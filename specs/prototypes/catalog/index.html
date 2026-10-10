@@ -1,0 +1,1183 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Clube Flex — protótipo do catálogo</title>
+  <meta name="description" content="Protótipo navegável do catálogo público de parceiros do Clube Flex.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&display=swap" rel="stylesheet">
+  <style>
+    /* ───────── Tokens (specs/apps/catalog/interface.md) ───────── */
+    :root {
+      --cream-50: #fbf8f2;
+      --cream-100: #f4efe6;
+      --cream-200: #e8e1d4;
+      --cream-300: #d4cbb8;
+      --ink: #141414;
+      --ink-soft: #2a2a2a;
+      --ink-muted: #6b6b6b;
+      --forest: #0b3d2e;
+      --forest-dark: #072b20;
+      --forest-light: #155a45;
+      --coral: #dd5a37;
+      --coral-dark: #b8482c;
+      --coral-light: #e8704f;
+
+      /* Semânticas (ui-foundations.md) — valores a validar */
+      --success: #13704f;
+      --success-subtle: #e3f3ea;
+      --warning: #8a5a12;
+      --warning-subtle: #fdf1d8;
+      --danger: #b3362f;
+      --danger-subtle: #fbe9e7;
+      --info: #2054ae;
+      --info-subtle: #e8effc;
+      --focus: #2563eb;
+
+      --radius: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --shadow-float: 0 16px 40px rgba(20, 20, 20, .16), 0 2px 6px rgba(20, 20, 20, .06);
+
+      --font-ui: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+      --font-display: "Fraunces", Georgia, serif;
+      --gutter: 16px;
+      --max: 1200px;
+    }
+    @media (min-width: 768px) { :root { --gutter: 32px; } }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { font-family: var(--font-ui); font-size: 16px; line-height: 1.5; color: var(--ink); background: var(--cream-50); -webkit-font-smoothing: antialiased; scroll-behavior: smooth; scroll-padding-top: 80px; }
+    body { margin: 0; min-width: 320px; background: var(--cream-50); }
+    h1, h2, h3, h4, p, dl, dd, ul, ol, figure, blockquote { margin: 0; }
+    ul, ol { padding: 0; list-style: none; }
+    button, input, select, textarea { font: inherit; color: inherit; }
+    button, a { touch-action: manipulation; }
+    a { color: var(--forest); }
+    img, svg { display: block; }
+    :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
+    [hidden] { display: none !important; }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    .icon { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .icon.sm { width: 16px; height: 16px; }
+    .wrap { width: 100%; max-width: var(--max); margin: 0 auto; padding: 0 var(--gutter); }
+    .display { font-family: var(--font-display); font-weight: 600; letter-spacing: -.02em; line-height: 1.08; font-variation-settings: "opsz" 144; }
+    .eyebrow { font-size: 13px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--coral-dark); }
+    .muted { color: var(--ink-muted); }
+
+    /* Copy cujo texto oficial não está no repositório */
+    [data-pending-copy] { text-decoration: underline dotted var(--coral); text-underline-offset: 4px; text-decoration-thickness: 1.5px; }
+    body.hide-pending [data-pending-copy] { text-decoration: none; }
+
+    .skip-link { position: absolute; left: 8px; top: -60px; z-index: 100; padding: 12px 16px; border-radius: var(--radius); background: var(--forest); color: #fff; font-weight: 600; }
+    .skip-link:focus { top: 8px; }
+
+    /* ───────── Botões ───────── */
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 22px; border-radius: 999px; border: 1.5px solid transparent; font-weight: 600; font-size: 16px; text-decoration: none; cursor: pointer; transition: background .15s, color .15s, border-color .15s, transform .15s; white-space: nowrap; }
+    .btn:active { transform: translateY(1px); }
+    .btn.primary { background: var(--forest); color: var(--cream-50); }
+    .btn.primary:hover { background: var(--forest-dark); }
+    .btn.accent { background: var(--coral-dark); color: #fff; }
+    .btn.accent:hover { background: #9f3d25; }
+    .btn.secondary { background: transparent; color: var(--forest); border-color: var(--forest); }
+    .btn.secondary:hover { background: var(--cream-100); }
+    .btn.ghost { background: transparent; color: var(--ink-soft); min-height: 44px; padding: 0 14px; }
+    .btn.ghost:hover { background: var(--cream-100); }
+    .btn.sm { min-height: 44px; padding: 0 16px; font-size: 15px; }
+    .btn:disabled, .btn[aria-disabled="true"] { opacity: .5; cursor: not-allowed; transform: none; }
+    .btn.loading { position: relative; color: transparent !important; pointer-events: none; }
+    .btn.loading::after { content: ""; position: absolute; width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--cream-50); border-right-color: transparent; animation: spin .7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ───────── Cabeçalho ───────── */
+    .site-header { position: sticky; top: 0; z-index: 40; background: rgba(251, 248, 242, .92); backdrop-filter: saturate(1.4) blur(10px); border-bottom: 1px solid transparent; transition: border-color .2s; }
+    .site-header.scrolled { border-bottom-color: var(--cream-200); }
+    .site-header .wrap { display: flex; align-items: center; gap: 16px; height: 68px; }
+    .logo { display: inline-flex; align-items: baseline; gap: 2px; font-family: var(--font-display); font-weight: 600; font-size: 24px; color: var(--forest); text-decoration: none; letter-spacing: -.02em; min-height: 44px; align-items: center; }
+    .logo span { color: var(--coral); }
+    .logo-note { font-family: var(--font-ui); font-size: 10px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-muted); border: 1px dashed var(--cream-300); border-radius: 4px; padding: 1px 5px; margin-left: 8px; }
+    .main-nav { margin-left: auto; display: none; gap: 4px; }
+    .main-nav a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; border-radius: 999px; color: var(--ink-soft); font-weight: 500; text-decoration: none; }
+    .main-nav a:hover { background: var(--cream-100); }
+    .header-cta { margin-left: auto; }
+    .menu-toggle { margin-left: 4px; width: 44px; height: 44px; border-radius: 50%; border: 0; background: transparent; display: inline-grid; place-items: center; cursor: pointer; }
+    .menu-toggle:hover { background: var(--cream-100); }
+    .mobile-nav { border-top: 1px solid var(--cream-200); background: var(--cream-50); padding: 8px var(--gutter) 16px; }
+    .mobile-nav a { display: flex; align-items: center; min-height: 48px; color: var(--ink); font-weight: 500; text-decoration: none; border-bottom: 1px solid var(--cream-200); }
+    @media (min-width: 900px) {
+      .main-nav { display: flex; }
+      .header-cta { margin-left: 8px; }
+      .menu-toggle, .mobile-nav { display: none !important; }
+    }
+    @media (max-width: 420px) { .header-cta { display: none; } .menu-toggle { margin-left: auto; } }
+
+    /* ───────── Hero ───────── */
+    .hero { position: relative; overflow: hidden; padding: 40px 0 56px; }
+    .hero .wrap { display: grid; gap: 40px; align-items: center; }
+    .badge-pill { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px 6px 8px; border-radius: 999px; background: var(--cream-100); border: 1px solid var(--cream-200); font-size: 14px; font-weight: 500; color: var(--ink-soft); }
+    .badge-pill i { width: 22px; height: 22px; border-radius: 50%; background: var(--forest); display: grid; place-items: center; color: var(--cream-50); }
+    .hero h1 { font-size: clamp(38px, 9vw, 68px); margin-top: 20px; color: var(--ink); }
+    .hero h1 em { font-style: italic; font-weight: 500; color: var(--forest); }
+    .hero p.lead { margin-top: 20px; font-size: 18px; color: var(--ink-soft); max-width: 34em; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+    .hero-actions .btn { flex: 1 1 200px; }
+    @media (min-width: 560px) { .hero-actions .btn { flex: 0 0 auto; } }
+    .hero-art { position: relative; aspect-ratio: 1 / 1; max-width: 520px; width: 100%; justify-self: center; }
+    .blob { position: absolute; border-radius: 50%; }
+    .blob.a { inset: 6% 10% 14% 4%; background: var(--forest); border-radius: 46% 54% 42% 58% / 52% 44% 56% 48%; }
+    .blob.b { width: 38%; aspect-ratio: 1; right: 2%; top: 2%; background: var(--coral); }
+    .blob.c { width: 22%; aspect-ratio: 1; left: 0; bottom: 6%; background: var(--cream-200); }
+    .float-card { position: absolute; background: var(--cream-50); border-radius: var(--radius-lg); box-shadow: var(--shadow-float); padding: 14px 16px; display: flex; align-items: center; gap: 12px; min-width: 0; }
+    .float-card strong { font-family: var(--font-display); font-size: 26px; color: var(--forest); line-height: 1; }
+    .float-card small { display: block; font-size: 13px; color: var(--ink-muted); }
+    .float-card b { display: block; font-size: 15px; }
+    .float-card.one { left: 12%; top: 22%; animation: float 7s ease-in-out infinite; }
+    .float-card.two { right: 4%; bottom: 22%; animation: float 8s ease-in-out -2s infinite; }
+    .float-card.three { left: 22%; bottom: 4%; animation: float 9s ease-in-out -4s infinite; }
+    .float-dot { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--cream-100); color: var(--forest); }
+    @keyframes float { 50% { transform: translateY(-8px); } }
+    @media (min-width: 900px) { .hero { padding: 64px 0 88px; } .hero .wrap { grid-template-columns: 1.1fr .9fr; gap: 56px; } }
+    @media (max-width: 380px) { .float-card { padding: 10px 12px; } .float-card strong { font-size: 20px; } .float-card.three { display: none; } }
+
+    /* ───────── Faixa de categorias ───────── */
+    .ribbon { background: var(--forest); color: var(--cream-50); overflow: hidden; padding: 18px 0; transform: rotate(-1.2deg); margin: 0 -8px; }
+    .ribbon-track { display: flex; width: max-content; animation: marquee 40s linear infinite; }
+    .ribbon-track span { font-family: var(--font-display); font-size: clamp(22px, 4vw, 32px); font-weight: 500; padding: 0 20px; display: inline-flex; align-items: center; gap: 40px; white-space: nowrap; }
+    .ribbon-track span::after { content: "✺"; color: var(--coral-light); font-size: .7em; }
+    @keyframes marquee { to { transform: translateX(-50%); } }
+    .ribbon-wrap { padding: 16px 0 24px; overflow: hidden; }
+
+    /* ───────── Seções ───────── */
+    .section { padding: 72px 0; }
+    .section-head { max-width: 640px; }
+    .section-head h2 { font-size: clamp(32px, 6vw, 48px); margin-top: 10px; }
+    .section-head p { margin-top: 14px; font-size: 17px; color: var(--ink-soft); }
+
+    .values { display: grid; gap: 16px; margin-top: 40px; }
+    .value { padding: 24px; border-radius: var(--radius-lg); background: var(--cream-100); border: 1px solid var(--cream-200); }
+    .value .v-icon { width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center; background: var(--cream-50); color: var(--forest); border: 1px solid var(--cream-200); }
+    .value:nth-child(2) .v-icon { color: var(--coral-dark); }
+    .value h3 { font-size: 19px; margin-top: 18px; }
+    .value p { margin-top: 8px; color: var(--ink-soft); }
+    @media (min-width: 640px) { .values { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1024px) { .values { grid-template-columns: repeat(4, 1fr); } }
+
+    /* ───────── Catálogo ───────── */
+    .catalog { background: var(--cream-100); border-top: 1px solid var(--cream-200); border-bottom: 1px solid var(--cream-200); }
+    .controls { margin-top: 32px; display: grid; gap: 20px; }
+    .field { display: grid; gap: 6px; }
+    .field label, .field .label { font-weight: 600; font-size: 15px; }
+    .field .hint { font-size: 14px; color: var(--ink-muted); display: flex; gap: 6px; align-items: flex-start; }
+    .select-wrap { position: relative; }
+    .select-wrap select { appearance: none; width: 100%; min-height: 52px; padding: 0 48px 0 16px; border-radius: var(--radius); border: 1.5px solid var(--cream-300); background: var(--cream-50); font-weight: 500; font-size: 16px; cursor: pointer; }
+    .select-wrap select:hover { border-color: var(--ink-muted); }
+    .select-wrap select.empty { color: var(--ink-muted); }
+    .select-wrap .icon { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); pointer-events: none; color: var(--ink-soft); }
+    @media (min-width: 768px) { .plan-field { max-width: 420px; } }
+
+    .chips-label { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .chips { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding: 4px var(--gutter); margin: 0 calc(var(--gutter) * -1); scroll-snap-type: x proximity; }
+    .chips::-webkit-scrollbar { display: none; }
+    @media (min-width: 900px) { .chips { flex-wrap: wrap; overflow: visible; margin: 0; padding: 4px 0; } }
+    .chip { flex: none; scroll-snap-align: start; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 18px; border-radius: 999px; border: 1.5px solid var(--cream-300); background: var(--cream-50); font-weight: 500; cursor: pointer; transition: background .15s, border-color .15s, color .15s; }
+    .chip:hover { border-color: var(--forest); }
+    .chip[aria-pressed="true"] { background: var(--forest); border-color: var(--forest); color: var(--cream-50); }
+    .chip[aria-pressed="true"]::before { content: ""; width: 14px; height: 14px; background: currentColor; -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12.5 4.5 4.5L19 7.5'/%3E%3C/svg%3E") center / contain no-repeat; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12.5 4.5 4.5L19 7.5'/%3E%3C/svg%3E") center / contain no-repeat; }
+    .chip .count { font-size: 13px; opacity: .7; font-variant-numeric: tabular-nums; }
+    .link-btn { background: none; border: 0; padding: 0 4px; min-height: 44px; color: var(--forest); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+
+    .results-bar { margin-top: 28px; display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 24px; font-size: 15px; color: var(--ink-muted); }
+    .grid { margin-top: 16px; display: grid; gap: 16px; grid-template-columns: 1fr; }
+    @media (min-width: 640px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1024px) { .grid { grid-template-columns: repeat(3, 1fr); gap: 20px; } }
+
+    .card { position: relative; display: flex; flex-direction: column; gap: 14px; padding: 22px; border-radius: var(--radius-lg); background: var(--cream-50); border: 1px solid var(--cream-200); transition: border-color .15s, box-shadow .15s, transform .15s; }
+    .card:hover { border-color: var(--cream-300); box-shadow: 0 10px 28px rgba(20, 20, 20, .08); transform: translateY(-2px); }
+    .card:focus-within { border-color: var(--forest); }
+    .card.featured { border-color: var(--forest); box-shadow: inset 0 0 0 1px var(--forest); }
+    .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+    .cats { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tag { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 999px; background: var(--cream-100); color: var(--ink-soft); font-size: 13px; font-weight: 500; }
+    .tag.featured { background: var(--forest); color: var(--cream-50); }
+    .tag.coupon { background: #fbe7df; color: var(--coral-dark); }
+    .card h3 { font-size: 21px; line-height: 1.2; }
+    .card h3 a { color: var(--ink); text-decoration: none; }
+    .card h3 a::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
+    .card h3 a:focus-visible { outline: none; }
+    .card h3 a:focus-visible::after { outline: 3px solid var(--focus); outline-offset: 2px; }
+    .card .loc { display: flex; align-items: center; gap: 6px; color: var(--ink-muted); font-size: 14.5px; }
+    .card-bottom { margin-top: auto; padding-top: 16px; border-top: 1px dashed var(--cream-300); display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
+    .pct small { display: block; font-size: 13px; color: var(--ink-muted); }
+    .pct strong { font-family: var(--font-display); font-size: 34px; line-height: 1; color: var(--forest); font-weight: 600; }
+    .pct strong span { font-size: 18px; font-family: var(--font-ui); font-weight: 600; margin-right: 4px; color: var(--ink-soft); }
+    .card .more { display: inline-flex; align-items: center; gap: 4px; font-weight: 600; color: var(--forest); text-decoration: underline; text-underline-offset: 3px; }
+
+    .skeleton { pointer-events: none; }
+    .sk { border-radius: 6px; background: linear-gradient(90deg, var(--cream-200) 25%, var(--cream-100) 50%, var(--cream-200) 75%); background-size: 200% 100%; animation: shimmer 1.4s ease-in-out infinite; }
+    @keyframes shimmer { to { background-position: -200% 0; } }
+
+    .state { margin-top: 24px; padding: 40px 24px; border-radius: var(--radius-lg); border: 1.5px dashed var(--cream-300); background: var(--cream-50); text-align: center; display: grid; justify-items: center; gap: 12px; }
+    .state .s-icon { width: 56px; height: 56px; border-radius: 50%; background: var(--cream-100); display: grid; place-items: center; color: var(--forest); }
+    .state.error .s-icon { background: var(--danger-subtle); color: var(--danger); }
+    .state h3 { font-size: 20px; }
+    .state p { max-width: 30em; color: var(--ink-soft); }
+    .alert { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: var(--radius); font-size: 15px; }
+    .alert.warning { background: var(--warning-subtle); color: var(--warning); }
+    .alert.info { background: var(--info-subtle); color: var(--info); }
+    .alert.danger { background: var(--danger-subtle); color: var(--danger); }
+    .alert .icon { margin-top: 1px; }
+    .alert div { color: var(--ink-soft); }
+    .alert strong { color: inherit; }
+
+    /* ───────── Passos ───────── */
+    .steps { display: grid; gap: 16px; margin-top: 40px; counter-reset: step; }
+    .step { position: relative; padding: 28px 24px 24px; border-radius: var(--radius-lg); border: 1px solid var(--cream-200); background: var(--cream-50); }
+    .step-n { font-family: var(--font-display); font-size: 56px; line-height: 1; color: var(--coral); font-weight: 500; }
+    .step h3 { font-size: 20px; margin-top: 12px; }
+    .step p { margin-top: 8px; color: var(--ink-soft); }
+    .step .btn { margin-top: 16px; }
+    @media (min-width: 640px) { .steps { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1024px) { .steps { grid-template-columns: repeat(4, 1fr); } }
+
+    /* ───────── Rodapé ───────── */
+    .site-footer { background: var(--forest-dark); color: #d9e3de; padding: 56px 0 32px; }
+    .site-footer a { color: #fff; }
+    .footer-grid { display: grid; gap: 32px; }
+    .footer-brand .logo { color: var(--cream-50); }
+    .footer-brand p { margin-top: 12px; max-width: 26em; color: #b9c8c0; }
+    .site-footer h2 { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: #9fb4a9; font-weight: 600; margin-bottom: 8px; }
+    .site-footer li a, .site-footer li button { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; text-decoration: none; background: none; border: 0; padding: 0; color: #fff; cursor: pointer; }
+    .site-footer li a:hover, .site-footer li button:hover { text-decoration: underline; }
+    .footer-legal { margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, .12); display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; font-size: 14px; color: #9fb4a9; }
+    .footer-legal nav { display: flex; gap: 16px; }
+    .footer-legal a { display: inline-flex; align-items: center; min-height: 44px; }
+    @media (min-width: 768px) { .footer-grid { grid-template-columns: 1.4fr 1fr 1.3fr; } }
+
+    /* ───────── Página do parceiro ───────── */
+    .partner-page { padding: 24px 0 72px; }
+    .back { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 14px 0 8px; margin-left: -8px; border-radius: 999px; font-weight: 600; color: var(--forest); text-decoration: none; }
+    .back:hover { background: var(--cream-100); }
+    .p-head { margin-top: 16px; display: grid; gap: 14px; }
+    .p-head h1 { font-size: clamp(34px, 7vw, 56px); }
+    .p-head .desc { font-size: 18px; color: var(--ink-soft); max-width: 40em; }
+    .p-layout { margin-top: 32px; display: grid; gap: 20px; align-items: start; }
+    @media (min-width: 960px) { .p-layout { grid-template-columns: 1fr 380px; gap: 32px; } .p-aside { position: sticky; top: 88px; } }
+    .panel { padding: 24px; border-radius: var(--radius-lg); background: var(--cream-50); border: 1px solid var(--cream-200); }
+    .panel h2 { font-size: 20px; }
+    .panel + .panel { margin-top: 20px; }
+    .benefit { background: var(--forest); color: var(--cream-50); border-color: var(--forest); position: relative; overflow: hidden; }
+    .benefit::after { content: ""; position: absolute; width: 180px; height: 180px; right: -60px; top: -60px; border-radius: 50%; background: var(--coral); opacity: .9; }
+    .benefit > * { position: relative; z-index: 1; }
+    .benefit .field label { color: var(--cream-50); }
+    .benefit .field .hint { color: #b9c8c0; }
+    .benefit .select-wrap select { border-color: rgba(255, 255, 255, .3); }
+    .benefit-value { margin-top: 20px; }
+    .benefit-value small { display: block; color: #b9c8c0; font-size: 14px; }
+    .benefit-value strong { display: block; font-family: var(--font-display); font-size: 64px; line-height: 1; font-weight: 600; margin-top: 6px; }
+    .benefit-value strong span { font-family: var(--font-ui); font-size: 22px; font-weight: 600; margin-right: 6px; }
+    .benefit-empty { margin-top: 20px; padding: 16px; border-radius: var(--radius-md); background: rgba(255, 255, 255, .08); border: 1px dashed rgba(255, 255, 255, .3); }
+    .coupon { margin-top: 20px; display: flex; align-items: center; gap: 12px; padding: 10px 10px 10px 16px; border-radius: var(--radius-md); background: var(--cream-50); color: var(--ink); }
+    .coupon small { display: block; font-size: 12.5px; color: var(--ink-muted); }
+    .coupon code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 18px; font-weight: 700; letter-spacing: .06em; }
+    .coupon .btn { margin-left: auto; }
+    .usage { background: #fdf0ea; border-color: #f2d3c6; }
+    .usage h2 { display: flex; align-items: center; gap: 10px; color: var(--coral-dark); }
+    .usage p { margin-top: 10px; font-size: 17px; color: var(--ink-soft); }
+    .contact-list { margin-top: 12px; display: grid; gap: 8px; }
+    .contact { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 10px 0; border-bottom: 1px solid var(--cream-200); }
+    .contact:last-child { border-bottom: 0; }
+    .contact .c-icon { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: var(--cream-100); color: var(--forest); flex: none; }
+    .contact .c-body { flex: 1 1 140px; min-width: 0; }
+    .contact .c-body small { display: block; font-size: 13px; color: var(--ink-muted); }
+    .contact .c-body b { font-weight: 600; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+    .units { margin-top: 12px; display: grid; gap: 10px; }
+    .unit { border: 1px solid var(--cream-200); border-radius: var(--radius-md); background: var(--cream-50); }
+    .unit summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 12px 16px; border-radius: var(--radius-md); }
+    .unit summary::-webkit-details-marker { display: none; }
+    .unit summary:hover { background: var(--cream-100); }
+    .unit summary .chev { margin-left: auto; transition: transform .2s; }
+    .unit[open] summary .chev { transform: rotate(180deg); }
+    .unit summary b { display: block; }
+    .unit summary small { display: block; color: var(--ink-muted); font-size: 14px; }
+    .unit-body { padding: 4px 16px 16px; display: grid; gap: 14px; }
+    .unit-body dt { font-size: 13px; font-weight: 600; color: var(--ink-muted); text-transform: uppercase; letter-spacing: .06em; }
+    .unit-body dd { margin-top: 2px; }
+    .assistant-cta { display: grid; gap: 14px; background: var(--cream-100); }
+    .assistant-cta p { color: var(--ink-soft); }
+    .not-found { padding: 72px 0; text-align: center; display: grid; justify-items: center; gap: 16px; }
+    .not-found h1 { font-size: clamp(32px, 6vw, 48px); }
+
+    .doc-page { padding: 32px 0 72px; max-width: 760px; }
+    .doc-page h1 { font-size: clamp(32px, 6vw, 48px); margin-top: 16px; }
+    .doc-page p { margin-top: 16px; color: var(--ink-soft); }
+
+    /* ───────── Assistente ───────── */
+    .fab { position: fixed; right: 20px; bottom: 76px; z-index: 50; width: 60px; height: 60px; border-radius: 50%; border: 0; background: var(--coral-dark); color: #fff; display: grid; place-items: center; box-shadow: var(--shadow-float); cursor: pointer; transition: transform .2s, background .15s; }
+    .fab:hover { background: #9f3d25; transform: scale(1.05); }
+    .fab .icon { width: 26px; height: 26px; }
+    body.assistant-open .fab { display: none; }
+    .assistant { position: fixed; z-index: 60; display: flex; flex-direction: column; background: var(--cream-50); box-shadow: var(--shadow-float); border: 1px solid var(--cream-200); inset: auto 0 0 0; height: 92dvh; border-radius: 20px 20px 0 0; }
+    @media (min-width: 640px) { .assistant { inset: auto 24px 24px auto; width: 400px; height: min(640px, calc(100dvh - 48px)); border-radius: 20px; } }
+    .assistant-backdrop { position: fixed; inset: 0; z-index: 55; background: rgba(20, 20, 20, .35); }
+    @media (min-width: 640px) { .assistant-backdrop { display: none; } }
+    .a-head { display: flex; align-items: center; gap: 12px; padding: 14px 12px 14px 18px; border-bottom: 1px solid var(--cream-200); }
+    .a-avatar { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: var(--forest); color: var(--cream-50); flex: none; }
+    .a-head h2 { font-size: 16px; }
+    .a-head small { display: block; font-size: 13px; color: var(--ink-muted); }
+    .a-close { margin-left: auto; width: 44px; height: 44px; border-radius: 50%; border: 0; background: transparent; display: grid; place-items: center; cursor: pointer; }
+    .a-close:hover { background: var(--cream-100); }
+    .a-log { flex: 1; overflow-y: auto; padding: 18px; display: flex; flex-direction: column; gap: 10px; overscroll-behavior: contain; }
+    .msg { max-width: 86%; padding: 10px 14px; border-radius: 16px; font-size: 15px; line-height: 1.45; animation: pop .25s ease-out; }
+    .msg.bot { align-self: flex-start; background: var(--cream-100); border: 1px solid var(--cream-200); border-bottom-left-radius: 4px; }
+    .msg.user { align-self: flex-end; background: var(--forest); color: var(--cream-50); border-bottom-right-radius: 4px; }
+    .msg ul { margin-top: 8px; padding-left: 18px; list-style: disc; display: grid; gap: 2px; }
+    @keyframes pop { from { opacity: 0; transform: translateY(6px); } }
+    .a-foot { border-top: 1px solid var(--cream-200); padding: 14px 16px calc(14px + env(safe-area-inset-bottom)); display: grid; gap: 10px; background: var(--cream-50); border-radius: 0 0 20px 20px; }
+    .a-options { display: grid; gap: 8px; }
+    .a-options .btn { width: 100%; }
+    .a-form { display: grid; gap: 8px; }
+    .a-form label { font-weight: 600; font-size: 14px; }
+    .a-row { display: flex; gap: 8px; }
+    .a-row input { flex: 1; min-width: 0; min-height: 48px; padding: 0 14px; border-radius: var(--radius); border: 1.5px solid var(--cream-300); background: #fff; font-size: 16px; }
+    .a-row input[aria-invalid="true"] { border-color: var(--danger); }
+    .a-send { width: 48px; height: 48px; border-radius: 50%; border: 0; background: var(--forest); color: var(--cream-50); display: grid; place-items: center; cursor: pointer; flex: none; }
+    .a-send:hover { background: var(--forest-dark); }
+    .a-error { display: flex; gap: 6px; align-items: center; color: var(--danger); font-size: 14px; font-weight: 500; }
+    .a-secondary { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+    .consent { display: flex; gap: 12px; align-items: flex-start; padding: 12px; border-radius: var(--radius); background: var(--cream-100); font-size: 14.5px; cursor: pointer; }
+    .consent input { width: 22px; height: 22px; margin: 1px 0 0; accent-color: var(--forest); flex: none; }
+    .review { display: grid; border: 1px solid var(--cream-200); border-radius: var(--radius-md); background: #fff; }
+    .review div { display: flex; align-items: center; gap: 8px; padding: 6px 6px 6px 14px; border-bottom: 1px solid var(--cream-200); }
+    .review div:last-child { border-bottom: 0; }
+    .review dt { font-size: 12.5px; color: var(--ink-muted); }
+    .review dd { font-weight: 600; overflow-wrap: anywhere; }
+    .review .r-text { flex: 1; min-width: 0; padding: 4px 0; }
+    .review .btn { min-height: 44px; padding: 0 12px; font-size: 14px; }
+    .a-note { font-size: 12.5px; color: var(--ink-muted); text-align: center; }
+
+    /* ───────── Barra do protótipo ───────── */
+    .proto { position: fixed; z-index: 70; left: 50%; transform: translateX(-50%); bottom: 12px; display: flex; align-items: center; gap: 8px; padding: 4px; border-radius: 999px; background: var(--ink); color: #fff; box-shadow: var(--shadow-float); font-size: 12.5px; max-width: calc(100vw - 16px); }
+    .proto label { padding-left: 10px; font-weight: 600; white-space: nowrap; }
+    .proto select { height: 32px; border-radius: 999px; border: 0; padding: 0 10px; background: #2c2c2c; color: #fff; font-size: 12.5px; min-width: 0; }
+    .proto .proto-extra { color: #a8a8a8; font-weight: 400; }
+    @media (max-width: 640px) { .proto .proto-extra, .proto .proto-api-label { display: none; } .proto { left: 8px; right: 8px; transform: none; } .proto select { flex: 1; } }
+    body.assistant-open .proto { display: none; }
+    .toast { position: fixed; left: 50%; bottom: 72px; transform: translateX(-50%); z-index: 80; padding: 12px 18px; border-radius: 999px; background: var(--ink); color: #fff; font-size: 14.5px; box-shadow: var(--shadow-float); max-width: calc(100vw - 32px); }
+
+    .view { display: none; }
+    .view.active { display: block; }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+      .ribbon-track { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="i-left" viewBox="0 0 24 24"><path d="M19 12H5"/><path d="m11 18-6-6 6-6"/></symbol>
+    <symbol id="i-right" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></symbol>
+    <symbol id="i-ticket" viewBox="0 0 24 24"><path d="M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4V8Z"/><path d="M14 6v12" stroke-dasharray="2 2"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3.5 2.6 5.3 5.9.9-4.2 4.1 1 5.8L12 16.8l-5.3 2.8 1-5.8-4.2-4.1 5.9-.9L12 3.5Z"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><path d="M5 4h3l2 5-2.5 1.5a11 11 0 0 0 6 6L15 14l5 2v3a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></symbol>
+    <symbol id="i-wa" viewBox="0 0 24 24"><path d="M4 20l1.3-4A8 8 0 1 1 8.5 19L4 20Z"/><path d="M9 9.5c.5 2 2 3.6 4 4.4l1-1 2 .8v1.3c-3.6.6-7.5-3.3-7-7H10l.8 2-1 1"/></symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></symbol>
+    <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3Z"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5M12 16v.01"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8v.01"/></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4V5Z"/><path d="M8 10h8M8 13h5"/></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></symbol>
+    <symbol id="i-bot" viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="11" rx="3"/><path d="M12 8V4"/><circle cx="12" cy="3.5" r="1"/><circle cx="9" cy="13.5" r="1.2"/><circle cx="15" cy="13.5" r="1.2"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14.6-4.5L4 8"/><path d="M4 4v4h4"/><path d="M4 13a8 8 0 0 0 14.6 4.5L20 16"/><path d="M20 20v-4h-4"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></symbol>
+    <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 13 9 5 9-5"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.2a4.3 4.3 0 0 1 7.5 2.6C19.5 15.4 12 20 12 20Z"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M5.6 18.4l2.8-2.8M15.6 8.4l2.8-2.8"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></symbol>
+    <symbol id="i-badge" viewBox="0 0 24 24"><circle cx="12" cy="9" r="6"/><path d="m8.5 14-1.5 7 5-3 5 3-1.5-7"/></symbol>
+    <symbol id="i-tooth" viewBox="0 0 24 24"><path d="M7 3c-2.5 0-4 2-4 4.5 0 3 1.5 4 2 7 .4 2.5 1 6.5 2.5 6.5S9.5 16 12 16s3 5 4.5 5 2.1-4 2.5-6.5c.5-3 2-4 2-7C21 5 19.5 3 17 3c-2 0-3 1-5 1S9 3 7 3Z"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h14v15H6a2 2 0 0 0-2 2V5Z"/><path d="M4 20a2 2 0 0 0 2 2h14v-4"/></symbol>
+  </svg>
+
+  <a class="skip-link" href="#main" data-skip>Ir para o conteúdo</a>
+
+  <!-- ═════════ Cabeçalho ═════════ -->
+  <header class="site-header" id="site-header">
+    <div class="wrap">
+      <a class="logo" href="#/" aria-label="Parceiros+ — página inicial">Parceiros<span>+</span><span class="logo-note" aria-hidden="true">logo provisória</span></a>
+      <nav class="main-nav" aria-label="Navegação principal">
+        <a href="#sobre" data-anchor="sobre">Sobre</a>
+        <a href="#parceiros" data-anchor="parceiros">Parceiros</a>
+        <a href="#como-funciona" data-anchor="como-funciona">Como funciona</a>
+      </nav>
+      <button class="btn primary sm header-cta" type="button" data-open-assistant="flex">Vem ser Flex</button>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav" aria-label="Abrir menu" data-menu-toggle><svg class="icon" aria-hidden="true"><use href="#i-menu"/></svg></button>
+    </div>
+    <nav class="mobile-nav" id="mobile-nav" aria-label="Navegação principal" hidden>
+      <a href="#sobre" data-anchor="sobre">Sobre</a>
+      <a href="#parceiros" data-anchor="parceiros">Parceiros</a>
+      <a href="#como-funciona" data-anchor="como-funciona">Como funciona</a>
+    </nav>
+  </header>
+
+  <main id="main" tabindex="-1">
+    <!-- ═════════ Página inicial ═════════ -->
+    <div class="view" id="view-home">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="wrap">
+          <div>
+            <span class="badge-pill"><i aria-hidden="true"><svg class="icon sm"><use href="#i-heart"/></svg></i>Desde 2010 cuidando da sua família</span>
+            <h1 class="display" id="hero-title">Saúde e Qualidade de Vida que <em>você e sua família</em> merecem.</h1>
+            <p class="lead">Saúde, Educação, lazer e muito mais. Vantagens reais para você e seu bolso. Descontos que merecem ser contados.</p>
+            <div class="hero-actions">
+              <button class="btn accent" type="button" data-open-assistant="flex">Vem ser Flex</button>
+              <a class="btn secondary" href="#parceiros" data-anchor="parceiros" data-focus-target="plan-select">Explorar parceiros <svg class="icon sm" aria-hidden="true"><use href="#i-down"/></svg></a>
+            </div>
+          </div>
+          <div class="hero-art" aria-hidden="true">
+            <div class="blob a"></div><div class="blob b"></div><div class="blob c"></div>
+            <div class="float-card one"><span class="float-dot"><svg class="icon"><use href="#i-heart"/></svg></span><div><small>Saúde</small><strong>até 40%</strong></div></div>
+            <div class="float-card two"><span class="float-dot"><svg class="icon"><use href="#i-book"/></svg></span><div><small>Educação</small><strong>até 30%</strong></div></div>
+            <div class="float-card three"><span class="float-dot"><svg class="icon"><use href="#i-spark"/></svg></span><div><b>Lazer e bem-estar</b><small>para toda a família</small></div></div>
+          </div>
+        </div>
+      </section>
+
+      <div class="ribbon-wrap" aria-hidden="true">
+        <div class="ribbon"><div class="ribbon-track" id="ribbon-track"></div></div>
+      </div>
+
+      <section class="section" id="sobre" aria-labelledby="about-title">
+        <div class="wrap">
+          <div class="section-head">
+            <p class="eyebrow">Clube Flex</p>
+            <h2 class="display" id="about-title">Mais que descontos. Uma rotina mais generosa.</h2>
+          </div>
+          <ul class="values">
+            <li class="value"><span class="v-icon" aria-hidden="true"><svg class="icon"><use href="#i-badge"/></svg></span><h3>Parceiros selecionados</h3><p data-pending-copy>Clínicas, escolas e espaços de lazer escolhidos com cuidado para atender você e sua família.</p></li>
+            <li class="value"><span class="v-icon" aria-hidden="true"><svg class="icon"><use href="#i-heart"/></svg></span><h3>Benefícios de verdade</h3><p data-pending-copy>Descontos claros, de acordo com o seu plano, para usar no dia a dia.</p></li>
+            <li class="value"><span class="v-icon" aria-hidden="true"><svg class="icon"><use href="#i-check"/></svg></span><h3>Sem complicação</h3><p data-pending-copy>Escolha o parceiro, siga as instruções de uso e aproveite.</p></li>
+            <li class="value"><span class="v-icon" aria-hidden="true"><svg class="icon"><use href="#i-calendar"/></svg></span><h3>Atualizações mensais</h3><p data-pending-copy>Novos parceiros e condições entram no catálogo com frequência.</p></li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="section catalog" id="parceiros" aria-labelledby="catalog-title">
+        <div class="wrap">
+          <div class="section-head">
+            <p class="eyebrow">Catálogo de parceiros</p>
+            <h2 class="display" id="catalog-title">Encontre seu próximo serviço.</h2>
+            <p>Escolha seu plano e filtre por categoria para encontrar o benefício que procura.</p>
+          </div>
+
+          <div class="controls">
+            <div class="field plan-field">
+              <label for="plan-select">Seu plano</label>
+              <div class="select-wrap">
+                <select id="plan-select" aria-describedby="plan-hint"></select>
+                <svg class="icon" aria-hidden="true"><use href="#i-down"/></svg>
+              </div>
+              <p class="hint" id="plan-hint"><svg class="icon sm" aria-hidden="true"><use href="#i-info"/></svg>O plano é informado por você e não é validado pelo Clube Flex.</p>
+            </div>
+            <div class="field" id="category-field" hidden>
+              <div class="chips-label"><span class="label" id="cat-label">Categorias</span><button class="link-btn" type="button" id="clear-category" hidden>Limpar filtro</button></div>
+              <div class="chips" role="group" aria-labelledby="cat-label" id="chips"></div>
+            </div>
+          </div>
+
+          <div id="catalog-alert"></div>
+          <div class="results-bar"><span id="results-count" aria-live="polite" aria-atomic="true"></span></div>
+          <div id="catalog-body" aria-busy="false"></div>
+        </div>
+      </section>
+
+      <section class="section" id="como-funciona" aria-labelledby="steps-title">
+        <div class="wrap">
+          <div class="section-head">
+            <p class="eyebrow">Como funciona</p>
+            <h2 class="display" id="steps-title">Em quatro passos.</h2>
+          </div>
+          <ol class="steps">
+            <li class="step"><span class="step-n" aria-hidden="true">01</span><h3>Cadastre-se</h3><p data-pending-copy>Deixe seus dados e a equipe do Clube Flex entra em contato para apresentar os planos.</p><button class="btn primary sm" type="button" data-open-assistant="flex">Quero ser Flex</button></li>
+            <li class="step"><span class="step-n" aria-hidden="true">02</span><h3>Explore parceiros</h3><p data-pending-copy>Escolha seu plano no catálogo e veja os descontos disponíveis por categoria.</p></li>
+            <li class="step"><span class="step-n" aria-hidden="true">03</span><h3>Use seu desconto</h3><p data-pending-copy>Siga as instruções de utilização de cada parceiro e apresente seu cupom quando houver.</p></li>
+            <li class="step"><span class="step-n" aria-hidden="true">04</span><h3>Economize sempre</h3><p data-pending-copy>Volte ao catálogo sempre que precisar e aproveite novas condições.</p></li>
+          </ol>
+        </div>
+      </section>
+    </div>
+
+    <!-- ═════════ Página do parceiro ═════════ -->
+    <div class="view" id="view-partner"><div class="wrap partner-page" id="partner-root"></div></div>
+
+    <!-- ═════════ Privacidade ═════════ -->
+    <div class="view" id="view-privacy">
+      <div class="wrap doc-page">
+        <a class="back" href="#/" data-back-home><svg class="icon" aria-hidden="true"><use href="#i-left"/></svg>Voltar ao início</a>
+        <h1 class="display">Privacidade</h1>
+        <p>Espaço reservado para o texto de privacidade publicado. O conteúdo oficial não faz parte deste protótipo.</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- ═════════ Rodapé ═════════ -->
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a class="logo" href="#/">Parceiros<span>+</span></a>
+          <p>O Clube Flex é um clube de descontos. Não é plano de saúde.</p>
+        </div>
+        <nav aria-labelledby="f-nav">
+          <h2 id="f-nav">Navegação</h2>
+          <ul>
+            <li><a href="#sobre" data-anchor="sobre">Sobre</a></li>
+            <li><a href="#parceiros" data-anchor="parceiros">Parceiros</a></li>
+            <li><a href="#como-funciona" data-anchor="como-funciona">Como funciona</a></li>
+            <li><button type="button" data-open-assistant="partner">Quero ser parceiro</button></li>
+          </ul>
+        </nav>
+        <div>
+          <h2>Contato</h2>
+          <ul>
+            <li><a href="tel:+552127029080"><svg class="icon sm" aria-hidden="true"><use href="#i-phone"/></svg>21 2702-9080</a></li>
+            <!-- Destino técnico do WhatsApp pendente (interface.md › Rodapé aprovado) -->
+            <li><a href="https://wa.me/552127029080" target="_blank" rel="noopener"><svg class="icon sm" aria-hidden="true"><use href="#i-wa"/></svg>WhatsApp</a></li>
+            <li><a href="mailto:comercial@flexcard.org.br"><svg class="icon sm" aria-hidden="true"><use href="#i-mail"/></svg>comercial@flexcard.org.br</a></li>
+            <li><span style="display:inline-flex;gap:8px;align-items:center;min-height:44px"><svg class="icon sm" aria-hidden="true"><use href="#i-pin"/></svg>Rua Laureano Rosa 100, São Gonçalo, RJ</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-legal">
+        <span>© Clube Flex</span>
+        <nav aria-label="Documentos legais"><a href="#/termos" data-toast="Termos de uso: conteúdo oficial fora do protótipo.">Termos de uso</a><a href="#/privacidade">Privacidade</a></nav>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ═════════ Assistente virtual ═════════ -->
+  <button class="fab" type="button" id="fab" aria-label="Abrir assistente do Clube Flex" data-open-assistant><svg class="icon" aria-hidden="true"><use href="#i-chat"/></svg></button>
+  <div class="assistant-backdrop" id="assistant-backdrop" hidden></div>
+  <section class="assistant" id="assistant" role="dialog" aria-labelledby="a-title" aria-describedby="a-sub" hidden>
+    <header class="a-head">
+      <span class="a-avatar" aria-hidden="true"><svg class="icon"><use href="#i-bot"/></svg></span>
+      <div><h2 id="a-title">Assistente virtual</h2><small id="a-sub">Respostas automáticas do Clube Flex</small></div>
+      <button class="a-close" type="button" aria-label="Fechar assistente" data-close-assistant><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button>
+    </header>
+    <div class="a-log" id="a-log" role="log" aria-label="Conversa com o assistente"></div>
+    <div class="sr-only" aria-live="polite" id="a-live"></div>
+    <div class="a-foot" id="a-foot"></div>
+  </section>
+
+  <div class="toast" id="toast" role="status" hidden></div>
+
+  <!-- ═════════ Barra do protótipo ═════════ -->
+  <div class="proto" role="region" aria-label="Controles do protótipo">
+    <label for="proto-screen">Protótipo<span class="proto-extra"> · dados ilustrativos</span></label>
+    <select id="proto-screen">
+      <option value="" disabled>Ir para…</option>
+      <optgroup label="Catálogo">
+        <option value="home">Início — sem plano</option>
+        <option value="home-plan">Catálogo com plano</option>
+        <option value="home-category">Catálogo com categoria</option>
+        <option value="home-loading">Carregando</option>
+        <option value="home-empty">Nenhum parceiro na categoria</option>
+        <option value="home-error">Falha ao consultar a API</option>
+        <option value="home-plan-gone">Plano indisponível</option>
+        <option value="home-category-gone">Categoria indisponível</option>
+      </optgroup>
+      <optgroup label="Parceiro">
+        <option value="partner-plan">Parceiro com plano</option>
+        <option value="partner-noplan">Parceiro sem plano</option>
+        <option value="partner-online">Parceiro sem unidade física</option>
+        <option value="partner-404">Parceiro inexistente</option>
+      </optgroup>
+      <optgroup label="Assistente">
+        <option value="assistant">Assistente — boas-vindas</option>
+        <option value="assistant-flex">Quero ser Flex</option>
+        <option value="assistant-partner">Quero ser parceiro</option>
+        <option value="assistant-fail">Envio com falha</option>
+      </optgroup>
+      <optgroup label="Referência">
+        <option value="pending-off">Ocultar marcação de copy provisória</option>
+        <option value="pending-on">Mostrar marcação de copy provisória</option>
+      </optgroup>
+    </select>
+    <label for="proto-api" class="proto-api-label">API</label>
+    <select id="proto-api" aria-label="Simulação da API">
+      <option value="ok">Normal</option>
+      <option value="slow">Lenta</option>
+      <option value="empty">Sem parceiros</option>
+      <option value="fail">Falha</option>
+    </select>
+  </div>
+
+  <script>
+    /* ───────── Dados ilustrativos (forma dos contratos /v1/public/*) ───────── */
+    const PLANS = [
+      { id: "pl-1", name: "Essencial", slug: "essencial" },
+      { id: "pl-2", name: "Família", slug: "familia" },
+      { id: "pl-3", name: "Premium", slug: "premium" },
+    ];
+    const CATEGORIES = [
+      { id: "saude", name: "Saúde" }, { id: "odontologia", name: "Odontologia" }, { id: "exames", name: "Exames" },
+      { id: "educacao", name: "Educação" }, { id: "lazer", name: "Lazer" }, { id: "bem-estar", name: "Bem-estar" }, { id: "pet", name: "Pet" },
+    ];
+    const addr = (street, number, neighborhood, city, postalCode, complement) => ({ postalCode, street, number, complement, neighborhood, city, state: "RJ" });
+    // benefits: { planSlug: [percentual, cupom específico?] }
+    const PARTNERS = [
+      { slug: "clinica-vida-plena", name: "Clínica Vida Plena", featured: true, categories: ["saude", "exames"],
+        description: "Clínica multiespecialidades com consultas, check-ups e exames laboratoriais.",
+        usageInstructions: "Agende pelo WhatsApp informando que é assinante do Clube Flex e apresente o cupom na recepção.",
+        website: "https://vidaplena.example", coupon: "FLEXVIDA",
+        contacts: [{ type: "whatsapp", value: "+5521999990001", label: "Agendamento" }, { type: "phone", value: "+552127000001", label: "Recepção" }],
+        units: [
+          { id: "u1", name: "Unidade Alcântara", address: addr("Rua Dr. Alfredo Backer", "520", "Alcântara", "São Gonçalo", "24710000", "Sala 204"), openingHours: "Segunda a sexta, das 7h às 19h. Sábado, das 7h às 12h.", instructions: "Exames de sangue com jejum: chegar até 9h.", contacts: [{ type: "phone", value: "+552127000011", label: "Recepção Alcântara" }, { type: "whatsapp", value: "+5521999990001", label: "Agendamento", inherited: true }] },
+          { id: "u2", name: "Unidade Centro", address: addr("Rua Feliciano Sodré", "88", "Centro", "São Gonçalo", "24440000"), openingHours: "Segunda a sexta, das 8h às 18h.", contacts: [{ type: "whatsapp", value: "+5521999990001", label: "Agendamento", inherited: true }, { type: "phone", value: "+552127000001", label: "Recepção", inherited: true }] },
+          { id: "u3", name: "Unidade Icaraí", address: addr("Rua Gavião Peixoto", "140", "Icaraí", "Niterói", "24230000"), contacts: [{ type: "phone", value: "+552126000003" }, { type: "whatsapp", value: "+5521999990001", label: "Agendamento", inherited: true }] },
+        ],
+        benefits: { essencial: [20], familia: [30], premium: [40, "FLEXVIDA40"] } },
+      { slug: "sorriso-sao-goncalo", name: "Sorriso São Gonçalo", featured: true, categories: ["odontologia"],
+        description: "Odontologia geral, ortodontia e clareamento para toda a família.",
+        usageInstructions: "Informe o seu plano no agendamento. O desconto é aplicado sobre a tabela particular da clínica.",
+        contacts: [{ type: "whatsapp", value: "+5521999990002" }],
+        units: [{ id: "u4", name: "Consultório Neves", address: addr("Av. Presidente Kennedy", "1200", "Neves", "São Gonçalo", "24425000", "Loja 3"), openingHours: "Segunda a sábado, das 9h às 20h.", contacts: [{ type: "whatsapp", value: "+5521999990002", inherited: true }] }],
+        benefits: { essencial: [15], familia: [25], premium: [35] } },
+      { slug: "laboratorio-analise-certa", name: "Laboratório Análise Certa", featured: false, categories: ["exames"],
+        description: "Exames laboratoriais e de imagem com resultado online.",
+        usageInstructions: "Apresente documento com foto e o cupom no atendimento.", coupon: "CERTAFLEX",
+        website: "https://analisecerta.example",
+        contacts: [{ type: "phone", value: "+552127000003", label: "Central" }],
+        units: [
+          { id: "u5", name: "Posto Zé Garoto", address: addr("Rua Coronel Moreira César", "301", "Zé Garoto", "São Gonçalo", "24440400"), openingHours: "Segunda a sábado, das 6h30 às 16h.", contacts: [{ type: "phone", value: "+552127000003", label: "Central", inherited: true }] },
+          { id: "u6", name: "Posto Barreto", address: addr("Rua Dr. March", "45", "Barreto", "Niterói", "24110000"), openingHours: "Segunda a sexta, das 6h30 às 15h.", contacts: [{ type: "phone", value: "+552127000003", label: "Central", inherited: true }] },
+        ],
+        benefits: { essencial: [10], familia: [20], premium: [30] } },
+      { slug: "colegio-novo-saber", name: "Colégio Novo Saber", featured: false, categories: ["educacao"],
+        description: "Educação infantil, ensino fundamental e médio.",
+        usageInstructions: "Desconto válido nas mensalidades. Solicite a matrícula pela secretaria informando o plano.",
+        contacts: [{ type: "phone", value: "+552127000004", label: "Secretaria" }, { type: "whatsapp", value: "+5521999990004", label: "Secretaria" }],
+        units: [{ id: "u7", name: "Sede", address: addr("Rua Visconde de Itaúna", "77", "Paraíso", "São Gonçalo", "24430000"), openingHours: "Segunda a sexta, das 7h às 17h.", contacts: [{ type: "phone", value: "+552127000004", label: "Secretaria", inherited: true }, { type: "whatsapp", value: "+5521999990004", label: "Secretaria", inherited: true }] }],
+        benefits: { familia: [15], premium: [25] } },
+      { slug: "idiomas-ponte", name: "Idiomas Ponte", featured: false, categories: ["educacao"],
+        description: "Cursos de inglês e espanhol presenciais e online.",
+        usageInstructions: "Use o cupom no site ao fazer a matrícula online.", coupon: "PONTEFLEX", website: "https://idiomasponte.example",
+        contacts: [{ type: "whatsapp", value: "+5521999990005" }], units: [],
+        benefits: { essencial: [20], familia: [25], premium: [30, "PONTE30"] } },
+      { slug: "parque-aquatico-sol", name: "Parque Aquático Sol", featured: true, categories: ["lazer"],
+        description: "Parque aquático com piscinas, toboáguas e área infantil.",
+        usageInstructions: "Compre o ingresso na bilheteria apresentando o cupom. Não cumulativo com outras promoções.", coupon: "SOLFLEX",
+        contacts: [{ type: "phone", value: "+552127000006" }],
+        units: [{ id: "u8", name: "Parque", address: addr("Estrada de Itaúna", "s/n", "Itaúna", "São Gonçalo", "24476000"), openingHours: "Quinta a domingo, das 9h às 17h.", instructions: "Crianças até 3 anos não pagam.", contacts: [{ type: "phone", value: "+552127000006", inherited: true }] }],
+        benefits: { familia: [30], premium: [50] } },
+      { slug: "academia-movimento", name: "Academia Movimento", featured: false, categories: ["bem-estar"],
+        description: "Musculação, funcional e aulas coletivas.",
+        usageInstructions: "Apresente o cupom na recepção no momento da matrícula.", coupon: "MOVEFLEX",
+        contacts: [{ type: "whatsapp", value: "+5521999990007" }],
+        units: [{ id: "u9", name: "Unidade Mutondo", address: addr("Rua Lúcio Tomé Feteira", "210", "Mutondo", "São Gonçalo", "24451000"), openingHours: "Segunda a sexta, das 5h às 23h. Sábado, das 8h às 14h.", contacts: [{ type: "whatsapp", value: "+5521999990007", inherited: true }] }],
+        benefits: { essencial: [10], familia: [15], premium: [20] } },
+      { slug: "espaco-equilibrio", name: "Espaço Equilíbrio", featured: false, categories: ["bem-estar", "saude"],
+        description: "Psicologia, nutrição e fisioterapia.",
+        usageInstructions: "Agende pelo telefone e informe o seu plano.",
+        contacts: [{ type: "phone", value: "+552127000008" }],
+        units: [{ id: "u10", name: "Consultórios", address: addr("Rua Nilo Peçanha", "15", "Estrela do Norte", "São Gonçalo", "24445000", "2º andar"), openingHours: "Segunda a sexta, das 8h às 20h.", contacts: [{ type: "phone", value: "+552127000008", inherited: true }] }],
+        benefits: { essencial: [15], familia: [20], premium: [30] } },
+      { slug: "pet-amigo", name: "Pet Amigo", featured: false, categories: ["pet"],
+        description: "Clínica veterinária, banho e tosa.",
+        usageInstructions: "Informe o plano no agendamento e apresente o cupom no pagamento.", coupon: "PETFLEX",
+        contacts: [{ type: "whatsapp", value: "+5521999990009" }],
+        units: [{ id: "u11", name: "Clínica", address: addr("Av. Jornalista Roberto Marinho", "500", "Colubandê", "São Gonçalo", "24744000"), openingHours: "Todos os dias, das 8h às 20h.", contacts: [{ type: "whatsapp", value: "+5521999990009", inherited: true }] }],
+        benefits: { essencial: [10], premium: [20] } },
+      { slug: "otica-visao-clara", name: "Ótica Visão Clara", featured: false, categories: ["saude"],
+        description: "Óculos de grau, lentes de contato e exame de vista.",
+        usageInstructions: "Desconto aplicado em armações e lentes. Apresente o cupom no caixa.", coupon: "VISAOFLEX",
+        contacts: [{ type: "phone", value: "+552127000010" }],
+        units: [{ id: "u12", name: "Loja Alcântara", address: addr("Rua Dr. Alfredo Backer", "300", "Alcântara", "São Gonçalo", "24710000"), openingHours: "Segunda a sábado, das 9h às 19h.", contacts: [{ type: "phone", value: "+552127000010", inherited: true }] }],
+        benefits: { essencial: [20], familia: [25], premium: [30] } },
+    ];
+    const OLD_SLUGS = { "clinica-vida": "clinica-vida-plena" };
+    const CONSENT = { version: "2026-10-01", text: "Autorizo o Clube Flex a utilizar estes dados para contato comercial.", privacyUrl: "#/privacidade" };
+
+    /* ───────── Utilitários ───────── */
+    const $ = (s, r = document) => r.querySelector(s);
+    const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+    const h = (tag, attrs = {}, ...kids) => {
+      const n = document.createElement(tag);
+      for (const [k, v] of Object.entries(attrs)) {
+        if (v == null || v === false) continue;
+        if (k === "class") n.className = v; else if (k.startsWith("on")) n.addEventListener(k.slice(2), v); else n.setAttribute(k, v === true ? "" : v);
+      }
+      n.append(...kids.flat().filter(k => k != null && k !== false));
+      return n;
+    };
+    const icon = (id, cls = "icon") => { const s = document.createElementNS("http://www.w3.org/2000/svg", "svg"); s.setAttribute("class", cls); s.setAttribute("aria-hidden", "true"); const u = document.createElementNS("http://www.w3.org/2000/svg", "use"); u.setAttribute("href", "#i-" + id); s.append(u); return s; };
+    const fmtPhone = v => { const d = v.replace(/\D/g, "").replace(/^55/, ""); return d.length === 11 ? `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}` : `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`; };
+    const fmtCep = c => c.slice(0, 5) + "-" + c.slice(5);
+    const catName = id => CATEGORIES.find(c => c.id === id)?.name;
+    const planBySlug = s => PLANS.find(p => p.slug === s);
+    const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
+    let toastTimer;
+    function toast(msg) { const t = $("#toast"); t.textContent = msg; t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => t.hidden = true, 3200); }
+
+    /* ───────── API simulada ───────── */
+    let apiMode = "ok";
+    const delay = ms => new Promise(r => setTimeout(r, ms));
+    function toPublic(p, plan) {
+      const out = { slug: p.slug, name: p.name, description: p.description, featured: p.featured, website: p.website, usageInstructions: p.usageInstructions,
+        categories: p.categories.map(id => ({ id, name: catName(id) })), contacts: p.contacts, units: p.units };
+      if (plan) { const [pct, specific] = p.benefits[plan.slug]; out.discountPercentage = pct; out.coupon = specific || p.coupon; }
+      return out;
+    }
+    async function api(fn) {
+      await delay(apiMode === "slow" ? 2600 : 450);
+      if (apiMode === "fail") throw { status: 503, title: "Serviço indisponível" };
+      return fn();
+    }
+    const fetchPartners = (planSlug, categoryId) => api(() => {
+      const plan = planBySlug(planSlug); if (!plan) throw { status: 404 };
+      if (categoryId && !CATEGORIES.some(c => c.id === categoryId)) throw { status: 404, scope: "category" };
+      if (apiMode === "empty") return [];
+      return PARTNERS.filter(p => p.benefits[plan.slug] && (!categoryId || p.categories.includes(categoryId)))
+        .sort((a, b) => (b.featured - a.featured) || a.name.localeCompare(b.name, "pt-BR"))
+        .map(p => toPublic(p, plan));
+    });
+    const categoriesFor = planSlug => {
+      const plan = planBySlug(planSlug);
+      return CATEGORIES.map(c => ({ ...c, count: PARTNERS.filter(p => p.benefits[plan.slug] && p.categories.includes(c.id)).length })).filter(c => c.count);
+    };
+
+    /* ───────── Rotas (o hash simula a URL: /?plano=&categoria= e /parceiros/{slug}?plano=) ───────── */
+    function parseRoute() {
+      const raw = location.hash.startsWith("#/") ? location.hash.slice(1) : "/";
+      const [path, qs = ""] = raw.split("?");
+      const q = new URLSearchParams(qs);
+      return { path, plano: q.get("plano") || "", categoria: q.get("categoria") || "" };
+    }
+    function homeHash(plano, categoria) { const q = new URLSearchParams(); if (plano) q.set("plano", plano); if (categoria) q.set("categoria", categoria); const s = q.toString(); return "#/" + (s ? "?" + s : ""); }
+    function partnerHash(slug, plano) { return `#/parceiros/${slug}` + (plano ? `?plano=${plano}` : ""); }
+    let lastCategory = "";
+    let suppressScroll = false;
+
+    function route() {
+      const r = parseRoute();
+      closeMobileMenu();
+      if (r.path.startsWith("/parceiros/")) return showPartner(decodeURIComponent(r.path.split("/")[2] || ""), r.plano);
+      if (r.path === "/privacidade") { setView("privacy"); document.title = "Privacidade — Clube Flex"; return; }
+      if (r.path === "/termos") { history.replaceState(null, "", "#/"); return route(); }
+      const wasHome = $("#view-home").classList.contains("active");
+      setView("home");
+      document.title = "Parceiros e descontos — Clube Flex";
+      renderCatalog(r.plano, r.categoria);
+      if (!wasHome && (r.plano || r.categoria) && !suppressScroll) requestAnimationFrame(() => $("#parceiros").scrollIntoView({ behavior: "instant" }));
+      suppressScroll = false;
+    }
+    function setView(id) {
+      const changed = !$("#view-" + id).classList.contains("active");
+      $$(".view").forEach(v => v.classList.toggle("active", v.id === "view-" + id));
+      if (changed) { scrollTo({ top: 0, behavior: "instant" }); if (id !== "home") $("#main").focus({ preventScroll: true }); }
+    }
+    addEventListener("hashchange", route);
+
+    // Âncoras de seção não alteram o hash para preservar ?plano e ?categoria.
+    document.addEventListener("click", e => {
+      const a = e.target.closest("[data-anchor]");
+      if (!a) return;
+      e.preventDefault();
+      const go = () => {
+        const target = document.getElementById(a.dataset.anchor);
+        target.scrollIntoView({ behavior: reduceMotion.matches ? "instant" : "smooth" });
+        const f = a.dataset.focusTarget ? document.getElementById(a.dataset.focusTarget) : target.querySelector("h2");
+        if (f) { if (!f.hasAttribute("tabindex") && f.tagName === "H2") f.setAttribute("tabindex", "-1"); f.focus({ preventScroll: true }); }
+      };
+      closeMobileMenu();
+      if (!$("#view-home").classList.contains("active")) { suppressScroll = true; location.hash = homeHash(parseRoute().plano, lastCategory); setTimeout(go, 30); } else go();
+    });
+    document.addEventListener("click", e => { const t = e.target.closest("[data-toast]"); if (t) { e.preventDefault(); toast(t.dataset.toast); } });
+    $("[data-skip]").addEventListener("click", e => { e.preventDefault(); $("#main").focus(); });
+
+    /* ───────── Cabeçalho ───────── */
+    addEventListener("scroll", () => $("#site-header").classList.toggle("scrolled", scrollY > 8), { passive: true });
+    const menuBtn = $("[data-menu-toggle]");
+    function closeMobileMenu() { $("#mobile-nav").hidden = true; menuBtn.setAttribute("aria-expanded", "false"); menuBtn.setAttribute("aria-label", "Abrir menu"); }
+    menuBtn.addEventListener("click", () => { const open = $("#mobile-nav").hidden; $("#mobile-nav").hidden = !open; menuBtn.setAttribute("aria-expanded", open); menuBtn.setAttribute("aria-label", open ? "Fechar menu" : "Abrir menu"); });
+
+    /* ───────── Faixa de categorias ───────── */
+    (() => { const words = ["Saúde", "Educação", "Lazer", "Odontologia", "Exames", "Bem-estar", "Pet"]; const t = $("#ribbon-track"); [...words, ...words].forEach(w => t.append(h("span", {}, w))); })();
+
+    /* ───────── Catálogo ───────── */
+    function planOptions(select, current, { onDark } = {}) {
+      select.replaceChildren(h("option", { value: "", disabled: true }, "Selecione seu plano"), ...PLANS.map(p => h("option", { value: p.slug }, p.name)));
+      select.value = planBySlug(current) ? current : "";
+      select.classList.toggle("empty", !select.value);
+    }
+    let reqId = 0;
+    async function renderCatalog(plano, categoria) {
+      const select = $("#plan-select");
+      planOptions(select, plano);
+      const alertBox = $("#catalog-alert"), body = $("#catalog-body"), count = $("#results-count");
+      alertBox.replaceChildren(); count.textContent = "";
+      const plan = planBySlug(plano);
+      const id = ++reqId;
+
+      if (!plan) {
+        $("#category-field").hidden = true;
+        if (plano) alertBox.append(alertEl("warning", "alert", "O plano informado não está disponível.", "Escolha um dos planos atuais para ver os parceiros."));
+        body.replaceChildren(stateEl("layers", "Escolha seu plano para começar", "Selecione acima o plano que você possui para ver os parceiros e os descontos disponíveis."));
+        return;
+      }
+
+      const cats = categoriesFor(plan.slug);
+      const catGone = categoria && !cats.some(c => c.id === categoria);
+      renderChips(cats, catGone ? "" : categoria, plan.slug);
+      if (catGone) {
+        alertBox.append(alertEl("warning", "alert", "A categoria informada não está disponível para este plano.", h("button", { class: "link-btn", type: "button", onclick: () => setCategory("", plan.slug) }, "Ver todas as categorias")));
+        body.replaceChildren(); return;
+      }
+      if (categoria) lastCategory = categoria; else lastCategory = "";
+
+      body.setAttribute("aria-busy", "true");
+      count.textContent = "Carregando parceiros…";
+      body.replaceChildren(h("ul", { class: "grid", "aria-hidden": "true" }, Array.from({ length: 6 }, skeletonCard)));
+      try {
+        const list = await fetchPartners(plan.slug, categoria);
+        if (id !== reqId) return; // resposta superada
+        body.setAttribute("aria-busy", "false");
+        if (!list.length) {
+          count.textContent = "Nenhum parceiro encontrado";
+          body.replaceChildren(stateEl("search", "Nenhum parceiro nesta categoria", "Ainda não há parceiros desta categoria para o seu plano. Veja as demais categorias.",
+            categoria ? h("button", { class: "btn secondary sm", type: "button", onclick: () => setCategory("", plan.slug) }, "Ver todas as categorias") : null));
+          return;
+        }
+        count.textContent = `${list.length} ${list.length === 1 ? "parceiro encontrado" : "parceiros encontrados"}`;
+        body.replaceChildren(h("ul", { class: "grid" }, list.map(p => partnerCard(p, plan))));
+      } catch (err) {
+        if (id !== reqId) return;
+        body.setAttribute("aria-busy", "false");
+        count.textContent = "";
+        body.replaceChildren(stateEl("alert", "Não foi possível carregar os parceiros", "Verifique sua conexão e tente novamente.",
+          h("button", { class: "btn primary sm", type: "button", onclick: () => renderCatalog(plano, categoria) }, icon("refresh", "icon sm"), "Tentar novamente"), "error"));
+      }
+    }
+    function renderChips(cats, current, planSlug) {
+      $("#category-field").hidden = false;
+      const total = PARTNERS.filter(p => p.benefits[planSlug]).length;
+      const chip = (id, name, n) => h("button", { class: "chip", type: "button", "aria-pressed": String(current === id), onclick: () => setCategory(id, planSlug) }, name, h("span", { class: "count", "aria-label": `${n} parceiros` }, String(n)));
+      $("#chips").replaceChildren(chip("", "Todas", total), ...cats.map(c => chip(c.id, c.name, c.count)));
+      $("#clear-category").hidden = !current;
+    }
+    function setCategory(id, planSlug) {
+      suppressScroll = true;
+      history.replaceState(null, "", homeHash(planSlug, id));
+      renderCatalog(planSlug, id);
+      $('#chips [aria-pressed="true"]')?.focus(); // os chips são recriados
+    }
+    $("#clear-category").addEventListener("click", () => setCategory("", parseRoute().plano));
+    $("#plan-select").addEventListener("change", e => {
+      suppressScroll = true;
+      history.replaceState(null, "", homeHash(e.target.value, ""));
+      renderCatalog(e.target.value, "");
+    });
+
+    function partnerCard(p, plan) {
+      const loc = p.units.length > 1 ? `${p.units.length} unidades` : p.units.length === 1 ? `${p.units[0].address.neighborhood}, ${p.units[0].address.city}` : null;
+      return h("li", { class: "card" + (p.featured ? " featured" : "") },
+        h("div", { class: "card-top" },
+          h("div", { class: "cats" }, p.categories.map(c => h("span", { class: "tag" }, c.name))),
+          p.featured ? h("span", { class: "tag featured" }, icon("star", "icon sm"), "Destaque") : null),
+        h("div", {},
+          h("h3", {}, h("a", { href: partnerHash(p.slug, plan.slug) }, p.name)),
+          loc ? h("p", { class: "loc", style: "margin-top:6px" }, icon("pin", "icon sm"), loc) : null),
+        p.coupon ? h("div", {}, h("span", { class: "tag coupon" }, icon("ticket", "icon sm"), "Com cupom")) : null,
+        h("div", { class: "card-bottom" },
+          h("p", { class: "pct" }, h("small", {}, `Plano ${plan.name}`), h("strong", {}, h("span", {}, "até"), `${p.discountPercentage}%`)),
+          h("span", { class: "more", "aria-hidden": "true" }, "Ver detalhes", icon("right", "icon sm"))));
+    }
+    function skeletonCard() {
+      return h("li", { class: "card skeleton" },
+        h("div", { class: "sk", style: "width:40%;height:22px;border-radius:999px" }),
+        h("div", { class: "sk", style: "width:75%;height:24px" }),
+        h("div", { class: "sk", style: "width:50%;height:16px" }),
+        h("div", { class: "card-bottom" }, h("div", { class: "sk", style: "width:96px;height:36px" }), h("div", { class: "sk", style: "width:88px;height:18px" })));
+    }
+    function stateEl(ic, title, text, action, kind = "") {
+      return h("div", { class: "state " + kind, role: kind === "error" ? "alert" : null },
+        h("span", { class: "s-icon" }, icon(ic)), h("h3", {}, title), h("p", {}, text), action);
+    }
+    function alertEl(kind, role, title, extra) {
+      return h("div", { class: `alert ${kind}`, role, style: "margin-top:20px" }, icon(kind === "info" ? "info" : "alert"), h("div", {}, h("strong", {}, title), " ", extra));
+    }
+
+    /* ───────── Página do parceiro ───────── */
+    let partnerReq = 0, refocusPlan = false;
+    async function showPartner(slug, plano) {
+      if (OLD_SLUGS[slug]) { history.replaceState(null, "", partnerHash(OLD_SLUGS[slug], plano)); return route(); } // 301 simulado
+      setView("partner");
+      const root = $("#partner-root"), id = ++partnerReq;
+      const back = h("a", { class: "back", href: homeHash(planBySlug(plano) ? plano : "", lastCategory) }, icon("left"), "Voltar para parceiros");
+      root.replaceChildren(back, h("div", { class: "p-head", "aria-busy": "true" },
+        h("div", { class: "sk", style: "width:160px;height:24px;border-radius:999px" }), h("div", { class: "sk", style: "width:60%;height:48px" }), h("div", { class: "sk", style: "width:80%;height:20px" })));
+      let p;
+      try { p = await api(() => PARTNERS.find(x => x.slug === slug)); }
+      catch {
+        if (id !== partnerReq) return;
+        root.replaceChildren(back, stateEl("alert", "Não foi possível carregar este parceiro", "Verifique sua conexão e tente novamente.", h("button", { class: "btn primary sm", type: "button", onclick: () => showPartner(slug, plano) }, icon("refresh", "icon sm"), "Tentar novamente"), "error"));
+        return;
+      }
+      if (id !== partnerReq) return;
+      if (!p) {
+        document.title = "Parceiro não encontrado — Clube Flex";
+        root.replaceChildren(h("div", { class: "not-found" },
+          h("h1", { class: "display" }, "Parceiro não encontrado"), h("p", { class: "muted" }, "Este parceiro não existe ou não está mais disponível no catálogo."),
+          h("a", { class: "btn primary", href: homeHash(planBySlug(plano) ? plano : "", "") }, "Ver todos os parceiros")));
+        $("#main").focus({ preventScroll: true });
+        return;
+      }
+      const plan = planBySlug(plano);
+      const hasBenefit = plan && p.benefits[plan.slug];
+      const pub = toPublic(p, hasBenefit ? plan : null);
+      document.title = `${p.name} — descontos Clube Flex`;
+
+      const select = h("select", { id: "partner-plan", "aria-describedby": "partner-plan-hint" });
+      planOptions(select, plano);
+      select.addEventListener("change", () => { refocusPlan = true; location.hash = partnerHash(slug, select.value); });
+
+      let benefitBody;
+      if (hasBenefit) {
+        benefitBody = [h("div", { class: "benefit-value" }, h("small", {}, `Desconto no plano ${plan.name}`), h("strong", {}, h("span", {}, "até"), `${pub.discountPercentage}%`))];
+        if (pub.coupon) benefitBody.push(h("div", { class: "coupon" }, h("div", {}, h("small", {}, "Cupom"), h("code", {}, pub.coupon)),
+          h("button", { class: "btn primary sm", type: "button", onclick: e => copyText(pub.coupon, e.currentTarget) }, icon("copy", "icon sm"), "Copiar")));
+      } else if (plan) {
+        benefitBody = [h("div", { class: "benefit-empty", role: "status" }, `Este parceiro não possui desconto para o plano ${plan.name}. Escolha outro plano para consultar.`)];
+      } else {
+        benefitBody = [h("div", { class: "benefit-empty", role: "status" },
+          plano ? "O plano informado não está disponível. " : "", "Escolha seu plano para consultar o desconto disponível.")];
+      }
+
+      const contacts = pub.contacts.length || pub.website ? h("section", { class: "panel", "aria-labelledby": "contacts-title" },
+        h("h2", { id: "contacts-title" }, "Site e contatos"),
+        h("ul", { class: "contact-list" },
+          pub.website ? contactRow("globe", "Site", pub.website.replace(/^https?:\/\//, ""), h("a", { class: "btn secondary sm", href: pub.website, target: "_blank", rel: "noopener" }, "Abrir site")) : null,
+          pub.contacts.map(c => contactRow(c.type === "whatsapp" ? "wa" : "phone", c.label || (c.type === "whatsapp" ? "WhatsApp" : "Telefone"), fmtPhone(c.value), contactAction(c))))) : null;
+
+      const units = pub.units.length ? h("section", { class: "panel", "aria-labelledby": "units-title" },
+        h("h2", { id: "units-title" }, pub.units.length === 1 ? "Unidade" : `Unidades (${pub.units.length})`),
+        h("div", { class: "units" }, pub.units.map((u, i) => unitEl(u, i === 0 && pub.units.length <= 2)))) :
+        h("section", { class: "panel", "aria-labelledby": "units-title" }, h("h2", { id: "units-title" }, "Unidades"), h("p", { class: "muted", style: "margin-top:8px" }, "Este parceiro não possui unidade física. Utilize os contatos ou o site para usar o benefício."));
+
+      root.replaceChildren(
+        back,
+        h("header", { class: "p-head" },
+          h("div", { class: "cats" }, pub.categories.map(c => h("span", { class: "tag" }, c.name)), p.featured ? h("span", { class: "tag featured" }, icon("star", "icon sm"), "Destaque") : null),
+          h("h1", { class: "display" }, p.name),
+          h("p", { class: "desc" }, pub.description)),
+        h("div", { class: "p-layout" },
+          h("div", { class: "p-main" },
+            h("section", { class: "panel usage", "aria-labelledby": "usage-title" }, h("h2", { id: "usage-title" }, icon("info"), "Como usar o desconto"), h("p", {}, pub.usageInstructions)),
+            contacts, units,
+            h("section", { class: "panel assistant-cta", "aria-labelledby": "cta-title" },
+              h("h2", { id: "cta-title" }, "Ainda não é Flex?"),
+              h("p", {}, "Fale com o assistente virtual e deixe seus dados para conhecer os planos."),
+              h("div", {}, h("button", { class: "btn accent sm", type: "button", "data-open-assistant": "flex" }, "Vem ser Flex")))),
+          h("aside", { class: "p-aside" },
+            h("section", { class: "panel benefit", "aria-labelledby": "benefit-title" },
+              h("h2", { id: "benefit-title", class: "sr-only" }, "Benefício"),
+              h("div", { class: "field" }, h("label", { for: "partner-plan" }, "Seu plano"), h("div", { class: "select-wrap" }, select, icon("down")),
+                h("p", { class: "hint", id: "partner-plan-hint" }, "Informado por você; não é validado pelo Clube Flex.")),
+              benefitBody))));
+      // Ordem em telas pequenas: benefício logo após o cabeçalho
+      if (matchMedia("(max-width: 959px)").matches) { const layout = $(".p-layout", root); layout.prepend($(".p-aside", root)); }
+      if (refocusPlan) { refocusPlan = false; select.focus(); }
+    }
+    function contactRow(ic, label, value, action) {
+      return h("li", { class: "contact" }, h("span", { class: "c-icon" }, icon(ic)), h("div", { class: "c-body" }, h("small", {}, label), h("b", {}, value)), action);
+    }
+    function contactAction(c) {
+      const digits = c.value.replace(/\D/g, "");
+      return c.type === "whatsapp"
+        ? h("a", { class: "btn secondary sm", href: `https://wa.me/${digits}`, target: "_blank", rel: "noopener", "aria-label": `Abrir WhatsApp ${fmtPhone(c.value)}` }, "WhatsApp")
+        : h("a", { class: "btn secondary sm", href: `tel:+${digits}`, "aria-label": `Ligar para ${fmtPhone(c.value)}` }, "Ligar");
+    }
+    function unitEl(u, open) {
+      const a = u.address;
+      const line = `${a.street}, ${a.number}${a.complement ? " — " + a.complement : ""}`;
+      return h("details", { class: "unit", open },
+        h("summary", {}, h("span", { class: "c-icon", style: "width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:var(--cream-100);color:var(--forest);flex:none" }, icon("pin", "icon sm")),
+          h("span", {}, h("b", {}, u.name), h("small", {}, `${a.neighborhood}, ${a.city}`)), icon("down", "icon chev")),
+        h("dl", { class: "unit-body" },
+          h("div", {}, h("dt", {}, "Endereço"), h("dd", {}, `${line} · ${a.neighborhood}, ${a.city} — ${a.state} · CEP ${fmtCep(a.postalCode)}`)),
+          u.openingHours ? h("div", {}, h("dt", {}, "Horário"), h("dd", {}, u.openingHours)) : null,
+          u.instructions ? h("div", {}, h("dt", {}, "Instruções da unidade"), h("dd", {}, u.instructions)) : null,
+          u.contacts.length ? h("div", {}, h("dt", {}, "Contatos"), h("dd", {}, h("ul", { class: "contact-list", style: "margin-top:0" },
+            u.contacts.map(c => contactRow(c.type === "whatsapp" ? "wa" : "phone", (c.label || (c.type === "whatsapp" ? "WhatsApp" : "Telefone")) + (c.inherited ? " · contato geral" : ""), fmtPhone(c.value), contactAction(c)))))) : null));
+    }
+    async function copyText(text, btn) {
+      try { await navigator.clipboard.writeText(text); } catch { const t = h("textarea", {}, text); document.body.append(t); t.select(); document.execCommand("copy"); t.remove(); }
+      const original = [...btn.childNodes];
+      btn.replaceChildren(icon("check", "icon sm"), "Copiado");
+      toast(`Cupom ${text} copiado.`);
+      setTimeout(() => btn.replaceChildren(...original), 2000);
+    }
+
+    /* ───────── Assistente virtual (fluxo determinístico) ───────── */
+    const A = { step: "closed", data: { name: "", whatsapp: "", email: "" }, consent: false, editing: false, opener: null, failNext: false };
+    const panel = $("#assistant"), log = $("#a-log"), foot = $("#a-foot"), live = $("#a-live");
+    const isSheet = () => matchMedia("(max-width: 639px)").matches;
+
+    function openAssistant(journey, opener) {
+      A.opener = opener || document.activeElement;
+      if (A.step === "closed" || A.step === "success" || journey) {
+        if (A.step === "closed" || A.step === "success" || A.step === "welcome" || A.step === "partner") { log.replaceChildren(); bot("Olá! Sou o assistente virtual do Clube Flex. Minhas respostas são automáticas. Como posso ajudar?"); A.step = "welcome"; }
+        if (journey === "flex" && A.step === "welcome") chooseFlex();
+        else if (journey === "partner" && A.step === "welcome") choosePartner();
+      }
+      panel.hidden = false; document.body.classList.add("assistant-open");
+      $("#assistant-backdrop").hidden = !isSheet();
+      renderFoot();
+      focusFoot();
+    }
+    function closeAssistant() {
+      panel.hidden = true; $("#assistant-backdrop").hidden = true; document.body.classList.remove("assistant-open");
+      if (A.step === "success") A.step = "closed";
+      (A.opener && document.contains(A.opener) ? A.opener : $("#fab")).focus();
+    }
+    function bot(content) { const m = h("div", { class: "msg bot" }, content); log.append(m); live.textContent = m.textContent; scrollLog(); }
+    function you(text) { log.append(h("div", { class: "msg user" }, h("span", { class: "sr-only" }, "Você: "), text)); scrollLog(); }
+    function scrollLog() { log.scrollTo({ top: log.scrollHeight, behavior: reduceMotion.matches ? "instant" : "smooth" }); }
+    function focusFoot() { requestAnimationFrame(() => { const f = $("input, button:not([disabled])", foot); f?.focus(); }); }
+
+    function chooseFlex() { you("Quero ser Flex"); bot("Que bom! Vou pedir alguns dados para a equipe comercial entrar em contato. Qual é o seu nome?"); A.step = "name"; }
+    function choosePartner() {
+      you("Quero ser parceiro"); A.step = "partner";
+      bot(h("div", {}, "O contato para parcerias continua por e-mail. Envie para comercial@flexcard.org.br com:",
+        h("ul", {}, ["nome do responsável;", "empresa ou profissional;", "telefone ou WhatsApp;", "cidade;", "serviços oferecidos;", "proposta de desconto."].map(t => h("li", {}, t)))));
+    }
+
+    const STEPS = {
+      name: { label: "Seu nome", type: "text", autocomplete: "name", key: "name", validate: v => v.trim().length >= 2 ? "" : "Informe seu nome." },
+      whatsapp: { label: "Seu WhatsApp com DDD", type: "tel", autocomplete: "tel-national", inputmode: "tel", placeholder: "(21) 99999-9999", key: "whatsapp",
+        validate: v => /^\d{10,11}$/.test(v.replace(/\D/g, "")) ? "" : "Informe um WhatsApp com DDD, por exemplo (21) 99999-9999." },
+      email: { label: "Seu e-mail (opcional)", type: "email", autocomplete: "email", inputmode: "email", key: "email", optional: true,
+        validate: v => !v.trim() || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()) ? "" : "Informe um e-mail válido ou pule esta etapa." },
+    };
+    const PROMPTS = { whatsapp: n => `Prazer, ${n.split(" ")[0]}! Qual é o seu WhatsApp com DDD?`, email: () => "Quer informar também um e-mail? Se preferir, pode pular.", consent: () => "Para continuar, preciso da sua autorização para contato." };
+    const fmtWa = v => { const d = v.replace(/\D/g, ""); return d.length >= 10 ? fmtPhone(d) : v; };
+
+    function advance(from) {
+      if (A.editing) { A.editing = false; A.step = "review"; bot("Pronto, atualizei. Confira seus dados antes de enviar."); return; }
+      const next = { name: "whatsapp", whatsapp: "email", email: "consent" }[from];
+      A.step = next; bot(PROMPTS[next](A.data.name));
+    }
+
+    function renderFoot() {
+      const s = A.step;
+      foot.replaceChildren();
+      if (s === "welcome") {
+        foot.append(h("div", { class: "a-options" },
+          h("button", { class: "btn primary", type: "button", onclick: () => { chooseFlex(); renderFoot(); focusFoot(); } }, "Quero ser Flex"),
+          h("button", { class: "btn secondary", type: "button", onclick: () => { choosePartner(); renderFoot(); focusFoot(); } }, "Quero ser parceiro")));
+      } else if (s === "partner") {
+        foot.append(h("div", { class: "a-options" },
+          h("a", { class: "btn primary", href: "mailto:comercial@flexcard.org.br?subject=" + encodeURIComponent("Quero ser parceiro do Clube Flex") }, icon("mail", "icon sm"), "Enviar e-mail"),
+          h("button", { class: "btn ghost", type: "button", onclick: restart }, "Voltar ao início")));
+      } else if (STEPS[s]) {
+        const cfg = STEPS[s];
+        const input = h("input", { id: "a-input", type: cfg.type, autocomplete: cfg.autocomplete, inputmode: cfg.inputmode, placeholder: cfg.placeholder, "aria-describedby": "a-err" });
+        input.value = A.data[cfg.key];
+        const err = h("p", { class: "a-error", id: "a-err", hidden: true });
+        const form = h("form", { class: "a-form", novalidate: true },
+          h("label", { for: "a-input" }, cfg.label),
+          h("div", { class: "a-row" }, input, h("button", { class: "a-send", type: "submit", "aria-label": "Enviar resposta" }, icon("send"))),
+          err,
+          h("div", { class: "a-secondary" },
+            cfg.optional ? h("button", { class: "btn ghost", type: "button", onclick: () => { A.data.email = ""; you("Pular e-mail"); advance("email"); renderFoot(); focusFoot(); } }, "Pular") : h("span"),
+            A.editing ? h("button", { class: "btn ghost", type: "button", onclick: () => { A.editing = false; A.step = "review"; renderFoot(); focusFoot(); } }, "Cancelar edição") : null));
+        form.addEventListener("submit", e => {
+          e.preventDefault();
+          const msg = cfg.validate(input.value);
+          if (msg) { err.replaceChildren(icon("alert", "icon sm"), msg); err.hidden = false; input.setAttribute("aria-invalid", "true"); input.focus(); return; }
+          A.data[cfg.key] = cfg.key === "whatsapp" ? fmtWa(input.value) : input.value.trim();
+          you(A.data[cfg.key] || "Pular e-mail");
+          advance(s); renderFoot(); focusFoot();
+        });
+        input.addEventListener("focus", () => setTimeout(() => input.scrollIntoView({ block: "nearest" }), 300)); // teclado virtual
+        foot.append(form);
+      } else if (s === "consent") {
+        const cb = h("input", { type: "checkbox", id: "a-consent" }); cb.checked = A.consent;
+        const next = h("button", { class: "btn primary", type: "button", disabled: !A.consent, onclick: () => { you("Autorizo o contato"); A.step = "review"; bot("Confira seus dados antes de enviar. Você pode editar qualquer item."); renderFoot(); focusFoot(); } }, "Continuar");
+        cb.addEventListener("change", () => { A.consent = cb.checked; next.disabled = !cb.checked; });
+        foot.append(h("label", { class: "consent", for: "a-consent" }, cb, h("span", {}, CONSENT.text, " ", h("a", { href: CONSENT.privacyUrl, target: "_blank" }, "Ler a política de privacidade"), ".")), next);
+      } else if (s === "review" || s === "sending" || s === "error") {
+        const row = (label, value, step) => h("div", {}, h("div", { class: "r-text" }, h("dt", {}, label), h("dd", {}, value || "Não informado")),
+          h("button", { class: "btn ghost", type: "button", disabled: s === "sending", "aria-label": `Editar ${label.toLowerCase()}`, onclick: () => { A.editing = true; A.step = step; bot(`Certo, informe novamente: ${STEPS[step].label.toLowerCase()}.`); renderFoot(); focusFoot(); } }, "Editar"));
+        const send = h("button", { class: "btn primary" + (s === "sending" ? " loading" : ""), type: "button", "aria-disabled": s === "sending" ? "true" : null, onclick: submit }, s === "error" ? "Tentar novamente" : "Enviar");
+        foot.append(
+          s === "error" ? h("div", { class: "alert danger", role: "alert" }, icon("alert"), h("div", {}, h("strong", {}, "Não foi possível enviar."), " Seus dados foram mantidos; tente novamente.")) : null,
+          h("dl", { class: "review" }, row("Nome", A.data.name, "name"), row("WhatsApp", A.data.whatsapp, "whatsapp"), row("E-mail", A.data.email, "email"),
+            h("div", {}, h("div", { class: "r-text" }, h("dt", {}, "Consentimento"), h("dd", {}, "Autorizado")))),
+          send, h("p", { class: "a-note" }, "Seus dados só são enviados quando você tocar em Enviar."));
+      } else if (s === "success") {
+        foot.append(h("div", { class: "a-options" }, h("button", { class: "btn primary", type: "button", onclick: closeAssistant }, "Fechar")));
+      }
+    }
+    async function submit() {
+      if (A.step === "sending") return;
+      A.step = "sending"; renderFoot(); live.textContent = "Enviando…";
+      await delay(1100);
+      if (A.failNext) { A.failNext = false; A.step = "error"; renderFoot(); focusFoot(); return; }
+      bot("Recebemos seus dados. A equipe do Clube Flex vai entrar em contato pelo WhatsApp informado. Obrigado!");
+      A.data = { name: "", whatsapp: "", email: "" }; A.consent = false; A.step = "success";
+      renderFoot(); focusFoot();
+    }
+    function restart() { log.replaceChildren(); A.step = "welcome"; A.editing = false; bot("Como posso ajudar?"); renderFoot(); focusFoot(); }
+
+    document.addEventListener("click", e => { const b = e.target.closest("[data-open-assistant]"); if (b) openAssistant(b.dataset.openAssistant, b); });
+    $("[data-close-assistant]").addEventListener("click", closeAssistant);
+    $("#assistant-backdrop").addEventListener("click", closeAssistant);
+    panel.addEventListener("keydown", e => {
+      if (e.key === "Escape") { e.preventDefault(); closeAssistant(); return; }
+      if (e.key !== "Tab" || !isSheet()) return; // contenção de foco apenas na folha móvel
+      const f = $$("button:not([disabled]), a[href], input, [tabindex='0']", panel).filter(x => x.offsetParent);
+      if (e.shiftKey && document.activeElement === f[0]) { e.preventDefault(); f.at(-1).focus(); }
+      else if (!e.shiftKey && document.activeElement === f.at(-1)) { e.preventDefault(); f[0].focus(); }
+    });
+
+    /* ───────── Barra do protótipo ───────── */
+    const protoApi = $("#proto-api");
+    protoApi.addEventListener("change", () => { apiMode = protoApi.value; route(); });
+    function setApi(mode) { apiMode = mode; protoApi.value = mode; }
+    const SCREENS = {
+      "home": () => { setApi("ok"); location.hash = "#/"; },
+      "home-plan": () => { setApi("ok"); location.hash = homeHash("familia"); },
+      "home-category": () => { setApi("ok"); location.hash = homeHash("familia", "saude"); },
+      "home-loading": () => { setApi("slow"); location.hash = homeHash("premium"); },
+      "home-empty": () => { setApi("empty"); location.hash = homeHash("essencial", "pet"); },
+      "home-error": () => { setApi("fail"); location.hash = homeHash("familia"); },
+      "home-plan-gone": () => { setApi("ok"); location.hash = homeHash("ouro"); },
+      "home-category-gone": () => { setApi("ok"); location.hash = homeHash("essencial", "lazer"); },
+      "partner-plan": () => { setApi("ok"); location.hash = partnerHash("clinica-vida-plena", "premium"); },
+      "partner-noplan": () => { setApi("ok"); location.hash = partnerHash("clinica-vida-plena"); },
+      "partner-online": () => { setApi("ok"); location.hash = partnerHash("idiomas-ponte", "familia"); },
+      "partner-404": () => { setApi("ok"); location.hash = partnerHash("parceiro-removido", "familia"); },
+      "assistant": () => { A.step = "closed"; openAssistant(null, $("#fab")); },
+      "assistant-flex": () => { A.step = "closed"; openAssistant("flex", $("#fab")); },
+      "assistant-partner": () => { A.step = "closed"; openAssistant("partner", $("#fab")); },
+      "assistant-fail": () => { A.step = "closed"; openAssistant("flex", $("#fab")); A.data = { name: "Maria Oliveira", whatsapp: "(21) 99876-5432", email: "" }; A.consent = true; A.failNext = true; you("Maria Oliveira"); you("(21) 99876-5432"); you("Pular e-mail"); you("Autorizo o contato"); A.step = "review"; bot("Confira seus dados antes de enviar. Você pode editar qualquer item."); renderFoot(); focusFoot(); },
+      "pending-off": () => document.body.classList.add("hide-pending"),
+      "pending-on": () => document.body.classList.remove("hide-pending"),
+    };
+    $("#proto-screen").addEventListener("change", e => { const v = e.target.value; e.target.value = ""; SCREENS[v]?.(); });
+    $("#proto-screen").value = "";
+
+    route();
+  </script>
+</body>
+</html>

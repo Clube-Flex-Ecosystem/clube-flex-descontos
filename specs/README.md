@@ -24,6 +24,7 @@ Esta pasta é a fonte de referência para o planejamento e a futura implementaç
 - [Fundamentos compartilhados](apps/ui-foundations.md)
 - [Design system proposto do dashboard](apps/dashboard/design-system/README.md)
 - [Protótipo navegável do dashboard](prototypes/dashboard/index.html)
+- [Protótipo navegável do catálogo](prototypes/catalog/index.html)
 
 Os protótipos são referências demonstrativas e não constituem implementação das aplicações.
 
