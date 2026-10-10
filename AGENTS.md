@@ -1,0 +1,50 @@
+# Instruções para agentes
+
+## Fonte de referência
+
+A pasta `specs/` é a fonte oficial das especificações do projeto.
+
+Antes de realizar alterações, consulte:
+
+- `specs/README.md`: índice e estado das especificações.
+- `specs/product/`: requisitos, domínio e regras de negócio.
+- `specs/apps/`: arquitetura, módulos, interfaces e contratos.
+- `specs/quality/strategy.md`: testes e critérios de qualidade.
+- `specs/delivery/implementation-plan.md`: planejamento das entregas.
+- `specs/adr/`: decisões arquiteturais aprovadas.
+
+Leia os documentos relevantes à tarefa, sem carregar desnecessariamente toda a documentação.
+
+## Desenvolvimento
+
+- Respeite as decisões arquiteturais aprovadas.
+- Não introduza dependências ou abstrações sem justificativa.
+- Não duplique regras de negócio ou contratos.
+- Mantenha as responsabilidades dos módulos separadas.
+- Priorize simplicidade, legibilidade e manutenção.
+- Não invente requisitos para preencher lacunas.
+- Solicite esclarecimentos para decisões bloqueantes.
+
+## Fluxo de trabalho
+
+1. Identifique os requisitos e módulos afetados.
+2. Consulte os contratos e decisões existentes.
+3. Especifique e planeje mudanças relevantes antes de implementar.
+4. Solicite aprovação para mudanças arquiteturais.
+5. Implemente respeitando o escopo aprovado.
+6. Execute os testes e verificações aplicáveis.
+7. Atualize as especificações afetadas.
+
+## Qualidade
+
+- Siga `specs/quality/strategy.md`.
+- Teste comportamentos, não detalhes desnecessários de implementação.
+- Não considere uma tarefa concluída com testes obrigatórios falhando.
+- Informe verificações não executadas e problemas conhecidos.
+
+## Restrições
+
+- Não altere decisões aprovadas silenciosamente.
+- Não implemente funcionalidades fora do escopo.
+- Não execute operações destrutivas sem autorização.
+- Não afirme que algo foi validado sem realizar a verificação.

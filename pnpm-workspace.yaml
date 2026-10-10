@@ -1,0 +1,7 @@
+packages:
+  - apps/*
+  - packages/*
+
+# esbuild funciona sem script de instalação (o binário vem por dependência opcional).
+allowBuilds:
+  esbuild: false

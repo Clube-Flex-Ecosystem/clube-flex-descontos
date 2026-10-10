@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: flex
+          POSTGRES_PASSWORD: flex
+          POSTGRES_DB: flex_test
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd "pg_isready -U flex -d flex_test"
+          --health-interval 2s
+          --health-timeout 3s
+          --health-retries 20
+    env:
+      TEST_DATABASE_URL: postgres://flex:flex@localhost:5433/flex_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm format:check
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm build
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: checks
+    strategy:
+      matrix:
+        app: [api, catalog, dashboard]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build da imagem
+        run: docker build -f apps/${{ matrix.app }}/Dockerfile -t flex-${{ matrix.app }} .

@@ -1,0 +1,133 @@
+# Dashboard — arquitetura
+
+**Aplicação:** Dashboard interno  
+**Estado:** Aprovada
+
+## Decisões aprovadas
+
+- TypeScript.
+- React.
+- Vite.
+- TanStack Router sem SSR.
+- TanStack Query para estado remoto e cache da API.
+- React Hook Form para gerenciamento dos formulários.
+- Zod Resolver para integrar os esquemas Zod à validação dos formulários.
+- Axios como cliente HTTP.
+- SPA não indexável.
+- Container Docker próprio publicado pelo Coolify.
+- Consumo exclusivo da API central; sem acesso direto ao PostgreSQL.
+
+## Evolução durante a implementação
+
+A organização segue módulos verticais por domínio, com rotas finas e infraestrutura compartilhada mínima. Subdivisões só devem ser adicionadas quando houver uso real.
+
+## Organização modular aprovada
+
+```text
+src/
+  app/
+    router.tsx
+    providers.tsx
+    app-shell.tsx
+  routes/
+    __root.tsx
+    login.tsx
+    _authenticated/
+      route.tsx
+      leads/
+      partners/
+      plans/
+      categories/
+      lead-sources/
+      users/
+      audit/
+  modules/
+    auth/
+    leads/
+    partners/
+    plans/
+    categories/
+    lead-sources/
+    users/
+    audit/
+  shared/
+    http/
+    ui/
+    feedback/
+    validation/
+    utils/
+```
+
+- TanStack Router usa roteamento baseado em arquivos e divisão automática por rota.
+- Arquivos de rota tratam URL, parâmetros, proteção e carregamento da página; não concentram formulários, chamadas Axios ou atualização de cache.
+- Cada módulo pode possuir `api`, `queries`, `mutations`, `cache`, `schemas`, `pages` e `components`, somente quando necessários.
+- Módulos expõem uma API pública e não importam arquivos internos de outros módulos.
+- Código passa a `shared` somente após reutilização real.
+- O frontend não replica controller, use case ou repository da API.
+
+Fluxo principal:
+
+`route → page → query ou mutation → função de API → Axios`
+
+No retorno de uma mutação:
+
+`resposta da API → mutation → atualização do cache → page e componentes`
+
+### SOLID pragmático
+
+- Pages compõem estados e componentes da tela.
+- Componentes visuais não acessam Axios diretamente.
+- Queries não contêm regras de apresentação.
+- Atualizações de cache ficam centralizadas no módulo proprietário.
+- Props e contratos locais permanecem pequenos e específicos.
+- Não são criadas interfaces para bibliotecas ou componentes sem necessidade concreta de substituição.
+
+## Estado remoto e cache
+
+- A API é a fonte autoritativa; o dashboard não mantém uma segunda fonte global dos recursos remotos.
+- Query keys são estáveis e representam coleções e detalhes, como `['leads']` e `['leads', leadId]`.
+- Criações inserem a representação retornada na coleção correspondente e no cache de detalhe quando aplicável.
+- Edições e mudanças de estado substituem imutavelmente o recurso nas coleções já carregadas e no detalhe.
+- Exclusões removem o recurso das coleções e ajustam ou removem o detalhe conforme `deleted` ou `anonymized`.
+- Mutações de itens internos retornam e atualizam o agregado completo: parceiro ou lead.
+- Atualizações bem-sucedidas não invalidam nem refazem automaticamente a listagem quando a resposta já contém toda a informação necessária.
+- `version` e `ETag` retornados pela API acompanham o recurso no cache e são usados na próxima mutação.
+- `RESOURCE_VERSION_CONFLICT` impede a substituição local silenciosa e exige reconciliação com a versão atual do servidor.
+- Atualizações do cache são imutáveis.
+- Mutações não são repetidas automaticamente após falha ou resposta incerta.
+- Queries ativas são atualizadas quando o usuário retorna à aba do navegador; não haverá polling contínuo ou WebSocket nesta entrega.
+
+### Kanban de leads
+
+- A resposta da mudança de etapa substitui o lead nos caches de lista e detalhe, sem nova consulta da listagem.
+- Uma atualização otimista pode mover o cartão antes da resposta para melhorar a percepção de velocidade.
+- Quando usada, ela deve guardar o estado anterior e restaurá-lo em caso de erro.
+- A resposta bem-sucedida sempre substitui a previsão otimista, incluindo a nova `version` e quaisquer mudanças calculadas pela API.
+- Em conflito de versão, o cartão retorna ao estado confirmado e a interface informa que o lead foi alterado por outra pessoa.
+
+## Formulários e HTTP
+
+- React Hook Form gerencia estado, interação e submissão dos formulários.
+- Zod Resolver aplica no cliente os esquemas de validação compatíveis com os contratos compartilhados.
+- A validação do cliente melhora a experiência, mas não substitui a validação da API.
+- Axios realiza as chamadas HTTP, incluindo credenciais de sessão conforme a política de cookies aprovada.
+- A organização de instâncias, interceptadores, tratamento de erros e adaptação dos contratos permanece adiada.
+- Esquemas de `packages/contracts` representam os contratos HTTP; schemas locais podem tratar confirmação, coerção e outros estados exclusivamente visuais.
+- A transformação entre o formulário e o request ocorre em fronteira explícita do módulo.
+
+## Referências oficiais
+
+- [Roteamento baseado em arquivos](https://tanstack.com/router/latest/docs/routing/file-based-routing)
+- [Divisão automática de código](https://tanstack.com/router/latest/docs/guide/code-splitting)
+- [Query options](https://tanstack.com/query/latest/docs/framework/react/reference/functions/queryOptions)
+
+## Operação
+
+- Desenvolvimento inicialmente local.
+- Produção em container independente no Coolify quando disponibilizada.
+- Deploy automático somente após os testes obrigatórios.
+- Verificação de processo ativo e logs estruturados sem dados pessoais.
+
+## Referência oficial
+
+- [TanStack Router com Vite](https://tanstack.com/router/latest/docs/installation/with-vite)

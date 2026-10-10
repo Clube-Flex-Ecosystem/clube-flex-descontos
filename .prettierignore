@@ -1,0 +1,5 @@
+pnpm-lock.yaml
+dist
+.astro
+apps/api/drizzle/meta
+specs
