@@ -1,0 +1,1743 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Clube Flex — protótipo do dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Fraunces:opsz,wght@9..144,600&display=swap" rel="stylesheet">
+  <style>
+    /* ───────── Tokens ───────── */
+    :root {
+      --canvas: #f4f5f3;
+      --surface: #ffffff;
+      --subtle: #f0f2ef;
+      --hover: #f7f8f6;
+      --border: #e3e6e2;
+      --border-strong: #cfd5d0;
+      --text: #151916;
+      --muted: #646d67;
+      --faint: #8a928c;
+
+      --primary: #0b3d2e;
+      --primary-hover: #072b20;
+      --primary-subtle: #e6f0eb;
+      --primary-text: #0f5a41;
+      --coral: #b8482c;
+      --coral-subtle: #fbede8;
+
+      --success: #13704f;
+      --success-subtle: #e3f3ea;
+      --warning: #8a5a12;
+      --warning-subtle: #fdf1d8;
+      --danger: #b3362f;
+      --danger-subtle: #fbe9e7;
+      --info: #2054ae;
+      --info-subtle: #e8effc;
+
+      --nav-bg: #0f1613;
+      --nav-raised: #19221e;
+      --nav-border: #232d28;
+      --nav-text: #b3bcb6;
+      --nav-muted: #6e7972;
+      --nav-active: #86d3ad;
+
+      --stage-new: #9aa59d;
+      --stage-contact: #6fa58c;
+      --stage-negotiating: #2f7a5c;
+      --stage-converted: #0b3d2e;
+      --stage-lost: #c4574f;
+
+      --focus: #2563eb;
+      --radius: 8px;
+      --radius-lg: 12px;
+      --shadow-float: 0 12px 32px rgba(15, 22, 19, .16), 0 2px 6px rgba(15, 22, 19, .06);
+
+      --font-ui: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+      --font-display: "Fraunces", Georgia, serif;
+      --nav-w: 236px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { font-family: var(--font-ui); font-size: 14px; line-height: 1.43; color: var(--text); background: var(--canvas); -webkit-font-smoothing: antialiased; }
+    body { margin: 0; min-width: 320px; background: var(--canvas); }
+    h1, h2, h3, p, dl, dd, ul, ol { margin: 0; }
+    ul, ol { padding: 0; list-style: none; }
+    button, input, select, textarea { font: inherit; color: inherit; }
+    button, a { touch-action: manipulation; }
+    a { color: var(--primary-text); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+    [hidden] { display: none !important; }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    .icon { width: 16px; height: 16px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .icon.lg { width: 18px; height: 18px; }
+    .muted { color: var(--muted); }
+    .num { font-variant-numeric: tabular-nums; }
+    .mono { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 12.5px; }
+
+    .skip-link { position: absolute; left: 8px; top: -48px; z-index: 100; padding: 8px 12px; border-radius: var(--radius); background: var(--primary); color: #fff; }
+    .skip-link:focus { top: 8px; }
+
+    /* ───────── Estrutura ───────── */
+    .shell { min-height: 100vh; display: grid; grid-template-columns: var(--nav-w) minmax(0, 1fr); }
+    body.nav-collapsed { --nav-w: 68px; }
+
+    .sidebar { position: sticky; top: 0; height: 100vh; background: var(--nav-bg); color: var(--nav-text); display: flex; flex-direction: column; overflow: hidden; }
+    .brand { height: 60px; padding: 0 16px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--nav-border); flex: none; }
+    .brand-mark { display: grid; place-items: center; width: 32px; height: 32px; flex: none; border-radius: var(--radius); background: var(--nav-active); color: var(--nav-bg); font-weight: 700; font-size: 15px; }
+    .brand-text { line-height: 1.15; min-width: 0; }
+    .brand-text strong { display: block; color: #fff; font-size: 14.5px; font-weight: 600; }
+    .brand-text span { color: var(--nav-muted); font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
+
+    .nav { flex: 1; overflow-y: auto; padding: 8px 10px 16px; }
+    .nav-group { padding-top: 16px; }
+    .nav-group h2 { padding: 0 10px 6px; color: var(--nav-muted); font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
+    .nav-item { position: relative; width: 100%; height: 34px; padding: 0 10px; border: 0; border-radius: var(--radius); color: var(--nav-text); background: transparent; display: flex; align-items: center; gap: 11px; text-align: left; cursor: pointer; white-space: nowrap; }
+    .nav-item + .nav-item { margin-top: 1px; }
+    .nav-item:hover { background: var(--nav-raised); color: #fff; }
+    .nav-item[aria-current="page"] { background: var(--nav-raised); color: var(--nav-active); font-weight: 600; }
+    .nav-item[aria-current="page"]::before { content: ""; position: absolute; left: -10px; top: 8px; bottom: 8px; width: 3px; border-radius: 0 3px 3px 0; background: var(--nav-active); }
+    .nav-label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+    .nav-count { min-width: 20px; height: 18px; padding: 0 6px; border-radius: 999px; background: rgba(232, 129, 101, .16); color: #f0a48e; font-size: 11px; font-weight: 700; display: inline-grid; place-items: center; }
+
+    .sidebar-footer { flex: none; padding: 10px; border-top: 1px solid var(--nav-border); display: flex; align-items: center; gap: 8px; }
+    .me { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; padding: 4px 6px; }
+    .me strong { display: block; color: #fff; font-weight: 600; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .me small { display: block; color: var(--nav-muted); font-size: 12px; }
+    .nav-icon-btn { width: 32px; height: 32px; flex: none; border: 0; border-radius: var(--radius); background: transparent; color: var(--nav-text); display: grid; place-items: center; cursor: pointer; }
+    .nav-icon-btn:hover { background: var(--nav-raised); color: #fff; }
+    .nav-icon-btn[aria-current="page"] { background: var(--nav-raised); color: var(--nav-active); }
+    .sidebar .avatar { color: var(--nav-bg); background: var(--nav-active); }
+
+    body.nav-collapsed .brand { padding: 0 18px; }
+    body.nav-collapsed .brand-text,
+    body.nav-collapsed .nav-label,
+    body.nav-collapsed .nav-count,
+    body.nav-collapsed .me div,
+    body.nav-collapsed .sidebar-footer .nav-icon-btn { display: none; }
+    body.nav-collapsed .nav-group h2 { height: 1px; margin: 0 10px 10px; padding: 0; overflow: hidden; color: transparent; background: var(--nav-border); }
+    body.nav-collapsed .nav-item { justify-content: center; padding: 0; }
+    body.nav-collapsed .nav-item[data-count]::after { content: ""; position: absolute; top: 7px; right: 11px; width: 7px; height: 7px; border-radius: 50%; background: #f0a48e; }
+    body.nav-collapsed .sidebar-footer { justify-content: center; }
+    body.nav-collapsed .me { flex: none; padding: 0; }
+
+    .main { min-width: 0; display: flex; flex-direction: column; }
+    .topbar { position: sticky; top: 0; z-index: 20; height: 60px; padding: 0 24px 0 16px; border-bottom: 1px solid var(--border); background: rgba(255, 255, 255, .92); backdrop-filter: saturate(1.4) blur(8px); display: flex; align-items: center; gap: 12px; }
+    .crumbs { display: flex; align-items: center; gap: 6px; min-width: 0; color: var(--muted); }
+    .crumbs button { padding: 2px 4px; border: 0; border-radius: 4px; background: none; color: var(--muted); cursor: pointer; }
+    .crumbs button:hover { color: var(--text); background: var(--subtle); }
+    .crumbs .sep { color: var(--border-strong); }
+    .crumbs strong { color: var(--text); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .topbar-end { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+    .divider-v { width: 1px; height: 20px; background: var(--border); }
+    .topbar .menu-btn { display: none; }
+
+    .content { width: 100%; max-width: 1480px; margin: 0 auto; padding: 24px 28px 96px; flex: 1; }
+
+    .page-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
+    .page-head h1 { font-size: 22px; line-height: 28px; font-weight: 700; letter-spacing: -.015em; }
+    .page-head p { margin-top: 4px; color: var(--muted); max-width: 70ch; }
+    .page-head .title-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .page-actions { display: flex; gap: 8px; flex-wrap: wrap; flex: none; }
+    .back { display: inline-flex; align-items: center; gap: 4px; margin-bottom: 8px; padding: 0; border: 0; background: none; color: var(--muted); font-weight: 500; cursor: pointer; }
+    .back:hover { color: var(--text); }
+
+    /* ───────── Controles ───────── */
+    .btn { height: 34px; padding: 0 12px; border: 1px solid var(--border-strong); border-radius: var(--radius); background: var(--surface); display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-weight: 600; font-size: 13.5px; white-space: nowrap; cursor: pointer; box-shadow: 0 1px 0 rgba(15, 22, 19, .04); }
+    .btn:hover { background: var(--hover); border-color: #bcc4be; }
+    .btn:active { transform: translateY(.5px); }
+    .btn.primary { color: #fff; border-color: var(--primary); background: var(--primary); }
+    .btn.primary:hover { background: var(--primary-hover); }
+    .btn.danger { color: #fff; border-color: var(--danger); background: var(--danger); }
+    .btn.danger:hover { background: #962c26; }
+    .btn.danger-quiet { color: var(--danger); }
+    .btn.danger-quiet:hover { background: var(--danger-subtle); border-color: #e6bdb8; }
+    .btn.ghost { border-color: transparent; background: transparent; box-shadow: none; color: var(--muted); }
+    .btn.ghost:hover { background: var(--subtle); color: var(--text); }
+    .btn.sm { height: 28px; padding: 0 9px; font-size: 13px; }
+    .btn.icon-only { width: 34px; padding: 0; }
+    .btn.sm.icon-only { width: 28px; }
+    .btn:disabled, .btn[aria-disabled="true"] { color: var(--faint); background: var(--subtle); border-color: var(--border); box-shadow: none; cursor: not-allowed; }
+    .btn.loading { position: relative; color: transparent !important; pointer-events: none; }
+    .btn.loading::after { content: ""; position: absolute; width: 14px; height: 14px; border: 2px solid rgba(255, 255, 255, .45); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; }
+    .btn:not(.primary):not(.danger).loading::after { border-color: var(--border-strong); border-top-color: var(--text); }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .control, .field input, .field select, .field textarea { height: 34px; padding: 0 10px; border: 1px solid var(--border-strong); border-radius: var(--radius); background: var(--surface); }
+    .control:hover, .field input:hover, .field select:hover, .field textarea:hover { border-color: #b7bfb9; }
+    .control:focus, .field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--focus); box-shadow: 0 0 0 3px rgba(37, 99, 235, .18); }
+    select.control, .field select { padding-right: 30px; appearance: none; background: var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%23646d67' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 6 4 4 4-4'/%3E%3C/svg%3E") no-repeat right 8px center; }
+    .search-box { position: relative; display: flex; align-items: center; }
+    .search-box .icon { position: absolute; left: 10px; color: var(--faint); pointer-events: none; }
+    .search-box .control { width: 240px; padding-left: 32px; }
+
+    .seg { display: inline-flex; padding: 2px; border-radius: var(--radius); background: var(--subtle); border: 1px solid var(--border); }
+    .seg button { height: 28px; padding: 0 10px; border: 0; border-radius: 6px; background: transparent; color: var(--muted); font-weight: 600; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; white-space: nowrap; }
+    .seg button:hover { color: var(--text); }
+    .seg button[aria-pressed="true"] { background: var(--surface); color: var(--text); box-shadow: 0 1px 2px rgba(15, 22, 19, .1), 0 0 0 1px var(--border); }
+    .seg .count { color: var(--faint); font-weight: 500; font-variant-numeric: tabular-nums; }
+    .seg button[aria-pressed="true"] .count { color: var(--muted); }
+
+    .switch { position: relative; display: inline-flex; align-items: center; gap: 10px; cursor: pointer; }
+    .switch input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+    .switch .track { width: 32px; height: 18px; border-radius: 999px; background: var(--border-strong); position: relative; transition: background .15s; flex: none; }
+    .switch .track::after { content: ""; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.2); transition: transform .15s; }
+    .switch input:checked + .track { background: var(--primary); }
+    .switch input:checked + .track::after { transform: translateX(14px); }
+    .switch input:focus-visible + .track { outline: 2px solid var(--focus); outline-offset: 2px; }
+    .switch input:disabled + .track { opacity: .5; }
+
+    .check { display: flex; align-items: flex-start; gap: 8px; cursor: pointer; }
+    .check input { width: 16px; height: 16px; margin: 2px 0 0; accent-color: var(--primary); flex: none; }
+    .check:has(input:disabled) { color: var(--faint); cursor: not-allowed; }
+
+    /* ───────── Badges e avatares ───────── */
+    .badge { display: inline-flex; align-items: center; gap: 5px; height: 22px; padding: 0 8px; border-radius: 6px; background: var(--subtle); color: #47504a; font-size: 12px; font-weight: 600; white-space: nowrap; }
+    .badge.dot::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+    .badge.success { background: var(--success-subtle); color: var(--success); }
+    .badge.warning { background: var(--warning-subtle); color: var(--warning); }
+    .badge.info { background: var(--info-subtle); color: var(--info); }
+    .badge.danger { background: var(--danger-subtle); color: var(--danger); }
+    .badge.accent { background: var(--coral-subtle); color: var(--coral); }
+    .badge.outline { background: transparent; box-shadow: inset 0 0 0 1px var(--border-strong); color: var(--muted); }
+    .badge .icon { width: 12px; height: 12px; }
+
+    .avatar { display: inline-grid; place-items: center; flex: none; width: 28px; height: 28px; border-radius: 50%; color: var(--primary-text); background: var(--primary-subtle); font-size: 11px; font-weight: 700; }
+    .avatar.sm { width: 22px; height: 22px; font-size: 9.5px; }
+    .avatar.lg { width: 40px; height: 40px; font-size: 14px; }
+    .avatar.none { color: var(--faint); background: transparent; box-shadow: inset 0 0 0 1px var(--border-strong); }
+
+    /* ───────── Cards ───────── */
+    .card { border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface); }
+    .card-head { padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .card-head + .card-body, .card-head + .table-wrap, .card-head + .list { border-top: 1px solid var(--border); }
+    .card-head h2 { font-size: 14.5px; line-height: 20px; font-weight: 600; }
+    .card-head p { color: var(--muted); font-size: 12.5px; }
+    .card-body { padding: 16px; }
+    .card + .card { margin-top: 16px; }
+    .card-foot { padding: 10px 16px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 12px; color: var(--muted); font-size: 13px; }
+
+    .toolbar { padding: 10px 12px 10px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .toolbar-start, .toolbar-end { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; min-width: 0; }
+
+    .dl { display: grid; gap: 0; }
+    .dl-row { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--border); align-items: baseline; }
+    .dl-row:last-child { border-bottom: 0; }
+    .dl dt { color: var(--muted); font-size: 13px; }
+    .dl dd { font-weight: 500; min-width: 0; overflow-wrap: anywhere; }
+
+    /* ───────── Tabelas ───────── */
+    .table-wrap { overflow-x: auto; }
+    .table { width: 100%; min-width: 720px; border-collapse: separate; border-spacing: 0; }
+    .table th { height: 36px; padding: 0 16px; border-bottom: 1px solid var(--border); color: var(--muted); text-align: left; font-size: 12.5px; font-weight: 500; white-space: nowrap; background: var(--surface); }
+    .table td { height: 48px; padding: 6px 16px; border-bottom: 1px solid var(--border); white-space: nowrap; vertical-align: middle; }
+    .table tbody tr:last-child td { border-bottom: 0; }
+    .table tbody tr:hover td { background: var(--hover); }
+    .table tbody tr.clickable { cursor: pointer; }
+    .table .r { text-align: right; }
+    .table .actions { width: 1%; text-align: right; padding-right: 10px; }
+    .table .actions > div { display: inline-flex; gap: 2px; }
+    .table th:first-child, .table td:first-child { position: sticky; left: 0; z-index: 1; }
+    .table td:first-child { background: var(--surface); }
+    .cell-main { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .cell-main strong { display: block; font-weight: 600; }
+    .cell-main small { display: block; color: var(--muted); font-size: 12.5px; }
+    .mark { display: grid; place-items: center; width: 30px; height: 30px; flex: none; border-radius: 7px; background: var(--subtle); color: var(--primary-text); font-weight: 700; font-size: 11.5px; box-shadow: inset 0 0 0 1px var(--border); }
+    .empty-row td { height: 160px; text-align: center; color: var(--muted); white-space: normal; }
+    .empty-row strong { display: block; color: var(--text); margin-bottom: 2px; }
+    .pager { display: flex; align-items: center; gap: 6px; }
+
+    /* ───────── Kanban ───────── */
+    .board { display: grid; grid-template-columns: repeat(5, minmax(212px, 1fr)); gap: 12px; overflow-x: auto; padding-bottom: 8px; align-items: start; }
+    .col { min-height: 520px; border-radius: var(--radius-lg); background: #eceeea; padding: 6px; display: flex; flex-direction: column; gap: 6px; transition: box-shadow .12s; }
+    .col.drop { box-shadow: inset 0 0 0 2px var(--stage); background: #e7ebe7; }
+    .col-head { display: flex; align-items: center; gap: 8px; padding: 8px 8px 6px; }
+    .col-head h2 { font-size: 13px; font-weight: 600; }
+    .col-head .stage-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--stage); flex: none; }
+    .col-head .num { margin-left: auto; min-width: 22px; height: 20px; padding: 0 6px; border-radius: 6px; background: var(--surface); color: var(--muted); font-size: 12px; font-weight: 600; display: inline-grid; place-items: center; box-shadow: inset 0 0 0 1px var(--border); }
+    .col-empty { margin: 4px 2px; padding: 16px 8px; border: 1px dashed var(--border-strong); border-radius: 10px; color: var(--faint); font-size: 12.5px; text-align: center; }
+    .lead { position: relative; padding: 10px 12px 10px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); box-shadow: 0 1px 1px rgba(15, 22, 19, .04); cursor: grab; }
+    .lead:hover { border-color: var(--border-strong); box-shadow: 0 2px 6px rgba(15, 22, 19, .06); }
+    .lead.dragging { opacity: .45; }
+    .lead.interest { box-shadow: inset 3px 0 0 var(--coral), 0 1px 1px rgba(15, 22, 19, .04); }
+    .lead-top { display: flex; align-items: flex-start; gap: 8px; }
+    .lead-name { flex: 1; min-width: 0; padding: 0; border: 0; background: none; text-align: left; font-weight: 600; cursor: pointer; }
+    .lead-name:hover { color: var(--primary-text); text-decoration: underline; text-underline-offset: 2px; }
+    .lead-name::after { content: ""; position: absolute; inset: 0; border-radius: 10px; }
+    .lead-move { position: relative; z-index: 1; margin: -4px -6px 0 0; }
+    .lead-phone { margin-top: 1px; color: var(--muted); font-size: 13px; }
+    .lead-flag { margin-top: 8px; display: inline-flex; align-items: center; gap: 5px; color: var(--coral); font-size: 12px; font-weight: 600; }
+    .lead-flag::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+    .lead-meta { margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 8px; color: var(--muted); font-size: 12.5px; }
+    .lead-owner { display: inline-flex; align-items: center; gap: 6px; flex: none; white-space: nowrap; }
+    .lead-meta > span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .board-error { margin-bottom: 12px; }
+
+    /* ───────── Detalhe ───────── */
+    .detail { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 16px; align-items: start; }
+    .detail aside { display: grid; gap: 16px; }
+    .detail aside .card + .card { margin-top: 0; }
+    .list > li { padding: 12px 16px; border-bottom: 1px solid var(--border); }
+    .list > li:last-child { border-bottom: 0; }
+    .request { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+    .request strong { font-weight: 600; }
+    .request p { color: var(--muted); font-size: 13px; }
+    .note-meta { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 12.5px; margin-bottom: 4px; }
+    .note-meta strong { color: var(--text); font-weight: 600; }
+    .composer { padding: 12px 16px; border-top: 1px solid var(--border); display: grid; gap: 8px; }
+    .composer textarea { width: 100%; min-height: 64px; padding: 8px 10px; border: 1px solid var(--border-strong); border-radius: var(--radius); resize: vertical; }
+    .composer textarea:focus { outline: none; border-color: var(--focus); box-shadow: 0 0 0 3px rgba(37, 99, 235, .18); }
+    .composer div { display: flex; justify-content: flex-end; }
+    .timeline { padding: 6px 16px 14px; }
+    .timeline li { position: relative; padding: 8px 0 8px 22px; font-size: 13.5px; }
+    .timeline li::before { content: ""; position: absolute; left: 4px; top: 14px; width: 7px; height: 7px; border-radius: 50%; background: var(--surface); box-shadow: 0 0 0 2px var(--border-strong); }
+    .timeline li::after { content: ""; position: absolute; left: 7px; top: 24px; bottom: -8px; width: 1px; background: var(--border); }
+    .timeline li:last-child::after { display: none; }
+    .timeline time { display: block; color: var(--muted); font-size: 12.5px; }
+    .timeline b { font-weight: 600; }
+    .danger-zone { border-color: #efcfcb; }
+    .danger-zone .card-head h2 { color: var(--danger); }
+    .stack { display: grid; gap: 8px; }
+
+    /* ───────── Formulários ───────── */
+    .form-layout { display: grid; grid-template-columns: 200px minmax(0, 1fr) 272px; gap: 20px; align-items: start; }
+    .section-nav { position: sticky; top: 84px; display: grid; gap: 1px; }
+    .section-nav h2 { padding: 0 10px 6px; color: var(--muted); font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
+    .section-link { height: 34px; padding: 0 10px; border: 0; border-radius: var(--radius); background: transparent; color: #47504a; display: flex; align-items: center; justify-content: space-between; gap: 8px; text-align: left; cursor: pointer; }
+    .section-link:hover { background: var(--subtle); color: var(--text); }
+    .section-link[aria-current="true"] { color: var(--text); background: var(--surface); box-shadow: 0 0 0 1px var(--border); font-weight: 600; }
+    .status-ico { display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; flex: none; }
+    .status-ico .icon { width: 12px; height: 12px; stroke-width: 2.4; }
+    .status-ico.error { color: #fff; background: var(--danger); }
+    .status-ico.done { color: var(--success); background: var(--success-subtle); }
+    .status-ico.todo { box-shadow: inset 0 0 0 1.5px var(--border-strong); }
+    .form-sections { display: grid; gap: 16px; }
+    .form-sections .card + .card { margin-top: 0; }
+    .form-sections section { scroll-margin-top: 84px; }
+    .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 16px; }
+    .field { display: grid; gap: 5px; align-content: start; }
+    .field.full { grid-column: 1 / -1; }
+    .field label, .field .label { font-weight: 600; font-size: 13px; }
+    .field label .opt { color: var(--faint); font-weight: 500; }
+    .field input, .field select, .field textarea { width: 100%; }
+    .field textarea { height: auto; min-height: 84px; padding: 8px 10px; resize: vertical; }
+    .field input[readonly] { background: var(--subtle); color: var(--muted); }
+    .hint { color: var(--muted); font-size: 12.5px; }
+    .field-error input, .field-error select { border-color: var(--danger); }
+    .field-error .hint { color: var(--danger); display: flex; align-items: center; gap: 5px; }
+    .prefix { display: flex; }
+    .prefix span { display: inline-flex; align-items: center; padding: 0 10px; border: 1px solid var(--border-strong); border-right: 0; border-radius: var(--radius) 0 0 var(--radius); background: var(--subtle); color: var(--muted); font-size: 13px; white-space: nowrap; }
+    .prefix input { border-radius: 0 var(--radius) var(--radius) 0; min-width: 0; }
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .chip { height: 30px; padding: 0 10px; border: 1px solid var(--border-strong); border-radius: 999px; background: var(--surface); display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; cursor: pointer; }
+    .chip[aria-pressed="true"] { color: var(--primary-text); border-color: #9cc4b1; background: var(--primary-subtle); }
+    .chip[aria-pressed="true"]::before { content: "✓"; font-size: 11px; font-weight: 700; }
+    .chip:disabled { color: var(--faint); border-style: dashed; cursor: not-allowed; }
+    .sub-table { width: 100%; border-collapse: collapse; }
+    .sub-table th { padding: 0 10px 6px 0; color: var(--muted); font-size: 12.5px; font-weight: 500; text-align: left; }
+    .sub-table td { padding: 6px 10px 6px 0; border-top: 1px solid var(--border); vertical-align: middle; }
+    .sub-table td:last-child, .sub-table th:last-child { padding-right: 0; text-align: right; }
+    .sub-table input { height: 32px; padding: 0 8px; border: 1px solid var(--border-strong); border-radius: var(--radius); width: 100%; }
+    .sub-table .pct { width: 96px; }
+    .unit { padding: 12px; border: 1px solid var(--border); border-radius: 10px; display: flex; gap: 12px; align-items: flex-start; justify-content: space-between; }
+    .unit + .unit { margin-top: 8px; }
+    .unit strong { font-weight: 600; }
+    .unit p { color: var(--muted); font-size: 13px; }
+    .add-row { margin-top: 10px; }
+
+    .side-summary { position: sticky; top: 84px; display: grid; gap: 12px; }
+    .side-summary .card + .card { margin-top: 0; }
+    .side-summary .card-foot .btn { width: 100%; }
+    .req-list li { display: flex; gap: 8px; align-items: flex-start; padding: 5px 0; font-size: 13px; }
+    .req-list .ok { color: var(--success); }
+    .req-list .no { color: var(--faint); }
+    .unsaved { display: flex; align-items: center; gap: 6px; color: var(--warning); font-size: 13px; font-weight: 600; }
+    .unsaved::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #d39b2c; }
+
+    .alert { display: flex; gap: 10px; padding: 10px 12px; border: 1px solid; border-radius: var(--radius); font-size: 13.5px; }
+    .alert .icon { margin-top: 2px; }
+    .alert strong { display: block; font-weight: 600; }
+    .alert.danger { border-color: #efc8c3; background: var(--danger-subtle); color: #7a231e; }
+    .alert.warning { border-color: #ecd4a3; background: var(--warning-subtle); color: #5f3e0b; }
+    .alert.info { border-color: #c9d8f5; background: var(--info-subtle); color: #183f84; }
+    .alert .btn { margin-top: 8px; }
+
+    .perm-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .perm-area { margin: 0; min-width: 0; padding: 14px 16px; border: 0; border-bottom: 1px solid var(--border); }
+    .perm-area:nth-child(odd) { border-right: 1px solid var(--border); }
+    .perm-area h3 { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; font-weight: 600; }
+    .perm-area h3 span { color: var(--faint); font-weight: 500; font-variant-numeric: tabular-nums; }
+    .perm-area .check { padding: 3px 0; font-size: 13.5px; }
+
+    .code-box { padding: 12px; border-radius: var(--radius); background: var(--subtle); text-align: center; }
+    .code-box strong { display: block; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 22px; letter-spacing: .18em; }
+
+    .diff { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .diff div { padding: 10px; border-radius: var(--radius); font-size: 13px; }
+    .diff .before { background: var(--danger-subtle); color: #7a231e; }
+    .diff .after { background: var(--success-subtle); color: #0d4b35; }
+    .diff span { display: block; margin-bottom: 2px; font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; opacity: .75; }
+
+    /* ───────── Acesso ───────── */
+    .auth { min-height: 100vh; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); background: var(--surface); }
+    .auth-side { padding: 40px; background: var(--nav-bg); color: var(--nav-text); display: flex; flex-direction: column; justify-content: space-between; }
+    .auth-side blockquote { margin: 0; max-width: 40ch; font-family: var(--font-display); font-size: 26px; line-height: 1.3; color: #fff; }
+    .auth-side small { color: var(--nav-muted); }
+    .auth-main { display: grid; place-items: center; padding: 32px 20px; }
+    .auth-form { width: min(360px, 100%); display: grid; gap: 16px; }
+    .auth-form h1 { font-family: var(--font-display); font-size: 28px; line-height: 1.2; font-weight: 600; }
+    .auth-form .btn { width: 100%; height: 40px; }
+    .auth-form .field input { height: 40px; }
+    .auth-links { display: flex; justify-content: space-between; font-size: 13px; }
+
+    /* ───────── Estados ───────── */
+    .ref-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .ref-grid .card + .card { margin-top: 0; }
+    .ref-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .ref-row + .ref-row { margin-top: 12px; }
+    .empty { padding: 28px 16px; border: 1px dashed var(--border-strong); border-radius: 10px; text-align: center; }
+    .empty .icon { width: 22px; height: 22px; color: var(--faint); margin-bottom: 6px; }
+    .empty strong { display: block; font-weight: 600; }
+    .empty p { margin: 2px auto 12px; color: var(--muted); max-width: 36ch; }
+    .skeleton { height: 12px; border-radius: 6px; background: linear-gradient(90deg, #eaede9 25%, #f4f6f3 37%, #eaede9 63%); background-size: 400% 100%; animation: shine 1.4s ease infinite; }
+    .skeleton-row { display: grid; grid-template-columns: 30px 1fr 90px 70px; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .skeleton-row:last-child { border-bottom: 0; }
+    .skeleton.box { height: 30px; border-radius: 7px; }
+    @keyframes shine { 0% { background-position: 100% 0; } 100% { background-position: 0 0; } }
+
+    /* ───────── Dialogs, drawer, menu e toast ───────── */
+    dialog { padding: 0; border: 0; color: var(--text); background: var(--surface); box-shadow: var(--shadow-float); }
+    dialog::backdrop { background: rgba(10, 16, 13, .42); }
+    dialog.modal { width: min(440px, calc(100vw - 32px)); border-radius: var(--radius-lg); }
+    dialog.drawer { margin: 0 0 0 auto; width: min(440px, 100vw); height: 100vh; max-height: 100vh; border-radius: 0; }
+    dialog.drawer[open] { display: flex; flex-direction: column; animation: slide .18s ease-out; }
+    dialog.drawer > form { display: flex; flex-direction: column; height: 100%; }
+    @keyframes slide { from { transform: translateX(24px); opacity: .6; } }
+    .dlg-head { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+    .dlg-head h2 { font-size: 16px; font-weight: 600; }
+    .dlg-head p { color: var(--muted); font-size: 13px; margin-top: 2px; }
+    .dlg-body { padding: 20px; display: grid; gap: 16px; align-content: start; }
+    .drawer .dlg-body { flex: 1; overflow-y: auto; }
+    .dlg-actions { padding: 12px 20px; border-top: 1px solid var(--border); background: var(--hover); display: flex; justify-content: flex-end; gap: 8px; }
+    .modal .dlg-head { border-bottom: 0; padding-bottom: 0; }
+    .modal .dlg-body { padding-top: 12px; }
+
+    .menu { position: fixed; z-index: 60; min-width: 184px; padding: 4px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); box-shadow: var(--shadow-float); }
+    .menu[hidden] { display: none; }
+    .menu button { width: 100%; height: 32px; padding: 0 10px; border: 0; border-radius: 6px; background: none; display: flex; align-items: center; gap: 8px; text-align: left; cursor: pointer; }
+    .menu button:hover, .menu button:focus-visible { background: var(--subtle); outline: none; }
+    .menu button.danger { color: var(--danger); }
+    .menu hr { margin: 4px 0; border: 0; border-top: 1px solid var(--border); }
+
+    .toasts { position: fixed; z-index: 80; left: 50%; bottom: 24px; transform: translateX(-50%); display: grid; gap: 8px; pointer-events: none; }
+    .toast { padding: 10px 14px; border-radius: 10px; background: #18211d; color: #fff; display: flex; align-items: center; gap: 8px; font-weight: 500; box-shadow: var(--shadow-float); animation: rise .2s ease-out; }
+    .toast .icon { color: var(--nav-active); }
+    @keyframes rise { from { transform: translateY(8px); opacity: 0; } }
+
+    .proto { position: fixed; z-index: 70; right: 16px; bottom: 16px; padding: 4px 4px 4px 12px; border: 1px solid var(--border-strong); border-radius: 999px; background: var(--surface); box-shadow: var(--shadow-float); display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: var(--muted); }
+    .proto select { height: 28px; border-radius: 999px; font-size: 12.5px; }
+
+    .view { display: none; }
+    .view.active { display: block; }
+    #view-login.active { display: grid; }
+    .overlay { display: none; }
+    body.auth-mode .shell { display: none; }
+    body:not(.auth-mode) #view-login { display: none; }
+
+    /* ───────── Responsivo ───────── */
+    @media (max-width: 1240px) {
+      .form-layout { grid-template-columns: 184px minmax(0, 1fr); }
+      .side-summary { grid-column: 2; position: static; grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 1080px) {
+      .detail { grid-template-columns: 1fr; }
+      .detail aside { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+    }
+    @media (max-width: 900px) {
+      .shell { display: block; }
+      body.nav-collapsed { --nav-w: 236px; }
+      .sidebar { position: fixed; z-index: 40; left: 0; top: 0; width: min(84vw, 280px); transform: translateX(-102%); transition: transform .2s ease; }
+      body.menu-open .sidebar { transform: none; box-shadow: var(--shadow-float); }
+      body.menu-open .overlay { display: block; position: fixed; z-index: 35; inset: 0; background: rgba(10, 16, 13, .42); }
+      .topbar .menu-btn { display: inline-flex; }
+      .topbar .collapse-btn { display: none; }
+      .topbar { padding: 0 16px 0 10px; }
+      .content { padding: 20px 16px 96px; }
+      .form-layout { display: block; }
+      .section-nav { position: sticky; top: 60px; z-index: 5; display: flex; gap: 4px; overflow-x: auto; margin: -4px -16px 12px; padding: 8px 16px; background: var(--canvas); border-bottom: 1px solid var(--border); }
+      .section-nav h2 { display: none; }
+      .section-link { flex: none; }
+      .side-summary { margin-top: 16px; grid-template-columns: 1fr; }
+      .auth { grid-template-columns: 1fr; }
+      .auth-side { display: none; }
+    }
+    @media (max-width: 680px) {
+      .page-head { flex-direction: column; align-items: stretch; }
+      .page-actions .btn { flex: 1; }
+      .toolbar { align-items: stretch; }
+      .toolbar-start, .toolbar-end { width: 100%; }
+      .toolbar .seg { overflow-x: auto; max-width: 100%; }
+      .search-box, .search-box .control { width: 100%; }
+      .toolbar select.control { flex: 1; }
+      .field-grid, .ref-grid, .perm-grid, .diff { grid-template-columns: 1fr; }
+      .perm-area:nth-child(odd) { border-right: 0; }
+      .dl-row { grid-template-columns: 1fr; gap: 2px; }
+      .btn, .control, .field input, .field select, .seg button, .section-link, .nav-item, .menu button { min-height: 44px; }
+      .btn.sm { min-height: 36px; }
+      .btn.sm.icon-only { width: 36px; }
+      .lead-move { margin: -8px -8px 0 0; }
+      .proto-extra { display: none; }
+      .proto { left: 8px; right: 8px; bottom: 8px; justify-content: space-between; }
+      .proto select { flex: 1; min-height: 32px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Ícones: traço único, herdam a cor do texto. -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-leads" viewBox="0 0 24 24"><rect x="3" y="4" width="5" height="16" rx="1.5"/><rect x="10" y="4" width="5" height="11" rx="1.5"/><rect x="17" y="4" width="4" height="7" rx="1.5"/></symbol>
+    <symbol id="i-source" viewBox="0 0 24 24"><path d="M4 7h10a4 4 0 0 1 0 8H8"/><path d="m11 18-3-3 3-3"/><circle cx="19" cy="7" r="1.5"/></symbol>
+    <symbol id="i-partner" viewBox="0 0 24 24"><path d="M4 10v10h16V10"/><path d="M3 10l2-6h14l2 6"/><path d="M9 20v-6h6v6"/></symbol>
+    <symbol id="i-plan" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 13 9 5 9-5"/></symbol>
+    <symbol id="i-category" viewBox="0 0 24 24"><path d="M3 12V4h8l10 10-8 8L3 12Z"/><circle cx="8" cy="9" r="1.2"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.4 3.2-5.5 6.5-5.5s5.9 2.1 6.5 5.5"/><path d="M16 4.8a3.5 3.5 0 0 1 0 6.4"/><path d="M18 14.9c1.8.7 3 2.4 3.5 5.1"/></symbol>
+    <symbol id="i-audit" viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9l-6-6Z"/><path d="M14 3v6h6"/><path d="M8 13h8M8 17h5"/></symbol>
+    <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="m11 12 9-9"/><path d="m17 6 3 3"/></symbol>
+    <symbol id="i-logout" viewBox="0 0 24 24"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 16l-4-4 4-4"/><path d="M6 12h10"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
+    <symbol id="i-panel" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></symbol>
+    <symbol id="i-swap" viewBox="0 0 24 24"><path d="M4 8h14"/><path d="m14 4 4 4-4 4"/><path d="M20 16H6"/><path d="m10 12-4 4 4 4"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5M12 16v.01"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></symbol>
+    <symbol id="i-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+    <symbol id="i-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4Z"/><path d="m13 7 4 4"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><path d="M5 4h3l2 5-2.5 1.5a11 11 0 0 0 6 6L15 14l5 2v3a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3.5 2.6 5.3 5.9.9-4.2 4.1 1 5.8L12 16.8l-5.3 2.8 1-5.8-4.2-4.1 5.9-.9L12 3.5Z"/></symbol>
+    <symbol id="i-inbox" viewBox="0 0 24 24"><path d="M3 13h5l1.5 3h5L16 13h5"/><path d="M5 5h14l2 8v6H3v-6l2-8Z"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14.6-4.5L4 8"/><path d="M4 4v4h4"/><path d="M4 13a8 8 0 0 0 14.6 4.5L20 16"/><path d="M20 20v-4h-4"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M10 11v6M14 11v6"/><path d="M6 7l1 13h10l1-13"/><path d="M9 7V4h6v3"/></symbol>
+  </svg>
+
+  <a class="skip-link" href="#content">Ir para o conteúdo</a>
+  <div class="overlay" data-close-menu></div>
+
+  <!-- ═════════ Acesso sem sessão ═════════ -->
+  <div class="auth view" id="view-login">
+    <div class="auth-side">
+      <div class="brand" style="padding:0;border:0;height:auto"><span class="brand-mark" aria-hidden="true">F</span><span class="brand-text"><strong>Clube Flex</strong><span>Painel interno</span></span></div>
+      <blockquote>Operação comercial e catálogo de parceiros em um só lugar.</blockquote>
+      <small>Acesso restrito à equipe do Clube Flex.</small>
+    </div>
+    <main class="auth-main">
+      <form class="auth-form" novalidate data-login>
+        <div><h1>Entrar</h1><p class="muted" style="margin-top:6px">Use o nome de usuário e a senha da sua conta.</p></div>
+        <div class="alert danger" role="alert" hidden id="login-error"><svg class="icon" aria-hidden="true"><use href="#i-alert"/></svg><div>Usuário ou senha incorretos.</div></div>
+        <div class="field"><label for="login-user">Nome de usuário</label><input id="login-user" autocomplete="username" value="ana.souza"></div>
+        <div class="field"><label for="login-pass">Senha</label><input id="login-pass" type="password" autocomplete="current-password" value="••••••••••"></div>
+        <button class="btn primary" type="submit">Entrar</button>
+        <div class="auth-links"><a href="#">Ativar conta</a><a href="#">Esqueci minha senha</a></div>
+      </form>
+    </main>
+  </div>
+
+  <!-- ═════════ Aplicação ═════════ -->
+  <div class="shell">
+    <aside class="sidebar" id="sidebar" aria-label="Navegação principal">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">F</span><span class="brand-text"><strong>Clube Flex</strong><span>Painel interno</span></span></div>
+      <nav class="nav">
+        <div class="nav-group">
+          <h2>Comercial</h2>
+          <button class="nav-item" type="button" data-nav="leads" title="Leads"><svg class="icon lg" aria-hidden="true"><use href="#i-leads"/></svg><span class="nav-label">Leads</span><span class="nav-count num" id="nav-interest"></span></button>
+          <button class="nav-item" type="button" data-nav="sources" title="Origens"><svg class="icon lg" aria-hidden="true"><use href="#i-source"/></svg><span class="nav-label">Origens</span></button>
+        </div>
+        <div class="nav-group">
+          <h2>Catálogo</h2>
+          <button class="nav-item" type="button" data-nav="partners" title="Parceiros"><svg class="icon lg" aria-hidden="true"><use href="#i-partner"/></svg><span class="nav-label">Parceiros</span></button>
+          <button class="nav-item" type="button" data-nav="plans" title="Planos"><svg class="icon lg" aria-hidden="true"><use href="#i-plan"/></svg><span class="nav-label">Planos</span></button>
+          <button class="nav-item" type="button" data-nav="categories" title="Categorias"><svg class="icon lg" aria-hidden="true"><use href="#i-category"/></svg><span class="nav-label">Categorias</span></button>
+        </div>
+        <div class="nav-group">
+          <h2>Administração</h2>
+          <button class="nav-item" type="button" data-nav="users" title="Usuários"><svg class="icon lg" aria-hidden="true"><use href="#i-users"/></svg><span class="nav-label">Usuários</span></button>
+          <button class="nav-item" type="button" data-nav="audit" title="Auditoria"><svg class="icon lg" aria-hidden="true"><use href="#i-audit"/></svg><span class="nav-label">Auditoria</span></button>
+        </div>
+      </nav>
+      <div class="sidebar-footer" aria-label="Conta">
+        <div class="me"><span class="avatar" aria-hidden="true">AS</span><div><strong>Ana Souza</strong><small>ana.souza</small></div></div>
+        <button class="nav-icon-btn" type="button" data-nav="password" aria-label="Alterar senha" title="Alterar senha"><svg class="icon lg" aria-hidden="true"><use href="#i-key"/></svg></button>
+        <button class="nav-icon-btn" type="button" data-logout aria-label="Sair" title="Sair"><svg class="icon lg" aria-hidden="true"><use href="#i-logout"/></svg></button>
+      </div>
+    </aside>
+
+    <div class="main">
+      <header class="topbar">
+        <button class="btn ghost icon-only menu-btn" type="button" data-open-menu aria-label="Abrir menu" aria-controls="sidebar"><svg class="icon lg" aria-hidden="true"><use href="#i-menu"/></svg></button>
+        <button class="btn ghost icon-only collapse-btn" type="button" data-collapse aria-label="Recolher menu lateral" aria-pressed="false" title="Recolher menu"><svg class="icon lg" aria-hidden="true"><use href="#i-panel"/></svg></button>
+        <span class="divider-v collapse-btn" aria-hidden="true"></span>
+        <nav class="crumbs" aria-label="Você está em" id="crumbs"></nav>
+      </header>
+
+      <main class="content" id="content" tabindex="-1">
+
+        <!-- Leads -->
+        <section class="view" id="view-leads" aria-labelledby="leads-title">
+          <div class="page-head">
+            <div><h1 id="leads-title">Leads</h1><p>Pipeline comercial dos contatos que você pode visualizar.</p></div>
+            <div class="page-actions"><button class="btn primary" type="button" data-new-lead><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>Novo lead</button></div>
+          </div>
+          <div class="card" style="margin-bottom:12px">
+            <div class="toolbar">
+              <div class="toolbar-start">
+                <div class="search-box"><svg class="icon" aria-hidden="true"><use href="#i-search"/></svg><input class="control" type="search" id="lead-search" placeholder="Nome ou WhatsApp" aria-label="Filtrar leads por nome ou WhatsApp"></div>
+                <select class="control" id="lead-owner" aria-label="Responsável"><option value="">Todos os responsáveis</option><option value="me">Meus leads</option><option value="none">Sem responsável</option></select>
+                <select class="control" id="lead-source" aria-label="Origem"><option value="">Todas as origens</option></select>
+              </div>
+              <div class="toolbar-end">
+                <button class="btn ghost sm" type="button" id="lead-interest-filter" aria-pressed="false"><span class="badge accent dot" style="height:18px;padding:0 6px">Novo interesse</span><span class="num" id="lead-interest-count"></span></button>
+                <span class="divider-v" aria-hidden="true"></span>
+                <span class="muted num" id="lead-total" aria-live="polite"></span>
+              </div>
+            </div>
+          </div>
+          <div class="alert danger board-error" role="alert" id="board-error" hidden><svg class="icon" aria-hidden="true"><use href="#i-alert"/></svg><div><strong>Não foi possível mover o lead.</strong><span id="board-error-text">O card voltou para a etapa confirmada.</span> <button class="btn sm" type="button" data-dismiss-error>Entendi</button></div></div>
+          <div class="board" id="board"></div>
+        </section>
+
+        <!-- Detalhe do lead -->
+        <section class="view" id="view-lead" aria-labelledby="lead-title">
+          <button class="back" type="button" data-nav="leads"><svg class="icon" aria-hidden="true"><use href="#i-left"/></svg>Leads</button>
+          <div class="page-head">
+            <div><div class="title-row"><h1 id="lead-title"></h1><span id="lead-stage-badge"></span><span id="lead-interest-badge"></span></div><p class="num" id="lead-sub"></p></div>
+            <div class="page-actions">
+              <button class="btn" type="button" data-lead-edit><svg class="icon" aria-hidden="true"><use href="#i-edit"/></svg>Editar dados</button>
+              <button class="btn primary" type="button" data-lead-stage><svg class="icon" aria-hidden="true"><use href="#i-swap"/></svg>Alterar etapa</button>
+            </div>
+          </div>
+          <div class="detail">
+            <div>
+              <div class="card" id="lead-requests-card">
+                <div class="card-head"><div><h2>Solicitações de contato</h2><p>Envios do formulário público para este WhatsApp.</p></div><span id="lead-requests-count"></span></div>
+                <ul class="list" id="lead-requests"></ul>
+              </div>
+              <div class="card">
+                <div class="card-head"><div><h2>Observações</h2><p>Somente o autor pode corrigir a própria observação.</p></div></div>
+                <ul class="list" id="lead-notes"></ul>
+                <form class="composer" data-note-form>
+                  <label class="sr-only" for="note-text">Nova observação</label>
+                  <textarea id="note-text" placeholder="Registrar uma observação sobre o atendimento…"></textarea>
+                  <div><button class="btn sm primary" type="submit">Adicionar observação</button></div>
+                </form>
+              </div>
+              <div class="card">
+                <div class="card-head"><div><h2>Histórico</h2><p>Alterações registradas automaticamente.</p></div></div>
+                <ol class="timeline" id="lead-history"></ol>
+              </div>
+            </div>
+            <aside>
+              <div class="card">
+                <div class="card-head"><h2>Dados do lead</h2></div>
+                <div class="card-body" style="padding-top:4px;padding-bottom:4px"><dl class="dl" id="lead-data"></dl></div>
+              </div>
+              <div class="card">
+                <div class="card-head"><h2>Responsável</h2></div>
+                <div class="card-body stack">
+                  <label class="sr-only" for="lead-assign">Responsável</label>
+                  <select class="control" id="lead-assign"></select>
+                  <p class="hint">A troca é registrada no histórico do lead.</p>
+                </div>
+              </div>
+              <div class="card danger-zone">
+                <div class="card-head"><div><h2>Privacidade</h2><p>Para revogações de consentimento validadas.</p></div></div>
+                <div class="card-body stack">
+                  <p class="hint">Leads com histórico são anonimizados; leads sem histórico podem ser excluídos. A operação gera registro de auditoria.</p>
+                  <button class="btn danger-quiet" type="button" data-lead-anonymize><svg class="icon" aria-hidden="true"><use href="#i-trash"/></svg>Excluir ou anonimizar</button>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <!-- Origens -->
+        <section class="view" id="view-sources" aria-labelledby="sources-title">
+          <div class="page-head">
+            <div><h1 id="sources-title">Origens</h1><p>Canais de aquisição atribuídos aos leads.</p></div>
+            <div class="page-actions"><button class="btn primary" type="button" data-new="sources"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>Nova origem</button></div>
+          </div>
+          <div class="card" data-list="sources"></div>
+        </section>
+
+        <!-- Parceiros -->
+        <section class="view" id="view-partners" aria-labelledby="partners-title">
+          <div class="page-head">
+            <div><h1 id="partners-title">Parceiros</h1><p>Estabelecimentos e profissionais exibidos no catálogo público.</p></div>
+            <div class="page-actions"><button class="btn primary" type="button" data-nav="partner-form"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>Novo parceiro</button></div>
+          </div>
+          <div class="card" data-list="partners"></div>
+        </section>
+
+        <!-- Formulário de parceiro -->
+        <section class="view" id="view-partner-form" aria-labelledby="form-title">
+          <button class="back" type="button" data-nav="partners"><svg class="icon" aria-hidden="true"><use href="#i-left"/></svg>Parceiros</button>
+          <div class="page-head">
+            <div><div class="title-row"><h1 id="form-title">Novo parceiro</h1><span class="badge warning dot">Rascunho</span></div><p>Criado como rascunho; só aparece no catálogo depois de publicado.</p></div>
+            <div class="page-actions"><button class="btn" type="button" data-leave-form>Cancelar</button><button class="btn primary" type="button" data-save-partner>Salvar</button></div>
+          </div>
+          <div class="form-layout">
+            <nav class="section-nav" aria-label="Seções do formulário">
+              <h2>Seções</h2>
+              <button class="section-link" type="button" data-section="sec-main" aria-current="true">Dados principais <span class="status-ico error" title="1 erro"><svg class="icon" aria-hidden="true"><use href="#i-alert"/></svg><span class="sr-only">1 erro</span></span></button>
+              <button class="section-link" type="button" data-section="sec-cat">Categorias e contatos <span class="status-ico done" title="Completa"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span class="sr-only">Completa</span></span></button>
+              <button class="section-link" type="button" data-section="sec-units">Unidades <span class="status-ico done" title="Completa"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span class="sr-only">Completa</span></span></button>
+              <button class="section-link" type="button" data-section="sec-benefits">Benefícios e cupons <span class="status-ico todo" title="Pendente"><span class="sr-only">Pendente</span></span></button>
+              <button class="section-link" type="button" data-section="sec-publish">Publicação <span class="status-ico todo" title="Pendente"><span class="sr-only">Pendente</span></span></button>
+            </nav>
+
+            <form class="form-sections" novalidate data-partner-form>
+              <div class="alert danger" role="alert"><svg class="icon" aria-hidden="true"><use href="#i-alert"/></svg><div><strong>Revise 1 campo antes de salvar.</strong>Endereço público em “Dados principais”.</div></div>
+
+              <section class="card" id="sec-main" aria-labelledby="sec-main-t">
+                <div class="card-head"><div><h2 id="sec-main-t">Dados principais</h2><p>Informações que identificam o parceiro no catálogo.</p></div></div>
+                <div class="card-body field-grid">
+                  <div class="field full"><label for="p-name">Nome do parceiro</label><input id="p-name" value="Clínica Vida Plena"><span class="hint">Já existe um parceiro chamado “Clínica Vida”. Verifique se não é duplicidade.</span></div>
+                  <div class="field field-error"><label for="p-slug">Endereço público</label><div class="prefix"><span>flexclube.org/p/</span><input id="p-slug" value="clinica vida plena" aria-invalid="true" aria-describedby="p-slug-hint"></div><span class="hint" id="p-slug-hint"><svg class="icon" aria-hidden="true" style="width:13px;height:13px"><use href="#i-alert"/></svg>Use apenas letras minúsculas, números e hífens.</span></div>
+                  <div class="field"><label for="p-site">Site <span class="opt">(opcional)</span></label><input id="p-site" type="url" value="https://vidaplena.com.br"></div>
+                  <div class="field full"><label for="p-desc">Descrição</label><textarea id="p-desc">Atendimento clínico e exames em diferentes especialidades, com agendamento pelo WhatsApp.</textarea><span class="hint num">91 de 2.000 caracteres.</span></div>
+                  <div class="field full"><label for="p-instr">Instruções para usar o benefício</label><textarea id="p-instr" style="min-height:64px">Apresente a carteirinha digital antes do atendimento.</textarea></div>
+                </div>
+              </section>
+
+              <section class="card" id="sec-cat" aria-labelledby="sec-cat-t">
+                <div class="card-head"><div><h2 id="sec-cat-t">Categorias e contatos</h2><p>Ao menos uma categoria ativa é necessária para publicar.</p></div></div>
+                <div class="card-body stack" style="gap:16px">
+                  <div class="field"><span class="label" id="cat-label">Categorias</span><div class="chips" role="group" aria-labelledby="cat-label" id="p-cats"></div></div>
+                  <div class="field">
+                    <span class="label">Contatos gerais</span>
+                    <table class="sub-table">
+                      <thead><tr><th scope="col" style="width:130px">Tipo</th><th scope="col">Número</th><th scope="col">Identificação <span style="color:var(--faint)">(opcional)</span></th><th scope="col"><span class="sr-only">Ações</span></th></tr></thead>
+                      <tbody>
+                        <tr><td><select class="control" style="width:100%;height:32px" aria-label="Tipo"><option>WhatsApp</option><option>Telefone</option></select></td><td><input class="num" value="+55 21 99876-5432" aria-label="Número"></td><td><input value="Agendamento" aria-label="Identificação"></td><td><button class="btn ghost sm icon-only" type="button" aria-label="Remover contato"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button></td></tr>
+                        <tr><td><select class="control" style="width:100%;height:32px" aria-label="Tipo"><option>Telefone</option><option>WhatsApp</option></select></td><td><input class="num" value="+55 21 3344-2100" aria-label="Número"></td><td><input value="Recepção" aria-label="Identificação"></td><td><button class="btn ghost sm icon-only" type="button" aria-label="Remover contato"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button></td></tr>
+                      </tbody>
+                    </table>
+                    <div class="add-row"><button class="btn sm" type="button"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>Adicionar contato</button></div>
+                  </div>
+                </div>
+              </section>
+
+              <section class="card" id="sec-units" aria-labelledby="sec-units-t">
+                <div class="card-head"><div><h2 id="sec-units-t">Unidades</h2><p>Opcional. Unidades sem contato próprio exibem os contatos gerais.</p></div><button class="btn sm" type="button"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>Adicionar unidade</button></div>
+                <div class="card-body">
+                  <div class="unit"><div><strong>Unidade Tijuca</strong> <span class="badge success dot" style="margin-left:4px">Ativa</span><p>Rua Conde de Bonfim, 420 · Tijuca, Rio de Janeiro – RJ · CEP 20520-054</p><p>Seg. a sex., 8h às 18h · usa contatos gerais</p></div><button class="btn ghost sm" type="button">Editar</button></div>
+                  <div class="unit"><div><strong>Unidade Méier</strong> <span class="badge success dot" style="margin-left:4px">Ativa</span><p>Rua Dias da Cruz, 188, sala 302 · Méier, Rio de Janeiro – RJ · CEP 20720-011</p><p class="num">1 contato próprio</p></div><button class="btn ghost sm" type="button">Editar</button></div>
+                </div>
+              </section>
+
+              <section class="card" id="sec-benefits" aria-labelledby="sec-benefits-t">
+                <div class="card-head"><div><h2 id="sec-benefits-t">Benefícios e cupons</h2><p>Um benefício por plano. O cupom do plano prevalece sobre o cupom geral.</p></div></div>
+                <div class="card-body stack" style="gap:16px">
+                  <div class="field" style="max-width:320px"><label for="p-coupon">Cupom geral <span class="opt">(opcional)</span></label><input id="p-coupon" class="mono" value="FLEXVIDA"></div>
+                  <table class="sub-table">
+                    <thead><tr><th scope="col">Plano</th><th scope="col">Desconto</th><th scope="col">Cupom do plano <span style="color:var(--faint)">(opcional)</span></th><th scope="col"><span class="sr-only">Oferece</span></th></tr></thead>
+                    <tbody id="p-benefits"></tbody>
+                  </table>
+                </div>
+              </section>
+
+              <section class="card" id="sec-publish" aria-labelledby="sec-publish-t">
+                <div class="card-head"><div><h2 id="sec-publish-t">Publicação</h2><p>Controle de exibição no catálogo público.</p></div></div>
+                <div class="card-body stack" style="gap:14px">
+                  <label class="switch"><input type="checkbox" id="p-featured"><span class="track" aria-hidden="true"></span><span><strong style="font-weight:600">Destacar no catálogo</strong><span class="hint" style="display:block">Parceiros em destaque aparecem primeiro.</span></span></label>
+                </div>
+              </section>
+            </form>
+
+            <aside class="side-summary" aria-label="Resumo do cadastro">
+              <div class="card">
+                <div class="card-head"><h2>Situação</h2><span class="unsaved">Não salvo</span></div>
+                <div class="card-body" style="padding-top:2px;padding-bottom:2px">
+                  <dl class="dl">
+                    <div class="dl-row"><dt>Estado</dt><dd><span class="badge warning dot">Rascunho</span></dd></div>
+                    <div class="dl-row"><dt>Categorias</dt><dd class="num" id="sum-cats">2</dd></div>
+                    <div class="dl-row"><dt>Unidades</dt><dd class="num">2</dd></div>
+                    <div class="dl-row"><dt>Benefícios</dt><dd class="num" id="sum-benefits">0 planos</dd></div>
+                  </dl>
+                </div>
+                <div class="card-foot" style="display:grid;gap:8px;color:inherit">
+                  <button class="btn primary" type="button" data-save-partner>Salvar</button>
+                  <button class="btn" type="button" disabled aria-describedby="publish-req" id="publish-btn">Publicar</button>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-head"><h2>Para publicar</h2></div>
+                <div class="card-body" style="padding-top:8px">
+                  <ul class="req-list" id="publish-req"></ul>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <!-- Planos -->
+        <section class="view" id="view-plans" aria-labelledby="plans-title">
+          <div class="page-head">
+            <div><h1 id="plans-title">Planos</h1><p>Modalidades exibidas no seletor do catálogo público.</p></div>
+            <div class="page-actions"><button class="btn primary" type="button" data-new="plans"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>Novo plano</button></div>
+          </div>
+          <div class="card" data-list="plans"></div>
+        </section>
+
+        <!-- Categorias -->
+        <section class="view" id="view-categories" aria-labelledby="categories-title">
+          <div class="page-head">
+            <div><h1 id="categories-title">Categorias</h1><p>Classificação dos parceiros e filtro do catálogo público.</p></div>
+            <div class="page-actions"><button class="btn primary" type="button" data-new="categories"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>Nova categoria</button></div>
+          </div>
+          <div class="card" data-list="categories"></div>
+        </section>
+
+        <!-- Usuários -->
+        <section class="view" id="view-users" aria-labelledby="users-title">
+          <div class="page-head">
+            <div><h1 id="users-title">Usuários</h1><p>Contas internas e suas permissões individuais.</p></div>
+            <div class="page-actions"><button class="btn primary" type="button" data-new-user><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>Novo usuário</button></div>
+          </div>
+          <div class="card" data-list="users"></div>
+        </section>
+
+        <!-- Detalhe do usuário -->
+        <section class="view" id="view-user" aria-labelledby="user-title">
+          <button class="back" type="button" data-nav="users"><svg class="icon" aria-hidden="true"><use href="#i-left"/></svg>Usuários</button>
+          <div class="page-head">
+            <div style="display:flex;gap:14px;align-items:center"><span class="avatar lg" id="user-avatar" aria-hidden="true"></span><div><div class="title-row"><h1 id="user-title"></h1><span id="user-badges" style="display:inline-flex;gap:6px"></span></div><p class="mono" id="user-sub"></p></div></div>
+            <div class="page-actions"><button class="btn" type="button" data-discard-perms>Descartar</button><button class="btn primary" type="button" data-save-user>Salvar alterações</button></div>
+          </div>
+          <div class="detail">
+            <div>
+              <div class="card">
+                <div class="card-head"><div><h2>Dados da conta</h2></div></div>
+                <div class="card-body field-grid">
+                  <div class="field"><label for="u-name">Nome completo</label><input id="u-name"></div>
+                  <div class="field"><label for="u-login">Nome de usuário</label><input id="u-login" class="mono"></div>
+                  <div class="field full"><label for="u-mail">E-mail <span class="opt">(opcional)</span></label><input id="u-mail" type="email"></div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-head"><div><h2>Permissões</h2><p>Concedidas individualmente. Alterações valem imediatamente, inclusive em sessões abertas.</p></div><span class="badge outline num" id="perm-total"></span></div>
+                <div class="alert info" id="perm-self" hidden style="margin:12px 16px 0"><svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg><div>Você não pode alterar as próprias permissões.</div></div>
+                <div class="perm-grid" id="perm-grid"></div>
+              </div>
+            </div>
+            <aside>
+              <div class="card">
+                <div class="card-head"><h2>Acesso</h2></div>
+                <div class="card-body stack" style="gap:12px">
+                  <dl class="dl"><div class="dl-row"><dt>Situação</dt><dd id="user-activation"></dd></div><div class="dl-row"><dt>Estado</dt><dd id="user-state"></dd></div></dl>
+                  <div class="code-box" id="code-box" hidden><span class="hint">Código de <span id="code-kind"></span> · válido por 30 min</span><strong id="code-value">482 913</strong><span class="hint">Entregue à pessoa por um canal seguro. Ele não será exibido de novo.</span></div>
+                  <button class="btn" type="button" data-issue-code id="issue-code"></button>
+                  <p class="hint">Emitir um novo código invalida o anterior da mesma finalidade.</p>
+                </div>
+              </div>
+              <div class="card danger-zone">
+                <div class="card-head"><div><h2 id="user-toggle-title">Desativar conta</h2><p id="user-toggle-desc">A pessoa perde o acesso; históricos e leads são preservados.</p></div></div>
+                <div class="card-body"><button class="btn danger-quiet" type="button" data-toggle-user id="user-toggle-btn">Desativar conta</button></div>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <!-- Auditoria -->
+        <section class="view" id="view-audit" aria-labelledby="audit-title">
+          <div class="page-head">
+            <div><h1 id="audit-title">Auditoria</h1><p>Registro imutável de operações administrativas sensíveis.</p></div>
+          </div>
+          <div class="card">
+            <div class="toolbar">
+              <div class="toolbar-start">
+                <select class="control" aria-label="Período"><option>Últimos 30 dias</option><option>Últimos 7 dias</option><option>Hoje</option><option>Todo o período</option></select>
+                <select class="control" id="audit-action" aria-label="Ação"><option value="">Todas as ações</option></select>
+                <select class="control" id="audit-author" aria-label="Autor"><option value="">Todos os autores</option></select>
+              </div>
+              <div class="toolbar-end"><button class="btn ghost sm" type="button" data-clear-audit>Limpar filtros</button></div>
+            </div>
+            <div class="table-wrap">
+              <table class="table">
+                <thead><tr><th scope="col">Data e hora</th><th scope="col">Ação</th><th scope="col">Autor</th><th scope="col">Afetado</th><th scope="col">Objeto</th><th scope="col"><span class="sr-only">Detalhes</span></th></tr></thead>
+                <tbody id="audit-rows"></tbody>
+              </table>
+            </div>
+            <div class="card-foot"><span class="num" id="audit-range"></span><div class="pager"><button class="btn sm" type="button" disabled aria-label="Página anterior"><svg class="icon" aria-hidden="true"><use href="#i-left"/></svg></button><span class="num">Página 1 de 13</span><button class="btn sm" type="button" aria-label="Próxima página"><svg class="icon" aria-hidden="true"><use href="#i-right"/></svg></button></div></div>
+          </div>
+        </section>
+
+        <!-- Alterar senha -->
+        <section class="view" id="view-password" aria-labelledby="password-title">
+          <div class="page-head"><div><h1 id="password-title">Alterar senha</h1><p>Sua sessão atual permanece ativa após a alteração.</p></div></div>
+          <form class="card" style="max-width:560px" novalidate data-password-form>
+            <div class="card-body stack" style="gap:14px">
+              <div class="field"><label for="pw-current">Senha atual</label><input id="pw-current" type="password" autocomplete="current-password"></div>
+              <div class="field"><label for="pw-new">Nova senha</label><input id="pw-new" type="password" autocomplete="new-password" aria-describedby="pw-rules"></div>
+              <ul class="req-list" id="pw-rules" aria-label="Critérios da senha">
+                <li data-rule="len"><svg class="icon no" aria-hidden="true"><use href="#i-check"/></svg>Pelo menos 10 caracteres</li>
+                <li data-rule="mix"><svg class="icon no" aria-hidden="true"><use href="#i-check"/></svg>Letras e números</li>
+              </ul>
+              <div class="field"><label for="pw-confirm">Confirmar nova senha</label><input id="pw-confirm" type="password" autocomplete="new-password"></div>
+            </div>
+            <div class="card-foot" style="justify-content:flex-end"><button class="btn primary" type="submit">Alterar senha</button></div>
+          </form>
+        </section>
+
+        <!-- Referência de estados -->
+        <section class="view" id="view-states" aria-labelledby="states-title">
+          <div class="page-head"><div><h1 id="states-title">Estados e componentes</h1><p>Referência de carregamento, vazio, erro, conflito e variantes de controles.</p></div></div>
+          <div class="ref-grid">
+            <article class="card"><div class="card-head"><div><h2>Carregamento estrutural</h2><p>Preserva a forma do conteúdo que será exibido.</p></div></div>
+              <div class="card-body" style="padding-top:4px;padding-bottom:4px">
+                <div class="skeleton-row"><div class="skeleton box"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></div>
+                <div class="skeleton-row"><div class="skeleton box"></div><div class="skeleton" style="width:70%"></div><div class="skeleton"></div><div class="skeleton"></div></div>
+                <div class="skeleton-row"><div class="skeleton box"></div><div class="skeleton" style="width:85%"></div><div class="skeleton"></div><div class="skeleton"></div></div>
+              </div>
+            </article>
+            <article class="card"><div class="card-head"><div><h2>Estado vazio</h2><p>Explica a ausência e oferece só a ação permitida.</p></div></div>
+              <div class="card-body"><div class="empty"><svg class="icon" aria-hidden="true"><use href="#i-partner"/></svg><strong>Nenhum parceiro cadastrado</strong><p>Cadastre o primeiro parceiro para começar o catálogo.</p><button class="btn primary sm" type="button">Novo parceiro</button></div></div>
+            </article>
+            <article class="card"><div class="card-head"><div><h2>Erro na região</h2><p>Persistente e próximo da área afetada.</p></div></div>
+              <div class="card-body"><div class="alert danger" role="alert"><svg class="icon" aria-hidden="true"><use href="#i-alert"/></svg><div><strong>Não foi possível carregar os leads.</strong>Os filtros atuais foram mantidos.<br><button class="btn sm" type="button"><svg class="icon" aria-hidden="true"><use href="#i-refresh"/></svg>Tentar novamente</button></div></div></div>
+            </article>
+            <article class="card"><div class="card-head"><div><h2>Conflito de versão</h2><p>Impede sobrescrita silenciosa.</p></div></div>
+              <div class="card-body"><div class="alert warning" role="alert"><svg class="icon" aria-hidden="true"><use href="#i-alert"/></svg><div><strong>Outra pessoa alterou este lead.</strong>Suas mudanças não foram salvas. Carregue a versão atual para continuar.<br><button class="btn sm" type="button">Carregar versão atual</button></div></div></div>
+            </article>
+            <article class="card"><div class="card-head"><div><h2>Botões</h2><p>Primário, secundário, silencioso e destrutivo · 28 / 34 / 44px.</p></div></div>
+              <div class="card-body">
+                <div class="ref-row"><button class="btn primary" type="button">Salvar</button><button class="btn" type="button">Cancelar</button><button class="btn ghost" type="button">Limpar</button><button class="btn danger" type="button">Desativar</button></div>
+                <div class="ref-row"><button class="btn primary loading" type="button" aria-busy="true">Salvando</button><button class="btn" type="button" disabled>Indisponível</button><button class="btn sm" type="button">Compacto</button><button class="btn sm icon-only" type="button" aria-label="Mais ações"><svg class="icon" aria-hidden="true"><use href="#i-more"/></svg></button></div>
+              </div>
+            </article>
+            <article class="card"><div class="card-head"><div><h2>Estados semânticos</h2><p>Texto e cor comunicam juntos.</p></div></div>
+              <div class="card-body">
+                <div class="ref-row"><span class="badge success dot">Publicado</span><span class="badge warning dot">Rascunho</span><span class="badge dot">Desativado</span><span class="badge info dot">Aguardando ativação</span><span class="badge danger dot">Erro</span></div>
+                <div class="ref-row"><span class="badge accent dot">Novo interesse</span><span class="badge outline"><svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg>Protegida</span><span class="badge outline"><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg>Destaque</span></div>
+              </div>
+            </article>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- Dialog central: alterar etapa -->
+  <dialog class="modal" id="stage-dialog" aria-labelledby="stage-title">
+    <form method="dialog">
+      <div class="dlg-head"><div><h2 id="stage-title">Alterar etapa</h2><p id="stage-lead"></p></div><button class="btn ghost sm icon-only" value="cancel" aria-label="Fechar"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button></div>
+      <div class="dlg-body">
+        <div class="field"><label for="stage-select">Nova etapa</label><select id="stage-select"></select></div>
+        <div class="field" id="stage-lost" hidden><label for="stage-reason">Motivo da perda <span class="opt">(opcional)</span></label><textarea id="stage-reason" style="min-height:72px"></textarea></div>
+        <div class="alert info" id="stage-confirm" hidden><svg class="icon" aria-hidden="true"><use href="#i-alert"/></svg><div id="stage-confirm-text"></div></div>
+      </div>
+      <div class="dlg-actions"><button class="btn" value="cancel">Cancelar</button><button class="btn primary" value="confirm" id="stage-submit">Alterar etapa</button></div>
+    </form>
+  </dialog>
+
+  <!-- Dialog central: confirmação sensível -->
+  <dialog class="modal" id="confirm-dialog" aria-labelledby="confirm-title">
+    <form method="dialog">
+      <div class="dlg-head"><div><h2 id="confirm-title"></h2></div></div>
+      <div class="dlg-body"><p id="confirm-body" class="muted"></p></div>
+      <div class="dlg-actions"><button class="btn" value="cancel">Cancelar</button><button class="btn danger" value="confirm" id="confirm-ok"></button></div>
+    </form>
+  </dialog>
+
+  <!-- Dialog lateral: formulário curto -->
+  <dialog class="drawer" id="entity-drawer" aria-labelledby="entity-title">
+    <form method="dialog" novalidate>
+      <div class="dlg-head"><div><h2 id="entity-title"></h2><p id="entity-sub"></p></div><button class="btn ghost sm icon-only" value="cancel" aria-label="Fechar"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button></div>
+      <div class="dlg-body" id="entity-body"></div>
+      <div class="dlg-actions"><button class="btn" value="cancel">Cancelar</button><button class="btn primary" value="confirm">Salvar</button></div>
+    </form>
+  </dialog>
+
+  <!-- Dialog lateral: evento de auditoria (somente leitura) -->
+  <dialog class="drawer" id="audit-drawer" aria-labelledby="audit-d-title">
+    <form method="dialog">
+      <div class="dlg-head"><div><h2 id="audit-d-title"></h2><p class="num" id="audit-d-sub"></p></div><button class="btn ghost sm icon-only" value="cancel" aria-label="Fechar"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button></div>
+      <div class="dlg-body" id="audit-d-body"></div>
+      <div class="dlg-actions"><span class="hint" style="margin-right:auto;align-self:center"><svg class="icon" aria-hidden="true" style="width:13px;height:13px;vertical-align:-2px"><use href="#i-lock"/></svg> Registro imutável</span><button class="btn" value="cancel">Fechar</button></div>
+    </form>
+  </dialog>
+
+  <div class="menu" id="row-menu" role="menu" hidden></div>
+  <div class="toasts" aria-live="polite" id="toasts"></div>
+
+  <div class="proto"><label for="proto-screen">Protótipo<span class="proto-extra"> · dados ilustrativos</span></label>
+    <select class="control" id="proto-screen">
+      <option value="login">Acesso — entrar</option>
+      <option value="leads">Leads — Kanban</option>
+      <option value="lead">Leads — detalhe</option>
+      <option value="sources">Origens</option>
+      <option value="partners">Parceiros</option>
+      <option value="partner-form">Parceiros — formulário</option>
+      <option value="plans">Planos</option>
+      <option value="categories">Categorias</option>
+      <option value="users">Usuários</option>
+      <option value="user">Usuários — detalhe</option>
+      <option value="audit">Auditoria</option>
+      <option value="password">Alterar senha</option>
+      <option value="states">Estados e componentes</option>
+    </select>
+  </div>
+
+  <script>
+    /* ───────── Dados ilustrativos ───────── */
+    const ME = "Ana Souza";
+    const STAGES = [
+      { id: "new", name: "Novo", color: "var(--stage-new)" },
+      { id: "firstContact", name: "Primeiro contato", color: "var(--stage-contact)" },
+      { id: "negotiating", name: "Em negociação", color: "var(--stage-negotiating)" },
+      { id: "converted", name: "Convertido", color: "var(--stage-converted)" },
+      { id: "lost", name: "Perdido", color: "var(--stage-lost)" },
+    ];
+    const STAGE_BADGE = { new: "", firstContact: "info", negotiating: "warning", converted: "success", lost: "danger" };
+    let LEADS = [
+      { id: 1, name: "Mariana Ribeiro", phone: "(21) 99999-1001", email: "mariana.r@email.com", source: "Catálogo/site", owner: "Ana Souza", stage: "new", interest: true },
+      { id: 2, name: "Paulo Mendes", phone: "(21) 98881-0092", source: "Indicação", owner: null, stage: "new" },
+      { id: 3, name: "Fernanda Alves", phone: "(21) 97302-4418", source: "Catálogo/site", owner: null, stage: "new" },
+      { id: 4, name: "Beatriz Lima", phone: "(21) 97711-3400", source: "Abordagem", owner: "Ana Souza", stage: "firstContact" },
+      { id: 5, name: "Diego Farias", phone: "(21) 98123-4567", email: "diego.farias@email.com", source: "Catálogo/site", owner: "Rafael Nunes", stage: "firstContact", interest: true },
+      { id: 6, name: "Thiago Moura", phone: "(21) 99654-2210", source: "Campanha", owner: "Ana Souza", stage: "firstContact" },
+      { id: 7, name: "Renato Costa", phone: "(21) 96672-8334", source: "Indicação", owner: "Ana Souza", stage: "negotiating" },
+      { id: 8, name: "Luciana Prado", phone: "(21) 99410-7782", source: "Abordagem", owner: "Rafael Nunes", stage: "negotiating" },
+      { id: 9, name: "Carla Nascimento", phone: "(21) 95552-2201", source: "Catálogo/site", owner: "Ana Souza", stage: "converted" },
+      { id: 10, name: "Sérgio Batista", phone: "(21) 98007-6611", source: "Indicação", owner: "Rafael Nunes", stage: "converted" },
+      { id: 11, name: "João Martins", phone: "(21) 94443-1100", source: "Indicação", owner: "Rafael Nunes", stage: "lost", lostReason: "Optou por outro serviço." },
+    ];
+    let USERS = [
+      { id: "ana", name: "Ana Souza", login: "ana.souza", email: "ana@flexclube.org", active: true, activated: true },
+      { id: "rafael", name: "Rafael Nunes", login: "rafael.nunes", email: "rafael@flexclube.org", active: true, activated: true },
+      { id: "juliana", name: "Juliana Torres", login: "juliana.torres", email: "", active: true, activated: false },
+      { id: "marcos", name: "Marcos Lima", login: "marcos.lima", email: "marcos@flexclube.org", active: false, activated: true },
+    ];
+    const PERMISSIONS = [
+      { area: "Leads", items: ["Visualizar próprios", "Visualizar todos", "Criar", "Editar", "Alterar etapa", "Atribuir e redistribuir", "Excluir ou anonimizar"] },
+      { area: "Parceiros", items: ["Visualizar", "Criar", "Editar", "Publicar e desativar", "Excluir registros elegíveis"] },
+      { area: "Origens", items: ["Visualizar", "Administrar"] },
+      { area: "Planos", items: ["Visualizar", "Administrar"] },
+      { area: "Categorias", items: ["Visualizar", "Administrar"] },
+      { area: "Usuários", items: ["Visualizar", "Criar e editar", "Ativar e desativar", "Redefinir acesso"] },
+      { area: "Permissões", items: ["Visualizar", "Administrar"] },
+      { area: "Auditoria", items: ["Visualizar histórico administrativo"] },
+    ];
+    const PERM_TOTAL = PERMISSIONS.reduce((n, g) => n + g.items.length, 0);
+    const GRANTS = {
+      ana: new Set(PERMISSIONS.flatMap(g => g.items.map(i => g.area + ":" + i))),
+      rafael: new Set(["Leads:Visualizar próprios", "Leads:Criar", "Leads:Editar", "Leads:Alterar etapa", "Parceiros:Visualizar", "Origens:Visualizar"]),
+      juliana: new Set(),
+      marcos: new Set(["Leads:Visualizar próprios", "Leads:Editar", "Leads:Alterar etapa", "Origens:Visualizar"]),
+    };
+
+    const DATA = {
+      sources: [
+        { name: "Catálogo/site", leads: 4, active: true, protected: true },
+        { name: "Indicação", leads: 4, active: true },
+        { name: "Abordagem", leads: 2, active: true },
+        { name: "Campanha", leads: 1, active: true },
+        { name: "Feira de saúde", leads: 0, active: false },
+      ],
+      partners: [
+        { name: "Brisom Odonto", slug: "brisom-odonto", categories: "Odontologia", units: 3, plans: 3, state: "published", featured: false },
+        { name: "Centro Clínico Master", slug: "centro-clinico-master", categories: "Consultas, Exames", units: 2, plans: 3, state: "published", featured: true },
+        { name: "Centro de Imagem Galeão", slug: "centro-imagem-galeao", categories: "Exames de imagem", units: 1, plans: 2, state: "draft", featured: false },
+        { name: "Clínica Vida", slug: "clinica-vida", categories: "Consultas", units: 1, plans: 3, state: "published", featured: false },
+        { name: "Hemoclin", slug: "hemoclin", categories: "Laboratório", units: 4, plans: 1, state: "inactive", featured: false },
+        { name: "Laboratório Pasteur", slug: "laboratorio-pasteur", categories: "Laboratório, Exames", units: 6, plans: 3, state: "published", featured: true },
+        { name: "Ótica Visão Rio", slug: "otica-visao-rio", categories: "Bem-estar", units: 0, plans: 0, state: "draft", featured: false },
+        { name: "Studio Corpo Livre", slug: "studio-corpo-livre", categories: "Bem-estar", units: 1, plans: 2, state: "published", featured: false },
+      ],
+      plans: [
+        { name: "Empresarial", slug: "empresarial", partners: 4, active: true },
+        { name: "Familiar", slug: "familiar", partners: 6, active: true },
+        { name: "Individual", slug: "individual", partners: 6, active: true },
+        { name: "Sênior", slug: "senior", partners: 2, active: false },
+      ],
+      categories: [
+        { name: "Bem-estar", partners: 2, active: true },
+        { name: "Consultas", partners: 2, active: true },
+        { name: "Exames", partners: 2, active: true },
+        { name: "Exames de imagem", partners: 1, active: true },
+        { name: "Farmácias", partners: 0, active: false },
+        { name: "Laboratório", partners: 2, active: true },
+        { name: "Odontologia", partners: 1, active: true },
+      ],
+    };
+    const AUDIT = [
+      { at: "10/10/2026 09:42", action: "Permissão concedida", author: "Ana Souza", target: "Rafael Nunes", object: "Leads: Alterar etapa", before: "Não concedida", after: "Concedida" },
+      { at: "10/10/2026 09:41", action: "Permissão revogada", author: "Ana Souza", target: "Rafael Nunes", object: "Leads: Visualizar todos", before: "Concedida", after: "Não concedida" },
+      { at: "09/10/2026 17:15", action: "Código de ativação emitido", author: "Ana Souza", target: "Juliana Torres", object: "Conta juliana.torres", before: "—", after: "Código disponível até 17:45" },
+      { at: "09/10/2026 17:12", action: "Usuário criado", author: "Ana Souza", target: "Juliana Torres", object: "Conta juliana.torres", before: "—", after: "Ativa · não ativada · sem permissões" },
+      { at: "08/10/2026 11:03", action: "Lead anonimizado", author: "Ana Souza", target: "—", object: "Lead #2381", before: "Dados pessoais preservados", after: "Dados pessoais anonimizados" },
+      { at: "07/10/2026 15:28", action: "Conta desativada", author: "Ana Souza", target: "Marcos Lima", object: "Conta marcos.lima", before: "Ativa", after: "Inativa" },
+      { at: "07/10/2026 10:02", action: "Dados do usuário alterados", author: "Ana Souza", target: "Rafael Nunes", object: "E-mail", before: "rafael.nunes@email.com", after: "rafael@flexclube.org" },
+      { at: "03/10/2026 08:55", action: "Código de recuperação emitido", author: "Ana Souza", target: "Rafael Nunes", object: "Conta rafael.nunes", before: "—", after: "Código disponível até 09:25" },
+      { at: "02/10/2026 14:30", action: "Permissão concedida", author: "Ana Souza", target: "Marcos Lima", object: "Origens: Visualizar", before: "Não concedida", after: "Concedida" },
+      { at: "01/10/2026 09:10", action: "Conta ativada", author: "Rafael Nunes", target: "Rafael Nunes", object: "Conta rafael.nunes", before: "Não ativada", after: "Ativada" },
+    ];
+
+    /* ───────── Utilitários ───────── */
+    const $ = (s, r = document) => r.querySelector(s);
+    const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+    const initials = (n) => n.split(/\s+/).filter(w => w.length > 2 || /^[A-ZÀ-Ú]/.test(w)).slice(0, 2).map(w => w[0]).join("").toUpperCase();
+    const firstName = (n) => n.split(" ")[0];
+    const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+    const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text !== undefined) n.textContent = text; return n; };
+    const icon = (id, cls = "icon") => {
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      svg.setAttribute("class", cls); svg.setAttribute("aria-hidden", "true");
+      const use = document.createElementNS("http://www.w3.org/2000/svg", "use"); use.setAttribute("href", "#" + id);
+      svg.append(use); return svg;
+    };
+    const badge = (kind, text, dot = true) => el("span", `badge ${kind}${dot ? " dot" : ""}`, text);
+    const button = (cls, label, onClick, iconId) => {
+      const b = el("button", cls); b.type = "button";
+      if (iconId) b.append(icon(iconId));
+      if (label) b.append(document.createTextNode(label));
+      if (onClick) b.addEventListener("click", onClick);
+      return b;
+    };
+    function toast(msg) {
+      const t = el("div", "toast"); t.append(icon("i-check"), document.createTextNode(msg));
+      $("#toasts").append(t); setTimeout(() => t.remove(), 2800);
+    }
+    function withLoading(btn, done, ms = 700) {
+      btn.classList.add("loading"); btn.setAttribute("aria-busy", "true");
+      setTimeout(() => { btn.classList.remove("loading"); btn.removeAttribute("aria-busy"); done(); }, ms);
+    }
+    function confirmAction({ title, body, ok, onConfirm }) {
+      const d = $("#confirm-dialog");
+      $("#confirm-title").textContent = title; $("#confirm-body").textContent = body; $("#confirm-ok").textContent = ok;
+      d.returnValue = "";
+      d.addEventListener("close", () => { if (d.returnValue === "confirm") onConfirm(); }, { once: true });
+      d.showModal();
+    }
+
+    /* Menu contextual de linha */
+    const menu = $("#row-menu");
+    function openMenu(anchor, items) {
+      menu.replaceChildren();
+      items.forEach(it => {
+        if (it === "sep") { menu.append(el("hr")); return; }
+        const b = el("button", it.danger ? "danger" : "", it.label); b.type = "button"; b.setAttribute("role", "menuitem");
+        b.addEventListener("click", () => { closeMenu(); it.run(); });
+        menu.append(b);
+      });
+      menu.hidden = false;
+      const r = anchor.getBoundingClientRect();
+      const w = menu.offsetWidth, h = menu.offsetHeight;
+      menu.style.left = Math.max(8, Math.min(r.right - w, innerWidth - w - 8)) + "px";
+      menu.style.top = (r.bottom + h + 8 > innerHeight ? r.top - h - 4 : r.bottom + 4) + "px";
+      menu.dataset.anchor = "1"; menu._anchor = anchor;
+      menu.querySelector("button").focus();
+    }
+    function closeMenu() { if (!menu.hidden) { menu.hidden = true; menu._anchor?.focus(); } }
+    document.addEventListener("click", e => { if (!menu.hidden && !menu.contains(e.target) && e.target !== menu._anchor && !menu._anchor?.contains(e.target)) { menu.hidden = true; } });
+    menu.addEventListener("keydown", e => {
+      const items = $$("button", menu); const i = items.indexOf(document.activeElement);
+      if (e.key === "ArrowDown") { e.preventDefault(); items[(i + 1) % items.length].focus(); }
+      if (e.key === "ArrowUp") { e.preventDefault(); items[(i - 1 + items.length) % items.length].focus(); }
+      if (e.key === "Escape") { e.preventDefault(); closeMenu(); }
+    });
+    const moreButton = (label, items) => {
+      const b = button("btn ghost sm icon-only", "", null, "i-more");
+      b.setAttribute("aria-label", label); b.setAttribute("aria-haspopup", "menu");
+      b.addEventListener("click", e => { e.stopPropagation(); menu.hidden || menu._anchor !== b ? openMenu(b, items()) : closeMenu(); });
+      return b;
+    };
+
+    /* ───────── Leads: Kanban ───────── */
+    const leadFilters = { q: "", owner: "", source: "", interest: false };
+    let currentLead = LEADS[0];
+    function visibleLeads() {
+      return LEADS.filter(l =>
+        (leadFilters.owner === "" || (leadFilters.owner === "me" ? l.owner === ME : leadFilters.owner === "none" ? !l.owner : l.owner === leadFilters.owner)) &&
+        (!leadFilters.source || l.source === leadFilters.source) &&
+        (!leadFilters.interest || l.interest) &&
+        (!leadFilters.q || l.name.toLowerCase().includes(leadFilters.q) || l.phone.replace(/\D/g, "").includes(leadFilters.q.replace(/\D/g, "") || "§")));
+    }
+    function renderBoard() {
+      const board = $("#board"); board.replaceChildren();
+      const leads = visibleLeads();
+      STAGES.forEach(stage => {
+        const items = leads.filter(l => l.stage === stage.id);
+        const col = el("section", "col"); col.style.setProperty("--stage", stage.color); col.dataset.stage = stage.id;
+        col.setAttribute("aria-label", `${stage.name}, ${plural(items.length, "lead", "leads")}`);
+        const head = el("div", "col-head"); head.append(el("span", "stage-dot"), el("h2", "", stage.name), el("span", "num", String(items.length)));
+        col.append(head);
+        items.forEach(l => col.append(leadCard(l)));
+        if (!items.length) col.append(el("p", "col-empty", "Nenhum lead nesta etapa"));
+        col.addEventListener("dragover", e => { e.preventDefault(); col.classList.add("drop"); });
+        col.addEventListener("dragleave", e => { if (!col.contains(e.relatedTarget)) col.classList.remove("drop"); });
+        col.addEventListener("drop", e => {
+          e.preventDefault(); col.classList.remove("drop");
+          const lead = LEADS.find(l => l.id === Number(e.dataTransfer.getData("text/plain")));
+          if (lead && lead.stage !== stage.id) requestStage(lead, stage.id);
+        });
+        board.append(col);
+      });
+      $("#lead-total").textContent = plural(leads.length, "lead", "leads");
+      const pending = LEADS.filter(l => l.interest).length;
+      $("#lead-interest-count").textContent = pending;
+      const nav = $("#nav-interest"); nav.textContent = pending || ""; nav.hidden = !pending;
+      nav.setAttribute("aria-label", `${pending} com novo interesse`);
+      nav.closest(".nav-item").toggleAttribute("data-count", pending > 0);
+    }
+    function leadCard(l) {
+      const card = el("article", "lead" + (l.interest ? " interest" : "")); card.draggable = true;
+      card.addEventListener("dragstart", e => { e.dataTransfer.setData("text/plain", l.id); card.classList.add("dragging"); });
+      card.addEventListener("dragend", () => card.classList.remove("dragging"));
+      const top = el("div", "lead-top");
+      const name = button("lead-name", l.name, () => openLead(l));
+      const move = button("btn ghost sm icon-only lead-move", "", () => openStageDialog(l), "i-swap");
+      move.setAttribute("aria-label", `Alterar etapa de ${l.name}`); move.title = "Alterar etapa";
+      top.append(name, move);
+      card.append(top, el("div", "lead-phone num", l.phone));
+      if (l.interest) card.append(el("div", "lead-flag", "Novo interesse pendente"));
+      const meta = el("div", "lead-meta");
+      const owner = el("span", "lead-owner");
+      owner.append(l.owner ? el("span", "avatar sm", initials(l.owner)) : el("span", "avatar sm none", "–"), el("span", "", l.owner ? firstName(l.owner) : "Sem responsável"));
+      meta.append(el("span", "", l.source), owner);
+      card.append(meta);
+      return card;
+    }
+    $("#lead-search").addEventListener("input", e => { leadFilters.q = e.target.value.trim().toLowerCase(); renderBoard(); });
+    $("#lead-owner").addEventListener("change", e => { leadFilters.owner = e.target.value; renderBoard(); });
+    $("#lead-source").addEventListener("change", e => { leadFilters.source = e.target.value; renderBoard(); });
+    $("#lead-interest-filter").addEventListener("click", e => {
+      leadFilters.interest = !leadFilters.interest; e.currentTarget.setAttribute("aria-pressed", leadFilters.interest);
+      e.currentTarget.classList.toggle("ghost", !leadFilters.interest); renderBoard();
+    });
+    $("[data-dismiss-error]").addEventListener("click", () => { $("#board-error").hidden = true; });
+
+    /* Alterar etapa: direto, ou com confirmação para convertido/perdido */
+    const stageDialog = $("#stage-dialog"), stageSelect = $("#stage-select");
+    let stageLead = null;
+    function requestStage(lead, target) {
+      if (target === "converted" || target === "lost") { openStageDialog(lead, target); return; }
+      applyStage(lead, target);
+    }
+    function applyStage(lead, target, reason) {
+      const from = lead.stage;
+      lead.stage = target; if (target === "lost") lead.lostReason = reason || "";
+      lead.history = [{ at: "Agora", text: `<b>${ME}</b> moveu de “${stageName(from)}” para “${stageName(target)}”` }, ...historyOf(lead)];
+      renderBoard(); if (currentLead === lead) renderLead();
+      toast(`${firstName(lead.name)} movido para “${stageName(target)}”.`);
+    }
+    const stageName = (id) => STAGES.find(s => s.id === id).name;
+    function openStageDialog(lead, preset) {
+      stageLead = lead;
+      $("#stage-lead").textContent = `${lead.name} está em “${stageName(lead.stage)}”.`;
+      stageSelect.replaceChildren(...STAGES.filter(s => s.id !== lead.stage).map(s => Object.assign(el("option", "", s.name), { value: s.id })));
+      if (preset) stageSelect.value = preset;
+      $("#stage-reason").value = "";
+      syncStageDialog(); stageDialog.returnValue = ""; stageDialog.showModal();
+    }
+    function syncStageDialog() {
+      const t = stageSelect.value, sensitive = t === "lost" || t === "converted";
+      $("#stage-lost").hidden = t !== "lost";
+      $("#stage-confirm").hidden = !sensitive;
+      $("#stage-confirm-text").textContent = t === "converted" ? "O lead será marcado como convertido. Ele pode ser reaberto depois." : "O lead será marcado como perdido. Ele pode ser reaberto depois.";
+      $("#stage-submit").textContent = t === "converted" ? "Confirmar conversão" : t === "lost" ? "Confirmar perda" : "Alterar etapa";
+    }
+    stageSelect.addEventListener("change", syncStageDialog);
+    stageDialog.addEventListener("close", () => { if (stageDialog.returnValue === "confirm" && stageLead) applyStage(stageLead, stageSelect.value, $("#stage-reason").value.trim()); });
+
+    /* ───────── Leads: detalhe ───────── */
+    function historyOf(l) {
+      return l.history || [
+        ...(l.interest ? [{ at: "Hoje, 08:14", text: "Nova solicitação pública recebida" }] : []),
+        ...(l.owner ? [{ at: "02/10/2026 10:20", text: `<b>Ana Souza</b> atribuiu a ${l.owner}` }] : []),
+        { at: "01/10/2026 18:05", text: l.source === "Catálogo/site" ? "Lead criado pelo formulário do catálogo" : `<b>Ana Souza</b> criou o lead · origem ${l.source}` },
+      ];
+    }
+    function openLead(l) { currentLead = l; renderLead(); showView("lead"); }
+    function renderLead() {
+      const l = currentLead;
+      $("#lead-title").textContent = l.name;
+      $("#lead-stage-badge").replaceChildren(badge(STAGE_BADGE[l.stage], stageName(l.stage)));
+      $("#lead-interest-badge").replaceChildren(l.interest ? badge("accent", "Novo interesse") : "");
+      $("#lead-sub").textContent = `${l.phone} · ${l.source}`;
+      const data = [["WhatsApp", l.phone], ["E-mail", l.email || "Não informado"], ["Origem", l.source], ["Detalhe", l.source === "Indicação" ? "Indicado por Carla N." : "—"], ...(l.stage === "lost" ? [["Motivo da perda", l.lostReason || "Não informado"]] : [])];
+      $("#lead-data").replaceChildren(...data.map(([k, v]) => { const r = el("div", "dl-row"); r.append(el("dt", "", k), el("dd", k === "WhatsApp" ? "num" : "", v)); return r; }));
+      const assign = $("#lead-assign");
+      assign.replaceChildren(Object.assign(el("option", "", "Sem responsável"), { value: "" }), ...USERS.filter(u => u.active).map(u => Object.assign(el("option", "", u.name), { value: u.name })));
+      assign.value = l.owner || "";
+      // Solicitações
+      const reqs = $("#lead-requests"); reqs.replaceChildren();
+      const items = [...(l.interest ? [{ at: "Hoje, 08:14", by: l.name, pending: true }] : []), { at: "01/10/2026 18:05", by: l.name, pending: false }];
+      items.forEach(r => {
+        const li = el("li"); const row = el("div", "request");
+        const text = el("div"); text.append(el("strong", "", r.pending ? "Novo interesse" : "Primeira solicitação"), el("p", "num", `${r.at} · ${r.by} · consentimento registrado`));
+        row.append(text);
+        if (r.pending) row.append(button("btn sm", "Marcar como tratada", () => { l.interest = false; l.history = [{ at: "Agora", text: `<b>${ME}</b> tratou o novo interesse` }, ...historyOf(l)]; renderBoard(); renderLead(); toast("Novo interesse marcado como tratado."); }, "i-check"));
+        else row.append(el("span", "hint", "Tratada"));
+        li.append(row); reqs.append(li);
+      });
+      $("#lead-requests-count").replaceChildren(l.interest ? badge("accent", "1 pendente") : badge("", "Nenhuma pendente", false));
+      // Observações
+      const notes = l.notes || (l.notes = [{ author: l.owner || "Ana Souza", at: "03/10/2026 14:22", text: "Prefere contato à tarde. Interessada no plano Familiar para 3 pessoas." }]);
+      $("#lead-notes").replaceChildren(...notes.map(n => {
+        const li = el("li"); const meta = el("div", "note-meta");
+        meta.append(el("span", "avatar sm", initials(n.author)), el("strong", "", n.author), el("span", "num", n.at));
+        if (n.author === ME) { const edit = button("btn ghost sm", "Corrigir"); edit.style.marginLeft = "auto"; meta.append(edit); }
+        li.append(meta, el("p", "", n.text)); return li;
+      }));
+      // Histórico
+      $("#lead-history").replaceChildren(...historyOf(l).map(h => { const li = el("li"); const p = el("p"); p.innerHTML = h.text; li.append(p, el("time", "num", h.at)); return li; }));
+    }
+    $("#lead-assign").addEventListener("change", e => {
+      const l = currentLead, to = e.target.value || null;
+      l.history = [{ at: "Agora", text: `<b>${ME}</b> ${to ? "atribuiu a " + to : "removeu o responsável"}` }, ...historyOf(l)];
+      l.owner = to; renderBoard(); renderLead(); toast("Responsável atualizado.");
+    });
+    $("[data-note-form]").addEventListener("submit", e => {
+      e.preventDefault(); const t = $("#note-text"); if (!t.value.trim()) { t.focus(); return; }
+      currentLead.notes.unshift({ author: ME, at: "Agora", text: t.value.trim() });
+      currentLead.history = [{ at: "Agora", text: `<b>${ME}</b> adicionou uma observação` }, ...historyOf(currentLead)];
+      t.value = ""; renderLead(); toast("Observação adicionada.");
+    });
+    $("[data-lead-stage]").addEventListener("click", () => openStageDialog(currentLead));
+    $("[data-lead-edit]").addEventListener("click", () => toast("Edição de dados abre os campos inline (fora do escopo do protótipo)."));
+    $("[data-lead-anonymize]").addEventListener("click", () => confirmAction({
+      title: "Anonimizar este lead?", ok: "Anonimizar",
+      body: `${currentLead.name} possui histórico operacional. Nome, WhatsApp e e-mail serão substituídos de forma irreversível; o histórico e a auditoria são preservados.`,
+      onConfirm: () => { LEADS = LEADS.filter(l => l !== currentLead); renderBoard(); showView("leads"); toast("Lead anonimizado e removido do pipeline."); },
+    }));
+    $("[data-new-lead]").addEventListener("click", () => openEntityDrawer("lead"));
+
+    /* ───────── Listagens administrativas ───────── */
+    const STATE = {
+      published: ["success", "Publicado"], draft: ["warning", "Rascunho"], inactive: ["", "Desativado"],
+      true: ["success", "Ativo"], false: ["", "Inativo"],
+    };
+    const LISTS = {
+      sources: {
+        noun: ["origem", "origens"], search: "Filtrar origens",
+        tabs: [["", "Todas"], ["true", "Ativas"], ["false", "Inativas"]], stateOf: r => String(r.active),
+        cols: [
+          ["Origem", r => mainCell(r.name, r.protected ? "Automática, usada pelo catálogo" : null, null, r.protected ? badge("outline", "Protegida", false) : null)],
+          ["Leads", r => el("span", "num", r.leads), "r"],
+          ["Estado", r => badge(...STATE[r.active])],
+        ],
+        actions: r => [
+          ...(!r.protected ? [{ label: "Editar", run: () => openEntityDrawer("sources", r) }] : []),
+          { label: r.active ? "Desativar" : "Reativar", run: () => toggleActive("sources", r) },
+          ...(!r.protected && r.leads === 0 ? ["sep", { label: "Excluir", danger: true, run: () => removeRow("sources", r) }] : []),
+        ],
+        primary: r => !r.protected ? button("btn sm", "Editar", () => openEntityDrawer("sources", r)) : null,
+        empty: "Nenhuma origem encontrada com esses filtros.",
+      },
+      partners: {
+        noun: ["parceiro", "parceiros"], search: "Filtrar por nome",
+        tabs: [["", "Todos"], ["published", "Publicados"], ["draft", "Rascunhos"], ["inactive", "Desativados"]], stateOf: r => r.state,
+        cols: [
+          ["Parceiro", r => mainCell(r.name, "/" + r.slug, initials(r.name), r.featured ? badge("outline", "Destaque", false) : null)],
+          ["Categorias", r => el("span", "", r.categories)],
+          ["Unidades", r => el("span", "num", r.units || "—"), "r"],
+          ["Planos com benefício", r => el("span", "num", r.plans ? `${r.plans} de 3` : "—"), "r"],
+          ["Estado", r => badge(...STATE[r.state])],
+        ],
+        actions: r => [
+          { label: "Editar", run: () => showView("partner-form") },
+          ...(r.state === "published" ? [{ label: r.featured ? "Remover destaque" : "Destacar", run: () => { r.featured = !r.featured; renderList("partners"); toast("Destaque atualizado."); } }] : []),
+          ...(r.state === "inactive" ? [{ label: "Republicar", run: () => { r.state = "published"; renderList("partners"); toast(`${r.name} republicado.`); } }] : []),
+          ...(r.state === "published" ? ["sep", { label: "Desativar", danger: true, run: () => confirmAction({ title: `Desativar ${r.name}?`, body: "O parceiro deixa de aparecer no catálogo imediatamente. Dados, unidades e benefícios são preservados e ele pode ser republicado.", ok: "Desativar", onConfirm: () => { r.state = "inactive"; r.featured = false; renderList("partners"); toast(`${r.name} desativado.`); } }) }] : []),
+          ...(r.state === "draft" ? ["sep", { label: "Excluir rascunho", danger: true, run: () => removeRow("partners", r) }] : []),
+        ],
+        primary: () => button("btn sm", "Editar", () => showView("partner-form")),
+        empty: "Nenhum parceiro encontrado com esses filtros.",
+      },
+      plans: {
+        noun: ["plano", "planos"], search: "Filtrar planos",
+        tabs: [["", "Todos"], ["true", "Ativos"], ["false", "Inativos"]], stateOf: r => String(r.active),
+        cols: [
+          ["Plano", r => mainCell(r.name, null, initials(r.name))],
+          ["Identificador público", r => el("span", "mono muted", r.slug)],
+          ["Parceiros com benefício", r => el("span", "num", r.partners), "r"],
+          ["Estado", r => badge(...STATE[r.active])],
+        ],
+        actions: r => [{ label: "Editar", run: () => openEntityDrawer("plans", r) }, "sep", { label: r.active ? "Desativar" : "Reativar", danger: r.active, run: () => toggleActive("plans", r) }],
+        primary: r => button("btn sm", "Editar", () => openEntityDrawer("plans", r)),
+        empty: "Nenhum plano encontrado com esses filtros.",
+      },
+      categories: {
+        noun: ["categoria", "categorias"], search: "Filtrar categorias",
+        tabs: [["", "Todas"], ["true", "Ativas"], ["false", "Inativas"]], stateOf: r => String(r.active),
+        cols: [
+          ["Categoria", r => mainCell(r.name)],
+          ["Parceiros", r => el("span", "num", r.partners), "r"],
+          ["Estado", r => badge(...STATE[r.active])],
+        ],
+        actions: r => [{ label: "Editar", run: () => openEntityDrawer("categories", r) }, "sep", { label: r.active ? "Desativar" : "Reativar", danger: r.active, run: () => toggleActive("categories", r) }],
+        primary: r => button("btn sm", "Editar", () => openEntityDrawer("categories", r)),
+        empty: "Nenhuma categoria encontrada com esses filtros.",
+      },
+      users: {
+        noun: ["usuário", "usuários"], search: "Filtrar por nome ou usuário",
+        tabs: [["", "Todos"], ["true", "Ativos"], ["false", "Inativos"]], stateOf: r => String(r.active),
+        rows: () => USERS, rowClick: r => openUser(r),
+        cols: [
+          ["Usuário", r => mainCell(r.name + (r.name === ME ? " (você)" : ""), r.login, initials(r.name))],
+          ["E-mail", r => el("span", r.email ? "" : "muted", r.email || "Não informado")],
+          ["Acesso", r => r.activated ? badge("", "Ativado", false) : badge("info", "Aguardando ativação")],
+          ["Permissões", r => el("span", "num", `${GRANTS[r.id].size} de ${PERM_TOTAL}`), "r"],
+          ["Estado", r => badge(...STATE[r.active])],
+        ],
+        actions: r => [{ label: "Abrir detalhe", run: () => openUser(r) }],
+        primary: r => button("btn sm", "Abrir", () => openUser(r)),
+        empty: "Nenhum usuário encontrado com esses filtros.",
+      },
+    };
+    const listState = {};
+    function mainCell(title, sub, mark, extra) {
+      const w = el("div", "cell-main");
+      if (mark) w.append(el("span", "mark", mark));
+      const t = el("div"); const s = el("strong", "", title);
+      if (extra) { s.append(" "); extra.style.marginLeft = "6px"; s.append(extra); }
+      t.append(s); if (sub) t.append(el("small", sub.startsWith("/") ? "mono" : "", sub));
+      w.append(t); return w;
+    }
+    function buildList(key) {
+      const cfg = LISTS[key], host = $(`[data-list="${key}"]`);
+      listState[key] = { q: "", state: "" };
+      const bar = el("div", "toolbar"), start = el("div", "toolbar-start"), end = el("div", "toolbar-end");
+      const seg = el("div", "seg"); seg.setAttribute("role", "group"); seg.setAttribute("aria-label", "Filtrar por estado");
+      cfg.tabs.forEach(([v, label]) => {
+        const b = el("button"); b.type = "button"; b.dataset.v = v; b.setAttribute("aria-pressed", v === "");
+        b.append(el("span", "", label), el("span", "count"));
+        b.addEventListener("click", () => { listState[key].state = v; $$("button", seg).forEach(x => x.setAttribute("aria-pressed", x === b)); renderList(key); });
+        seg.append(b);
+      });
+      const box = el("div", "search-box"); box.append(icon("i-search"));
+      const input = el("input", "control"); input.type = "search"; input.placeholder = cfg.search; input.setAttribute("aria-label", cfg.search);
+      input.addEventListener("input", () => { listState[key].q = input.value.trim().toLowerCase(); renderList(key); });
+      box.append(input);
+      start.append(seg); end.append(box);
+      bar.append(start, end);
+      const wrap = el("div", "table-wrap"), table = el("table", "table");
+      const thead = el("thead"), tr = el("tr");
+      cfg.cols.forEach(([h, , cls]) => { const th = el("th", cls || "", h); th.scope = "col"; tr.append(th); });
+      const thA = el("th", "actions"); thA.append(el("span", "sr-only", "Ações")); tr.append(thA);
+      thead.append(tr); table.append(thead, el("tbody")); wrap.append(table);
+      const foot = el("div", "card-foot"); foot.append(el("span", "num"), el("span", "", "Ordem alfabética · sem paginação"));
+      host.append(bar, wrap, foot);
+    }
+    function renderList(key) {
+      const cfg = LISTS[key], host = $(`[data-list="${key}"]`), st = listState[key];
+      const all = (cfg.rows ? cfg.rows() : DATA[key]).slice().sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
+      $$(".seg button", host).forEach(b => { const v = b.dataset.v; $(".count", b).textContent = all.filter(r => !v || cfg.stateOf(r) === v).length; });
+      const rows = all.filter(r => (!st.state || cfg.stateOf(r) === st.state) && (!st.q || (r.name + " " + (r.login || "")).toLowerCase().includes(st.q)));
+      const body = $("tbody", host); body.replaceChildren();
+      if (!rows.length) {
+        const tr = el("tr", "empty-row"), td = el("td"); td.colSpan = cfg.cols.length + 1;
+        td.append(el("strong", "", cfg.empty), document.createTextNode("Ajuste a busca ou o filtro de estado."));
+        tr.append(td); body.append(tr);
+      }
+      rows.forEach(r => {
+        const tr = el("tr");
+        cfg.cols.forEach(([, render, cls]) => { const td = el("td", cls || ""); td.append(render(r)); tr.append(td); });
+        const td = el("td", "actions"), box = el("div");
+        const p = cfg.primary(r); if (p) box.append(p);
+        box.append(moreButton(`Mais ações para ${r.name}`, () => cfg.actions(r)));
+        td.append(box); tr.append(td);
+        if (cfg.rowClick) { tr.classList.add("clickable"); tr.addEventListener("click", e => { if (!e.target.closest("button")) cfg.rowClick(r); }); }
+        body.append(tr);
+      });
+      $(".card-foot .num", host).textContent = rows.length === all.length ? plural(all.length, cfg.noun[0], cfg.noun[1]) : `${rows.length} de ${all.length} ${cfg.noun[1]}`;
+    }
+    function toggleActive(key, r) {
+      const noun = LISTS[key].noun[0];
+      if (r.active) confirmAction({
+        title: `Desativar ${noun} “${r.name}”?`, ok: "Desativar",
+        body: key === "plans" ? "O plano sai do seletor público. Benefícios e cupons associados são preservados e voltam com a reativação."
+          : key === "categories" ? "A categoria deixa de aparecer no catálogo e nas seleções. As associações com parceiros são preservadas."
+          : "A origem deixa de aparecer nas seleções de novos leads. Leads existentes mantêm a origem.",
+        onConfirm: () => { r.active = false; renderList(key); toast(`“${r.name}” agora está inativo.`); },
+      });
+      else { r.active = true; renderList(key); toast(`“${r.name}” agora está ativo.`); }
+    }
+    function removeRow(key, r) {
+      confirmAction({ title: `Excluir “${r.name}”?`, body: "O registro nunca foi utilizado e será removido definitivamente.", ok: "Excluir",
+        onConfirm: () => { DATA[key] = DATA[key].filter(x => x !== r); renderList(key); toast(`“${r.name}” foi excluído.`); } });
+    }
+
+    /* Dialog lateral de formulário curto */
+    const drawer = $("#entity-drawer");
+    let drawerSave = null;
+    function field(id, label, value = "", opts = {}) {
+      const f = el("div", "field"); const l = el("label", "", label); l.htmlFor = id;
+      if (opts.optional) l.append(" ", el("span", "opt", "(opcional)"));
+      let input;
+      if (opts.options) { input = el("select"); opts.options.forEach(o => input.append(Object.assign(el("option", "", o), { value: o }))); input.value = value; }
+      else { input = el("input"); input.value = value; if (opts.readonly) input.readOnly = true; if (opts.mono) input.className = "mono"; }
+      input.id = id; f.append(l, input);
+      if (opts.hint) f.append(el("span", "hint", opts.hint));
+      return f;
+    }
+    function activeSwitch(on) {
+      const l = el("label", "switch"); const i = el("input"); i.type = "checkbox"; i.checked = on; i.id = "e-active";
+      const t = el("span"); t.append(el("strong", "", "Ativo")); t.firstChild.style.fontWeight = 600;
+      t.append(el("span", "hint", on ? "Disponível nas seleções e no catálogo." : "Oculto até ser reativado.")); t.lastChild.style.display = "block";
+      l.append(i, Object.assign(el("span", "track"), { ariaHidden: "true" }), t); return l;
+    }
+    function openEntityDrawer(key, r) {
+      const isNew = !r, body = $("#entity-body"); body.replaceChildren();
+      const titles = { sources: ["Nova origem", "Editar origem"], plans: ["Novo plano", "Editar plano"], categories: ["Nova categoria", "Editar categoria"], lead: ["Novo lead", ""], user: ["Novo usuário", ""] };
+      $("#entity-title").textContent = titles[key][isNew ? 0 : 1];
+      $("#entity-sub").textContent = isNew ? "" : r.name;
+      if (key === "plans") {
+        body.append(field("e-name", "Nome", r?.name), field("e-slug", "Identificador público", r?.slug || "", { mono: true, readonly: !isNew, hint: isNew ? "Gerado a partir do nome; usado em links do catálogo." : "Não muda ao renomear o plano, para preservar links existentes." }), activeSwitch(r ? r.active : true));
+      } else if (key === "categories" || key === "sources") {
+        body.append(field("e-name", "Nome", r?.name, { hint: "Deve ser único, sem diferenciar maiúsculas e acentos." }), activeSwitch(r ? r.active : true));
+      } else if (key === "lead") {
+        body.append(field("e-name", "Nome"), field("e-phone", "WhatsApp", "", { hint: "Com DDD. Um WhatsApp só pode pertencer a um lead." }), field("e-mail", "E-mail", "", { optional: true }),
+          field("e-source", "Origem", "Indicação", { options: DATA.sources.filter(s => s.active && !s.protected).map(s => s.name) }), field("e-detail", "Detalhe da origem", "", { optional: true }),
+          field("e-owner", "Responsável", ME, { options: ["Sem responsável", ...USERS.filter(u => u.active).map(u => u.name)] }));
+      } else if (key === "user") {
+        body.append(field("e-name", "Nome completo"), field("e-login", "Nome de usuário", "", { mono: true, hint: "Gerado a partir do nome; pode ser ajustado." }), field("e-mail", "E-mail", "", { optional: true }),
+          Object.assign(el("div", "alert info"), {}));
+        const a = body.lastChild; a.append(icon("i-alert")); a.append(el("div", "", "A conta começa ativa, sem permissões e aguardando ativação. Emita o código de ativação no detalhe do usuário."));
+      }
+      drawerSave = () => {
+        const name = $("#e-name").value.trim(); if (!name) return toast("Informe o nome.");
+        if (key === "lead") {
+          LEADS.push({ id: Date.now(), name, phone: $("#e-phone").value || "(21) 90000-0000", source: $("#e-source").value, owner: $("#e-owner").value === "Sem responsável" ? null : $("#e-owner").value, stage: "new" });
+          renderBoard(); toast("Lead criado em “Novo”."); return;
+        }
+        if (key === "user") {
+          const u = { id: "u" + Date.now(), name, login: $("#e-login").value || name.toLowerCase().split(" ").join("."), email: $("#e-mail").value, active: true, activated: false };
+          USERS.push(u); GRANTS[u.id] = new Set(); renderList("users"); toast("Usuário criado."); openUser(u); return;
+        }
+        const active = $("#e-active").checked;
+        if (isNew) DATA[key].push({ name, slug: key === "plans" ? ($("#e-slug").value || name.toLowerCase().normalize("NFD").replace(/[^\w]+/g, "-")) : undefined, active, leads: 0, partners: 0 });
+        else Object.assign(r, { name, active });
+        renderList(key); toast(isNew ? `“${name}” cadastrado.` : "Alterações salvas.");
+      };
+      drawer.returnValue = ""; drawer.showModal();
+      setTimeout(() => $("#e-name")?.focus(), 0);
+    }
+    drawer.addEventListener("close", () => { if (drawer.returnValue === "confirm" && drawerSave) drawerSave(); });
+    $$("[data-new]").forEach(b => b.addEventListener("click", () => openEntityDrawer(b.dataset.new)));
+    $("[data-new-user]").addEventListener("click", () => openEntityDrawer("user"));
+
+    /* ───────── Parceiro: formulário ───────── */
+    const pCats = new Set(["Consultas", "Exames"]);
+    const pBenefits = { Individual: { pct: "", coupon: "", on: false }, Familiar: { pct: "", coupon: "", on: false }, Empresarial: { pct: "", coupon: "", on: false } };
+    function renderPartnerForm() {
+      const chips = $("#p-cats"); chips.replaceChildren();
+      DATA.categories.forEach(c => {
+        const b = el("button", "chip", c.name); b.type = "button";
+        b.setAttribute("aria-pressed", pCats.has(c.name)); b.disabled = !c.active;
+        if (!c.active) b.title = "Categoria inativa";
+        b.addEventListener("click", () => { pCats.has(c.name) ? pCats.delete(c.name) : pCats.add(c.name); renderPartnerForm(); });
+        chips.append(b);
+      });
+      const tb = $("#p-benefits"); tb.replaceChildren();
+      DATA.plans.filter(p => p.active).forEach(p => {
+        const b = pBenefits[p.name] || (pBenefits[p.name] = { pct: "", coupon: "", on: false });
+        const tr = el("tr");
+        const pct = el("input", "pct num"); pct.type = "number"; pct.min = 1; pct.max = 100; pct.value = b.pct; pct.disabled = !b.on; pct.placeholder = "%"; pct.setAttribute("aria-label", `Desconto no plano ${p.name}, em %`);
+        pct.addEventListener("input", () => { b.pct = pct.value; syncPublish(); });
+        const cp = el("input", "mono"); cp.value = b.coupon; cp.disabled = !b.on; cp.placeholder = "Usa o cupom geral"; cp.setAttribute("aria-label", `Cupom do plano ${p.name}`);
+        cp.addEventListener("input", () => { b.coupon = cp.value; });
+        const sw = el("label", "switch"); const si = el("input"); si.type = "checkbox"; si.checked = b.on; si.setAttribute("aria-label", `Oferecer benefício no plano ${p.name}`);
+        si.addEventListener("change", () => { b.on = si.checked; if (b.on && !b.pct) b.pct = 10; renderPartnerForm(); });
+        sw.append(si, Object.assign(el("span", "track"), { ariaHidden: "true" }));
+        const td = (n) => { const c = el("td"); c.append(n); return c; };
+        const name = el("td"); name.append(el("strong", "", p.name)); name.firstChild.style.fontWeight = 600;
+        tr.append(name, td(pct), td(cp), td(sw)); tb.append(tr);
+      });
+      syncPublish();
+    }
+    function syncPublish() {
+      const benefits = Object.values(pBenefits).filter(b => b.on && Number(b.pct) >= 1 && Number(b.pct) <= 100).length;
+      const slugOk = /^[a-z0-9-]+$/.test($("#p-slug").value);
+      $("#sum-cats").textContent = pCats.size;
+      $("#sum-benefits").textContent = plural(benefits, "plano", "planos");
+      const reqs = [["Dados principais válidos", slugOk], ["Ao menos uma categoria ativa", pCats.size > 0], ["Ao menos um benefício por plano", benefits > 0], ["Alterações salvas", false]];
+      $("#publish-req").replaceChildren(...reqs.map(([t, ok]) => { const li = el("li"); li.append(icon(ok ? "i-check" : "i-x", "icon " + (ok ? "ok" : "no")), el("span", ok ? "" : "muted", t)); return li; }));
+      const sec = (id, state) => {
+        const s = $(`[data-section="${id}"] .status-ico`); s.className = "status-ico " + state; s.replaceChildren();
+        if (state !== "todo") s.append(icon(state === "error" ? "i-alert" : "i-check"));
+        s.append(el("span", "sr-only", state === "error" ? "Com erro" : state === "done" ? "Completa" : "Pendente"));
+      };
+      sec("sec-main", slugOk ? "done" : "error"); sec("sec-cat", pCats.size ? "done" : "todo"); sec("sec-benefits", benefits ? "done" : "todo");
+      const alert = $("[data-partner-form] > .alert"); alert.hidden = slugOk;
+      $("#p-slug").closest(".field").classList.toggle("field-error", !slugOk);
+      $("#p-slug").setAttribute("aria-invalid", !slugOk);
+    }
+    $("#p-slug").addEventListener("input", syncPublish);
+    $$("[data-section]").forEach(b => b.addEventListener("click", () => {
+      $$("[data-section]").forEach(x => x.removeAttribute("aria-current")); b.setAttribute("aria-current", "true");
+      document.getElementById(b.dataset.section).scrollIntoView({ behavior: "smooth", block: "start" });
+    }));
+    $$("[data-save-partner]").forEach(b => b.addEventListener("click", () => {
+      if (!/^[a-z0-9-]+$/.test($("#p-slug").value)) { $("#p-slug").focus(); return; }
+      withLoading(b, () => { $(".unsaved").textContent = "Salvo agora"; $(".unsaved").style.color = "var(--success)"; toast("Parceiro salvo como rascunho."); });
+    }));
+    $("[data-leave-form]").addEventListener("click", () => confirmAction({ title: "Sair sem salvar?", body: "As alterações feitas neste parceiro serão descartadas.", ok: "Descartar alterações", onConfirm: () => showView("partners") }));
+
+    /* ───────── Usuários: detalhe ───────── */
+    let currentUser = USERS[1], draftGrants = null;
+    function openUser(u) { currentUser = u; draftGrants = new Set(GRANTS[u.id]); $("#code-box").hidden = true; renderUser(); showView("user"); }
+    function renderUser() {
+      const u = currentUser, self = u.name === ME;
+      $("#user-avatar").textContent = initials(u.name);
+      $("#user-title").textContent = u.name + (self ? " (você)" : "");
+      $("#user-sub").textContent = u.login;
+      $("#user-badges").replaceChildren(badge(...STATE[u.active]), ...(u.activated ? [] : [badge("info", "Aguardando ativação")]));
+      $("#u-name").value = u.name; $("#u-login").value = u.login; $("#u-mail").value = u.email;
+      $("#user-activation").replaceChildren(u.activated ? document.createTextNode("Conta ativada") : badge("info", "Aguardando ativação"));
+      $("#user-state").replaceChildren(badge(...STATE[u.active]));
+      $("#issue-code").replaceChildren(icon("i-key"), document.createTextNode(u.activated ? "Emitir código de recuperação" : "Emitir código de ativação"));
+      $("#issue-code").disabled = !u.active;
+      $("#user-toggle-title").textContent = u.active ? "Desativar conta" : "Reativar conta";
+      $("#user-toggle-desc").textContent = u.active ? "A pessoa perde o acesso imediatamente; históricos e leads são preservados." : "A pessoa volta a poder entrar com a senha atual.";
+      const tbtn = $("#user-toggle-btn"); tbtn.textContent = u.active ? "Desativar conta" : "Reativar conta"; tbtn.className = u.active ? "btn danger-quiet" : "btn";
+      tbtn.disabled = self; tbtn.title = self ? "Você não pode desativar a própria conta." : "";
+      $("#perm-self").hidden = !self;
+      $("#perm-total").textContent = `${draftGrants.size} de ${PERM_TOTAL}`;
+      const grid = $("#perm-grid"); grid.replaceChildren();
+      PERMISSIONS.forEach(g => {
+        const area = el("fieldset", "perm-area");
+        const on = g.items.filter(i => draftGrants.has(g.area + ":" + i)).length;
+        const h = el("h3"); const legend = el("legend", "sr-only", g.area); area.append(legend);
+        h.append(el("span", "", g.area), el("span", "", `${on}/${g.items.length}`)); h.firstChild.style.color = "var(--text)"; h.firstChild.style.fontWeight = 600;
+        area.append(h);
+        g.items.forEach(i => {
+          const key = g.area + ":" + i, l = el("label", "check"), c = el("input"); c.type = "checkbox";
+          c.checked = draftGrants.has(key);
+          const mine = GRANTS.ana.has(key);
+          c.disabled = self || !mine;
+          c.addEventListener("change", () => { c.checked ? draftGrants.add(key) : draftGrants.delete(key); renderUser(); });
+          l.append(c, el("span", "", i)); area.append(l);
+        });
+        grid.append(area);
+      });
+    }
+    $("[data-save-user]").addEventListener("click", e => withLoading(e.currentTarget, () => {
+      const u = currentUser; u.name = $("#u-name").value; u.login = $("#u-login").value; u.email = $("#u-mail").value;
+      GRANTS[u.id] = new Set(draftGrants); renderUser(); renderList("users"); toast("Usuário atualizado. Permissões já estão em vigor.");
+    }));
+    $("[data-discard-perms]").addEventListener("click", () => { draftGrants = new Set(GRANTS[currentUser.id]); renderUser(); });
+    $("[data-issue-code]").addEventListener("click", () => {
+      const kind = currentUser.activated ? "recuperação" : "ativação";
+      confirmAction({ title: `Emitir código de ${kind}?`, body: `Qualquer código de ${kind} anterior de ${currentUser.name} deixará de funcionar. O novo código vale por 30 minutos e aceita até 5 tentativas.`, ok: "Emitir código",
+        onConfirm: () => { $("#code-kind").textContent = kind; $("#code-value").textContent = String(Math.floor(100000 + Math.random() * 899999)).replace(/(\d{3})(\d{3})/, "$1 $2"); $("#code-box").hidden = false; } });
+    });
+    $("[data-toggle-user]").addEventListener("click", () => {
+      const u = currentUser;
+      if (!u.active) { u.active = true; renderUser(); renderList("users"); toast(`${u.name} reativado.`); return; }
+      confirmAction({ title: `Desativar ${u.name}?`, body: "A pessoa perde o acesso imediatamente, inclusive em sessões abertas. Leads atribuídos e históricos são preservados.", ok: "Desativar conta",
+        onConfirm: () => { u.active = false; renderUser(); renderList("users"); toast(`${u.name} desativado.`); } });
+    });
+
+    /* ───────── Auditoria ───────── */
+    const auditDrawer = $("#audit-drawer");
+    function renderAudit() {
+      const action = $("#audit-action").value, author = $("#audit-author").value;
+      const rows = AUDIT.filter(a => (!action || a.action === action) && (!author || a.author === author));
+      const body = $("#audit-rows"); body.replaceChildren();
+      if (!rows.length) { const tr = el("tr", "empty-row"), td = el("td"); td.colSpan = 6; td.append(el("strong", "", "Nenhum evento com esses filtros."), document.createTextNode("Amplie o período ou remova filtros.")); tr.append(td); body.append(tr); }
+      rows.forEach(a => {
+        const tr = el("tr", "clickable");
+        const who = (n) => { if (n === "—") return el("span", "muted", "—"); const w = el("span", "cell-main"); w.style.gap = "8px"; w.append(el("span", "avatar sm", initials(n)), el("span", "", n)); return w; };
+        const td = (n, cls) => { const c = el("td", cls || ""); c.append(n); return c; };
+        const open = button("btn ghost sm", "Ver", () => openAudit(a)); open.setAttribute("aria-label", `Ver detalhes: ${a.action} em ${a.at}`);
+        tr.append(td(el("span", "num", a.at)), td(el("strong", "", a.action)), td(who(a.author)), td(who(a.target)), td(el("span", "muted", a.object)), td(open, "actions"));
+        tr.firstChild.querySelector("span").style.color = "var(--muted)";
+        tr.children[1].firstChild.style.fontWeight = 600;
+        tr.addEventListener("click", e => { if (!e.target.closest("button")) openAudit(a); });
+        body.append(tr);
+      });
+      $("#audit-range").textContent = action || author ? `${rows.length} eventos nesta página` : "1–10 de 128 eventos";
+    }
+    function openAudit(a) {
+      $("#audit-d-title").textContent = a.action; $("#audit-d-sub").textContent = a.at;
+      const dl = el("dl", "dl"); [["Autor", a.author], ["Usuário afetado", a.target], ["Objeto", a.object]].forEach(([k, v]) => { const r = el("div", "dl-row"); r.append(el("dt", "", k), el("dd", "", v)); dl.append(r); });
+      const diff = el("div", "diff"); const b = el("div", "before"), af = el("div", "after");
+      b.append(el("span", "", "Anterior"), document.createTextNode(a.before)); af.append(el("span", "", "Novo"), document.createTextNode(a.after)); diff.append(b, af);
+      const h = el("h3", "", "Alteração"); h.style.cssText = "font-size:13px;font-weight:600;margin-bottom:-8px";
+      $("#audit-d-body").replaceChildren(dl, h, diff);
+      auditDrawer.showModal();
+    }
+    [...new Set(AUDIT.map(a => a.action))].sort().forEach(a => $("#audit-action").append(Object.assign(el("option", "", a), { value: a })));
+    [...new Set(AUDIT.map(a => a.author))].forEach(a => $("#audit-author").append(Object.assign(el("option", "", a), { value: a })));
+    $("#audit-action").addEventListener("change", renderAudit); $("#audit-author").addEventListener("change", renderAudit);
+    $("[data-clear-audit]").addEventListener("click", () => { $("#audit-action").value = ""; $("#audit-author").value = ""; renderAudit(); });
+
+    /* ───────── Alterar senha ───────── */
+    $("#pw-new").addEventListener("input", e => {
+      const v = e.target.value, rules = { len: v.length >= 10, mix: /[a-z]/i.test(v) && /\d/.test(v) };
+      $$("#pw-rules li").forEach(li => { const ok = rules[li.dataset.rule]; li.querySelector("svg").setAttribute("class", "icon " + (ok ? "ok" : "no")); });
+    });
+    $("[data-password-form]").addEventListener("submit", e => { e.preventDefault(); withLoading($("button[type=submit]", e.target), () => { e.target.reset(); toast("Senha alterada."); }); });
+
+    /* ───────── Acesso ───────── */
+    $("[data-login]").addEventListener("submit", e => { e.preventDefault(); withLoading($("button[type=submit]", e.target), () => showView("leads")); });
+    $("[data-logout]").addEventListener("click", () => showView("login"));
+
+    /* ───────── Navegação ───────── */
+    const ROUTES = {
+      login: { area: null }, leads: { area: "Comercial", title: "Leads", nav: "leads" },
+      lead: { area: "Comercial", parent: ["Leads", "leads"], title: () => currentLead.name, nav: "leads" },
+      sources: { area: "Comercial", title: "Origens", nav: "sources" },
+      partners: { area: "Catálogo", title: "Parceiros", nav: "partners" },
+      "partner-form": { area: "Catálogo", parent: ["Parceiros", "partners"], title: "Novo parceiro", nav: "partners" },
+      plans: { area: "Catálogo", title: "Planos", nav: "plans" }, categories: { area: "Catálogo", title: "Categorias", nav: "categories" },
+      users: { area: "Administração", title: "Usuários", nav: "users" },
+      user: { area: "Administração", parent: ["Usuários", "users"], title: () => currentUser.name, nav: "users" },
+      audit: { area: "Administração", title: "Auditoria", nav: "audit" },
+      password: { area: "Conta", title: "Alterar senha", nav: "password" },
+      states: { area: "Referência", title: "Estados e componentes" },
+    };
+    function showView(id) {
+      const route = ROUTES[id];
+      if (id === "lead" && !LEADS.includes(currentLead)) currentLead = LEADS[0];
+      if (id === "lead") renderLead();
+      if (id === "user" && !draftGrants) { draftGrants = new Set(GRANTS[currentUser.id]); renderUser(); }
+      document.body.classList.toggle("auth-mode", id === "login");
+      $$(".view").forEach(v => v.classList.toggle("active", v.id === "view-" + id));
+      $$("[data-nav]").forEach(b => b.dataset.nav === route.nav && !b.classList.contains("back") && !b.closest(".page-actions") ? b.setAttribute("aria-current", "page") : b.removeAttribute("aria-current"));
+      const crumbs = $("#crumbs"); crumbs.replaceChildren();
+      if (route.area) {
+        crumbs.append(el("span", "", route.area), el("span", "sep", "/"));
+        if (route.parent) { crumbs.append(button("", route.parent[0], () => showView(route.parent[1])), el("span", "sep", "/")); }
+        const t = el("strong", "", typeof route.title === "function" ? route.title() : route.title); t.setAttribute("aria-current", "page"); crumbs.append(t);
+      }
+      $("#proto-screen").value = id;
+      document.body.classList.remove("menu-open");
+      closeMenu(); scrollTo(0, 0);
+      if (id !== "login") $("#content").focus({ preventScroll: true });
+    }
+    document.addEventListener("click", e => { const b = e.target.closest("[data-nav]"); if (b) showView(b.dataset.nav); });
+    $("#proto-screen").addEventListener("change", e => showView(e.target.value));
+    $("[data-open-menu]").addEventListener("click", () => document.body.classList.add("menu-open"));
+    $("[data-close-menu]").addEventListener("click", () => document.body.classList.remove("menu-open"));
+    $("[data-collapse]").addEventListener("click", e => { const on = document.body.classList.toggle("nav-collapsed"); e.currentTarget.setAttribute("aria-pressed", on); e.currentTarget.setAttribute("aria-label", on ? "Expandir menu lateral" : "Recolher menu lateral"); });
+    document.addEventListener("keydown", e => { if (e.key === "Escape") document.body.classList.remove("menu-open"); });
+
+    /* ───────── Inicialização ───────── */
+    DATA.sources.forEach(s => $("#lead-source").append(Object.assign(el("option", "", s.name), { value: s.name })));
+    Object.keys(LISTS).forEach(k => { buildList(k); renderList(k); });
+    renderBoard(); renderPartnerForm(); renderAudit();
+    showView("leads");
+  </script>
+</body>
+</html>

@@ -19,6 +19,14 @@ Esta pasta é a fonte de referência para o planejamento e a futura implementaç
 | 11 — Implementação | [delivery/implementation-plan.md](delivery/implementation-plan.md) | Aprovada |
 | 12 — Revisão | [review.md](review.md) | Aprovada |
 
+## UI/UX em validação
+
+- [Fundamentos compartilhados](apps/ui-foundations.md)
+- [Design system proposto do dashboard](apps/dashboard/design-system/README.md)
+- [Protótipo navegável do dashboard](prototypes/dashboard/index.html)
+
+Os protótipos são referências demonstrativas e não constituem implementação das aplicações.
+
 ## Convenções
 
 - **Confirmado:** informação aprovada durante a descoberta.
