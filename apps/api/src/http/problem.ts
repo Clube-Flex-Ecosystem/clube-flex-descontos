@@ -40,6 +40,37 @@ const catalog: Record<
     title: 'Dados inválidos',
     detail: 'Revise os campos informados.',
   },
+  PUBLICATION_REQUIREMENTS_NOT_MET: {
+    status: 422,
+    title: 'Publicação não permitida',
+    detail: 'O parceiro ainda não atende às condições de publicação.',
+  },
+  DUPLICATE_RESOURCE: {
+    status: 409,
+    title: 'Registro duplicado',
+    detail: 'Já existe um registro com os mesmos dados.',
+  },
+  INVALID_RESOURCE_STATE: {
+    status: 409,
+    title: 'Estado incompatível',
+    detail: 'O recurso não está em um estado que permita esta operação.',
+  },
+  RESOURCE_VERSION_CONFLICT: {
+    status: 409,
+    title: 'Conflito de versão',
+    detail:
+      'O registro foi alterado por outra pessoa. Carregue a versão atual e tente novamente.',
+  },
+  PROTECTED_RESOURCE: {
+    status: 409,
+    title: 'Registro protegido',
+    detail: 'O registro possui histórico ou associações e deve ser preservado.',
+  },
+  RESOURCE_VERSION_REQUIRED: {
+    status: 428,
+    title: 'Versão obrigatória',
+    detail: 'Informe a versão conhecida do recurso no cabeçalho If-Match.',
+  },
   RATE_LIMIT_EXCEEDED: {
     status: 429,
     title: 'Muitas tentativas',
@@ -63,6 +94,8 @@ const typeSlug = (code: ErrorCode) => code.toLowerCase().replaceAll('_', '-');
 export interface ProblemOptions {
   /** Erros localizados por campo. */
   errors?: FieldError[];
+  /** Substitui a mensagem padrão por uma mensagem de domínio, já em português. */
+  detail?: string;
   headers?: Record<string, string>;
 }
 
@@ -72,7 +105,8 @@ export function sendProblem(
   code: ErrorCode,
   options: ProblemOptions = {},
 ): void {
-  const { status, title, detail } = catalog[code];
+  const { status, title, detail: defaultDetail } = catalog[code];
+  const detail = options.detail ?? defaultDetail;
   const body: ProblemDetails = {
     type: `urn:flex:error:${typeSlug(code)}`,
     title,

@@ -43,7 +43,7 @@ export function createAuthRouter({
   const authenticate = createAuthenticationMiddleware(resolveSession, {
     required: true,
   });
-  
+
   const authenticateOptionally = createAuthenticationMiddleware(
     resolveSession,
     { required: false },

@@ -1,8 +1,10 @@
 import type { Permission } from '@flex/contracts';
+import type { IconName } from '../shared/ui/icon';
 
 export interface NavItem {
-  to: '/senha';
+  to: '/parceiros' | '/planos' | '/categorias' | '/senha';
   label: string;
+  icon: IconName;
   /** Itens sem permissão de visualização são ocultados; a API segue como autoridade. */
   permission?: Permission;
 }
@@ -13,13 +15,36 @@ export interface NavGroup {
 }
 
 /**
- * Navegação lateral agrupada por responsabilidade. Os grupos Comercial, Catálogo e
- * Administração entram junto com os módulos dos incrementos seguintes.
+ * Navegação lateral agrupada por responsabilidade. Os grupos Comercial e Administração
+ * entram junto com os módulos dos incrementos seguintes.
  */
 export const navigation: NavGroup[] = [
   {
+    label: 'Catálogo',
+    items: [
+      {
+        to: '/parceiros',
+        label: 'Parceiros',
+        icon: 'partner',
+        permission: 'partners.view',
+      },
+      {
+        to: '/planos',
+        label: 'Planos',
+        icon: 'plan',
+        permission: 'plans.view',
+      },
+      {
+        to: '/categorias',
+        label: 'Categorias',
+        icon: 'category',
+        permission: 'categories.view',
+      },
+    ],
+  },
+  {
     label: 'Conta',
-    items: [{ to: '/senha', label: 'Alterar senha' }],
+    items: [{ to: '/senha', label: 'Alterar senha', icon: 'key' }],
   },
 ];
 
@@ -32,4 +57,13 @@ export function visibleNavigation(granted: readonly Permission[]): NavGroup[] {
       ),
     }))
     .filter((group) => group.items.length > 0);
+}
+
+/** Primeiro módulo que o usuário pode visualizar (destino após a autenticação). */
+export function firstAllowedModule(
+  granted: readonly Permission[],
+): NavItem['to'] | undefined {
+  return visibleNavigation(granted)
+    .flatMap((group) => group.items)
+    .find((item) => item.permission)?.to;
 }

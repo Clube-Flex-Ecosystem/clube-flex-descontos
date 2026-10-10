@@ -1,12 +1,15 @@
-import type { ButtonHTMLAttributes } from 'react';
+import type { ButtonHTMLAttributes, Ref } from 'react';
 
-type Variant = 'primary' | 'secondary' | 'quiet' | 'sidebar';
+type Variant = 'primary' | 'secondary' | 'quiet' | 'danger' | 'sidebar';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: Variant;
   /** Impede reenvio acidental sem remover o contexto do usuário. */
   loading?: boolean;
   block?: boolean;
+  /** Compacto para ações em linhas de tabela e barras de ferramentas. */
+  compact?: boolean;
+  ref?: Ref<HTMLButtonElement>;
 }
 
 // Alvo de 44px em interações móveis; 36px a partir de `md` (ui-foundations).
@@ -18,6 +21,8 @@ const variants: Record<Variant, string> = {
     'border-primary-edge bg-primary-raised text-primary-foreground shadow-brand-raised hover:bg-primary-raised-hover hover:shadow-brand-raised-hover active:shadow-brand-pressed',
   secondary:
     'border-control-border bg-control text-foreground shadow-control-raised hover:border-control-border-hover hover:shadow-control-raised-hover active:shadow-control-pressed',
+  danger:
+    'border-danger-edge bg-danger-raised text-primary-foreground shadow-brand-raised hover:bg-danger hover:shadow-brand-raised-hover active:shadow-brand-pressed',
   quiet:
     'border-transparent bg-transparent text-muted-foreground hover:bg-surface-muted hover:text-foreground',
   sidebar:
@@ -28,6 +33,7 @@ export function Button({
   variant = 'secondary',
   loading = false,
   block = false,
+  compact = false,
   className,
   disabled,
   children,
@@ -37,7 +43,13 @@ export function Button({
     <button
       type="button"
       {...rest}
-      className={[base, variants[variant], block ? 'w-full' : '', className]
+      className={[
+        base,
+        variants[variant],
+        compact ? 'min-h-9 px-2.5 md:min-h-control-sm' : '',
+        block ? 'w-full' : '',
+        className,
+      ]
         .filter(Boolean)
         .join(' ')}
       disabled={disabled || loading}

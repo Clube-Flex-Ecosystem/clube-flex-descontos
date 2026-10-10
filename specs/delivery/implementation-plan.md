@@ -126,6 +126,19 @@ Permitir cadastrar e publicar os dados que alimentarão o catálogo público.
 
 Um usuário autorizado consegue cadastrar um parceiro completo e publicá-lo; entradas inválidas não alteram parcialmente o agregado.
 
+### Registro de execução
+
+Executado em 2026-10-10. Decisões tomadas durante a execução, dentro do escopo aprovado e detalhadas nos [contratos](../apps/api/contracts/README.md):
+
+- **Regras compartilhadas em `packages/contracts`:** normalização de nomes, telefones e CEP, esquemas de entrada, regra de publicação (RN-001), visibilidade (RN-003), cupom efetivo (RN-016) e herança de contatos (RN-027). O dashboard reutiliza a mesma regra de publicação na lista "Para publicar".
+- **Visibilidade, cupom efetivo e contatos herdados** existem como funções puras testadas, sem endpoint: serão consumidas pelo catálogo público no incremento 4.
+- **Exclusão:** somente rascunho nunca publicado (`first_published_at` nulo); demais casos retornam `409 PROTECTED_RESOURCE`. Planos e categorias não possuem `DELETE`, pois o contrato aprovado não o define. Unidades e contatos são removidos pela omissão no `PUT`.
+- **Endereços anteriores** de parceiros ficam em `partner_slug_history`; o redirecionamento público é entregue no incremento 4. O identificador de um plano é imutável depois de criado.
+- **Autorização:** o formulário de parceiro lê planos e categorias, portanto quem edita parceiros também precisa de `plans.view` e `categories.view`.
+- **Listagens do dashboard:** as colunas "parceiros com benefício" de planos e categorias do protótipo não foram implementadas, pois o contrato não expõe essa contagem. O protótipo usava o prefixo `/p/` para o endereço do parceiro; prevalece `/parceiros/{slug}` da especificação do catálogo (protótipo corrigido).
+- **Rotas do dashboard** em português (`/parceiros`, `/planos`, `/categorias`), como `/senha`. Após a autenticação o usuário segue ao primeiro módulo que pode visualizar.
+- **Não coberto:** E2E `cadastrar e publicar parceiro` (incremento 8) e testes automatizados do dashboard; a jornada foi verificada em navegador (Chromium headless) contra API e PostgreSQL reais.
+
 ## Incremento 4 — Catálogo público
 
 ### Objetivo

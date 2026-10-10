@@ -1,24 +1,36 @@
 import type { ReactNode } from 'react';
+import { Icon } from './icon';
 
 interface AlertProps {
-  tone: 'danger' | 'success' | 'info';
-  children: ReactNode;
+  tone: 'danger' | 'success' | 'info' | 'warning';
+  /** Resumo em destaque; o restante vai em `children`. */
+  title?: string;
+  children?: ReactNode;
+  /** Ação acionável associada à mensagem (ex.: tentar novamente). */
+  action?: ReactNode;
 }
 
 const tones: Record<AlertProps['tone'], string> = {
   danger: 'bg-danger-soft',
   success: 'bg-success-soft',
   info: 'bg-info-soft',
+  warning: 'bg-warning-soft',
 };
 
 /** Erros usam `role="alert"`; os demais são anunciados de forma educada. */
-export function Alert({ tone, children }: AlertProps) {
+export function Alert({ tone, title, children, action }: AlertProps) {
+  const assertive = tone === 'danger' || tone === 'warning';
   return (
     <div
       className={`t-small flex items-start gap-2 rounded-md px-3 py-2.5 text-foreground ${tones[tone]}`}
-      role={tone === 'danger' ? 'alert' : 'status'}
+      role={assertive ? 'alert' : 'status'}
     >
-      <div>{children}</div>
+      {title ? <Icon name="alert" className="mt-0.5" /> : null}
+      <div className="grid min-w-0 gap-1.5">
+        {title ? <strong className="font-semibold">{title}</strong> : null}
+        {children ? <div>{children}</div> : null}
+        {action ? <div>{action}</div> : null}
+      </div>
     </div>
   );
 }

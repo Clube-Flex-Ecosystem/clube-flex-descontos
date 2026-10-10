@@ -1,5 +1,6 @@
 import { Writable } from 'node:stream';
 import pg from 'pg';
+import request from 'supertest';
 import type { Permission } from '@flex/contracts';
 import { createCompositionRoot } from '../src/composition-root';
 import { createApp } from '../src/http/app';
@@ -94,6 +95,7 @@ export function createTestApp(databaseUrl = testDatabaseUrl) {
     logger,
     checkReadiness: createDatabaseReadinessCheck(pool),
     identity: root.identity,
+    catalog: root.catalog,
     allowedOrigins: [DASHBOARD_ORIGIN],
     limiters: createAuthRateLimiters(),
   });
@@ -104,7 +106,7 @@ export type TestContext = ReturnType<typeof createTestApp>;
 
 export async function resetDatabase(pool: pg.Pool): Promise<void> {
   await pool.query(
-    'TRUNCATE audit_events, access_codes, sessions, user_permissions, users CASCADE',
+    'TRUNCATE audit_events, access_codes, sessions, user_permissions, users, partners, categories, plans CASCADE',
   );
 }
 
@@ -142,6 +144,43 @@ export async function seedUser(context: TestContext, seed: UserSeed = {}) {
     );
   }
   return { id, username };
+}
+
+export const ALL_CATALOG_PERMISSIONS: Permission[] = [
+  'plans.view',
+  'plans.manage',
+  'categories.view',
+  'categories.manage',
+  'partners.view',
+  'partners.create',
+  'partners.update',
+  'partners.publish',
+  'partners.delete',
+];
+
+export interface SignedInSession {
+  cookie: string;
+  csrf: string;
+}
+
+/** Cria o usuário, autentica por HTTP e devolve o cookie e o token CSRF da sessão. */
+export async function signIn(
+  context: TestContext,
+  seed: UserSeed = {},
+): Promise<SignedInSession> {
+  const username = seed.username ?? 'maria.silva';
+  await seedUser(context, { password: STRONG_PASSWORD, ...seed, username });
+  const login = await request(context.app)
+    .post('/v1/auth/login')
+    .set('origin', DASHBOARD_ORIGIN)
+    .send({ username, password: STRONG_PASSWORD });
+  const cookie = (login.headers['set-cookie'] as unknown as string[])[0]!.split(
+    ';',
+  )[0]!;
+  const session = await request(context.app)
+    .get('/v1/auth/session')
+    .set('cookie', cookie);
+  return { cookie, csrf: session.headers['x-csrf-token'] as string };
 }
 
 /** Emite um código pelas mesmas regras usadas pelos casos de uso. */

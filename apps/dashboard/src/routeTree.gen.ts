@@ -14,7 +14,12 @@ import { Route as AtivarRouteImport } from './routes/ativar'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as RecuperarRouteImport } from './routes/recuperar'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
+import { Route as AuthenticatedCategoriasRouteImport } from './routes/_authenticated/categorias'
+import { Route as AuthenticatedPlanosRouteImport } from './routes/_authenticated/planos'
 import { Route as AuthenticatedSenhaRouteImport } from './routes/_authenticated/senha'
+import { Route as AuthenticatedParceirosIndexRouteImport } from './routes/_authenticated/parceiros/index'
+import { Route as AuthenticatedParceirosPartnerIdRouteImport } from './routes/_authenticated/parceiros/$partnerId'
+import { Route as AuthenticatedParceirosNovoRouteImport } from './routes/_authenticated/parceiros/novo'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
@@ -40,25 +45,63 @@ const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedCategoriasRoute = AuthenticatedCategoriasRouteImport.update({
+  id: '/categorias',
+  path: '/categorias',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPlanosRoute = AuthenticatedPlanosRouteImport.update({
+  id: '/planos',
+  path: '/planos',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedSenhaRoute = AuthenticatedSenhaRouteImport.update({
   id: '/senha',
   path: '/senha',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedParceirosIndexRoute =
+  AuthenticatedParceirosIndexRouteImport.update({
+    id: '/parceiros/',
+    path: '/parceiros/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedParceirosPartnerIdRoute =
+  AuthenticatedParceirosPartnerIdRouteImport.update({
+    id: '/parceiros/$partnerId',
+    path: '/parceiros/$partnerId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedParceirosNovoRoute =
+  AuthenticatedParceirosNovoRouteImport.update({
+    id: '/parceiros/novo',
+    path: '/parceiros/novo',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/ativar': typeof AtivarRoute
   '/login': typeof LoginRoute
   '/recuperar': typeof RecuperarRoute
+  '/categorias': typeof AuthenticatedCategoriasRoute
+  '/planos': typeof AuthenticatedPlanosRoute
   '/senha': typeof AuthenticatedSenhaRoute
+  '/parceiros/$partnerId': typeof AuthenticatedParceirosPartnerIdRoute
+  '/parceiros/novo': typeof AuthenticatedParceirosNovoRoute
+  '/parceiros/': typeof AuthenticatedParceirosIndexRoute
 }
 export interface FileRoutesByTo {
   '/ativar': typeof AtivarRoute
   '/login': typeof LoginRoute
   '/recuperar': typeof RecuperarRoute
+  '/categorias': typeof AuthenticatedCategoriasRoute
+  '/planos': typeof AuthenticatedPlanosRoute
   '/senha': typeof AuthenticatedSenhaRoute
   '/': typeof AuthenticatedIndexRoute
+  '/parceiros/$partnerId': typeof AuthenticatedParceirosPartnerIdRoute
+  '/parceiros/novo': typeof AuthenticatedParceirosNovoRoute
+  '/parceiros': typeof AuthenticatedParceirosIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -66,22 +109,52 @@ export interface FileRoutesById {
   '/ativar': typeof AtivarRoute
   '/login': typeof LoginRoute
   '/recuperar': typeof RecuperarRoute
+  '/_authenticated/categorias': typeof AuthenticatedCategoriasRoute
+  '/_authenticated/planos': typeof AuthenticatedPlanosRoute
   '/_authenticated/senha': typeof AuthenticatedSenhaRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/parceiros/$partnerId': typeof AuthenticatedParceirosPartnerIdRoute
+  '/_authenticated/parceiros/novo': typeof AuthenticatedParceirosNovoRoute
+  '/_authenticated/parceiros/': typeof AuthenticatedParceirosIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/ativar' | '/login' | '/recuperar' | '/senha'
+  fullPaths:
+    | '/'
+    | '/ativar'
+    | '/login'
+    | '/recuperar'
+    | '/categorias'
+    | '/planos'
+    | '/senha'
+    | '/parceiros/$partnerId'
+    | '/parceiros/novo'
+    | '/parceiros/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/ativar' | '/login' | '/recuperar' | '/senha' | '/'
+  to:
+    | '/ativar'
+    | '/login'
+    | '/recuperar'
+    | '/categorias'
+    | '/planos'
+    | '/senha'
+    | '/'
+    | '/parceiros/$partnerId'
+    | '/parceiros/novo'
+    | '/parceiros'
   id:
     | '__root__'
     | '/_authenticated'
     | '/ativar'
     | '/login'
     | '/recuperar'
+    | '/_authenticated/categorias'
+    | '/_authenticated/planos'
     | '/_authenticated/senha'
     | '/_authenticated/'
+    | '/_authenticated/parceiros/$partnerId'
+    | '/_authenticated/parceiros/novo'
+    | '/_authenticated/parceiros/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -128,6 +201,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/categorias': {
+      id: '/_authenticated/categorias'
+      path: '/categorias'
+      fullPath: '/categorias'
+      preLoaderRoute: typeof AuthenticatedCategoriasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/planos': {
+      id: '/_authenticated/planos'
+      path: '/planos'
+      fullPath: '/planos'
+      preLoaderRoute: typeof AuthenticatedPlanosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/senha': {
       id: '/_authenticated/senha'
       path: '/senha'
@@ -135,17 +222,48 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSenhaRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/parceiros/': {
+      id: '/_authenticated/parceiros/'
+      path: '/parceiros'
+      fullPath: '/parceiros/'
+      preLoaderRoute: typeof AuthenticatedParceirosIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/parceiros/$partnerId': {
+      id: '/_authenticated/parceiros/$partnerId'
+      path: '/parceiros/$partnerId'
+      fullPath: '/parceiros/$partnerId'
+      preLoaderRoute: typeof AuthenticatedParceirosPartnerIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/parceiros/novo': {
+      id: '/_authenticated/parceiros/novo'
+      path: '/parceiros/novo'
+      fullPath: '/parceiros/novo'
+      preLoaderRoute: typeof AuthenticatedParceirosNovoRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedCategoriasRoute: typeof AuthenticatedCategoriasRoute
+  AuthenticatedPlanosRoute: typeof AuthenticatedPlanosRoute
   AuthenticatedSenhaRoute: typeof AuthenticatedSenhaRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedParceirosPartnerIdRoute: typeof AuthenticatedParceirosPartnerIdRoute
+  AuthenticatedParceirosNovoRoute: typeof AuthenticatedParceirosNovoRoute
+  AuthenticatedParceirosIndexRoute: typeof AuthenticatedParceirosIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedCategoriasRoute: AuthenticatedCategoriasRoute,
+  AuthenticatedPlanosRoute: AuthenticatedPlanosRoute,
   AuthenticatedSenhaRoute: AuthenticatedSenhaRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+  AuthenticatedParceirosPartnerIdRoute: AuthenticatedParceirosPartnerIdRoute,
+  AuthenticatedParceirosNovoRoute: AuthenticatedParceirosNovoRoute,
+  AuthenticatedParceirosIndexRoute: AuthenticatedParceirosIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

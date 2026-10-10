@@ -412,6 +412,19 @@ Definido em `packages/contracts` e concedido por identificador estável:
 - Itens já persistidos carregam `id`; itens novos omitem `id`.
 - A ausência de item existente na representação completa solicita sua remoção. Se ele precisar ser preservado pelas regras de integridade, toda a operação é recusada com erro localizado.
 
+### Detalhes materializados na implementação (Incremento 3)
+
+- **Permissões por rota:** listar e consultar exigem `plans.view`, `categories.view` ou `partners.view`; criar, `plans.manage`, `categories.manage` ou `partners.create`; `PUT`, `partners.update`; publicar, desativar e voltar a rascunho, `partners.publish`; `DELETE`, `partners.delete`. Mutações exigem token CSRF e `If-Match`.
+- **Planos:** `POST` recebe `name` e `slug` opcional (gerado do nome, com sufixo numérico em colisões); `PATCH` recebe somente `name`. O `slug` é imutável.
+- **Parceiro:** `POST` aceita `slug` e `featured` opcionais; `PUT` exige a representação completa, inclusive `slug` e `featured`. Texto opcional em branco equivale a ausente. Contatos e unidades já persistidos carregam `id`; um `id` que não pertença ao parceiro resulta em `422`.
+- **Estados:** publicar aceita rascunho ou desativado (publicado devolve a representação atual); desativar exige publicado; `move-to-draft` exige desativado (transição inválida: `409 INVALID_RESOURCE_STATE`). `PUT` em parceiro publicado reaplica as condições de publicação (`422 PUBLICATION_REQUIREMENTS_NOT_MET`).
+- **Exclusão:** apenas rascunho nunca publicado; caso contrário `409 PROTECTED_RESOURCE`.
+- **Associações:** novas associações exigem categoria e plano ativos (`INACTIVE_REFERENCE`); associações já existentes são preservadas mesmo depois da desativação.
+- **`warnings`:** lista de códigos (`["POSSIBLE_DUPLICATE_PARTNER"]`), presente em criação e edição.
+- **Telefones:** normalizados para E.164 brasileiro (`+55DDNNNNNNNN`); CEP, somente dígitos; estado, somente `RJ`.
+- **Códigos de erro de campo adicionais:** `INVALID_PHONE_NUMBER`, `INVALID_URL`, `INVALID_POSTAL_CODE`, `INVALID_STATE`, `INVALID_SLUG`, `INVALID_PERCENTAGE`, `DUPLICATE_NAME`, `DUPLICATE_SLUG`, `DUPLICATE_PLAN_BENEFIT`, `UNKNOWN_REFERENCE`, `INACTIVE_REFERENCE` e `PUBLICATION_{DESCRIPTION,INSTRUCTIONS,CATEGORY,CONTACT,BENEFIT}_REQUIRED`. Os caminhos seguem a entrada (`units.0.address.postalCode`).
+- A mensagem de `INVALID_RESOURCE_STATE` e `PROTECTED_RESOURCE` pode substituir o `detail` padrão por texto de domínio.
+
 ## Limites e normalização das entradas
 
 | Campo | Limite |

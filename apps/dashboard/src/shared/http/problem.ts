@@ -49,5 +49,20 @@ export function describeError(error: unknown): string {
   if (problem?.code === 'CSRF_VALIDATION_FAILED') {
     return 'Sua sessão precisa ser atualizada. Recarregue a página e tente novamente.';
   }
+  if (problem?.code === 'RESOURCE_VERSION_CONFLICT') {
+    return 'Outra pessoa alterou este registro. Suas mudanças não foram salvas; carregue a versão atual para continuar.';
+  }
+  if (problem?.code === 'RESOURCE_NOT_FOUND') {
+    return 'O registro não existe mais. Atualize a listagem.';
+  }
+  if (
+    problem?.code === 'PROTECTED_RESOURCE' ||
+    problem?.code === 'INVALID_RESOURCE_STATE'
+  ) {
+    return problem.detail;
+  }
+  if (problem?.code === 'PUBLICATION_REQUIREMENTS_NOT_MET') {
+    return 'O parceiro ainda não atende às condições de publicação.';
+  }
   return 'Não foi possível concluir a operação. Tente novamente.';
 }

@@ -8,6 +8,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { SessionResponse } from '@flex/contracts';
 import { useLogout } from '../modules/auth/mutations/auth.mutations';
 import { Button } from '../shared/ui/button';
+import { Icon } from '../shared/ui/icon';
 import { navigation, visibleNavigation } from './navigation';
 
 function initials(fullName: string): string {
@@ -51,7 +52,9 @@ export function AppShell({ session }: { session: SessionResponse }) {
 
   const current = navigation
     .flatMap((group) => group.items.map((item) => ({ group, item })))
-    .find(({ item }) => item.to === pathname);
+    .find(
+      ({ item }) => pathname === item.to || pathname.startsWith(`${item.to}/`),
+    );
 
   return (
     <div className="grid min-h-dvh md:grid-cols-[var(--sidebar-width)_1fr]">
@@ -103,6 +106,7 @@ export function AppShell({ session }: { session: SessionResponse }) {
                       to={item.to}
                       onClick={() => setMenuOpenedAt(null)}
                     >
+                      <Icon name={item.icon} size="lg" />
                       {item.label}
                     </Link>
                   </li>

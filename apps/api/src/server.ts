@@ -12,6 +12,7 @@ const app = createApp({
   logger,
   checkReadiness: createDatabaseReadinessCheck(pool),
   identity: root.identity,
+  catalog: root.catalog,
   allowedOrigins: [env.DASHBOARD_ORIGIN],
   trustProxyHops: env.TRUST_PROXY_HOPS,
 });

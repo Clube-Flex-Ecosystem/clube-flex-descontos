@@ -1,5 +1,6 @@
 import { sql } from 'drizzle-orm';
 import {
+  boolean,
   check,
   index,
   integer,
@@ -118,4 +119,190 @@ export const auditEvents = pgTable(
     after: jsonb('after'),
   },
   (table) => [index('audit_events_occurred_at_idx').on(table.occurredAt)],
+);
+
+// ───────── Administração do catálogo (incremento 3) ─────────
+
+export const plans = pgTable(
+  'plans',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    name: text('name').notNull(),
+    // Nome sem acentos, caixa e espaços redundantes: chave de unicidade (RN-030).
+    nameKey: text('name_key').notNull().unique(),
+    // Identificador público estável (RN-040); não acompanha renomeações.
+    slug: text('slug').notNull().unique(),
+    status: text('status', { enum: ['active', 'inactive'] })
+      .notNull()
+      .default('active'),
+    version: integer('version').notNull().default(1),
+    createdAt: timestamp('created_at', { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    check('plans_status_check', sql`${table.status} in ('active', 'inactive')`),
+  ],
+);
+
+export const categories = pgTable(
+  'categories',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    name: text('name').notNull(),
+    nameKey: text('name_key').notNull().unique(),
+    status: text('status', { enum: ['active', 'inactive'] })
+      .notNull()
+      .default('active'),
+    version: integer('version').notNull().default(1),
+    createdAt: timestamp('created_at', { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    check(
+      'categories_status_check',
+      sql`${table.status} in ('active', 'inactive')`,
+    ),
+  ],
+);
+
+export const partners = pgTable(
+  'partners',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    name: text('name').notNull(),
+    // Nomes iguais são permitidos (RN-031); a chave serve apenas ao alerta de duplicidade.
+    nameKey: text('name_key').notNull(),
+    slug: text('slug').notNull().unique(),
+    description: text('description'),
+    usageInstructions: text('usage_instructions'),
+    website: text('website'),
+    featured: boolean('featured').notNull().default(false),
+    generalCoupon: text('general_coupon'),
+    status: text('status', { enum: ['draft', 'published', 'inactive'] })
+      .notNull()
+      .default('draft'),
+    // Preenchido na primeira publicação; define se o registro ainda é excluível.
+    firstPublishedAt: timestamp('first_published_at', { withTimezone: true }),
+    version: integer('version').notNull().default(1),
+    createdAt: timestamp('created_at', { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    check(
+      'partners_status_check',
+      sql`${table.status} in ('draft', 'published', 'inactive')`,
+    ),
+    index('partners_name_key_idx').on(table.nameKey),
+  ],
+);
+
+/** Identificadores públicos anteriores, preservados para o redirecionamento permanente. */
+export const partnerSlugHistory = pgTable('partner_slug_history', {
+  slug: text('slug').primaryKey(),
+  partnerId: uuid('partner_id')
+    .notNull()
+    .references(() => partners.id, { onDelete: 'cascade' }),
+  retiredAt: timestamp('retired_at', { withTimezone: true }).notNull(),
+});
+
+export const partnerCategories = pgTable(
+  'partner_categories',
+  {
+    partnerId: uuid('partner_id')
+      .notNull()
+      .references(() => partners.id, { onDelete: 'cascade' }),
+    categoryId: uuid('category_id')
+      .notNull()
+      .references(() => categories.id),
+  },
+  (table) => [primaryKey({ columns: [table.partnerId, table.categoryId] })],
+);
+
+export const partnerUnits = pgTable(
+  'partner_units',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    partnerId: uuid('partner_id')
+      .notNull()
+      .references(() => partners.id, { onDelete: 'cascade' }),
+    position: integer('position').notNull(),
+    name: text('name').notNull(),
+    postalCode: text('postal_code').notNull(),
+    street: text('street').notNull(),
+    number: text('number').notNull(),
+    complement: text('complement'),
+    neighborhood: text('neighborhood').notNull(),
+    city: text('city').notNull(),
+    state: text('state').notNull(),
+    openingHours: text('opening_hours'),
+    instructions: text('instructions'),
+    status: text('status', { enum: ['active', 'inactive'] })
+      .notNull()
+      .default('active'),
+  },
+  (table) => [
+    check(
+      'partner_units_status_check',
+      sql`${table.status} in ('active', 'inactive')`,
+    ),
+    index('partner_units_partner_id_idx').on(table.partnerId),
+  ],
+);
+
+/** Contatos do parceiro (`unitId` nulo) ou de uma de suas unidades. */
+export const partnerContacts = pgTable(
+  'partner_contacts',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    partnerId: uuid('partner_id')
+      .notNull()
+      .references(() => partners.id, { onDelete: 'cascade' }),
+    unitId: uuid('unit_id').references(() => partnerUnits.id, {
+      onDelete: 'cascade',
+    }),
+    position: integer('position').notNull(),
+    type: text('type', { enum: ['phone', 'whatsapp'] }).notNull(),
+    value: text('value').notNull(),
+    label: text('label'),
+  },
+  (table) => [
+    check(
+      'partner_contacts_type_check',
+      sql`${table.type} in ('phone', 'whatsapp')`,
+    ),
+    index('partner_contacts_partner_id_idx').on(table.partnerId),
+  ],
+);
+
+export const partnerBenefits = pgTable(
+  'partner_benefits',
+  {
+    partnerId: uuid('partner_id')
+      .notNull()
+      .references(() => partners.id, { onDelete: 'cascade' }),
+    planId: uuid('plan_id')
+      .notNull()
+      .references(() => plans.id),
+    discountPercentage: integer('discount_percentage').notNull(),
+    coupon: text('coupon'),
+  },
+  (table) => [
+    primaryKey({ columns: [table.partnerId, table.planId] }),
+    check(
+      'partner_benefits_percentage_check',
+      sql`${table.discountPercentage} between 1 and 100`,
+    ),
+  ],
 );

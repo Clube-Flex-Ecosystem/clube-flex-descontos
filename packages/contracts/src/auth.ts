@@ -1,33 +1,12 @@
 import { z } from 'zod';
 import { permissionSchema } from './permissions';
+import { requiredText } from './text';
 
 export const PASSWORD_MIN_LENGTH = 15;
 export const PASSWORD_MAX_LENGTH = 128;
 
-/** Códigos estáveis de erro de campo; consumidores decidem pelo código, nunca pelo texto. */
-export const fieldErrorMessages = {
-  REQUIRED: 'Preencha este campo.',
-  INVALID_VALUE: 'Valor inválido.',
-  PASSWORD_TOO_SHORT: `A senha deve ter ao menos ${PASSWORD_MIN_LENGTH} caracteres.`,
-  PASSWORD_TOO_LONG: `A senha deve ter no máximo ${PASSWORD_MAX_LENGTH} caracteres.`,
-  PASSWORD_TOO_COMMON:
-    'Esta senha é muito comum ou previsível. Escolha outra, como uma frase longa.',
-  PASSWORD_CONFIRMATION_MISMATCH: 'A confirmação não confere com a nova senha.',
-  INVALID_CURRENT_PASSWORD: 'A senha atual está incorreta.',
-  INVALID_ACCESS_CODE: 'Código inválido, expirado ou já utilizado.',
-} as const;
-
-export type FieldErrorCode = keyof typeof fieldErrorMessages;
-
 // Comprimento medido em caracteres Unicode, não em unidades UTF-16.
 const length = (value: string) => [...value].length;
-
-const requiredText = (max: number) =>
-  z
-    .string({ error: 'REQUIRED' })
-    .trim()
-    .min(1, { error: 'REQUIRED' })
-    .max(max, { error: 'INVALID_VALUE' });
 
 /**
  * Regras de tamanho para validação antecipada nos formulários. Senhas preservam espaços e
