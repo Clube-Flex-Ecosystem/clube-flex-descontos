@@ -12,6 +12,9 @@ RUN pnpm install --frozen-lockfile --filter @flex/dashboard...
 COPY tsconfig.base.json ./
 COPY packages/contracts packages/contracts
 COPY apps/dashboard apps/dashboard
+# Endereço público da API embutido no bundle (variável de build do Vite).
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
 RUN pnpm --filter @flex/dashboard build
 
 FROM nginx:1.29-alpine

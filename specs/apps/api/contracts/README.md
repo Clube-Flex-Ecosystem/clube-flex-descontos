@@ -277,6 +277,81 @@ Resposta de `GET /v1/auth/session`:
 
 O e-mail é omitido quando não estiver cadastrado. A resposta sempre representa as permissões atuais, não uma cópia congelada no início da sessão.
 
+### Detalhes materializados na implementação (Incremento 2)
+
+Entradas e saídas:
+
+| Operação | Corpo da requisição | Resposta |
+| --- | --- | --- |
+| `POST /v1/auth/login` | `username`, `password` | `204` e cookie `__Host-session` |
+| `POST /v1/auth/logout` | vazio | `204` |
+| `POST /v1/auth/activate` | `code`, `newPassword`, `newPasswordConfirmation` | `204`, sem sessão |
+| `POST /v1/auth/recovery-requests` | `username` | `202` com `{ "message": "..." }` neutro |
+| `POST /v1/auth/recover` | `code`, `newPassword`, `newPasswordConfirmation` | `204`, sem sessão |
+| `PUT /v1/auth/password` | `currentPassword`, `newPassword`, `newPasswordConfirmation` | `204` |
+
+- O nome de usuário é comparado sem diferenciar maiúsculas e minúsculas.
+- Respostas de `/v1/auth` usam `Cache-Control: no-store`.
+- O código de acesso tem 16 caracteres do alfabeto Crockford exibidos em quatro grupos (`ABCD-EFGH-JKMN-PQRS`). A comparação ignora caixa e separadores. Ativação e recuperação enviam somente o código, sem nome de usuário.
+
+Cookie de sessão:
+
+- Nome `__Host-session`; `HttpOnly`, `Secure`, `SameSite=Strict`, `Path=/`, sem `Domain`.
+- Validade do cookie igual ao limite absoluto de 24 horas; a expiração por inatividade de 8 horas é aplicada pelo servidor.
+- Cada login emite um novo identificador e encerra a sessão anterior enviada pelo mesmo navegador.
+
+CSRF e origem:
+
+- `GET /v1/auth/session` devolve o token CSRF da sessão no cabeçalho `X-CSRF-Token`; o corpo permanece conforme o contrato acima.
+- Toda operação mutável autenticada envia esse mesmo valor em `X-CSRF-Token`; a ausência ou divergência retorna `403 CSRF_VALIDATION_FAILED`.
+- Logout sem sessão válida permanece idempotente e não exige token.
+- Operações mutáveis em `/v1/auth` recusam `Origin` (ou `Referer`) fora da origem do dashboard com `403 CSRF_VALIDATION_FAILED`.
+- O CORS libera apenas a origem do dashboard, com credenciais, e expõe `X-CSRF-Token`, `X-Request-Id`, `Retry-After` e `ETag`.
+
+Erros de campo (`422 VALIDATION_ERROR`, `errors[].code`):
+
+| Código | Campo |
+| --- | --- |
+| `REQUIRED`, `INVALID_VALUE` | qualquer |
+| `PASSWORD_TOO_SHORT`, `PASSWORD_TOO_LONG`, `PASSWORD_TOO_COMMON` | `newPassword` |
+| `PASSWORD_CONFIRMATION_MISMATCH` | `newPasswordConfirmation` |
+| `INVALID_CURRENT_PASSWORD` | `currentPassword` |
+| `INVALID_ACCESS_CODE` | `code` (inexistente, expirado, usado, invalidado, de outra finalidade ou de conta indisponível) |
+
+- Uma senha recusada pela política depois de o código ser identificado consome uma das cinco tentativas do código. Divergência de confirmação e erros de formato não consomem tentativas.
+- Credenciais incorretas continuam em `401 INVALID_CREDENTIALS`; a senha atual incorreta na alteração autenticada é um erro de campo, para não ser confundida com sessão expirada.
+
+Limitação de tentativas (progressiva, em memória, sem bloqueio permanente; `429 RATE_LIMIT_EXCEEDED` com `Retry-After`):
+
+| Escopo | Tentativas livres | Bloqueio |
+| --- | --- | --- |
+| Login por nome de usuário informado | 5 | 30 s, dobrando até 15 min |
+| Login por IP | 20 | 30 s, dobrando até 15 min |
+| Ativação e recuperação por IP | 10 | 30 s, dobrando até 15 min |
+| Solicitação de recuperação por usuário | 3 | 30 s, dobrando até 15 min |
+| Solicitação de recuperação por IP | 10 | 30 s, dobrando até 15 min |
+
+- O histórico é esquecido após 15 minutos sem tentativas; login bem-sucedido zera o contador do usuário.
+- O IP só é considerado quando `TRUST_PROXY_HOPS` informa proxies confiáveis; não é registrado nos logs.
+
+### Catálogo de permissões (identificadores)
+
+Definido em `packages/contracts` e concedido por identificador estável:
+
+| Área | Identificadores |
+| --- | --- |
+| Planos | `plans.view`, `plans.manage` |
+| Categorias | `categories.view`, `categories.manage` |
+| Parceiros | `partners.view`, `partners.create`, `partners.update`, `partners.publish`, `partners.delete` |
+| Leads | `leads.view-own`, `leads.view-all`, `leads.create`, `leads.update`, `leads.change-stage`, `leads.assign`, `leads.delete` |
+| Origens | `sources.view`, `sources.manage` |
+| Usuários | `users.view`, `users.manage`, `users.set-status`, `users.reset-access` |
+| Permissões | `permissions.view`, `permissions.manage` |
+| Auditoria | `audit.view` |
+
+- `users.manage` cobre criar e editar; `users.set-status` cobre ativar e desativar; `users.reset-access` cobre emitir códigos de acesso.
+- `partners.publish` cobre publicar, desativar e republicar; `partners.delete` cobre excluir registros elegíveis.
+
 ## Administração do catálogo
 
 ### Planos

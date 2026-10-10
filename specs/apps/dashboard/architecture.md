@@ -13,6 +13,8 @@
 - React Hook Form para gerenciamento dos formulários.
 - Zod Resolver para integrar os esquemas Zod à validação dos formulários.
 - Axios como cliente HTTP.
+- Tailwind CSS 4 como camada de estilos, com tokens em `src/styles/tailwind.css` e utilidades aplicadas diretamente nos componentes.
+- Metadata do documento (título) declarada no `head` de cada rota e renderizada por `HeadContent`, sem efeitos manuais.
 - SPA não indexável.
 - Container Docker próprio publicado pelo Coolify.
 - Consumo exclusivo da API central; sem acesso direto ao PostgreSQL.

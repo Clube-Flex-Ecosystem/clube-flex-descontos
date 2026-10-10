@@ -19,14 +19,15 @@ Esta pasta é a fonte de referência para o planejamento e a futura implementaç
 | 11 — Implementação | [delivery/implementation-plan.md](delivery/implementation-plan.md) | Aprovada |
 | 12 — Revisão | [review.md](review.md) | Aprovada |
 
-## UI/UX em validação
+## Fonte da interface
 
-- [Fundamentos compartilhados](apps/ui-foundations.md)
-- [Design system proposto do dashboard](apps/dashboard/design-system/README.md)
+- [Fundamentos compartilhados](apps/ui-foundations.md): tokens, escalas, tipografia e precedência entre fontes.
+- [Design system do dashboard](apps/dashboard/design-system/README.md)
 - [Protótipo navegável do dashboard](prototypes/dashboard/index.html)
 - [Protótipo navegável do catálogo](prototypes/catalog/index.html)
+- Tokens: [`apps/dashboard/src/styles/tailwind.css`](../apps/dashboard/src/styles/tailwind.css)
 
-Os protótipos são referências demonstrativas e não constituem implementação das aplicações.
+Os protótipos são a referência de construção da interface: a implementação reproduz sua estrutura, componentes e estados. Eles usam dados ilustrativos e não definem contratos, regras de negócio nem arquitetura.
 
 ## Convenções
 

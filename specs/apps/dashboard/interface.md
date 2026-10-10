@@ -20,8 +20,8 @@ A navegação lateral é agrupada por responsabilidade:
 ## Direção visual
 
 - Aparência funcional e menos decorativa que o catálogo público.
-- `DM Sans` é a tipografia predominante; `Fraunces` pode aparecer apenas em títulos principais.
-- A identidade de cores pode ser compartilhada com o catálogo, com prioridade para legibilidade, densidade controlada e estados operacionais claros.
+- Tipografia, paleta e escalas vêm dos [fundamentos de interface](../ui-foundations.md) e do arquivo de tokens; `Geist` é a família única.
+- A estrutura de telas, componentes e estados segue o [protótipo do dashboard](../../prototypes/dashboard/index.html), com prioridade para legibilidade, densidade controlada e estados operacionais claros.
 - O dashboard não possui compromisso formal WCAG nesta entrega, mas mantém práticas básicas de teclado, foco, rótulos e contraste.
 
 ## Acesso sem sessão

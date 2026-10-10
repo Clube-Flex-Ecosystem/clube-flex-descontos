@@ -5,31 +5,14 @@
 
 ## Direção visual
 
-- Linguagem editorial, acolhedora e leve, com amplo espaço em branco.
-- Fundo principal creme, textos em tinta escura, verde como cor institucional e coral como destaque.
-- `DM Sans` para leitura e `Fraunces` para títulos e chamadas.
+- Linguagem editorial e acolhedora, com amplo espaço em branco, construída sobre os tokens e a tipografia compartilhados em [fundamentos de interface](../ui-foundations.md).
+- Paleta e tipografia: fundo neutro claro, texto navy, laranja como cor de ação e destaque, navy como superfície escura e `Geist` como família única. Os valores vêm do arquivo de tokens, não são repetidos aqui.
+- A estrutura e os componentes seguem o [protótipo do catálogo](../../prototypes/catalog/index.html).
 - A experiência móvel é prioritária.
 - O catálogo deve comunicar descontos em diferentes áreas e evitar aparência ou linguagem que o confunda com plano de saúde.
+- Texto laranja sobre fundo claro usa `accent-foreground`; texto pequeno sobre ações usa `primary` (contraste AA). Animações respeitam `prefers-reduced-motion`.
 
-### Paleta inicial
-
-| Token | Valor | Uso principal |
-| --- | --- | --- |
-| `cream-50` | `#fbf8f2` | Fundo principal |
-| `cream-100` | `#f4efe6` | Superfícies secundárias |
-| `cream-200` | `#e8e1d4` | Bordas e divisões |
-| `cream-300` | `#d4cbb8` | Elementos neutros |
-| `ink` | `#141414` | Texto principal |
-| `ink-soft` | `#2a2a2a` | Texto secundário forte |
-| `ink-muted` | `#6b6b6b` | Texto auxiliar |
-| `forest` | `#0b3d2e` | Ações e superfícies institucionais |
-| `forest-dark` | `#072b20` | Estados escuros |
-| `forest-light` | `#155a45` | Variação institucional |
-| `coral` | `#dd5a37` | Destaques grandes e decoração |
-| `coral-dark` | `#b8482c` | Texto e controles sobre fundo claro |
-| `coral-light` | `#e8704f` | Variação decorativa |
-
-O coral original não deve ser usado em texto pequeno sobre o fundo creme; `coral-dark` atende melhor ao contraste necessário. Animações respeitam `prefers-reduced-motion`.
+> **Revisão de 2026-10-10:** a paleta cream/forest/coral e as famílias DM Sans/Fraunces aprovadas anteriormente foram substituídas, por decisão do responsável, pela paleta e pela tipografia do arquivo de tokens. A copy aprovada permanece inalterada.
 
 ## Estrutura da página inicial
 

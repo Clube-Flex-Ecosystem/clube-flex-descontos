@@ -9,7 +9,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "tsx --env-file=.env src/migrate.ts"
+    "db:migrate": "tsx --env-file=.env src/migrate.ts",
+    "bootstrap": "tsx --env-file=.env src/bootstrap.ts"
   },
   "dependencies": {
     "drizzle-orm": "^0.45.4",

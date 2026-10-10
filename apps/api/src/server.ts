@@ -1,16 +1,19 @@
 import { loadEnv } from './config/env';
 import { createApp } from './http/app';
-import { createPool } from './infrastructure/database/drizzle/client';
 import { createDatabaseReadinessCheck } from './infrastructure/database/readiness';
 import { createLogger } from './infrastructure/logger/logger';
+import { createRuntime } from './runtime';
 
 const env = loadEnv();
 const logger = createLogger(env);
-const pool = createPool(env.DATABASE_URL);
+const { pool, root } = createRuntime(env, logger);
 
 const app = createApp({
   logger,
   checkReadiness: createDatabaseReadinessCheck(pool),
+  identity: root.identity,
+  allowedOrigins: [env.DASHBOARD_ORIGIN],
+  trustProxyHops: env.TRUST_PROXY_HOPS,
 });
 
 const server = app.listen(env.PORT, () => {

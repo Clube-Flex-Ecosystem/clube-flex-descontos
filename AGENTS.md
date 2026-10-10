@@ -12,6 +12,8 @@ Antes de realizar alterações, consulte:
 - `specs/quality/strategy.md`: testes e critérios de qualidade.
 - `specs/delivery/implementation-plan.md`: planejamento das entregas.
 - `specs/adr/`: decisões arquiteturais aprovadas.
+- `specs/prototypes/`: protótipos navegáveis, fonte visual e estrutural para construir a UI (layout, componentes, estados e interações).
+- `apps/dashboard/src/styles/tailwind.css`: tokens de cor, tipografia, escalas, raios e sombras de catálogo e dashboard.
 
 Leia os documentos relevantes à tarefa, sem carregar desnecessariamente toda a documentação.
 
@@ -21,6 +23,7 @@ Leia os documentos relevantes à tarefa, sem carregar desnecessariamente toda a 
 - Não introduza dependências ou abstrações sem justificativa.
 - Não duplique regras de negócio ou contratos.
 - Mantenha as responsabilidades dos módulos separadas.
+- Construa a UI a partir do protótipo correspondente, aplicando os tokens com Tailwind; não introduza valores visuais literais. Em conflito, prevalecem a especificação de interface, depois o protótipo e por fim os tokens (ver `specs/apps/ui-foundations.md`).
 - Priorize simplicidade, legibilidade e manutenção.
 - Não invente requisitos para preencher lacunas.
 - Solicite esclarecimentos para decisões bloqueantes.

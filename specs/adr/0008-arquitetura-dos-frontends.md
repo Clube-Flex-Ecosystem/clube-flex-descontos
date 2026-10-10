@@ -19,7 +19,7 @@ O catálogo prioriza conteúdo SSR e baixo JavaScript, enquanto o dashboard poss
 - Renderizar o detalhe do parceiro em rota Astro própria.
 - Encapsular Axios em funções públicas por feature.
 - Usar React Hook Form, Zod Resolver e `useReducer` no assistente.
-- Usar Tailwind com os tokens de marca definidos no CSS global.
+- Usar Tailwind com os tokens de marca de `tailwind.css`, os mesmos do dashboard (revisão de 2026-10-10).
 
 ### Dashboard
 
@@ -28,6 +28,8 @@ O catálogo prioriza conteúdo SSR e baixo JavaScript, enquanto o dashboard poss
 - Separar pages, componentes, API, queries, mutations, cache e schemas quando houver necessidade real.
 - Usar TanStack Query como fonte do estado remoto no cliente e atualizar o cache a partir das respostas completas da API.
 - Usar React Hook Form, Zod Resolver e Axios.
+- Usar Tailwind CSS com os tokens de `src/styles/tailwind.css` (revisão de 2026-10-10).
+- Declarar o título do documento no `head` das rotas do TanStack Router (revisão de 2026-10-10).
 - Compartilhar somente infraestrutura e UI realmente reutilizadas.
 
 ### Limites comuns
@@ -50,3 +52,10 @@ O catálogo prioriza conteúdo SSR e baixo JavaScript, enquanto o dashboard poss
 - Catálogo e dashboard adotam estratégias de estado diferentes.
 - Módulos exigem disciplina para não acessar detalhes internos uns dos outros.
 - Alguns contratos visuais existem apenas no frontend e precisam ser adaptados aos contratos HTTP.
+
+## Revisão 2026-10-10
+
+- **Estilos e tokens:** o responsável definiu o `index.css` fornecido como paleta principal de catálogo e dashboard. Ele passa a ser `apps/dashboard/src/styles/tailwind.css`, fonte de verdade dos tokens. O catálogo adota o mesmo bloco no incremento 4; um local compartilhado só será criado mediante decisão arquitetural.
+- **Dashboard com Tailwind:** a decisão anterior de não definir biblioteca de estilos para o dashboard foi substituída pelo uso de Tailwind CSS 4.
+- **Metadata:** o título deixa de ser atualizado por `useEffect` e passa a ser declarado no `head` de cada rota.
+- **Protótipos:** passam a ser a fonte de construção da UI (ver [fundamentos de interface](../apps/ui-foundations.md)).

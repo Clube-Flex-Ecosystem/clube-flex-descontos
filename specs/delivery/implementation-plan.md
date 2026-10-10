@@ -42,7 +42,7 @@ As três aplicações compilam, a API conecta ao banco migrado, os checks obriga
 Executado em 2026-10-10. Decisões tomadas durante a execução, dentro do escopo aprovado:
 
 - **Migration inicial:** `0000_baseline` não cria tabelas; estabelece o histórico versionado. As tabelas de domínio nascem nos incrementos que as consomem.
-- **Dependências adiadas até o consumidor real:** Tailwind, TanStack Router/Query, React Hook Form, Axios e a integração React do Astro entram nos incrementos 2 e 4. Os tokens de marca do `global.css` também ainda não existem nas especificações.
+- **Dependências adiadas até o consumidor real:** TanStack Router/Query, React Hook Form, Axios e a integração React do Astro entram nos incrementos 2 e 4; Tailwind entra no dashboard no incremento 2 e no catálogo no incremento 4. Os tokens de marca ainda não existiam nas especificações; passaram a vir do `tailwind.css` (ver incremento 2).
 - **TypeScript 6:** typescript-eslint e `astro check` ainda não suportam o TypeScript 7.
 - **Contratos:** `@flex/contracts` é consumido como TypeScript e embutido no bundle da API.
 - **Health checks:** `/v1/health/live` e `/v1/health/ready` na API; `/health` no catálogo e no dashboard (ver contratos).
@@ -78,6 +78,27 @@ Permitir o primeiro acesso seguro e estabelecer a autorização usada pelos incr
 ### Critério de saída
 
 O primeiro administrador consegue ativar a conta, autenticar-se e acessar somente operações permitidas. Sessão, CSRF e revogação estão cobertos por integração.
+
+### Registro de execução
+
+Executado em 2026-10-10. Decisões tomadas durante a execução, dentro do escopo aprovado e detalhadas nos [contratos](../apps/api/contracts/README.md):
+
+- **Argon2id sem dependência nova:** usa `crypto.argon2` do Node 24. O hash guarda seus parâmetros (PHC), de modo que uma recalibração na VPS não invalida senhas existentes. Os parâmetros vêm do ambiente, com o mínimo da OWASP como padrão.
+- **Senhas comuns:** a recusa usa uma lista curta embutida e a detecção de padrões repetidos. A verificação contra bases de vazamentos exige serviço externo e não foi implementada.
+- **E-mail:** a API chama diretamente a API HTTP do Resend por `fetch`, sem SDK. Sem `RESEND_API_KEY`, toda entrega cai no fluxo manual previsto (código exibido uma única vez).
+- **Token CSRF:** derivado da sessão (HMAC do identificador, sem novo armazenamento) e entregue no cabeçalho `X-CSRF-Token` da consulta da sessão, preservando o corpo contratado.
+- **Limitação de tentativas:** limitador progressivo em memória, adequado a uma única instância da API.
+- **Estilos do dashboard:** Tailwind CSS 4 com os tokens do `index.css` do responsável, hoje em `apps/dashboard/src/styles/tailwind.css` (paleta laranja/navy e Geist, substituindo a paleta verde proposta). Os protótipos foram realinhados aos tokens e passam a ser a fonte de construção da UI.
+- **Metadata de rota:** o título do documento é declarado no `head` de cada rota (`HeadContent` na raiz), sem `useEffect`.
+- **Auditoria:** a tabela de eventos nasce aqui para registrar o bootstrap (`user.created`, `user.permissions.updated`, `user.access-code.issued`); imutabilidade reforçada no banco, consulta e filtros ficam para o incremento 7.
+- **Catálogo de permissões:** identificadores definidos em `packages/contracts` (ver contratos).
+- **Navegação do dashboard:** somente o grupo Conta existe; os demais grupos entram com seus módulos.
+
+Pendências conhecidas, sem bloqueio para os próximos incrementos:
+
+- **Troca de senha obrigatória após redefinição administrativa (`CA-RF-015-11`):** o fluxo aprovado define a senha pelo próprio usuário com o código, e a especificação não descreve como o estado `passwordChangeRequired` é atribuído ou removido. Deve ser resolvido junto à emissão administrativa de códigos, no incremento 7.
+- **Limpeza de sessões e códigos expirados:** registros expirados são recusados, mas ainda não removidos (encaminhamento da arquitetura da API).
+- **E2E e axe:** a jornada `autenticar no dashboard` da suíte E2E entra no incremento 8; o fluxo foi verificado manualmente em navegador durante a execução.
 
 ## Incremento 3 — Administração do catálogo
 

@@ -7,7 +7,7 @@
 
 - TypeScript.
 - Astro.
-- Tailwind para estilos, preservando os tokens aprovados em `global.css`.
+- Tailwind para estilos, com os tokens definidos em `tailwind.css` (ver [fundamentos de interface](../ui-foundations.md)).
 - Renderização no servidor para páginas públicas dinâmicas.
 - Adaptador oficial Node do Astro.
 - Container Docker próprio publicado pelo Coolify.
@@ -61,7 +61,7 @@ src/
     utils/
     config/
   styles/
-    global.css
+    tailwind.css
 ```
 
 - A árvore define limites; diretórios sem arquivos reais não devem ser criados antecipadamente.

@@ -2,7 +2,7 @@ import { defineConfig } from 'tsup';
 
 // `@flex/contracts` é publicado como TypeScript; por isso é embutido no bundle.
 export default defineConfig({
-  entry: ['src/server.ts', 'src/migrate.ts'],
+  entry: ['src/server.ts', 'src/migrate.ts', 'src/bootstrap.ts'],
   format: ['esm'],
   target: 'node24',
   platform: 'node',

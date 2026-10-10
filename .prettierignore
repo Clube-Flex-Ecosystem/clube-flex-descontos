@@ -3,3 +3,4 @@ dist
 .astro
 apps/api/drizzle/meta
 specs
+apps/dashboard/src/routeTree.gen.ts

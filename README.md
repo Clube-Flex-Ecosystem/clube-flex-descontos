@@ -23,9 +23,32 @@ pnpm db:up                         # PostgreSQL de desenvolvimento (5434) e de t
 cp apps/api/.env.example apps/api/.env
 pnpm --filter @flex/api db:migrate # aplica as migrations
 pnpm dev:api                       # http://localhost:3000/v1/health/ready
-pnpm dev:dashboard
+pnpm dev:dashboard                 # http://localhost:5173
 pnpm dev:catalog
 ```
+
+### Primeiro administrador
+
+O primeiro acesso é criado por um comando local, nunca por HTTP. Ele recusa a execução se já existir qualquer usuário e não recebe nem define senha:
+
+```bash
+pnpm --filter @flex/api bootstrap --name "Nome Completo" [--email email@exemplo.org]
+# em produção, no console do container: node dist/bootstrap.js --name "Nome Completo"
+```
+
+Com e-mail, o código de ativação é enviado automaticamente. Sem e-mail (ou sem `RESEND_API_KEY`), o código é exibido uma única vez no terminal. A pessoa define a própria senha em `/ativar` no dashboard.
+
+### Variáveis de ambiente
+
+| Variável                                                   | Aplicação | Descrição                                                                                                   |
+| ---------------------------------------------------------- | --------- | ----------------------------------------------------------------------------------------------------------- |
+| `DASHBOARD_ORIGIN`                                         | API       | Origem do dashboard (CORS, CSRF e links de e-mail). Obrigatória em produção; padrão `http://localhost:5173` |
+| `TRUST_PROXY_HOPS`                                         | API       | Proxies confiáveis à frente da API (Coolify). `0` ignora `X-Forwarded-For`                                  |
+| `RESEND_API_KEY`, `EMAIL_FROM`                             | API       | E-mails transacionais; sem chave, a entrega é manual                                                        |
+| `ARGON2_MEMORY_KIB`, `ARGON2_PASSES`, `ARGON2_PARALLELISM` | API       | Custo do Argon2id (padrão: mínimo da OWASP), a calibrar na VPS                                              |
+| `VITE_API_URL`                                             | Dashboard | Endereço da API; padrão `http://localhost:3000`. Em Docker, é um `--build-arg`                              |
+
+O cookie de sessão usa o prefixo `__Host-`, que exige `Secure`; navegadores aceitam esse cookie em `http://localhost`, mas não em outros hosts sem HTTPS.
 
 ## Verificações
 
