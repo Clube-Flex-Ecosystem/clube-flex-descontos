@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { BrandMark } from '../../../shared/ui/brand-mark';
 
 interface AuthLayoutProps {
   title: string;
@@ -12,16 +13,13 @@ export function AuthLayout({ title, description, children }: AuthLayoutProps) {
     <main className="grid min-h-dvh place-items-center px-4 py-6" id="content">
       <div className="grid w-full max-w-100 gap-5">
         <div className="flex items-center gap-2.5">
-          <span
-            className="grid size-8 place-items-center rounded-md border border-primary-edge bg-linear-to-br from-brand-gradient-from to-brand-gradient-to font-bold text-primary-foreground shadow-brand-raised"
-            aria-hidden="true"
-          >
-            F
+          <BrandMark />
+          <span className="t-caption font-normal text-muted-foreground">
+            Painel interno
           </span>
-          <strong className="t-section">Clube Flex</strong>
         </div>
         <section
-          className="grid gap-4 rounded-xl border border-border bg-surface p-6 shadow-sm"
+          className="grid gap-4 rounded-card border border-border bg-surface p-6"
           aria-labelledby="auth-title"
         >
           <div className="grid gap-1.5">
@@ -29,7 +27,7 @@ export function AuthLayout({ title, description, children }: AuthLayoutProps) {
               {title}
             </h1>
             {description ? (
-              <p className="t-small muted">{description}</p>
+              <p className="t-body-small muted">{description}</p>
             ) : null}
           </div>
           {children}

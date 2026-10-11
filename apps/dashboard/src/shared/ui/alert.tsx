@@ -12,13 +12,13 @@ interface AlertProps {
 }
 
 const alertVariants = tv({
-  base: 't-small flex items-start gap-2 rounded-md px-3 py-2.5 text-foreground',
+  base: 't-body-small flex items-start gap-2.5 rounded-card px-3 py-2.5 text-foreground',
   variants: {
     tone: {
-      danger: 'bg-danger-soft',
-      success: 'bg-success-soft',
-      info: 'bg-info-soft',
-      warning: 'bg-warning-soft',
+      danger: 'bg-danger-soft [&>svg]:text-danger',
+      success: 'bg-success-soft [&>svg]:text-success',
+      info: 'bg-info-soft [&>svg]:text-info',
+      warning: 'bg-warning-soft [&>svg]:text-warning',
     },
   },
 });

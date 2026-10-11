@@ -20,11 +20,11 @@ function Home() {
 
   return (
     <>
-      <div className="mb-5">
+      <div className="mb-4">
         <h1 className="t-page">Olá, {current.user.fullName.split(' ')[0]}</h1>
       </div>
       <section
-        className="grid justify-items-start gap-1.5 rounded-xl border border-border bg-surface p-6 shadow-sm"
+        className="grid justify-items-start gap-1.5 rounded-card border border-border bg-surface p-6"
         aria-labelledby="home-title"
       >
         {current.permissions.length === 0 ? (

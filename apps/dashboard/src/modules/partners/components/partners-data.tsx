@@ -5,6 +5,7 @@ import { CellMain, DataTable } from '../../../shared/ui/data-table';
 import { EmptyState } from '../../../shared/ui/page-parts';
 import { ListCard } from '../../../shared/ui/list-card';
 import { RowMenu, type RowMenuItem } from '../../../shared/ui/row-menu';
+import { entityInitialsOf } from '../../../shared/utils/initials';
 import { PartnerStatusBadge } from './partner-status-badge';
 
 interface PartnersDataProps {
@@ -28,15 +29,6 @@ interface PartnersDataProps {
   onDeactivate: (partner: Partner) => void;
   onDelete: (partner: Partner) => void;
 }
-
-const initials = (name: string) =>
-  name
-    .split(/\s+/)
-    .filter((word) => word.length > 2 || /^\p{Lu}/u.test(word))
-    .slice(0, 2)
-    .map((word) => word[0])
-    .join('')
-    .toUpperCase();
 
 /** Apresentação da lista: recebe dados e callbacks, sem buscar estado remoto. */
 export function PartnersData({
@@ -67,7 +59,7 @@ export function PartnersData({
         title="Nenhum parceiro cadastrado"
         action={
           canCreate ? (
-            <Button variant="primary" compact onClick={onCreate}>
+            <Button compact onClick={onCreate}>
               Novo parceiro
             </Button>
           ) : undefined
@@ -94,7 +86,10 @@ export function PartnersData({
     if (canPublish && partner.status === 'inactive') {
       items.push(
         { label: 'Republicar', onSelect: () => onRepublish(partner) },
-        { label: 'Enviar para rascunho', onSelect: () => onMoveToDraft(partner) },
+        {
+          label: 'Enviar para rascunho',
+          onSelect: () => onMoveToDraft(partner),
+        },
       );
     }
     if (canPublish && partner.status === 'published') {
@@ -120,9 +115,17 @@ export function PartnersData({
     <ListCard
       tabs={[
         { value: '', label: 'Todos', count: statusCount('') },
-        { value: 'published', label: 'Publicados', count: statusCount('published') },
+        {
+          value: 'published',
+          label: 'Publicados',
+          count: statusCount('published'),
+        },
         { value: 'draft', label: 'Rascunhos', count: statusCount('draft') },
-        { value: 'inactive', label: 'Desativados', count: statusCount('inactive') },
+        {
+          value: 'inactive',
+          label: 'Desativados',
+          count: statusCount('inactive'),
+        },
       ]}
       activeTab={activeStatus}
       onTabChange={onStatusChange}
@@ -146,10 +149,11 @@ export function PartnersData({
               <CellMain
                 title={partner.name}
                 subtitle={`/${partner.slug}`}
-                mark={initials(partner.name)}
+                mark={entityInitialsOf(partner.name)}
+                mono
                 extra={
                   partner.featured ? (
-                    <Badge tone="outline" icon="star">
+                    <Badge tone="tag" icon="star">
                       Destaque
                     </Badge>
                   ) : null

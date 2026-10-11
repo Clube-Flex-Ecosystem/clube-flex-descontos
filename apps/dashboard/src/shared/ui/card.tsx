@@ -1,49 +1,45 @@
 import type { ReactNode } from 'react';
 
-/** Cartão do protótipo; `danger` destaca zonas de ações destrutivas. */
-export function Card({
-  danger = false,
-  children,
-}: {
-  danger?: boolean;
-  children: ReactNode;
-}) {
+/** Painel plano: separado por borda, sem sombra. */
+export function Card({ children }: { children: ReactNode }) {
   return (
-    <section
-      className={`rounded-xl border bg-surface shadow-sm ${danger ? 'border-danger/30' : 'border-border'}`}
-    >
+    <section className="rounded-card border border-border bg-surface">
       {children}
     </section>
   );
 }
 
-/** Cabeçalho do cartão: título, descrição opcional e conteúdo à direita. */
+/**
+ * Coluna de uma página de detalhe: cartões independentes, um por seção, sem
+ * aninhamento (cartão dentro de cartão é proibido).
+ */
+export function CardStack({ children }: { children: ReactNode }) {
+  return <div className="grid content-start gap-4">{children}</div>;
+}
+
+/** Cabeçalho do painel: título, descrição opcional e conteúdo à direita. */
 export function CardHead({
   title,
   description,
   aside,
-  danger = false,
   divided = true,
   headingLevel: Heading = 'h2',
 }: {
   title: string;
   description?: string;
   aside?: ReactNode;
-  danger?: boolean;
   /** Linha divisória abaixo, quando o cabeçalho é seguido por conteúdo. */
   divided?: boolean;
   headingLevel?: 'h2' | 'h3';
 }) {
   return (
     <header
-      className={`flex items-center justify-between gap-3 px-4 py-3.5 ${divided ? 'border-b border-border' : ''}`}
+      className={`flex items-center justify-between gap-3 px-4 py-3 ${divided ? 'border-b border-border' : ''}`}
     >
       <div className="min-w-0">
-        <Heading className={`t-card ${danger ? 'text-danger' : ''}`}>
-          {title}
-        </Heading>
+        <Heading className="t-section">{title}</Heading>
         {description ? (
-          <p className="t-caption font-normal text-muted-foreground">
+          <p className="t-caption mt-px font-normal text-muted-foreground">
             {description}
           </p>
         ) : null}
@@ -53,7 +49,7 @@ export function CardHead({
   );
 }
 
-/** Corpo do cartão com o espaçamento padrão. */
+/** Corpo do painel com o espaçamento padrão. */
 export function CardBody({
   grid = false,
   children,
@@ -63,11 +59,7 @@ export function CardBody({
   children: ReactNode;
 }) {
   return (
-    <div
-      className={
-        grid ? 'grid gap-x-4 gap-y-3.5 p-4 sm:grid-cols-2' : 'grid gap-2 p-4'
-      }
-    >
+    <div className={grid ? 'grid gap-4 p-4 sm:grid-cols-2' : 'grid gap-2 p-4'}>
       {children}
     </div>
   );
@@ -86,10 +78,8 @@ export function DefinitionList({
           key={row.label}
           className="grid items-baseline gap-0.5 border-b border-border py-2 last:border-b-0 sm:grid-cols-[120px_minmax(0,1fr)] sm:gap-3"
         >
-          <dt className="t-small text-muted-foreground">{row.label}</dt>
-          <dd className="min-w-0 font-medium [overflow-wrap:anywhere]">
-            {row.value}
-          </dd>
+          <dt className="t-body-small text-muted-foreground">{row.label}</dt>
+          <dd className="min-w-0 wrap-anywhere">{row.value}</dd>
         </div>
       ))}
     </dl>

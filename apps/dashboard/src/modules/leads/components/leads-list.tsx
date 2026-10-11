@@ -4,6 +4,7 @@ import type { LeadStage, LeadSummary } from '@flex/contracts';
 import { useCan, useSession } from '../../auth';
 import { Alert } from '../../../shared/ui/alert';
 import { ConfirmDialog } from '../../../shared/ui/dialogs';
+import { controlClass } from '../../../shared/ui/form-controls';
 import { describeError } from '../../../shared/http/problem';
 import { leadStageName } from '../lead-stages';
 import { useMoveLead } from '../mutations/move-lead.mutation';
@@ -110,7 +111,7 @@ export function LeadsList() {
                 <label className="grid gap-1.5">
                   <span className="t-label">Motivo da perda (opcional)</span>
                   <textarea
-                    className="min-h-20 rounded-md border border-control-border bg-control p-3"
+                    className={`${controlClass} min-h-20 py-2`}
                     value={lossReason}
                     onChange={(event) => setLossReason(event.target.value)}
                   />

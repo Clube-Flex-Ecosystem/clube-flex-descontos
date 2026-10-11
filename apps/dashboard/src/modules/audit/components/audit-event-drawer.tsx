@@ -39,18 +39,18 @@ export function AuditEventDrawer({
           { label: 'Objeto', value: view.object },
         ]}
       />
-      <h3 className="t-label font-semibold">Alteração</h3>
+      <h3 className="t-heading">Alteração</h3>
       <div className="grid gap-2 sm:grid-cols-2">
-        <div className="t-small rounded-md bg-danger-soft p-2.5 text-danger">
-          <span className="t-caption mb-0.5 block font-semibold tracking-wider uppercase opacity-75">
+        <div className="t-body-small rounded-control bg-surface-muted p-2.5 text-foreground">
+          <span className="t-overline mb-0.5 block text-muted-foreground">
             Anterior
           </span>
           {view.before.map((line) => (
             <p key={line}>{line}</p>
           ))}
         </div>
-        <div className="t-small rounded-md bg-success-soft p-2.5 text-success">
-          <span className="t-caption mb-0.5 block font-semibold tracking-wider uppercase opacity-75">
+        <div className="t-body-small rounded-control bg-success-soft p-2.5 text-foreground">
+          <span className="t-overline mb-0.5 block text-muted-foreground">
             Novo
           </span>
           {view.after.map((line) => (

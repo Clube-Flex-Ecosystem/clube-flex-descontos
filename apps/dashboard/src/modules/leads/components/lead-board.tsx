@@ -93,14 +93,14 @@ function LeadColumn({
     <section
       ref={setNodeRef}
       aria-label={`${stage.name}, ${leads.length} ${leads.length === 1 ? 'lead' : 'leads'}`}
-      className={`flex min-h-130 flex-col gap-1.5 rounded-xl bg-secondary p-1.5 transition-shadow ${
+      className={`flex min-h-130 flex-col gap-1.5 rounded-card bg-surface-muted p-1.5 transition-shadow ${
         isOver ? `ring-2 ${stage.dropClassName}` : ''
       }`}
     >
-      <header className="flex items-center gap-2 px-2 py-1.5">
+      <header className="flex items-center gap-2 px-1.5 pt-1.5 pb-1">
         <span className={`size-2 rounded-full ${stage.dotClassName}`} />
-        <h2 className="t-card">{stage.name}</h2>
-        <span className="t-caption ml-auto grid min-w-5 place-items-center rounded-sm border border-border bg-surface px-1.5 py-0.5 text-muted-foreground">
+        <h2 className="t-heading">{stage.name}</h2>
+        <span className="t-caption tnum ml-auto text-muted-foreground">
           {leads.length}
         </span>
       </header>
@@ -108,7 +108,7 @@ function LeadColumn({
         <DraggableLeadCard key={lead.id} lead={lead} disabled={!canMove} />
       ))}
       {!leads.length ? (
-        <p className="t-small m-0.5 rounded-lg border border-dashed border-border-strong px-2 py-4 text-center text-muted-foreground">
+        <p className="t-caption m-0.5 px-2 py-4 text-center font-normal text-muted-foreground">
           Nenhum lead nesta etapa
         </p>
       ) : null}
@@ -171,33 +171,35 @@ function LeadCard({
     <article
       {...dragAttributes}
       {...dragListeners}
-      className={`relative rounded-lg border border-border bg-surface px-3 py-2.5 shadow-sm transition-shadow hover:border-border-strong hover:shadow-md ${
-        lead.hasPendingInterest ? 'border-l-[3px] border-l-accent' : ''
-      } ${overlay ? 'rotate-1 cursor-grabbing shadow-lg' : 'cursor-grab'}`}
+      className={`relative rounded-tile border border-border bg-surface px-3 py-2.5 hover:border-border-strong ${
+        overlay
+          ? 'rotate-1 cursor-grabbing border-border-strong shadow-floating'
+          : 'cursor-grab'
+      }`}
     >
       <Link
         to="/leads/$leadId"
         params={{ leadId: lead.id }}
-        className="t-card block min-w-0 pr-4 text-foreground no-underline hover:text-accent-foreground hover:underline"
+        className="t-body block min-w-0 pr-4 font-semibold text-foreground no-underline hover:underline"
       >
         {lead.name}
       </Link>
-      <p className="t-small tnum mt-0.5 text-muted-foreground">
+      <p className="t-body-small tnum mt-0.5 text-muted-foreground">
         {lead.whatsapp}
       </p>
       {lead.hasPendingInterest ? (
-        <p className="t-caption mt-2 inline-flex items-center gap-1.5 font-semibold text-accent-foreground before:size-1.5 before:rounded-full before:bg-current before:content-['']">
+        <p className="t-caption mt-1.5 inline-flex items-center gap-1.5 font-semibold text-attention-foreground before:size-1.5 before:rounded-full before:bg-signal before:content-['']">
           Novo interesse pendente
         </p>
       ) : null}
-      <div className="t-caption mt-2.5 flex items-center justify-between gap-2 border-t border-border pt-2 text-muted-foreground">
+      <div className="t-caption mt-2.5 flex items-center justify-between gap-2 border-t border-border pt-2 font-normal text-muted-foreground">
         <span className="min-w-0 truncate">{lead.source.name}</span>
         <span className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap">
           <span
-            className={`grid size-5 place-items-center rounded-full text-[9px] font-semibold ${
+            className={`grid size-5 place-items-center rounded-full text-[0.5625rem] font-semibold ${
               owner
-                ? 'bg-accent-soft text-accent-foreground'
-                : 'border border-border text-muted-foreground'
+                ? 'bg-identity text-identity-foreground'
+                : 'border border-border-strong text-muted-foreground'
             }`}
           >
             {owner ? initials(owner.fullName) : '–'}

@@ -39,7 +39,7 @@ export function UnitsEditor() {
   return (
     <div className="grid gap-2">
       {fields.length === 0 ? (
-        <p className="t-small muted">
+        <p className="t-body-small muted">
           Nenhuma unidade. O parceiro pode operar sem unidade física.
         </p>
       ) : null}
@@ -52,7 +52,7 @@ export function UnitsEditor() {
           ? [unit.street, unit.number].filter(Boolean).join(', ')
           : '';
         return (
-          <div key={field.id} className="rounded-lg border border-border">
+          <div key={field.id} className="rounded-card border border-border">
             <div className="flex items-start justify-between gap-3 p-3">
               <div className="min-w-0">
                 <strong className="t-body font-semibold">
@@ -65,7 +65,7 @@ export function UnitsEditor() {
                 ) : (
                   <Badge dot>Inativa</Badge>
                 )}
-                <p className="t-small muted">
+                <p className="t-body-small muted">
                   {[
                     address,
                     unit?.neighborhood,
@@ -76,7 +76,7 @@ export function UnitsEditor() {
                     .filter(Boolean)
                     .join(' · ') || 'Endereço não informado.'}
                 </p>
-                <p className="t-small muted tnum">
+                <p className="t-body-small muted tnum">
                   {unit && unit.contacts.length > 0
                     ? `${unit.contacts.length} ${unit.contacts.length === 1 ? 'contato próprio' : 'contatos próprios'}`
                     : 'Usa os contatos gerais'}

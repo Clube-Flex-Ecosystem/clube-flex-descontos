@@ -15,6 +15,7 @@ import { Button } from '../../../shared/ui/button';
 import { Drawer, ConfirmDialog } from '../../../shared/ui/dialogs';
 import { Alert } from '../../../shared/ui/alert';
 import { Icon } from '../../../shared/ui/icon';
+import { controlClass } from '../../../shared/ui/form-controls';
 import { describeError } from '../../../shared/http/problem';
 import type { LeadSource } from '@flex/contracts';
 const config = (version: number) => ({
@@ -72,7 +73,7 @@ export function SourcesPage() {
     <>
       <PageHeader
         title="Origens"
-        description="Canais de aquisiÃ§Ã£o atribuÃ­dos aos leads."
+        description="Canais de aquisição atribuídos aos leads."
         actions={
           can ? (
             <Button variant="primary" onClick={() => open('new')}>
@@ -84,23 +85,20 @@ export function SourcesPage() {
       />
       {error ? (
         <div className="mb-3">
-          <Alert
-            tone="danger"
-            title="NÃ£o foi possÃ­vel concluir a operaÃ§Ã£o."
-          >
+          <Alert tone="danger" title="Não foi possível concluir a operação.">
             {error}
           </Alert>
         </div>
       ) : null}
       {q.isPending ? <ListSkeleton label="Carregando origens" /> : null}
       {q.isError ? (
-        <Alert tone="danger" title="NÃ£o foi possÃ­vel carregar as origens.">
+        <Alert tone="danger" title="Não foi possível carregar as origens.">
           {describeError(q.error)}
         </Alert>
       ) : null}
       {q.isSuccess && q.data.length === 0 ? (
         <EmptyState icon="source" title="Nenhuma origem cadastrada">
-          Cadastre os canais usados pela operaÃ§Ã£o comercial.
+          Cadastre os canais usados pela operação comercial.
         </EmptyState>
       ) : null}
       {q.isSuccess && q.data.length ? (
@@ -124,9 +122,9 @@ export function SourcesPage() {
                     title={s.name}
                     subtitle={
                       s.protected
-                        ? 'Criada automaticamente pelo catÃ¡logo'
+                        ? 'Criada automaticamente pelo catálogo'
                         : s.requiresReferral
-                          ? 'Exige identificaÃ§Ã£o da indicaÃ§Ã£o'
+                          ? 'Exige identificação da indicação'
                           : 'Cadastro manual'
                     }
                   />
@@ -181,7 +179,7 @@ export function SourcesPage() {
             <span className="t-label">Nome</span>
             <input
               autoFocus
-              className="h-control-md rounded-md border border-control-border bg-control px-3"
+              className={`${controlClass} h-control-md`}
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
@@ -194,8 +192,8 @@ export function SourcesPage() {
               onChange={(e) => setReferral(e.target.checked)}
             />
             <span>
-              <strong className="t-label block">Origem por indicaÃ§Ã£o</strong>
-              <span className="t-small text-muted-foreground">
+              <strong className="t-label block">Origem por indicação</strong>
+              <span className="t-body-small text-muted-foreground">
                 Exige informar quem indicou no cadastro do lead.
               </span>
             </span>
@@ -204,8 +202,8 @@ export function SourcesPage() {
       ) : null}
       {deactivate ? (
         <ConfirmDialog
-          title={`Desativar â€œ${deactivate.name}â€?`}
-          body="A origem deixa de aparecer em novos cadastros. Os leads existentes sÃ£o preservados."
+          title={`Desativar “${deactivate.name}”?`}
+          body="A origem deixa de aparecer em novos cadastros. Os leads existentes são preservados."
           confirmLabel="Desativar"
           onCancel={() => setDeactivate(null)}
           onConfirm={() => void toggle(deactivate, false)}

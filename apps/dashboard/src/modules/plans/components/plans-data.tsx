@@ -5,6 +5,7 @@ import { CellMain, DataTable } from '../../../shared/ui/data-table';
 import { EmptyState } from '../../../shared/ui/page-parts';
 import { ListCard } from '../../../shared/ui/list-card';
 import { RowMenu, type RowMenuItem } from '../../../shared/ui/row-menu';
+import { entityInitialsOf } from '../../../shared/utils/initials';
 
 interface PlansDataProps {
   plans: Plan[];
@@ -20,15 +21,6 @@ interface PlansDataProps {
   onDeactivate: (plan: Plan) => void;
   onReactivate: (plan: Plan) => void;
 }
-
-const initials = (name: string) =>
-  name
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((word) => word[0])
-    .join('')
-    .toUpperCase();
 
 /** Apresentação da lista: recebe dados e callbacks, sem buscar estado remoto. */
 export function PlansData({
@@ -52,7 +44,7 @@ export function PlansData({
         title="Nenhum plano cadastrado"
         action={
           canManage ? (
-            <Button variant="primary" compact onClick={onCreate}>
+            <Button compact onClick={onCreate}>
               Novo plano
             </Button>
           ) : undefined
@@ -88,7 +80,11 @@ export function PlansData({
       tabs={[
         { value: '', label: 'Todos', count: statusCount('') },
         { value: 'active', label: 'Ativos', count: statusCount('active') },
-        { value: 'inactive', label: 'Inativos', count: statusCount('inactive') },
+        {
+          value: 'inactive',
+          label: 'Inativos',
+          count: statusCount('inactive'),
+        },
       ]}
       activeTab={activeStatus}
       onTabChange={onStatusChange}
@@ -109,7 +105,7 @@ export function PlansData({
           {
             header: 'Plano',
             cell: (plan) => (
-              <CellMain title={plan.name} mark={initials(plan.name)} />
+              <CellMain title={plan.name} mark={entityInitialsOf(plan.name)} />
             ),
           },
           {

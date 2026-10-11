@@ -44,7 +44,7 @@ export function UsersData({
         title="Nenhum usuário cadastrado"
         action={
           canManage ? (
-            <Button variant="primary" compact onClick={onCreate}>
+            <Button compact onClick={onCreate}>
               Novo usuário
             </Button>
           ) : undefined
@@ -94,7 +94,7 @@ export function UsersData({
                     : user.fullName
                 }
                 subtitle={user.username}
-                mark={initialsOf(user.fullName)}
+                avatar={initialsOf(user.fullName)}
               />
             ),
           },
@@ -131,7 +131,9 @@ export function UsersData({
             </Button>
             <RowMenu
               label={`Mais ações para ${user.fullName}`}
-              items={[{ label: 'Abrir detalhe', onSelect: () => onOpenUser(user) }]}
+              items={[
+                { label: 'Abrir detalhe', onSelect: () => onOpenUser(user) },
+              ]}
             />
           </>
         )}

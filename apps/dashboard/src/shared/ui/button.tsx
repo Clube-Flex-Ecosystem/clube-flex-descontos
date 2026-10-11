@@ -2,8 +2,11 @@ import type { ButtonHTMLAttributes, Ref } from 'react';
 import { tv } from 'tailwind-variants';
 import { cn } from './cn';
 
-type Variant =
-  'primary' | 'secondary' | 'quiet' | 'danger' | 'danger-quiet' | 'sidebar';
+/**
+ * `primary`: a ação principal da região (no máximo uma). `danger-quiet`: entrada de
+ * uma ação destrutiva; `danger` fica reservado ao ponto de confirmação.
+ */
+type Variant = 'primary' | 'secondary' | 'quiet' | 'danger' | 'danger-quiet';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: Variant;
@@ -15,22 +18,21 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   ref?: Ref<HTMLButtonElement>;
 }
 
-const buttonVariants = tv({
-  base: 't-label inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-md border px-3 whitespace-nowrap no-underline transition-colors duration-fast disabled:cursor-not-allowed disabled:opacity-60 md:min-h-control-md',
+/** Também aplicada a links que agem como botão (navegação para criar ou voltar). */
+export const buttonVariants = tv({
+  base: 't-button inline-flex min-h-11 cursor-pointer items-center justify-center gap-1.5 rounded-control border px-3 whitespace-nowrap no-underline transition-colors duration-fast disabled:cursor-not-allowed disabled:border-border disabled:bg-surface-muted disabled:text-placeholder md:min-h-control-md',
   variants: {
     variant: {
       primary:
-        'border-primary-edge bg-primary-raised text-primary-foreground shadow-brand-raised hover:bg-primary-raised-hover hover:shadow-brand-raised-hover active:shadow-brand-pressed',
+        'border-primary bg-primary text-primary-foreground hover:border-primary-hover hover:bg-primary-hover active:border-primary-active active:bg-primary-active',
       secondary:
-        'border-control-border bg-control text-foreground shadow-control-raised hover:border-control-border-hover hover:shadow-control-raised-hover active:shadow-control-pressed',
+        'border-border-strong bg-surface text-foreground hover:border-control-border hover:bg-background active:bg-surface-muted aria-expanded:bg-surface-muted',
       danger:
-        'border-danger-edge bg-danger-raised text-primary-foreground shadow-brand-raised hover:bg-danger hover:shadow-brand-raised-hover active:shadow-brand-pressed',
+        'border-danger bg-danger text-danger-foreground hover:border-danger-hover hover:bg-danger-hover',
       'danger-quiet':
-        'border-control-border bg-control text-danger shadow-control-raised hover:border-danger/40 hover:bg-danger-soft active:shadow-control-pressed',
+        'border-border-strong bg-surface text-danger hover:border-danger hover:bg-danger-soft',
       quiet:
-        'border-transparent bg-transparent text-muted-foreground hover:bg-surface-muted hover:text-foreground',
-      sidebar:
-        'border-transparent bg-transparent text-sidebar-muted hover:bg-sidebar-hover hover:text-sidebar-foreground',
+        'border-transparent bg-transparent text-foreground-soft hover:bg-surface-muted hover:text-foreground aria-expanded:bg-surface-muted aria-expanded:text-foreground',
     },
     compact: { true: 'min-h-9 px-2.5 md:min-h-control-sm' },
     block: { true: 'w-full' },

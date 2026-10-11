@@ -7,6 +7,7 @@ import {
 import { useEffect, useRef, useState } from 'react';
 import type { SessionResponse } from '@flex/contracts';
 import { useLogout } from '../modules/auth/mutations/auth.mutations';
+import { BrandMark } from '../shared/ui/brand-mark';
 import { Button } from '../shared/ui/button';
 import { Icon } from '../shared/ui/icon';
 import { navigation, visibleNavigation } from './navigation';
@@ -18,10 +19,19 @@ function initials(fullName: string): string {
   return (first + last).toUpperCase();
 }
 
+/** Item atual: fundo navy-700, texto 600, ícone e marcador de 3px na borda da moldura. */
 const navLink =
-  't-label relative flex h-(--nav-item-height) items-center gap-2.5 rounded-md px-2.5 text-sidebar-foreground no-underline hover:bg-sidebar-hover ' +
-  'aria-[current=page]:bg-sidebar-active aria-[current=page]:font-semibold ' +
-  'aria-[current=page]:before:absolute aria-[current=page]:before:inset-y-2 aria-[current=page]:before:-left-2.5 aria-[current=page]:before:w-[3px] aria-[current=page]:before:rounded-r-sm aria-[current=page]:before:bg-accent';
+  't-label relative flex h-(--nav-item-height) items-center gap-2.5 rounded-control px-2 text-sidebar-foreground no-underline hover:bg-sidebar-hover [&>svg]:text-sidebar-muted ' +
+  'aria-[current=page]:bg-sidebar-selected aria-[current=page]:font-semibold aria-[current=page]:text-sidebar-selected-foreground aria-[current=page]:[&>svg]:text-signal-inverse ' +
+  'aria-[current=page]:before:absolute aria-[current=page]:before:inset-y-1.75 aria-[current=page]:before:-left-2 aria-[current=page]:before:w-0.75 aria-[current=page]:before:rounded-r-badge aria-[current=page]:before:bg-signal-inverse';
+
+function CrumbSeparator() {
+  return (
+    <span className="text-border-strong" aria-hidden="true">
+      /
+    </span>
+  );
+}
 
 /** Estrutura autenticada: sidebar, barra superior e área de conteúdo. */
 export function AppShell({ session }: { session: SessionResponse }) {
@@ -50,16 +60,35 @@ export function AppShell({ session }: { session: SessionResponse }) {
     return () => document.removeEventListener('keydown', onKey);
   }, [menuOpen]);
 
+  // Título declarado pela rota (`head`), usado como último nível nas páginas de detalhe.
+  const routeTitle = useRouterState({
+    select: (state) => {
+      const meta = state.matches.at(-1)?.meta;
+      if (!Array.isArray(meta)) return undefined;
+      const entry: unknown = meta.find(
+        (item: unknown) =>
+          typeof item === 'object' && item !== null && 'title' in item,
+      );
+      const title = (entry as { title?: unknown } | undefined)?.title;
+      return typeof title === 'string'
+        ? title.replace(/\s[—|]\sClube Flex$/, '')
+        : undefined;
+    },
+  });
+
   const current = navigation
     .flatMap((group) => group.items.map((item) => ({ group, item })))
     .find(
       ({ item }) => pathname === item.to || pathname.startsWith(`${item.to}/`),
     );
+  // Em páginas de detalhe, o nível anterior da trilha é o retorno à listagem.
+  const detailTitle =
+    current && pathname !== current.item.to ? routeTitle : undefined;
 
   return (
     <div className="grid min-h-dvh md:grid-cols-[var(--sidebar-width)_1fr]">
       <a
-        className="t-label absolute -top-12 left-2 z-100 rounded-md bg-primary px-3 py-2 text-primary-foreground focus:top-2"
+        className="t-button absolute -top-12 left-2 z-100 rounded-control bg-primary px-3 py-2 text-primary-foreground no-underline focus:top-2"
         href="#content"
       >
         Ir para o conteúdo
@@ -67,35 +96,26 @@ export function AppShell({ session }: { session: SessionResponse }) {
       <aside
         id="sidebar"
         aria-label="Navegação principal"
+        data-surface="inverse"
         className={[
-          'fixed inset-y-0 left-0 z-60 flex w-[min(280px,86vw)] flex-col bg-sidebar text-sidebar-foreground transition-transform duration-base',
+          'fixed inset-y-0 left-0 z-60 flex w-[min(280px,86vw)] flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground transition-transform duration-base',
           'md:sticky md:top-0 md:h-dvh md:w-auto md:translate-x-0',
-          menuOpen ? 'translate-x-0 shadow-lg' : '-translate-x-full',
+          menuOpen ? 'translate-x-0 shadow-overlay' : '-translate-x-full',
         ].join(' ')}
       >
         <div className="flex h-(--header-height) flex-none items-center gap-2.5 border-b border-sidebar-border px-4">
-          <span
-            className="grid size-7 place-items-center rounded-md border border-primary-edge bg-linear-to-br from-brand-gradient-from to-brand-gradient-to font-bold text-primary-foreground shadow-brand-raised"
-            aria-hidden="true"
-          >
-            F
-          </span>
-          <div className="leading-tight">
-            <strong className="t-card block text-sidebar-foreground">
-              Clube Flex
-            </strong>
-            <small className="t-caption block text-sidebar-muted">
-              Painel interno
-            </small>
-          </div>
+          <BrandMark tone="inverse" />
+          <small className="t-caption font-normal text-sidebar-muted">
+            Painel interno
+          </small>
         </div>
         <nav
-          className="flex-1 overflow-y-auto px-2.5 pb-4"
+          className="flex-1 overflow-y-auto px-2 pb-3"
           aria-label="Seções do painel"
         >
           {groups.map((group) => (
-            <div className="pt-4" key={group.label}>
-              <h2 className="t-caption px-2.5 pb-1.5 tracking-wider text-sidebar-muted uppercase">
+            <div className="pt-3" key={group.label}>
+              <h2 className="t-overline px-2 pb-1 text-sidebar-muted">
                 {group.label}
               </h2>
               <ul className="grid gap-px">
@@ -106,7 +126,7 @@ export function AppShell({ session }: { session: SessionResponse }) {
                       to={item.to}
                       onClick={() => setMenuOpenedAt(null)}
                     >
-                      <Icon name={item.icon} size="lg" />
+                      <Icon name={item.icon} />
                       {item.label}
                     </Link>
                   </li>
@@ -115,15 +135,15 @@ export function AppShell({ session }: { session: SessionResponse }) {
             </div>
           ))}
         </nav>
-        <div className="flex flex-none items-center gap-2 border-t border-sidebar-border p-2.5">
+        <div className="flex flex-none items-center gap-2 border-t border-sidebar-border p-2">
           <span
-            className="t-caption grid size-8 flex-none place-items-center rounded-full bg-sidebar-active text-sidebar-foreground"
+            className="t-caption grid size-7 flex-none place-items-center rounded-full bg-sidebar-selected font-semibold text-sidebar-selected-foreground"
             aria-hidden="true"
           >
             {initials(session.user.fullName)}
           </span>
           <div className="min-w-0 flex-1 leading-tight">
-            <strong className="t-label block truncate text-sidebar-foreground">
+            <strong className="t-label block truncate font-semibold text-sidebar-selected-foreground">
               {session.user.fullName}
             </strong>
             <span className="t-caption block truncate text-sidebar-muted">
@@ -131,7 +151,9 @@ export function AppShell({ session }: { session: SessionResponse }) {
             </span>
           </div>
           <Button
-            variant="sidebar"
+            variant="quiet"
+            compact
+            className="text-sidebar-foreground hover:bg-sidebar-hover hover:text-sidebar-selected-foreground"
             loading={logout.isPending}
             onClick={() =>
               logout.mutate(undefined, {
@@ -152,7 +174,7 @@ export function AppShell({ session }: { session: SessionResponse }) {
       ) : null}
 
       <div className="flex min-w-0 flex-col">
-        <header className="sticky top-0 z-20 flex h-(--header-height) items-center gap-3 border-b border-border bg-surface/90 px-2 backdrop-blur md:px-6">
+        <header className="sticky top-0 z-20 flex h-(--header-height) items-center gap-3 border-b border-border bg-surface px-2 md:px-6">
           <Button
             className="md:hidden"
             variant="quiet"
@@ -164,18 +186,39 @@ export function AppShell({ session }: { session: SessionResponse }) {
             Menu
           </Button>
           <nav
-            className="t-small flex items-center gap-2 text-muted-foreground"
+            className="t-body-small flex items-center gap-1.5 text-muted-foreground"
             aria-label="Você está em"
           >
             {current ? <span>{current.group.label}</span> : null}
-            {current ? <span aria-hidden="true">/</span> : null}
-            <strong className="font-medium text-foreground" aria-current="page">
-              {current?.item.label ?? 'Início'}
-            </strong>
+            {current ? <CrumbSeparator /> : null}
+            {current && detailTitle ? (
+              <>
+                <Link
+                  to={current.item.to}
+                  className="text-muted-foreground no-underline hover:text-foreground hover:underline"
+                >
+                  {current.item.label}
+                </Link>
+                <CrumbSeparator />
+                <strong
+                  className="truncate font-medium text-foreground"
+                  aria-current="page"
+                >
+                  {detailTitle}
+                </strong>
+              </>
+            ) : (
+              <strong
+                className="font-medium text-foreground"
+                aria-current="page"
+              >
+                {current?.item.label ?? 'Início'}
+              </strong>
+            )}
           </nav>
         </header>
         <main
-          className="mx-auto w-full max-w-(--content-max) flex-1 p-4 outline-hidden md:px-(--content-pad-x) md:py-6"
+          className="mx-auto w-full max-w-(--content-max) flex-1 p-4 outline-hidden md:px-(--content-pad-x) md:pt-5 md:pb-12"
           id="content"
           tabIndex={-1}
           ref={contentRef}

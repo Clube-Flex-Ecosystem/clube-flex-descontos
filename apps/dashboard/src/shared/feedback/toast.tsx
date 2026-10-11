@@ -46,14 +46,20 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             key={item.id}
             open
             onOpenChange={(open) => !open && remove(item.id)}
-            className="t-label flex items-center gap-2 rounded-lg bg-sidebar-active px-3.5 py-2.5 text-sidebar-foreground shadow-lg data-[state=open]:animate-[popover-in_var(--duration-fast)_ease-out]"
+            data-surface="inverse"
+            className="t-label flex items-center gap-2 rounded-tile border border-inverse bg-inverse py-2 pr-2 pl-3 text-inverse-foreground shadow-floating data-[state=open]:animate-[popover-in_var(--duration-fast)_ease-out]"
           >
-            <Icon name="check" className="text-accent" />
+            <Icon name="check" className="text-signal-inverse" />
             <ToastPrimitive.Description className="flex-1">
               {item.message}
             </ToastPrimitive.Description>
             <ToastPrimitive.Close asChild>
-              <Button variant="sidebar" compact aria-label="Fechar notificação">
+              <Button
+                variant="quiet"
+                compact
+                className="text-inverse-foreground hover:bg-sidebar-hover hover:text-inverse-foreground"
+                aria-label="Fechar notificação"
+              >
                 <Icon name="x" size="sm" />
               </Button>
             </ToastPrimitive.Close>

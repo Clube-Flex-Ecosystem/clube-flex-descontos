@@ -7,37 +7,40 @@ export interface LeadStageDefinition {
   dropClassName: string;
 }
 
-/** Etapas fixas do pipeline e seus sinais visuais do protótipo. */
+/**
+ * Etapas fixas do pipeline e seus sinais visuais do protótipo: etapas abertas não
+ * têm cor própria; os desfechos seguem as famílias de estado.
+ */
 export const leadStages: readonly LeadStageDefinition[] = [
   {
     id: 'new',
     name: 'Novo',
-    dotClassName: 'bg-border-strong',
-    dropClassName: 'ring-border-strong',
+    dotClassName: 'bg-control-border',
+    dropClassName: 'ring-selected',
   },
   {
     id: 'firstContact',
     name: 'Primeiro contato',
-    dotClassName: 'bg-info',
-    dropClassName: 'ring-info',
+    dotClassName: 'bg-control-border',
+    dropClassName: 'ring-selected',
   },
   {
     id: 'negotiating',
     name: 'Em negociação',
-    dotClassName: 'bg-accent',
-    dropClassName: 'ring-accent',
+    dotClassName: 'bg-control-border',
+    dropClassName: 'ring-selected',
   },
   {
     id: 'converted',
     name: 'Convertido',
     dotClassName: 'bg-success',
-    dropClassName: 'ring-success',
+    dropClassName: 'ring-selected',
   },
   {
     id: 'lost',
     name: 'Perdido',
-    dotClassName: 'bg-danger',
-    dropClassName: 'ring-danger',
+    dotClassName: 'bg-muted-foreground',
+    dropClassName: 'ring-selected',
   },
 ];
 

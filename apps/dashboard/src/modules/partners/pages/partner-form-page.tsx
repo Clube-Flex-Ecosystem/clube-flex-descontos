@@ -6,7 +6,7 @@ import { categoriesQueryOptions } from '../../categories';
 import { plansQueryOptions } from '../../plans';
 import { describeError } from '../../../shared/http/problem';
 import { Alert } from '../../../shared/ui/alert';
-import { Button } from '../../../shared/ui/button';
+import { Button, buttonVariants } from '../../../shared/ui/button';
 import { ListSkeleton } from '../../../shared/ui/page-parts';
 import { PartnerForm } from '../components/partner-form';
 import {
@@ -57,10 +57,7 @@ function PartnerCreateFormPage({ partnerId }: { partnerId?: string }) {
     partner.error.response?.status === 404;
 
   const back = (
-    <Link
-      to="/parceiros"
-      className="t-label inline-flex min-h-11 items-center rounded-md border border-control-border bg-control px-3 text-foreground no-underline shadow-control-raised md:min-h-control-sm"
-    >
+    <Link to="/parceiros" className={buttonVariants({ compact: true })}>
       Voltar para parceiros
     </Link>
   );

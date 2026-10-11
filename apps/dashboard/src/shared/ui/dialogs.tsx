@@ -26,7 +26,7 @@ function DrawerFrame({
     <DialogPrimitive.Root open onOpenChange={(open) => !open && onClose()}>
       <DialogPrimitive.Portal>
         <DialogPrimitive.Overlay className="fixed inset-0 z-70 bg-overlay data-[state=open]:animate-[overlay-in_var(--duration-fast)_ease-out]" />
-        <DialogPrimitive.Content className="fixed inset-y-0 right-0 z-80 flex h-dvh w-full max-w-110 flex-col bg-surface p-0 text-foreground shadow-lg data-[state=open]:animate-[drawer-in_var(--duration-base)_ease-out]">
+        <DialogPrimitive.Content className="fixed inset-y-0 right-0 z-80 flex h-dvh w-full max-w-105 flex-col bg-surface p-0 text-foreground shadow-overlay data-[state=open]:animate-[drawer-in_var(--duration-base)_ease-out]">
           {children}
         </DialogPrimitive.Content>
       </DialogPrimitive.Portal>
@@ -51,19 +51,19 @@ export function Drawer({
         noValidate
         onSubmit={onSubmit}
       >
-        <div className="flex items-start justify-between gap-3 border-b border-border px-5 py-4">
+        <div className="flex items-start justify-between gap-3 border-b border-border px-5 py-3.5">
           <div>
             <DialogPrimitive.Title className="t-section">
               {title}
             </DialogPrimitive.Title>
             {description ? (
-              <DialogPrimitive.Description className="t-small muted">
+              <DialogPrimitive.Description className="t-body-small muted mt-0.5">
                 {description}
               </DialogPrimitive.Description>
             ) : null}
           </div>
           <DialogPrimitive.Close asChild>
-            <Button variant="quiet" aria-label="Fechar">
+            <Button variant="quiet" compact aria-label="Fechar">
               <Icon name="x" />
             </Button>
           </DialogPrimitive.Close>
@@ -71,7 +71,7 @@ export function Drawer({
         <div className="grid flex-1 content-start gap-4 overflow-y-auto p-5">
           {children}
         </div>
-        <div className="flex justify-end gap-2 border-t border-border bg-surface-hover px-5 py-3">
+        <div className="flex justify-end gap-2 border-t border-border bg-surface px-5 py-3">
           <DialogPrimitive.Close asChild>
             <Button>Cancelar</Button>
           </DialogPrimitive.Close>
@@ -104,19 +104,19 @@ export function DetailDrawer({
   return (
     <DrawerFrame onClose={onClose}>
       <div className="flex h-full min-h-0 flex-col">
-        <div className="flex items-start justify-between gap-3 border-b border-border px-5 py-4">
+        <div className="flex items-start justify-between gap-3 border-b border-border px-5 py-3.5">
           <div>
             <DialogPrimitive.Title className="t-section">
               {title}
             </DialogPrimitive.Title>
             {description ? (
-              <DialogPrimitive.Description className="t-small muted tnum">
+              <DialogPrimitive.Description className="t-body-small muted tnum mt-0.5">
                 {description}
               </DialogPrimitive.Description>
             ) : null}
           </div>
           <DialogPrimitive.Close asChild>
-            <Button variant="quiet" aria-label="Fechar">
+            <Button variant="quiet" compact aria-label="Fechar">
               <Icon name="x" />
             </Button>
           </DialogPrimitive.Close>
@@ -124,7 +124,7 @@ export function DetailDrawer({
         <div className="grid flex-1 content-start gap-4 overflow-y-auto p-5">
           {children}
         </div>
-        <div className="flex items-center justify-end gap-2 border-t border-border bg-surface-hover px-5 py-3">
+        <div className="flex items-center justify-end gap-2 border-t border-border bg-surface px-5 py-3">
           {note ? (
             <span className="t-caption muted mr-auto inline-flex items-center gap-1.5">
               {note}
@@ -143,7 +143,7 @@ interface ConfirmDialogProps {
   title: string;
   body: ReactNode;
   confirmLabel: string;
-  /** Ações destrutivas usam o tom de perigo; as demais, o da marca. */
+  /** Ações destrutivas usam o tom de perigo (com ícone); as demais, a ação principal. */
   tone?: 'danger' | 'primary';
   onConfirm: () => void;
   onCancel: () => void;
@@ -165,14 +165,24 @@ export function ConfirmDialog({
     >
       <AlertDialogPrimitive.Portal>
         <AlertDialogPrimitive.Overlay className="fixed inset-0 z-70 bg-overlay data-[state=open]:animate-[overlay-in_var(--duration-fast)_ease-out]" />
-        <AlertDialogPrimitive.Content className="fixed top-1/2 left-1/2 z-80 w-[min(440px,calc(100vw-32px))] -translate-x-1/2 -translate-y-1/2 rounded-xl bg-surface p-0 text-foreground shadow-lg data-[state=open]:animate-[dialog-in_var(--duration-base)_ease-out]">
-          <div className="grid gap-3 p-5">
-            <AlertDialogPrimitive.Title className="t-section">
-              {title}
-            </AlertDialogPrimitive.Title>
-            <AlertDialogPrimitive.Description asChild>
-              <div className="t-body muted">{body}</div>
-            </AlertDialogPrimitive.Description>
+        <AlertDialogPrimitive.Content className="fixed top-1/2 left-1/2 z-80 w-[min(440px,calc(100vw-32px))] -translate-x-1/2 -translate-y-1/2 rounded-overlay border border-border bg-surface p-0 text-foreground shadow-overlay data-[state=open]:animate-[dialog-in_var(--duration-base)_ease-out]">
+          <div className="flex items-start gap-3 px-5 pt-5 pb-4">
+            {tone === 'danger' ? (
+              <span
+                className="grid size-8 flex-none place-items-center rounded-full bg-danger-soft text-danger"
+                aria-hidden="true"
+              >
+                <Icon name="alert" />
+              </span>
+            ) : null}
+            <div className="grid min-w-0 gap-1">
+              <AlertDialogPrimitive.Title className="t-section pt-1.5">
+                {title}
+              </AlertDialogPrimitive.Title>
+              <AlertDialogPrimitive.Description asChild>
+                <div className="t-body-small text-foreground-soft">{body}</div>
+              </AlertDialogPrimitive.Description>
+            </div>
           </div>
           <div className="flex justify-end gap-2 px-5 pb-5">
             <AlertDialogPrimitive.Cancel asChild>

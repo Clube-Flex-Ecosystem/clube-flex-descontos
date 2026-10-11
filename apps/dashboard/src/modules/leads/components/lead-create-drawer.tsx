@@ -5,6 +5,7 @@ import { useToast } from '../../../shared/feedback/toast';
 import { describeError } from '../../../shared/http/problem';
 import { Alert } from '../../../shared/ui/alert';
 import { Drawer } from '../../../shared/ui/dialogs';
+import { controlClass } from '../../../shared/ui/form-controls';
 import { sourcesQueryOptions } from '../queries/leads.query';
 import { useCreateLead } from '../mutations/create-lead.mutation';
 
@@ -93,7 +94,7 @@ function LeadForm({
       <label className="grid gap-1.5">
         <span className="t-label">Nome</span>
         <input
-          className="h-control-md rounded-md border border-control-border bg-control px-3"
+          className={`${controlClass} h-control-md`}
           value={form.name}
           onChange={(event) => update('name', event.target.value)}
           required
@@ -102,7 +103,7 @@ function LeadForm({
       <label className="grid gap-1.5">
         <span className="t-label">WhatsApp</span>
         <input
-          className="h-control-md rounded-md border border-control-border bg-control px-3"
+          className={`${controlClass} h-control-md`}
           value={form.whatsapp}
           onChange={(event) => update('whatsapp', event.target.value)}
           required
@@ -112,7 +113,7 @@ function LeadForm({
         <span className="t-label">E-mail (opcional)</span>
         <input
           type="email"
-          className="h-control-md rounded-md border border-control-border bg-control px-3"
+          className={`${controlClass} h-control-md`}
           value={form.email}
           onChange={(event) => update('email', event.target.value)}
         />
@@ -120,7 +121,7 @@ function LeadForm({
       <label className="grid gap-1.5">
         <span className="t-label">Origem</span>
         <select
-          className="h-control-md rounded-md border border-control-border bg-control px-3"
+          className={`${controlClass} h-control-md`}
           value={form.sourceId}
           onChange={(event) => update('sourceId', event.target.value)}
           required
@@ -138,7 +139,7 @@ function LeadForm({
       <label className="grid gap-1.5">
         <span className="t-label">Detalhe da origem</span>
         <textarea
-          className="min-h-20 rounded-md border border-control-border bg-control p-3"
+          className={`${controlClass} min-h-20 py-2`}
           value={form.sourceDetail}
           onChange={(event) => update('sourceDetail', event.target.value)}
         />
@@ -147,7 +148,7 @@ function LeadForm({
         <label className="grid gap-1.5">
           <span className="t-label">Quem indicou</span>
           <input
-            className="h-control-md rounded-md border border-control-border bg-control px-3"
+            className={`${controlClass} h-control-md`}
             value={form.referredBy}
             onChange={(event) => update('referredBy', event.target.value)}
             required

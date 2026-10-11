@@ -1,6 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery } from '@tanstack/react-query';
-import { Link } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -20,6 +19,7 @@ import { Badge } from '../../../shared/ui/badge';
 import { Button } from '../../../shared/ui/button';
 import {
   Card,
+  CardStack,
   CardBody,
   CardHead,
   DefinitionList,
@@ -66,16 +66,6 @@ const toValues = (user: AdminUser): ProfileValues => ({
   username: user.username,
   email: user.email ?? '',
 });
-
-const backLink = (
-  <Link
-    to="/usuarios"
-    className="t-label mb-2 inline-flex min-h-11 items-center gap-1 text-muted-foreground no-underline hover:text-foreground md:min-h-0"
-  >
-    <Icon name="left" />
-    Usuários
-  </Link>
-);
 
 /** Detalhe de uma conta: os dados obrigatórios são carregados pela rota. */
 export function UserDetailPage({ user }: { user: AdminUser }) {
@@ -250,11 +240,10 @@ function UserDetail({
 
   return (
     <>
-      {backLink}
       <PageHeader
         leading={
           <span
-            className="t-card grid size-10 flex-none place-items-center rounded-full bg-accent-soft font-bold text-accent-foreground"
+            className="t-heading grid size-10 flex-none place-items-center rounded-full bg-identity text-identity-foreground"
             aria-hidden="true"
           >
             {initialsOf(user.fullName)}
@@ -314,7 +303,7 @@ function UserDetail({
       ) : null}
 
       <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
-        <div className="grid gap-4">
+        <CardStack>
           <Card>
             <CardHead title="Dados da conta" />
             <CardBody grid>
@@ -348,7 +337,7 @@ function UserDetail({
               title="Permissões"
               description="Concedidas individualmente. Alterações valem imediatamente, inclusive em sessões abertas."
               aside={
-                <Badge tone="outline">
+                <Badge tone="tag">
                   <span className="tnum">
                     {grants.size} de {allPermissions.length}
                   </span>
@@ -380,9 +369,9 @@ function UserDetail({
               }
             />
           </Card>
-        </div>
+        </CardStack>
 
-        <aside className="grid gap-4">
+        <CardStack>
           <Card>
             <CardHead title="Acesso" />
             <div className="grid gap-3 p-4">
@@ -405,18 +394,18 @@ function UserDetail({
               />
               {issued && issued.delivery === 'manual' && issued.code ? (
                 <div
-                  className="grid gap-1 rounded-md bg-surface-muted p-3 text-center"
+                  className="grid gap-1 rounded-control bg-surface-muted p-3 text-center"
                   role="status"
                 >
-                  <span className="t-small muted">
+                  <span className="t-body-small muted">
                     Código de{' '}
                     {issued.purpose === 'recovery' ? 'recuperação' : 'ativação'}{' '}
                     · válido por {ACCESS_CODE_VALIDITY_MINUTES} min
                   </span>
-                  <strong className="font-mono text-base font-semibold tracking-widest">
+                  <strong className="font-mono text-base font-normal tracking-widest">
                     {issued.code}
                   </strong>
-                  <span className="t-small muted">
+                  <span className="t-body-small muted">
                     Entregue à pessoa por um canal seguro. Ele não será exibido
                     de novo.
                   </span>
@@ -444,7 +433,7 @@ function UserDetail({
                     <Icon name="key" />
                     Emitir código de {kind}
                   </Button>
-                  <p className="t-small muted">
+                  <p className="t-body-small muted">
                     Emitir um novo código invalida o anterior da mesma
                     finalidade.
                   </p>
@@ -454,9 +443,8 @@ function UserDetail({
           </Card>
 
           {canSetStatus ? (
-            <Card danger>
+            <Card>
               <CardHead
-                danger
                 title={
                   user.status === 'active'
                     ? 'Desativar conta'
@@ -493,7 +481,7 @@ function UserDetail({
               </div>
             </Card>
           ) : null}
-        </aside>
+        </CardStack>
       </div>
 
       {confirm === 'issue' ? (

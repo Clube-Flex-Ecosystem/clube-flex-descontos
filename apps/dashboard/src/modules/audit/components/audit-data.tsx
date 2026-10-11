@@ -5,7 +5,11 @@ import {
   type AuditEvent,
   type AuditEventPage,
 } from '@flex/contracts';
-import { auditActionLabel, formatAuditDate, presentAuditEvent } from '../audit-format';
+import {
+  auditActionLabel,
+  formatAuditDate,
+  presentAuditEvent,
+} from '../audit-format';
 import { initialsOf } from '../../../shared/utils/initials';
 import { Button } from '../../../shared/ui/button';
 import { Icon } from '../../../shared/ui/icon';
@@ -32,7 +36,7 @@ function Person({ name }: { name: string }) {
   return (
     <span className="inline-flex items-center gap-2">
       <span
-        className="t-caption grid size-5.5 flex-none place-items-center rounded-full bg-accent-soft font-bold text-accent-foreground"
+        className="t-caption grid size-5 flex-none place-items-center rounded-full bg-identity text-[0.5625rem] font-semibold text-identity-foreground"
         aria-hidden="true"
       >
         {initialsOf(name)}
@@ -83,12 +87,11 @@ export function AuditData({
     (id ? names.get(id) : undefined) ?? fallback;
   const pageCount = Math.max(1, Math.ceil(data.total / data.pageSize));
   const firstRow = data.total > 0 ? (data.page - 1) * data.pageSize + 1 : 0;
-  const lastRow =
-    data.total > 0 ? firstRow + data.items.length - 1 : 0;
+  const lastRow = data.total > 0 ? firstRow + data.items.length - 1 : 0;
 
   return (
-    <section className="rounded-xl border border-border bg-surface shadow-sm">
-      <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-2.5">
+    <section className="rounded-card border border-border bg-surface">
+      <div className="flex flex-wrap items-center justify-between gap-3 py-2 pr-3 pl-4">
         <div className="flex min-w-0 flex-wrap items-center gap-2">
           <FilterSelect
             aria-label="Período"
@@ -149,7 +152,7 @@ export function AuditData({
         </Button>
       </div>
 
-      <div className="overflow-x-auto border-t border-border">
+      <div className="overflow-x-auto">
         <table className="w-full min-w-180 border-separate border-spacing-0">
           <thead>
             <tr>
@@ -158,13 +161,13 @@ export function AuditData({
                   <th
                     key={header}
                     scope="col"
-                    className="t-small h-9 border-b border-border bg-surface px-4 text-left font-medium whitespace-nowrap text-muted-foreground"
+                    className="t-table-header h-table-header border-y border-border bg-surface px-4 text-left whitespace-nowrap text-muted-foreground"
                   >
                     {header}
                   </th>
                 ),
               )}
-              <th scope="col" className="border-b border-border bg-surface">
+              <th scope="col" className="border-y border-border bg-surface">
                 <span className="sr-only">Detalhes</span>
               </th>
             </tr>
@@ -196,16 +199,18 @@ export function AuditData({
                     onSelect(event);
                   }}
                 >
-                  <td className="tnum h-12 border-b border-border px-4 py-1.5 whitespace-nowrap text-muted-foreground group-last:border-b-0 group-hover:bg-surface-hover">
+                  <td className="tnum h-row-default border-b border-border px-4 py-1 whitespace-nowrap text-muted-foreground group-last:border-b-0 group-hover:bg-surface-muted">
                     {date}
                   </td>
-                  <td className="h-12 border-b border-border px-4 py-1.5 font-semibold whitespace-nowrap group-last:border-b-0 group-hover:bg-surface-hover">
+                  <td className="h-row-default border-b border-border px-4 py-1 font-semibold whitespace-nowrap group-last:border-b-0 group-hover:bg-surface-muted">
                     {label}
                   </td>
-                  <td className="h-12 border-b border-border px-4 py-1.5 whitespace-nowrap group-last:border-b-0 group-hover:bg-surface-hover">
-                    <Person name={nameOf(event.actor.id, event.actor.username)} />
+                  <td className="h-row-default border-b border-border px-4 py-1 whitespace-nowrap group-last:border-b-0 group-hover:bg-surface-muted">
+                    <Person
+                      name={nameOf(event.actor.id, event.actor.username)}
+                    />
                   </td>
-                  <td className="h-12 border-b border-border px-4 py-1.5 whitespace-nowrap group-last:border-b-0 group-hover:bg-surface-hover">
+                  <td className="h-row-default border-b border-border px-4 py-1 whitespace-nowrap group-last:border-b-0 group-hover:bg-surface-muted">
                     {event.target.type === 'user' && event.target.label ? (
                       <Person
                         name={nameOf(event.target.id, event.target.label)}
@@ -214,10 +219,10 @@ export function AuditData({
                       <span className="text-muted-foreground">—</span>
                     )}
                   </td>
-                  <td className="h-12 border-b border-border px-4 py-1.5 whitespace-nowrap text-muted-foreground group-last:border-b-0 group-hover:bg-surface-hover">
+                  <td className="h-row-default border-b border-border px-4 py-1 whitespace-nowrap text-muted-foreground group-last:border-b-0 group-hover:bg-surface-muted">
                     {view.object}
                   </td>
-                  <td className="h-12 w-px border-b border-border px-2.5 py-1.5 text-right whitespace-nowrap group-last:border-b-0 group-hover:bg-surface-hover">
+                  <td className="h-row-default w-px border-b border-border px-4 py-1 text-right whitespace-nowrap group-last:border-b-0 group-hover:bg-surface-muted">
                     <Button
                       variant="quiet"
                       compact
@@ -234,7 +239,7 @@ export function AuditData({
         </table>
       </div>
 
-      <div className="t-small tnum flex flex-wrap items-center justify-between gap-3 border-t border-border px-4 py-2.5 text-muted-foreground">
+      <div className="t-caption tnum flex flex-wrap items-center justify-between gap-3 border-t border-border px-4 py-2 font-normal text-muted-foreground">
         <span aria-live="polite">
           {data.total === 0
             ? '0 eventos'

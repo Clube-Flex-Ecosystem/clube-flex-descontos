@@ -1,8 +1,8 @@
 import type { LeadSource, LeadStage, LeadSummary } from '@flex/contracts';
-import { Badge } from '../../../shared/ui/badge';
 import { Button } from '../../../shared/ui/button';
 import { Icon } from '../../../shared/ui/icon';
 import { Alert } from '../../../shared/ui/alert';
+import { controlClass } from '../../../shared/ui/form-controls';
 import { LeadBoard } from './lead-board';
 
 interface LeadsDataProps {
@@ -41,16 +41,16 @@ export function LeadsData({
 }: LeadsDataProps) {
   return (
     <>
-      <section className="mb-3 rounded-xl border border-border bg-surface shadow-sm">
-        <div className="flex flex-wrap items-center gap-2 p-3">
+      <section className="mb-3 rounded-card border border-border bg-surface py-2 pr-3 pl-4">
+        <div className="flex flex-wrap items-center gap-2">
           <label className="relative min-w-56 flex-1">
             <span className="sr-only">Filtrar leads</span>
             <Icon
               name="search"
-              className="absolute top-2.5 left-3 text-muted-foreground"
+              className="absolute top-2 left-2.5 text-muted-foreground"
             />
             <input
-              className="h-control-md w-full rounded-md border border-control-border bg-control pr-3 pl-9"
+              className={`${controlClass} h-control-sm pl-8`}
               placeholder="Nome ou WhatsApp"
               value={search}
               onChange={(event) => onSearchChange(event.target.value)}
@@ -58,7 +58,7 @@ export function LeadsData({
           </label>
           <select
             aria-label="Responsável"
-            className="h-control-md rounded-md border border-control-border bg-control px-3"
+            className={`${controlClass} h-control-sm w-auto`}
             value={owner}
             onChange={(event) => onOwnerChange(event.target.value)}
           >
@@ -68,7 +68,7 @@ export function LeadsData({
           </select>
           <select
             aria-label="Origem"
-            className="h-control-md rounded-md border border-control-border bg-control px-3"
+            className={`${controlClass} h-control-sm w-auto`}
             value={source}
             onChange={(event) => onSourceChange(event.target.value)}
           >
@@ -81,17 +81,19 @@ export function LeadsData({
           </select>
           <Button
             compact
-            variant={interest ? 'primary' : 'quiet'}
             aria-pressed={interest}
             onClick={onInterestChange}
+            className="aria-pressed:border-selected aria-pressed:bg-selected aria-pressed:text-selected-foreground"
           >
-            <Badge tone="accent" dot>
-              Novo interesse
-            </Badge>
+            <span
+              className="size-1.5 rounded-full bg-signal"
+              aria-hidden="true"
+            />
+            Novo interesse
             <span className="tnum">{pendingInterestCount}</span>
           </Button>
           <span
-            className="t-small ml-auto text-muted-foreground"
+            className="t-body-small ml-auto text-muted-foreground"
             aria-live="polite"
           >
             {leads.length} {leads.length === 1 ? 'lead' : 'leads'}

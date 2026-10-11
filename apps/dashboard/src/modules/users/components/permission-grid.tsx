@@ -20,10 +20,10 @@ export function PermissionGrid({
         return (
           <fieldset
             key={area}
-            className="m-0 min-w-0 border-0 border-b border-border px-4 py-3.5 sm:odd:border-r"
+            className="m-0 min-w-0 border-0 border-b border-border px-4 py-3 sm:odd:border-r"
           >
             <legend className="sr-only">{area}</legend>
-            <h3 className="t-label mb-2 flex justify-between font-semibold text-foreground">
+            <h3 className="t-heading mb-2 flex justify-between text-foreground">
               <span>{area}</span>
               <span className="tnum font-medium text-muted-foreground">
                 {enabled}/{items.length}
@@ -32,11 +32,11 @@ export function PermissionGrid({
             {items.map((item) => (
               <label
                 key={item.id}
-                className="t-body flex cursor-pointer items-start gap-2 py-0.75 has-disabled:cursor-not-allowed has-disabled:text-muted-foreground has-disabled:opacity-70"
+                className="t-body-small flex cursor-pointer items-start gap-2 py-0.75 has-disabled:cursor-not-allowed has-disabled:text-placeholder"
               >
                 <input
                   type="checkbox"
-                  className="mt-0.5 size-4 flex-none accent-primary"
+                  className="mt-px size-4 flex-none accent-selected"
                   checked={granted.has(item.id)}
                   disabled={!canChange(item.id)}
                   onChange={(event) => onToggle(item.id, event.target.checked)}

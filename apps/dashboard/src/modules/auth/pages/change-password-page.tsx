@@ -53,19 +53,21 @@ export function ChangePasswordPage() {
 
   return (
     <>
-      <div className="mb-5">
+      <div className="mb-4">
         <h1 className="t-page">Alterar senha</h1>
-        <p className="t-small muted">Troque a senha da sua própria conta.</p>
+        <p className="t-body-small muted mt-0.5">
+          Troque a senha da sua própria conta.
+        </p>
       </div>
       <section
-        className="max-w-110 rounded-xl border border-border bg-surface shadow-sm"
+        className="max-w-110 rounded-card border border-border bg-surface"
         aria-labelledby="password-card"
       >
-        <div className="border-b border-border px-4 py-3.5">
-          <h2 id="password-card" className="t-card">
+        <div className="border-b border-border px-4 py-3">
+          <h2 id="password-card" className="t-section">
             Troca de senha
           </h2>
-          <p className="t-small muted">
+          <p className="t-caption muted mt-px font-normal">
             As demais sessões da sua conta serão encerradas.
           </p>
         </div>

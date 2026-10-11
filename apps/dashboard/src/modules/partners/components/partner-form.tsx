@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQueryClient } from '@tanstack/react-query';
-import { Link, useBlocker, useNavigate } from '@tanstack/react-router';
+import { useBlocker, useNavigate } from '@tanstack/react-router';
 import { useEffect, useState, type ReactNode } from 'react';
 import {
   Controller,
@@ -106,14 +106,14 @@ function Section({
     <section
       id={id}
       aria-labelledby={`${id}-title`}
-      className="scroll-mt-28 rounded-xl border border-border bg-surface shadow-sm"
+      className="scroll-mt-28 rounded-card border border-border bg-surface"
     >
-      <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-3.5">
+      <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-3">
         <div>
-          <h2 id={`${id}-title`} className="t-card">
+          <h2 id={`${id}-title`} className="t-section">
             {title}
           </h2>
-          <p className="t-small muted">{description}</p>
+          <p className="t-caption muted mt-px font-normal">{description}</p>
         </div>
         {action}
       </div>
@@ -368,13 +368,6 @@ export function PartnerForm({
 
   return (
     <FormProvider {...methods}>
-      <Link
-        to="/parceiros"
-        className="t-label mb-2 inline-flex min-h-11 items-center gap-1 text-muted-foreground no-underline hover:text-foreground md:min-h-0"
-      >
-        <Icon name="left" />
-        Parceiros
-      </Link>
       <PageHeader
         title={isNew ? 'Novo parceiro' : partner.name}
         status={<PartnerStatusBadge status={partner?.status ?? 'draft'} />}
@@ -407,9 +400,9 @@ export function PartnerForm({
       <div className="grid gap-5 md:grid-cols-[184px_minmax(0,1fr)] xl:grid-cols-[200px_minmax(0,1fr)_272px]">
         <nav
           aria-label="Seções do formulário"
-          className="sticky top-12 z-10 -mx-4 flex gap-1 overflow-x-auto border-b border-border bg-background px-4 py-2 md:top-20 md:row-span-2 md:mx-0 md:grid md:content-start md:gap-px md:overflow-visible md:border-0 md:bg-transparent md:p-0 xl:row-span-1"
+          className="sticky top-12 z-10 -mx-4 flex gap-1 overflow-x-auto border-b border-border bg-background px-4 py-2 md:top-18 md:row-span-2 md:mx-0 md:grid md:content-start md:gap-px md:overflow-visible md:border-0 md:bg-transparent md:p-0 xl:row-span-1"
         >
-          <h2 className="t-caption hidden px-2.5 pb-1.5 tracking-wider text-muted-foreground uppercase md:block">
+          <h2 className="t-overline hidden px-2 pb-1 text-muted-foreground md:block">
             Seções
           </h2>
           {SECTIONS.map((section) => (
@@ -418,7 +411,7 @@ export function PartnerForm({
               type="button"
               aria-current={activeSection === section.id ? 'true' : undefined}
               onClick={() => scrollTo(section.id)}
-              className="t-label flex min-h-11 flex-none cursor-pointer items-center justify-between gap-2 rounded-md px-2.5 text-left whitespace-nowrap text-neutral hover:bg-surface-muted hover:text-foreground aria-[current=true]:bg-surface aria-[current=true]:font-semibold aria-[current=true]:text-foreground aria-[current=true]:ring-1 aria-[current=true]:ring-border md:min-h-control-md"
+              className="t-label flex min-h-11 flex-none cursor-pointer items-center justify-between gap-2 rounded-control border border-transparent px-2 text-left whitespace-nowrap text-foreground-soft hover:bg-surface-muted hover:text-foreground aria-[current=true]:border-border aria-[current=true]:bg-surface aria-[current=true]:font-semibold aria-[current=true]:text-foreground md:min-h-control-sm"
             >
               {section.label}
               <SectionStatus state={sectionStates[section.id]} />
@@ -539,7 +532,7 @@ export function PartnerForm({
                   Categorias
                 </span>
                 {categories.length === 0 ? (
-                  <p className="t-small muted">
+                  <p className="t-body-small muted">
                     Nenhuma categoria cadastrada. Cadastre categorias para
                     classificar o parceiro.
                   </p>
@@ -631,13 +624,13 @@ export function PartnerForm({
 
         <aside
           aria-label="Resumo do cadastro"
-          className="grid content-start gap-3 md:col-start-2 md:grid-cols-2 xl:sticky xl:top-20 xl:col-start-3 xl:row-start-1 xl:grid-cols-1"
+          className="grid content-start gap-3 md:col-start-2 md:grid-cols-2 xl:sticky xl:top-18 xl:col-start-3 xl:row-start-1 xl:grid-cols-1"
         >
-          <section className="rounded-xl border border-border bg-surface shadow-sm">
-            <div className="flex items-center justify-between gap-3 px-4 py-3.5">
-              <h2 className="t-card">Situação</h2>
+          <section className="rounded-card border border-border bg-surface">
+            <div className="flex items-center justify-between gap-3 px-4 py-3">
+              <h2 className="t-section">Situação</h2>
               <span
-                className={`t-label inline-flex items-center gap-1.5 ${pendingChanges ? 'text-warning' : 'text-success'}`}
+                className={`t-caption inline-flex items-center gap-1.5 ${pendingChanges ? 'text-warning' : 'text-success'}`}
               >
                 <span
                   className="size-1.5 rounded-full bg-current"
@@ -664,25 +657,14 @@ export function PartnerForm({
               ].map(([term, detail]) => (
                 <div
                   key={String(term)}
-                  className="grid grid-cols-[110px_minmax(0,1fr)] items-baseline gap-3 border-b border-border py-2.5 last:border-b-0"
+                  className="grid grid-cols-[110px_minmax(0,1fr)] items-baseline gap-3 border-b border-border py-2 last:border-b-0"
                 >
-                  <dt className="t-small muted">{term}</dt>
-                  <dd className="t-label tnum">{detail}</dd>
+                  <dt className="t-body-small muted">{term}</dt>
+                  <dd className="tnum">{detail}</dd>
                 </div>
               ))}
             </dl>
             <div className="grid gap-2 border-t border-border p-4">
-              {canSave ? (
-                <Button
-                  type="submit"
-                  form="partner-form"
-                  variant="primary"
-                  block
-                  loading={create.isPending || replace.isPending}
-                >
-                  Salvar
-                </Button>
-              ) : null}
               {!isNew && canPublish && partner.status !== 'published' ? (
                 <Button
                   block
@@ -714,7 +696,7 @@ export function PartnerForm({
               ) : null}
               {!isNew && canPublish && partner.status === 'published' ? (
                 <Button
-                  variant="danger"
+                  variant="danger-quiet"
                   block
                   disabled={busy || isDirty}
                   onClick={() => setDeactivating(true)}
@@ -726,9 +708,9 @@ export function PartnerForm({
           </section>
 
           {partner?.status !== 'published' ? (
-            <section className="rounded-xl border border-border bg-surface shadow-sm">
-              <div className="px-4 py-3.5">
-                <h2 className="t-card">Para publicar</h2>
+            <section className="rounded-card border border-border bg-surface">
+              <div className="px-4 py-3">
+                <h2 className="t-section">Para publicar</h2>
               </div>
               <ul
                 id="publish-requirements"
@@ -737,14 +719,14 @@ export function PartnerForm({
                 {requirements.map((requirement) => (
                   <li
                     key={requirement.label}
-                    className="t-small flex items-start gap-2 py-1.5"
+                    className="t-body-small flex items-start gap-2 py-1.5"
                   >
                     <Icon
                       name={requirement.met ? 'check' : 'x'}
                       className={
                         requirement.met
-                          ? 'mt-0.5 text-success'
-                          : 'mt-0.5 text-muted-foreground'
+                          ? 'mt-px text-success'
+                          : 'mt-px text-placeholder'
                       }
                     />
                     <span className={requirement.met ? '' : 'muted'}>

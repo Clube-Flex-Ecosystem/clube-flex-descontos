@@ -72,7 +72,7 @@ export function LoginPage({ notice }: { notice?: LoginNotice | undefined }) {
         <Button type="submit" variant="primary" block loading={login.isPending}>
           Entrar
         </Button>
-        <div className="t-small flex flex-wrap justify-between gap-3">
+        <div className="t-body-small flex flex-wrap justify-between gap-3">
           <Link to="/ativar">Ativar conta</Link>
           <Link to="/recuperar">Esqueci minha senha</Link>
         </div>

@@ -43,7 +43,7 @@ export function CategoriesData({
         title="Nenhuma categoria cadastrada"
         action={
           canManage ? (
-            <Button variant="primary" compact onClick={onCreate}>
+            <Button compact onClick={onCreate}>
               Nova categoria
             </Button>
           ) : undefined

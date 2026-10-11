@@ -43,19 +43,19 @@ export function ContactsEditor({
               <tr>
                 <th
                   scope="col"
-                  className="t-small w-36 pr-2 pb-1.5 text-left font-medium text-muted-foreground"
+                  className="t-body-small w-36 pr-2 pb-1.5 text-left font-medium text-muted-foreground"
                 >
                   Tipo
                 </th>
                 <th
                   scope="col"
-                  className="t-small pr-2 pb-1.5 text-left font-medium text-muted-foreground"
+                  className="t-body-small pr-2 pb-1.5 text-left font-medium text-muted-foreground"
                 >
                   Número
                 </th>
                 <th
                   scope="col"
-                  className="t-small pr-2 pb-1.5 text-left font-medium text-muted-foreground"
+                  className="t-body-small pr-2 pb-1.5 text-left font-medium text-muted-foreground"
                 >
                   Identificação (opcional)
                 </th>
