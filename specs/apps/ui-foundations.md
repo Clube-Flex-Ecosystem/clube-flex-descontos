@@ -13,19 +13,20 @@ aprovação explícita e só depois pode ser aplicada em `apps/catalog/` ou
 `apps/dashboard/`. Os aplicativos não são fonte para definir alterações
 visuais. Consulte o [processo de evolução da interface](../ui-change-process.md).
 
-A interface é construída a partir de três fontes, nesta ordem de precedência quando houver conflito:
+A interface separa as fontes por responsabilidade, sem criar uma precedência
+única que permita uma fonte substituir outra:
 
-1. **Especificação de interface** ([catálogo](catalog/interface.md) e [dashboard](dashboard/interface.md)): fluxos, copy aprovada, estados, regras e comportamento.
-2. **Protótipos navegáveis** em [`specs/prototypes/`](../prototypes/): estrutura de página, composição, componentes, estados visuais e interações. São a referência de construção; a implementação reproduz sua estrutura e seus estados, e não os reinventa.
-3. **Tokens** em [`apps/dashboard/src/styles/tailwind.css`](../../apps/dashboard/src/styles/tailwind.css): paleta, tipografia, escalas, raios, sombras e dimensões de controles.
+1. **Especificação de interface** ([catálogo](catalog/interface.md) e [dashboard](dashboard/interface.md)): fluxos, copy aprovada, requisitos funcionais, regras e comportamento.
+2. **Protótipos navegáveis** em [`specs/prototypes/`](../prototypes/): fonte vinculante para estrutura visual, composição, componentes, medidas, tipografia, pesos, cores, espaçamentos, estados visuais, interações e animações. A implementação reproduz sua estrutura e seus estados, e não os reinventa.
+3. **Tokens** definidos neste documento: valores compartilhados de cor, tipografia, escalas, raios, sombras e dimensões de controles. O arquivo [`apps/dashboard/src/styles/tailwind.css`](../../apps/dashboard/src/styles/tailwind.css) materializa esses valores para os aplicativos e não é uma fonte concorrente.
 
 Regras:
 
 - Valores visuais (cores, tamanhos, sombras, raios) vêm dos tokens. Não são introduzidos valores literais nos componentes.
-- Os protótipos espelham os valores dos tokens; ao alterar um token, os protótipos são atualizados na mesma mudança.
-- O catálogo adota o mesmo bloco de tokens quando for construído (incremento 4); até lá, o arquivo do dashboard é a fonte única. Quando os dois apps o consumirem, o arquivo passa a um local compartilhado, mediante decisão arquitetural.
+- Os protótipos espelham os valores dos tokens; ao alterar um token, os protótipos e a materialização nos aplicativos são atualizados na mesma mudança.
+- O catálogo adota o mesmo bloco de tokens quando for construído (incremento 4). Até lá, o arquivo do dashboard é apenas a materialização atual; quando os dois apps o consumirem, o arquivo pode passar a um local compartilhado mediante decisão arquitetural, sem alterar a autoridade desta especificação.
 - Os protótipos não definem contratos, regras de negócio nem dados; usam dados ilustrativos.
-- Divergência entre protótipo e especificação de interface é tratada como defeito de documentação e resolvida antes da implementação afetada.
+- Divergência entre protótipo e especificação de interface é tratada como defeito de documentação e resolvida antes da implementação afetada. O agente não escolhe uma fonte silenciosamente.
 
 ## Linguagem visual
 

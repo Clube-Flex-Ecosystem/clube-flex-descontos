@@ -55,7 +55,7 @@ O catálogo prioriza conteúdo SSR e baixo JavaScript, enquanto o dashboard poss
 
 ## Revisão 2026-10-10
 
-- **Estilos e tokens:** o responsável definiu o `index.css` fornecido como paleta principal de catálogo e dashboard. Ele passa a ser `apps/dashboard/src/styles/tailwind.css`, fonte de verdade dos tokens. O catálogo adota o mesmo bloco no incremento 4; um local compartilhado só será criado mediante decisão arquitetural.
+- **Estilos e tokens:** o responsável definiu o `index.css` fornecido como paleta principal de catálogo e dashboard. Os valores aprovados são definidos nos fundamentos compartilhados de interface e materializados atualmente em `apps/dashboard/src/styles/tailwind.css`. O catálogo adota o mesmo bloco no incremento 4; um local compartilhado só será criado mediante decisão arquitetural.
 - **Dashboard com Tailwind:** a decisão anterior de não definir biblioteca de estilos para o dashboard foi substituída pelo uso de Tailwind CSS 4.
 - **Metadata:** o título deixa de ser atualizado por `useEffect` e passa a ser declarado no `head` de cada rota.
 - **Protótipos:** passam a ser a fonte de construção da UI (ver [fundamentos de interface](../apps/ui-foundations.md)).
