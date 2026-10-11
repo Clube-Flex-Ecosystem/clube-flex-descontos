@@ -68,6 +68,31 @@ const glyphs = {
       <circle cx="8" cy="9" r="1.2" />
     </>
   ),
+  leads: (
+    <>
+      <rect x="3" y="4" width="5" height="16" rx="1.5" />
+      <rect x="10" y="4" width="5" height="11" rx="1.5" />
+      <rect x="17" y="4" width="4" height="7" rx="1.5" />
+    </>
+  ),
+  source: (
+    <>
+      <circle cx="12" cy="12" r="8" />
+      <circle cx="12" cy="12" r="3" />
+      <path d="M12 4v2M20 12h-2M12 20v-2M4 12h2" />
+    </>
+  ),
+  swap: (
+    <>
+      <path d="M7 7h13M16 3l4 4-4 4M17 17H4M8 13l-4 4 4 4" />
+    </>
+  ),
+  edit: (
+    <>
+      <path d="m4 20 4.5-1 10-10-3.5-3.5-10 10L4 20Z" />
+      <path d="m13.5 7 3.5 3.5" />
+    </>
+  ),
 } satisfies Record<string, ReactNode>;
 
 export type IconName = keyof typeof glyphs;

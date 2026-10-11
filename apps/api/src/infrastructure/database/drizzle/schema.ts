@@ -315,6 +315,8 @@ export const leadSources = pgTable('lead_sources', {
   kind: text('kind', { enum: ['automatic', 'manual'] }).notNull(),
   active: boolean('active').notNull().default(true),
   protected: boolean('protected').notNull().default(false),
+  requiresReferral: boolean('requires_referral').notNull().default(false),
+  version: integer('version').notNull().default(1),
   createdAt: timestamp('created_at', { withTimezone: true })
     .notNull()
     .defaultNow(),
@@ -332,6 +334,10 @@ export const leads = pgTable(
       .notNull()
       .references(() => leadSources.id),
     assigneeId: uuid('assignee_id').references(() => users.id),
+    sourceDetail: text('source_detail'),
+    referredBy: text('referred_by'),
+    lossReason: text('loss_reason'),
+    version: integer('version').notNull().default(1),
     hasPendingInterest: boolean('has_pending_interest')
       .notNull()
       .default(false),
@@ -353,6 +359,8 @@ export const leadContactRequests = pgTable(
     submittedEmail: text('submitted_email'),
     source: text('source').notNull(),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull(),
+    resolvedAt: timestamp('resolved_at', { withTimezone: true }),
+    resolvedBy: uuid('resolved_by').references(() => users.id),
   },
   (table) => [index('lead_contact_requests_lead_id_idx').on(table.leadId)],
 );
@@ -383,7 +391,25 @@ export const leadHistory = pgTable(
       .references(() => leads.id),
     type: text('type').notNull(),
     occurredAt: timestamp('occurred_at', { withTimezone: true }).notNull(),
+    actorUserId: uuid('actor_user_id').references(() => users.id),
     data: jsonb('data'),
   },
   (table) => [index('lead_history_lead_id_idx').on(table.leadId)],
+);
+
+export const leadObservations = pgTable(
+  'lead_observations',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    leadId: uuid('lead_id')
+      .notNull()
+      .references(() => leads.id),
+    authorUserId: uuid('author_user_id')
+      .notNull()
+      .references(() => users.id),
+    text: text('text').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull(),
+  },
+  (table) => [index('lead_observations_lead_id_idx').on(table.leadId)],
 );

@@ -34,6 +34,7 @@ import { ResolveSessionUseCase } from './modules/identity/use-cases/resolve-sess
 import { SetPasswordWithAccessCodeUseCase } from './modules/identity/use-cases/set-password-with-access-code.use-case';
 import { createDatabase } from './infrastructure/database/drizzle/client';
 import { PublicContactService } from './modules/leads/public-contact.service';
+import { CommercialService } from './modules/leads/commercial.service';
 import {
   DrizzleCatalogUnitOfWork,
   createCatalogRepositories,
@@ -67,6 +68,7 @@ export function createCompositionRoot(deps: CompositionDependencies) {
   return {
     leads: {
       public: new PublicContactService(db, deps.clock),
+      commercial: new CommercialService(db, deps.clock),
     },
     catalog: {
       public: new PublicCatalogService(plans, categories, partners),

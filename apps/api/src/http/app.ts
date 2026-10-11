@@ -17,7 +17,9 @@ import { createAdminCatalogRouter } from './routes/admin-catalog.routes';
 import { createAuthRouter } from './routes/auth.routes';
 import { createPublicCatalogRouter } from './routes/public-catalog.routes';
 import { createPublicContactRouter } from './routes/public-contact.routes';
+import { createAdminCommercialRouter } from './routes/admin-commercial.routes';
 import type { PublicContactService } from '../modules/leads/public-contact.service';
+import type { CommercialService } from '../modules/leads/commercial.service';
 import type { PublicCatalogService } from '../modules/catalog/use-cases/public-catalog.service';
 import {
   createHealthRouter,
@@ -29,7 +31,7 @@ export interface AppDependencies {
   checkReadiness: ReadinessCheck;
   identity: IdentityUseCases & { resolveSession: ResolveSessionUseCase };
   catalog: CatalogUseCases & { public: PublicCatalogService };
-  leads: { public: PublicContactService };
+  leads: { public: PublicContactService; commercial: CommercialService };
   /** Origens com permissão para CORS com credenciais e para operações mutáveis. */
   allowedOrigins: readonly string[];
   /** Proxies confiáveis à frente da API; `0` ignora `X-Forwarded-For`. */
@@ -74,6 +76,14 @@ export function createApp({
     '/v1/admin',
     createAdminCatalogRouter({
       useCases: catalog,
+      resolveSession: (input) => identity.resolveSession.execute(input),
+      originGuard: createOriginMiddleware(allowedOrigins),
+    }),
+  );
+  app.use(
+    '/v1/admin',
+    createAdminCommercialRouter({
+      service: leads.commercial,
       resolveSession: (input) => identity.resolveSession.execute(input),
       originGuard: createOriginMiddleware(allowedOrigins),
     }),

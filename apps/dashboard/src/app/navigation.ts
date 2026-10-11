@@ -2,7 +2,8 @@ import type { Permission } from '@flex/contracts';
 import type { IconName } from '../shared/ui/icon';
 
 export interface NavItem {
-  to: '/parceiros' | '/planos' | '/categorias' | '/senha';
+  to:
+    '/leads' | '/origens' | '/parceiros' | '/planos' | '/categorias' | '/senha';
   label: string;
   icon: IconName;
   /** Itens sem permissão de visualização são ocultados; a API segue como autoridade. */
@@ -19,6 +20,23 @@ export interface NavGroup {
  * entram junto com os módulos dos incrementos seguintes.
  */
 export const navigation: NavGroup[] = [
+  {
+    label: 'Comercial',
+    items: [
+      {
+        to: '/leads',
+        label: 'Leads',
+        icon: 'leads',
+        permission: 'leads.view-own',
+      },
+      {
+        to: '/origens',
+        label: 'Origens',
+        icon: 'source',
+        permission: 'sources.view',
+      },
+    ],
+  },
   {
     label: 'Catálogo',
     items: [
@@ -53,7 +71,10 @@ export function visibleNavigation(granted: readonly Permission[]): NavGroup[] {
     .map((group) => ({
       ...group,
       items: group.items.filter(
-        (item) => !item.permission || granted.includes(item.permission),
+        (item) =>
+          !item.permission ||
+          granted.includes(item.permission) ||
+          (item.to === '/leads' && granted.includes('leads.view-all')),
       ),
     }))
     .filter((group) => group.items.length > 0);

@@ -107,7 +107,7 @@ export type TestContext = ReturnType<typeof createTestApp>;
 
 export async function resetDatabase(pool: pg.Pool): Promise<void> {
   await pool.query(
-    'TRUNCATE lead_history, lead_consents, lead_contact_requests, leads, lead_sources, audit_events, access_codes, sessions, user_permissions, users, partners, categories, plans CASCADE',
+    'TRUNCATE lead_observations, lead_history, lead_consents, lead_contact_requests, leads, lead_sources, audit_events, access_codes, sessions, user_permissions, users, partners, categories, plans CASCADE',
   );
 }
 
