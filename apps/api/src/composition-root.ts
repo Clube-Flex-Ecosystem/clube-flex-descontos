@@ -17,6 +17,7 @@ import { SetPlanStatusUseCase } from './modules/catalog/use-cases/set-plan-statu
 import { UpdateCategoryUseCase } from './modules/catalog/use-cases/update-category.use-case';
 import { UpdatePartnerUseCase } from './modules/catalog/use-cases/update-partner.use-case';
 import { UpdatePlanUseCase } from './modules/catalog/use-cases/update-plan.use-case';
+import { PublicCatalogService } from './modules/catalog/use-cases/public-catalog.service';
 import { AccessCodeDelivery } from './modules/identity/access-code-delivery';
 import type {
   ApplicationLogger,
@@ -64,6 +65,7 @@ export function createCompositionRoot(deps: CompositionDependencies) {
 
   return {
     catalog: {
+      public: new PublicCatalogService(plans, categories, partners),
       listPlans: new ListPlansUseCase(plans),
       getPlan: new GetPlanUseCase(plans),
       createPlan: new CreatePlanUseCase(plans, deps.clock),

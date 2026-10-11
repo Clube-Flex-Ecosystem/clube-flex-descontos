@@ -1,0 +1,65 @@
+---
+import Icon from './Icon.astro';
+---
+
+<a class="skip-link" href="#main">
+  Ir para o conteúdo
+</a>
+<header class="site-header" id="site-header">
+  <div class="wrap">
+    <a class="logo" href="/" aria-label="Parceiros+ — página inicial">
+      Parceiros<span>+</span>
+      <span class="logo-note" aria-hidden="true">
+        logo provisória
+      </span>
+    </a>
+    <nav class="main-nav" aria-label="Navegação principal">
+      <a href="/#sobre">Sobre</a>
+      <a href="/#parceiros">Parceiros</a>
+      <a href="/#como-funciona">Como funciona</a>
+    </nav>
+    <a
+      class="btn primary sm header-cta"
+      href="mailto:comercial@flexcard.org.br?subject=Quero%20ser%20Flex"
+    >
+      Vem ser Flex
+    </a>
+    <button
+      class="menu-toggle"
+      type="button"
+      aria-expanded="false"
+      aria-controls="mobile-nav"
+      aria-label="Abrir menu"
+    >
+      <Icon name="menu" />
+    </button>
+  </div>
+  <nav
+    class="mobile-nav"
+    id="mobile-nav"
+    aria-label="Navegação principal"
+    hidden
+  >
+    <a href="/#sobre">Sobre</a>
+    <a href="/#parceiros">Parceiros</a>
+    <a href="/#como-funciona">Como funciona</a>
+  </nav>
+</header>
+<script>
+  const button = document.querySelector<HTMLButtonElement>('.menu-toggle');
+  const menu = document.querySelector<HTMLElement>('#mobile-nav');
+  button?.addEventListener('click', () => {
+    const open = button.getAttribute('aria-expanded') === 'true';
+    button.setAttribute('aria-expanded', String(!open));
+    button.setAttribute('aria-label', open ? 'Abrir menu' : 'Fechar menu');
+    if (menu) menu.hidden = open;
+  });
+  addEventListener(
+    'scroll',
+    () =>
+      document
+        .querySelector('#site-header')
+        ?.classList.toggle('scrolled', scrollY > 8),
+    { passive: true },
+  );
+</script>

@@ -160,6 +160,18 @@ Disponibilizar a consulta pública indexável e prioritariamente móvel.
 
 O visitante seleciona um plano, filtra por categoria, consulta um parceiro e compartilha sua URL. Conteúdo geral do parceiro é indexável sem seleção automática de plano.
 
+### Registro de execução
+
+Executado em 2026-10-10. Decisões tomadas durante a execução, dentro do escopo aprovado:
+
+- **API pública:** planos, categorias, grade e detalhe usam as regras compartilhadas de visibilidade, precedência de cupom e herança de contatos. Slugs anteriores respondem com redirecionamento permanente.
+- **Renderização:** a home e o detalhe são Astro SSR; somente os filtros do catálogo hidratam como React Island, recebendo o resultado inicial do servidor.
+- **Contexto compartilhável:** `plano` usa o slug público na URL e `categoria` usa UUID; nenhum plano é recuperado de armazenamento local.
+- **Interface:** estrutura, copy e estados seguem o protótipo e os tokens aprovados.
+- **SEO:** detalhe com metadados próprios e JSON-LD; conteúdo geral permanece disponível sem plano.
+- **Incremento 5 preservado:** o assistente e a captação não foram antecipados. As chamadas comerciais usam o e-mail oficial até essa entrega.
+- **Verificações:** integração cobre elegibilidade, ordenação, cupons, detalhe geral e redirecionamento; E2E, axe e Core Web Vitals permanecem no incremento 8.
+
 ## Incremento 5 — Assistente e captação pública
 
 ### Objetivo

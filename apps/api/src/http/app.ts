@@ -15,6 +15,8 @@ import {
 } from './middlewares/rate-limit.middleware';
 import { createAdminCatalogRouter } from './routes/admin-catalog.routes';
 import { createAuthRouter } from './routes/auth.routes';
+import { createPublicCatalogRouter } from './routes/public-catalog.routes';
+import type { PublicCatalogService } from '../modules/catalog/use-cases/public-catalog.service';
 import {
   createHealthRouter,
   type ReadinessCheck,
@@ -24,7 +26,7 @@ export interface AppDependencies {
   logger: Logger;
   checkReadiness: ReadinessCheck;
   identity: IdentityUseCases & { resolveSession: ResolveSessionUseCase };
-  catalog: CatalogUseCases;
+  catalog: CatalogUseCases & { public: PublicCatalogService };
   /** Origens com permissão para CORS com credenciais e para operações mutáveis. */
   allowedOrigins: readonly string[];
   /** Proxies confiáveis à frente da API; `0` ignora `X-Forwarded-For`. */
@@ -51,6 +53,7 @@ export function createApp({
   app.use(express.json({ limit: '100kb' }));
 
   app.use('/v1/health', createHealthRouter(checkReadiness));
+  app.use('/v1/public', createPublicCatalogRouter(catalog.public));
 
   app.use(
     '/v1/auth',

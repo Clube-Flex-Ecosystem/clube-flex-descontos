@@ -1,0 +1,71 @@
+---
+import Icon from './Icon.astro';
+---
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a class="logo" href="/">
+          Parceiros<span>+</span>
+        </a>
+        <p>O Clube Flex é um clube de descontos. Não é plano de saúde.</p>
+      </div>
+      <nav aria-labelledby="f-nav">
+        <h2 id="f-nav">Navegação</h2>
+        <ul>
+          <li>
+            <a href="/#sobre">Sobre</a>
+          </li>
+          <li>
+            <a href="/#parceiros">Parceiros</a>
+          </li>
+          <li>
+            <a href="/#como-funciona">Como funciona</a>
+          </li>
+          <li>
+            <a href="mailto:comercial@flexcard.org.br?subject=Quero%20ser%20parceiro">
+              Quero ser parceiro
+            </a>
+          </li>
+        </ul>
+      </nav>
+      <div>
+        <h2>Contato</h2>
+        <ul>
+          <li>
+            <a href="tel:+552127029080">
+              <Icon name="phone" small />
+              21 2702-9080
+            </a>
+          </li>
+          <li>
+            <a href="https://wa.me/552127029080" target="_blank" rel="noopener">
+              <Icon name="chat" small />
+              WhatsApp
+            </a>
+          </li>
+          <li>
+            <a href="mailto:comercial@flexcard.org.br">
+              <Icon name="mail" small />
+              comercial@flexcard.org.br
+            </a>
+          </li>
+          <li>
+            <span class="footer-address">
+              <Icon name="pin" small />
+              Rua Laureano Rosa 100, São Gonçalo, RJ
+            </span>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-legal">
+      <span>© Clube Flex</span>
+      <nav aria-label="Documentos legais">
+        <a href="/termos">Termos de uso</a>
+        <a href="/privacidade">Privacidade</a>
+      </nav>
+    </div>
+  </div>
+</footer>

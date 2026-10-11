@@ -349,6 +349,56 @@ export const partnerSchema = z.object({
 });
 export type Partner = z.infer<typeof partnerSchema>;
 
+// ───────── Representações públicas ─────────
+
+export const publicPlanSchema = planSchema.pick({
+  id: true,
+  name: true,
+  slug: true,
+});
+export type PublicPlan = z.infer<typeof publicPlanSchema>;
+
+export const publicCategorySchema = categorySchema.pick({
+  id: true,
+  name: true,
+});
+export type PublicCategory = z.infer<typeof publicCategorySchema>;
+
+const publicContactSchema = contactSchema.omit({ id: true }).extend({
+  inherited: z.boolean().optional(),
+});
+
+export const publicPartnerSchema = z.object({
+  slug: z.string(),
+  name: z.string(),
+  description: z.string(),
+  featured: z.boolean(),
+  categories: z.array(publicCategorySchema),
+  discountPercentage: z.number().int().min(1).max(100).optional(),
+  coupon: z.string().optional(),
+  usageInstructions: z.string(),
+  website: z.string().optional(),
+  contacts: z.array(publicContactSchema),
+  units: z.array(
+    z.object({
+      name: z.string(),
+      address: z.object({
+        postalCode: z.string(),
+        street: z.string(),
+        number: z.string(),
+        complement: z.string().optional(),
+        neighborhood: z.string(),
+        city: z.string(),
+        state: z.string(),
+      }),
+      openingHours: z.string().optional(),
+      instructions: z.string().optional(),
+      contacts: z.array(publicContactSchema),
+    }),
+  ),
+});
+export type PublicPartner = z.infer<typeof publicPartnerSchema>;
+
 // ───────── Regras de publicação e visibilidade ─────────
 
 export interface PublicationIssue {

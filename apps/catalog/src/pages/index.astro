@@ -1,15 +1,233 @@
 ---
+import PublicLayout from '../layouts/PublicLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Icon from '../components/Icon.astro';
+import CatalogIsland from '../features/catalog/components/CatalogIsland';
+import {
+  listCategories,
+  listPartners,
+  listPlans,
+} from '../features/catalog/api/public-catalog';
+const plans = await listPlans().catch(() => []);
+const planSlug = Astro.url.searchParams.get('plano');
+const categoryId = Astro.url.searchParams.get('categoria') ?? undefined;
+const initialPlan = plans.find((p) => p.slug === planSlug);
+const initialInvalid = Boolean(planSlug && !initialPlan);
+const [initialCategories, initialPartners] = initialPlan
+  ? await Promise.all([
+      listCategories(initialPlan.id),
+      listPartners(initialPlan.id, categoryId),
+    ]).catch(() => [[], []])
+  : [[], []];
+const ribbon = [
+  'Saúde',
+  'Educação',
+  'Lazer',
+  'Bem-estar',
+  'Família',
+  'Odontologia',
+];
 ---
 
-<html lang="pt-BR">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Clube Flex — Parceiros</title>
-  </head>
-  <body>
-    <main>
-      <h1>Clube Flex</h1>
-    </main>
-  </body>
-</html>
+<PublicLayout
+  title="Clube Flex — Parceiros"
+  description="Descontos em saúde, educação, lazer e muito mais para você e sua família."
+>
+  <Header />
+  <main id="main" tabindex="-1">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="wrap">
+        <div>
+          <span class="badge-pill">
+            <i>
+              <Icon name="heart" small />
+            </i>
+            Desde 2010 cuidando da sua família
+          </span>
+          <h1 class="display" id="hero-title">
+            Saúde e Qualidade de Vida que <em>você e sua família</em> merecem.
+          </h1>
+          <p class="lead">
+            Saúde, Educação, lazer e muito mais. Vantagens reais para você e seu
+            bolso. Descontos que merecem ser contados.
+          </p>
+          <div class="hero-actions">
+            <a
+              class="btn accent"
+              href="mailto:comercial@flexcard.org.br?subject=Quero%20ser%20Flex"
+            >
+              Vem ser Flex
+            </a>
+            <a class="btn secondary" href="#parceiros">
+              Explorar parceiros <Icon name="down" small />
+            </a>
+          </div>
+        </div>
+        <div class="hero-art" aria-hidden="true">
+          <div class="blob a"></div>
+          <div class="blob b"></div>
+          <div class="blob c"></div>
+          <div class="float-card one">
+            <span class="float-dot">
+              <Icon name="heart" />
+            </span>
+            <div>
+              <small>Saúde</small>
+              <strong>até 40%</strong>
+            </div>
+          </div>
+          <div class="float-card two">
+            <span class="float-dot">
+              <Icon name="book" />
+            </span>
+            <div>
+              <small>Educação</small>
+              <strong>até 30%</strong>
+            </div>
+          </div>
+          <div class="float-card three">
+            <span class="float-dot">
+              <Icon name="spark" />
+            </span>
+            <div>
+              <b>Lazer e bem-estar</b>
+              <small>para toda a família</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <div class="ribbon-wrap" aria-hidden="true">
+      <div class="ribbon">
+        <div class="ribbon-track">
+          {[...ribbon, ...ribbon].map((item) => (
+            <span>{item}</span>
+          ))}
+        </div>
+      </div>
+    </div>
+    <section class="section" id="sobre" aria-labelledby="about-title">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="eyebrow">Clube Flex</p>
+          <h2 class="display" id="about-title">
+            Mais que descontos. Uma rotina mais generosa.
+          </h2>
+        </div>
+        <ul class="values">
+          <li class="value">
+            <span class="v-icon">
+              <Icon name="badge" />
+            </span>
+            <h3>Parceiros selecionados</h3>
+            <p>
+              Clínicas, escolas e espaços de lazer escolhidos com cuidado para
+              atender você e sua família.
+            </p>
+          </li>
+          <li class="value">
+            <span class="v-icon">
+              <Icon name="heart" />
+            </span>
+            <h3>Benefícios de verdade</h3>
+            <p>
+              Descontos claros, de acordo com o seu plano, para usar no dia a
+              dia.
+            </p>
+          </li>
+          <li class="value">
+            <span class="v-icon">
+              <Icon name="check" />
+            </span>
+            <h3>Sem complicação</h3>
+            <p>Escolha o parceiro, siga as instruções de uso e aproveite.</p>
+          </li>
+          <li class="value">
+            <span class="v-icon">
+              <Icon name="calendar" />
+            </span>
+            <h3>Atualizações mensais</h3>
+            <p>
+              Novos parceiros e condições entram no catálogo com frequência.
+            </p>
+          </li>
+        </ul>
+      </div>
+    </section>
+    <section
+      class="section catalog"
+      id="parceiros"
+      aria-labelledby="catalog-title"
+    >
+      <div class="wrap">
+        <CatalogIsland
+          client:load
+          plans={plans}
+          initialPlan={initialPlan}
+          initialCategory={categoryId}
+          initialCategories={initialCategories}
+          initialPartners={initialPartners}
+          initialInvalid={initialInvalid}
+        />
+      </div>
+    </section>
+    <section class="section" id="como-funciona" aria-labelledby="steps-title">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="eyebrow">Como funciona</p>
+          <h2 class="display" id="steps-title">
+            Em quatro passos.
+          </h2>
+        </div>
+        <ol class="steps">
+          <li class="step">
+            <span class="step-n">01</span>
+            <h3>Cadastre-se</h3>
+            <p>
+              Deixe seus dados e a equipe do Clube Flex entra em contato para
+              apresentar os planos.
+            </p>
+            <a
+              class="btn primary sm"
+              href="mailto:comercial@flexcard.org.br?subject=Quero%20ser%20Flex"
+            >
+              Quero ser Flex
+            </a>
+          </li>
+          <li class="step">
+            <span class="step-n">02</span>
+            <h3>Explore parceiros</h3>
+            <p>
+              Escolha seu plano no catálogo e veja os descontos disponíveis por
+              categoria.
+            </p>
+          </li>
+          <li class="step">
+            <span class="step-n">03</span>
+            <h3>Use seu desconto</h3>
+            <p>
+              Siga as instruções de utilização de cada parceiro e apresente seu
+              cupom quando houver.
+            </p>
+          </li>
+          <li class="step">
+            <span class="step-n">04</span>
+            <h3>Economize sempre</h3>
+            <p>
+              Volte ao catálogo sempre que precisar e aproveite novas condições.
+            </p>
+          </li>
+        </ol>
+      </div>
+    </section>
+  </main>
+  <Footer />
+  <a
+    class="fab"
+    href="mailto:comercial@flexcard.org.br?subject=Quero%20ser%20Flex"
+    aria-label="Abrir assistente do Clube Flex"
+  >
+    <Icon name="chat" />
+  </a>
+</PublicLayout>

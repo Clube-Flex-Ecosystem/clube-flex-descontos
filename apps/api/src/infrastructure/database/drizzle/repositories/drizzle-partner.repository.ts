@@ -63,6 +63,24 @@ export class DrizzlePartnerRepository implements PartnerRepository {
     return (await this.hydrate(rows))[0] ?? null;
   }
 
+  async findBySlug(slug: string): Promise<PartnerRecord | null> {
+    const rows = await this.db
+      .select()
+      .from(partners)
+      .where(eq(partners.slug, slug));
+    return (await this.hydrate(rows))[0] ?? null;
+  }
+
+  async findCurrentSlugByPrevious(slug: string): Promise<string | null> {
+    const [row] = await this.db
+      .select({ slug: partners.slug })
+      .from(partnerSlugHistory)
+      .innerJoin(partners, eq(partnerSlugHistory.partnerId, partners.id))
+      .where(eq(partnerSlugHistory.slug, slug))
+      .limit(1);
+    return row?.slug ?? null;
+  }
+
   async hasSimilarName(name: string, excludingId: string): Promise<boolean> {
     const [row] = await this.db
       .select({ id: partners.id })
