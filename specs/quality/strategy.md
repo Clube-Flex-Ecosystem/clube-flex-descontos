@@ -38,7 +38,7 @@ Playwright cobre uma suíte pequena de jornadas críticas:
 2. enviar interesse pela jornada do assistente virtual;
 3. autenticar no dashboard;
 4. cadastrar e publicar parceiro;
-5. mover lead no pipeline;
+5. arrastar lead no Kanban para outra etapa, incluindo confirmação em etapa sensível;
 6. confirmar restrição por permissão.
 
 Os testes ponta a ponta não duplicam exaustivamente todas as variações já verificadas pelas suítes inferiores.

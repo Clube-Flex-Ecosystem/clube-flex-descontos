@@ -232,7 +232,7 @@ Executado em 2026-10-10. Decisões tomadas durante a execução, dentro do escop
 - **Agregado e concorrência:** leads, origens, observações e solicitações foram integrados ao PostgreSQL; toda mutação interna do lead usa `version`, `ETag` e `If-Match` e devolve a representação completa atualizada.
 - **Escopo:** `leads.view-own` limita a consulta aos leads atribuídos ao usuário; `leads.view-all` inclui todos e os sem responsável. Editar outro responsável exige visualização global, e o responsável pode devolver o próprio lead sem a permissão de redistribuição.
 - **Histórico:** criação, contato/origem, etapa, atribuição, observações e tratamento de interesse produzem eventos imutáveis. A correção de observação preserva o texto anterior no evento.
-- **Interface:** Kanban, filtros, destaque de novo interesse, detalhe, histórico, cadastro manual e origens seguem o protótipo do dashboard e os tokens existentes. A movimentação possui arraste e controle explícito acessível.
+- **Interface:** Kanban, filtros, destaque de novo interesse, detalhe, histórico, cadastro manual e origens seguem o protótipo do dashboard e os tokens existentes. Em 2026-10-11, o Kanban passou a usar `@dnd-kit/core`, com movimentação exclusivamente por arraste, sensores de ponteiro e teclado, overlay e confirmação ao soltar em etapas sensíveis; não há controle ou dialog de seleção manual de etapa.
 - **Limite do incremento:** exclusão ou anonimização de lead permanece no incremento 7, como definido no plano; o incremento 6 não expõe essa operação na interface.
 - **Verificações:** testes de integração cobrem cadastro, pipeline, conflito de versão, histórico, escopo próprio e devolução; lint, TypeScript e builds foram executados.
 

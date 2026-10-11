@@ -35,14 +35,13 @@ A navegação lateral é agrupada por responsabilidade:
 ## Leads
 
 - O pipeline utiliza quadro Kanban com as cinco etapas fixas.
-- A movimentação pode ocorrer por arrastar e por ação explícita `Alterar etapa`.
-- A alternativa explícita é obrigatória para teclado e tecnologia assistiva.
+- A movimentação ocorre exclusivamente pelo arraste do cartão entre as colunas, incluindo o sensor de teclado do Kanban; não há botão ou dialog de seleção manual de etapa.
 - Cada coluna apresenta o nome da etapa e a quantidade de leads.
 - Em larguras insuficientes, o quadro utiliza rolagem horizontal e preserva a largura legível dos cartões.
 - Cada cartão apresenta nome, WhatsApp, origem, responsável e indicador de novo interesse pendente.
 - Selecionar o cartão abre uma página própria de detalhe, não um modal.
 - O detalhe reúne dados, etapa, responsável, observações, solicitações de contato pendentes e histórico.
-- Mover para `converted` ou `lost` exige confirmação; ao mover para `lost`, a mesma interface permite informar o motivo opcional.
+- Soltar em `converted` ou `lost` exige confirmação; ao mover para `lost`, a confirmação permite informar o motivo opcional.
 - As demais mudanças de etapa são aplicadas diretamente.
 - O cartão é atualizado no cache com a representação completa retornada pela mutação.
 - Falhas restauram o estado confirmado e exibem mensagem acionável próxima ao quadro; um toast pode complementar, mas não é o único feedback.

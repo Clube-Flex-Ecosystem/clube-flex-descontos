@@ -16,6 +16,7 @@
 - Tailwind CSS 4 como camada de estilos, com tokens em `src/styles/tailwind.css` e utilidades aplicadas diretamente nos componentes.
 - Lucide React como biblioteca única de ícones do dashboard, encapsulada pelo componente semântico `shared/ui/icon.tsx`.
 - Radix UI como base de comportamento para componentes interativos complexos: dialogs, sheets laterais, confirmações, menus contextuais e toasts.
+- `@dnd-kit/core` para a movimentação entre as etapas fixas do Kanban; o módulo usa apenas sensores, cards arrastáveis e colunas de destino, sem a dependência de ordenação interna.
 - `tailwind-variants` para variantes visuais e `tailwind-merge` com `clsx` para composição segura de classes Tailwind.
 - Metadata do documento (título) declarada no `head` de cada rota e renderizada por `HeadContent`, sem efeitos manuais.
 - SPA não indexável.
@@ -109,6 +110,8 @@ No retorno de uma mutação:
 
 ### Kanban de leads
 
+- O Kanban é composto localmente por quadro, coluna, card, configuração das etapas e mutation; a página somente coordena filtros, criação e confirmação de transições sensíveis.
+- A movimentação ocorre exclusivamente pelo arraste do card entre as colunas. A biblioteca fornece sensores de ponteiro e teclado, overlay e estado de destino sem listeners HTML5 manuais.
 - A resposta da mudança de etapa substitui o lead nos caches de lista e detalhe, sem nova consulta da listagem.
 - Uma atualização otimista pode mover o cartão antes da resposta para melhorar a percepção de velocidade.
 - Quando usada, ela deve guardar o estado anterior e restaurá-lo em caso de erro.
