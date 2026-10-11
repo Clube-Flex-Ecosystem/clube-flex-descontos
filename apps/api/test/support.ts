@@ -96,6 +96,7 @@ export function createTestApp(databaseUrl = testDatabaseUrl) {
     checkReadiness: createDatabaseReadinessCheck(pool),
     identity: root.identity,
     catalog: root.catalog,
+    leads: root.leads,
     allowedOrigins: [DASHBOARD_ORIGIN],
     limiters: createAuthRateLimiters(),
   });
@@ -106,7 +107,7 @@ export type TestContext = ReturnType<typeof createTestApp>;
 
 export async function resetDatabase(pool: pg.Pool): Promise<void> {
   await pool.query(
-    'TRUNCATE audit_events, access_codes, sessions, user_permissions, users, partners, categories, plans CASCADE',
+    'TRUNCATE lead_history, lead_consents, lead_contact_requests, leads, lead_sources, audit_events, access_codes, sessions, user_permissions, users, partners, categories, plans CASCADE',
   );
 }
 

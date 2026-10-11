@@ -193,6 +193,17 @@ Captar interesse comercial e orientar interessados em parceria.
 
 Contato novo cria lead sem responsável; contato existente registra novo interesse sem sobrescrever o lead; ambas as respostas públicas são indistinguíveis.
 
+### Registro de execução
+
+Executado em 2026-10-10. Decisões tomadas durante a execução, dentro do escopo aprovado:
+
+- **Assistente independente:** React Island determinístico com `useReducer`, React Hook Form e Zod Resolver; os dados permanecem apenas em memória até o envio.
+- **Consentimento versionado:** a API publica a definição vigente e aceita somente sua versão; a evidência registra data, versão e origem, sem IP.
+- **Captação transacional:** a origem protegida `catálogo/site` nasce automaticamente. Um WhatsApp novo cria lead sem responsável; um existente preserva os dados e registra nova solicitação, consentimento, histórico e interesse pendente.
+- **Proteção pública:** as duas situações retornam a mesma resposta `202`; o endpoint possui rate limiting por IP processado apenas em memória.
+- **Interface:** os estados, textos, medidas e responsividade foram transcritos do protótipo do catálogo; a jornada de parceria continua por e-mail e não persiste dados.
+- **Verificações:** testes de integração cobrem criação, duplicidade neutra, não sobrescrita, consentimento vigente e ausência de IP. A comparação visual automatizada em navegador não foi executada porque nenhum navegador estava disponível na sessão.
+
 ## Incremento 6 — Operação comercial
 
 ### Objetivo

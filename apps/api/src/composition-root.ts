@@ -33,6 +33,7 @@ import { RequestRecoveryUseCase } from './modules/identity/use-cases/request-rec
 import { ResolveSessionUseCase } from './modules/identity/use-cases/resolve-session.use-case';
 import { SetPasswordWithAccessCodeUseCase } from './modules/identity/use-cases/set-password-with-access-code.use-case';
 import { createDatabase } from './infrastructure/database/drizzle/client';
+import { PublicContactService } from './modules/leads/public-contact.service';
 import {
   DrizzleCatalogUnitOfWork,
   createCatalogRepositories,
@@ -64,6 +65,9 @@ export function createCompositionRoot(deps: CompositionDependencies) {
   );
 
   return {
+    leads: {
+      public: new PublicContactService(db, deps.clock),
+    },
     catalog: {
       public: new PublicCatalogService(plans, categories, partners),
       listPlans: new ListPlansUseCase(plans),

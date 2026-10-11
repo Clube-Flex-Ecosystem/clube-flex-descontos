@@ -4,6 +4,7 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Icon from '../components/Icon.astro';
 import CatalogIsland from '../features/catalog/components/CatalogIsland';
+import AssistantIsland from '../features/assistant/components/AssistantIsland';
 import {
   listCategories,
   listPartners,
@@ -53,12 +54,9 @@ const ribbon = [
             bolso. Descontos que merecem ser contados.
           </p>
           <div class="hero-actions">
-            <a
-              class="btn accent"
-              href="mailto:comercial@flexcard.org.br?subject=Quero%20ser%20Flex"
-            >
+            <button class="btn accent" type="button" data-open-assistant="flex">
               Vem ser Flex
-            </a>
+            </button>
             <a class="btn secondary" href="#parceiros">
               Explorar parceiros <Icon name="down" small />
             </a>
@@ -188,12 +186,13 @@ const ribbon = [
               Deixe seus dados e a equipe do Clube Flex entra em contato para
               apresentar os planos.
             </p>
-            <a
+            <button
               class="btn primary sm"
-              href="mailto:comercial@flexcard.org.br?subject=Quero%20ser%20Flex"
+              type="button"
+              data-open-assistant="flex"
             >
               Quero ser Flex
-            </a>
+            </button>
           </li>
           <li class="step">
             <span class="step-n">02</span>
@@ -223,11 +222,5 @@ const ribbon = [
     </section>
   </main>
   <Footer />
-  <a
-    class="fab"
-    href="mailto:comercial@flexcard.org.br?subject=Quero%20ser%20Flex"
-    aria-label="Abrir assistente do Clube Flex"
-  >
-    <Icon name="chat" />
-  </a>
+  <AssistantIsland client:load />
 </PublicLayout>

@@ -17,6 +17,8 @@ const envSchema = z
       .optional(),
     // Origem do dashboard: única permitida pelo CORS com credenciais e base dos links de e-mail.
     DASHBOARD_ORIGIN: optionalText,
+    // Origem pública que hidrata os Islands do catálogo.
+    CATALOG_ORIGIN: optionalText,
     // Quantidade de proxies confiáveis à frente da API (Coolify); 0 não confia em `X-Forwarded-For`.
     TRUST_PROXY_HOPS: z.coerce.number().int().min(0).max(10).default(0),
     RESEND_API_KEY: optionalText,
@@ -45,6 +47,10 @@ const envSchema = z
   .transform((env) => ({
     ...env,
     DASHBOARD_ORIGIN: (env.DASHBOARD_ORIGIN ?? 'http://localhost:5173').replace(
+      /\/+$/,
+      '',
+    ),
+    CATALOG_ORIGIN: (env.CATALOG_ORIGIN ?? 'http://localhost:4321').replace(
       /\/+$/,
       '',
     ),

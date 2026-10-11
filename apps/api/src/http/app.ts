@@ -16,6 +16,8 @@ import {
 import { createAdminCatalogRouter } from './routes/admin-catalog.routes';
 import { createAuthRouter } from './routes/auth.routes';
 import { createPublicCatalogRouter } from './routes/public-catalog.routes';
+import { createPublicContactRouter } from './routes/public-contact.routes';
+import type { PublicContactService } from '../modules/leads/public-contact.service';
 import type { PublicCatalogService } from '../modules/catalog/use-cases/public-catalog.service';
 import {
   createHealthRouter,
@@ -27,6 +29,7 @@ export interface AppDependencies {
   checkReadiness: ReadinessCheck;
   identity: IdentityUseCases & { resolveSession: ResolveSessionUseCase };
   catalog: CatalogUseCases & { public: PublicCatalogService };
+  leads: { public: PublicContactService };
   /** Origens com permissão para CORS com credenciais e para operações mutáveis. */
   allowedOrigins: readonly string[];
   /** Proxies confiáveis à frente da API; `0` ignora `X-Forwarded-For`. */
@@ -39,6 +42,7 @@ export function createApp({
   checkReadiness,
   identity,
   catalog,
+  leads,
   allowedOrigins,
   trustProxyHops = 0,
   limiters = createAuthRateLimiters(),
@@ -54,6 +58,7 @@ export function createApp({
 
   app.use('/v1/health', createHealthRouter(checkReadiness));
   app.use('/v1/public', createPublicCatalogRouter(catalog.public));
+  app.use('/v1/public', createPublicContactRouter(leads.public));
 
   app.use(
     '/v1/auth',

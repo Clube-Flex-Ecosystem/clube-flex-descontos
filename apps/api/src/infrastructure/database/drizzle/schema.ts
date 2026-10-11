@@ -306,3 +306,84 @@ export const partnerBenefits = pgTable(
     ),
   ],
 );
+
+// ─── Captação pública (incremento 5) ───
+
+export const leadSources = pgTable('lead_sources', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  name: text('name').notNull().unique(),
+  kind: text('kind', { enum: ['automatic', 'manual'] }).notNull(),
+  active: boolean('active').notNull().default(true),
+  protected: boolean('protected').notNull().default(false),
+  createdAt: timestamp('created_at', { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+});
+
+export const leads = pgTable(
+  'leads',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    name: text('name').notNull(),
+    whatsapp: text('whatsapp').notNull().unique(),
+    email: text('email'),
+    stage: text('stage').notNull().default('new'),
+    sourceId: uuid('source_id')
+      .notNull()
+      .references(() => leadSources.id),
+    assigneeId: uuid('assignee_id').references(() => users.id),
+    hasPendingInterest: boolean('has_pending_interest')
+      .notNull()
+      .default(false),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull(),
+  },
+  (table) => [index('leads_source_id_idx').on(table.sourceId)],
+);
+
+export const leadContactRequests = pgTable(
+  'lead_contact_requests',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    leadId: uuid('lead_id')
+      .notNull()
+      .references(() => leads.id),
+    submittedName: text('submitted_name').notNull(),
+    submittedWhatsapp: text('submitted_whatsapp').notNull(),
+    submittedEmail: text('submitted_email'),
+    source: text('source').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull(),
+  },
+  (table) => [index('lead_contact_requests_lead_id_idx').on(table.leadId)],
+);
+
+export const leadConsents = pgTable(
+  'lead_consents',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    leadId: uuid('lead_id')
+      .notNull()
+      .references(() => leads.id),
+    contactRequestId: uuid('contact_request_id')
+      .notNull()
+      .references(() => leadContactRequests.id),
+    version: text('version').notNull(),
+    source: text('source').notNull(),
+    acceptedAt: timestamp('accepted_at', { withTimezone: true }).notNull(),
+  },
+  (table) => [index('lead_consents_lead_id_idx').on(table.leadId)],
+);
+
+export const leadHistory = pgTable(
+  'lead_history',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    leadId: uuid('lead_id')
+      .notNull()
+      .references(() => leads.id),
+    type: text('type').notNull(),
+    occurredAt: timestamp('occurred_at', { withTimezone: true }).notNull(),
+    data: jsonb('data'),
+  },
+  (table) => [index('lead_history_lead_id_idx').on(table.leadId)],
+);

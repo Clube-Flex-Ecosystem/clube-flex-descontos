@@ -13,7 +13,8 @@ const app = createApp({
   checkReadiness: createDatabaseReadinessCheck(pool),
   identity: root.identity,
   catalog: root.catalog,
-  allowedOrigins: [env.DASHBOARD_ORIGIN],
+  leads: root.leads,
+  allowedOrigins: [env.DASHBOARD_ORIGIN, env.CATALOG_ORIGIN],
   trustProxyHops: env.TRUST_PROXY_HOPS,
 });
 
