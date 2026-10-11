@@ -24,6 +24,22 @@
 
 ## Evolução durante a implementação
 
+## Arquitetura de styling
+
+- `src/styles/tailwind.css` contém somente os tokens executáveis do catálogo,
+  a base global mínima, regras globais de acessibilidade e keyframes/motion
+  compartilhados quando necessários.
+- A interface é composta com utilities Tailwind nos componentes proprietários
+  da página, das estruturas compartilhadas e das features.
+- Primitives independentes de domínio podem viver em `components/ui/` quando
+  houver reutilização concreta e uma API pequena. Componentes específicos de
+  catálogo, assistente, parceiro ou home permanecem dentro da feature.
+- Não devem ser criadas classes semânticas globais para esconder a composição
+  visual de header, footer, hero, cards, filtros, estados ou assistente.
+- A migração de styling é classificada como refactor técnico sem mudança
+  intencional de comportamento; valores aprovados e comportamento responsivo
+  devem ser preservados.
+
 Nomes de arquivos e subdivisões internas podem ser ajustados conforme surgirem consumidores reais, sem romper as fronteiras aprovadas entre páginas Astro, features, Islands e código compartilhado.
 
 ## Organização modular aprovada

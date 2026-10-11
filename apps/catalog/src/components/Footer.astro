@@ -2,69 +2,126 @@
 import { Mail, MapPin, MessageSquare, Phone } from '@lucide/astro';
 ---
 
-<footer class="site-footer">
-  <div class="wrap">
-    <div class="footer-grid">
-      <div class="footer-brand">
-        <a class="logo" href="/">
-          Parceiros<span>+</span>
+<footer class="bg-sidebar px-0 pb-8 pt-14 text-sidebar-foreground">
+  <div class="mx-auto w-full max-w-[1200px] px-4 md:px-8">
+    <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
+      <div>
+        <a
+          class="inline-flex min-h-11 items-center gap-0.5 font-display text-2xl font-semibold tracking-[-0.02em] text-sidebar-foreground no-underline"
+          href="/"
+        >
+          Parceiros<span class="text-accent">+</span>
         </a>
-        <p>O Clube Flex é um clube de descontos. Não é plano de saúde.</p>
+        <p class="mt-3 max-w-[26em] text-sidebar-muted">
+          O Clube Flex é um clube de descontos. Não é plano de saúde.
+        </p>
       </div>
       <nav aria-labelledby="f-nav">
-        <h2 id="f-nav">Navegação</h2>
+        <h2 id="f-nav" class="mb-2 text-[13px] uppercase tracking-[0.08em]">
+          Navegação
+        </h2>
         <ul>
           <li>
-            <a href="/#sobre">Sobre</a>
+            <a
+              class="inline-flex min-h-11 items-center gap-2 text-white no-underline hover:underline"
+              href="/#sobre"
+            >
+              Sobre
+            </a>
           </li>
           <li>
-            <a href="/#parceiros">Parceiros</a>
+            <a
+              class="inline-flex min-h-11 items-center gap-2 text-white no-underline hover:underline"
+              href="/#parceiros"
+            >
+              Parceiros
+            </a>
           </li>
           <li>
-            <a href="/#como-funciona">Como funciona</a>
+            <a
+              class="inline-flex min-h-11 items-center gap-2 text-white no-underline hover:underline"
+              href="/#como-funciona"
+            >
+              Como funciona
+            </a>
           </li>
           <li>
-            <button type="button" data-open-assistant="partner">
+            <button
+              class="inline-flex min-h-11 items-center gap-2 border-0 bg-transparent p-0 font-inherit text-white hover:underline"
+              type="button"
+              data-open-assistant="partner"
+            >
               Quero ser parceiro
             </button>
           </li>
         </ul>
       </nav>
       <div>
-        <h2>Contato</h2>
+        <h2 class="mb-2 text-[13px] uppercase tracking-[0.08em]">Contato</h2>
         <ul>
           <li>
-            <a href="tel:+552127029080">
-              <Phone class="icon sm" aria-hidden="true" stroke-width={1.75} />
+            <a
+              class="inline-flex min-h-11 items-center gap-2 text-white no-underline hover:underline"
+              href="tel:+552127029080"
+            >
+              <Phone
+                class="h-4 w-4 shrink-0"
+                aria-hidden="true"
+                stroke-width={1.75}
+              />
               21 2702-9080
             </a>
           </li>
           <li>
-            <a href="https://wa.me/552127029080" target="_blank" rel="noopener">
-              <MessageSquare class="icon sm" aria-hidden="true" stroke-width={1.75} />
+            <a
+              class="inline-flex min-h-11 items-center gap-2 text-white no-underline hover:underline"
+              href="https://wa.me/552127029080"
+              target="_blank"
+              rel="noopener"
+            >
+              <MessageSquare
+                class="h-4 w-4 shrink-0"
+                aria-hidden="true"
+                stroke-width={1.75}
+              />
               WhatsApp
             </a>
           </li>
           <li>
-            <a href="mailto:comercial@flexcard.org.br">
-              <Mail class="icon sm" aria-hidden="true" stroke-width={1.75} />
+            <a
+              class="inline-flex min-h-11 items-center gap-2 text-white no-underline hover:underline"
+              href="mailto:comercial@flexcard.org.br"
+            >
+              <Mail
+                class="h-4 w-4 shrink-0"
+                aria-hidden="true"
+                stroke-width={1.75}
+              />
               comercial@flexcard.org.br
             </a>
           </li>
           <li>
-            <span class="footer-address">
-              <MapPin class="icon sm" aria-hidden="true" stroke-width={1.75} />
+            <span class="inline-flex min-h-11 items-center gap-2 text-white">
+              <MapPin
+                class="h-4 w-4 shrink-0"
+                aria-hidden="true"
+                stroke-width={1.75}
+              />
               Rua Laureano Rosa 100, São Gonçalo, RJ
             </span>
           </li>
         </ul>
       </div>
     </div>
-    <div class="footer-legal">
+    <div class="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-sidebar-foreground/15 pt-4 text-sm text-sidebar-muted">
       <span>© Clube Flex</span>
-      <nav aria-label="Documentos legais">
-        <a href="/termos">Termos de uso</a>
-        <a href="/privacidade">Privacidade</a>
+      <nav class="flex gap-4" aria-label="Documentos legais">
+        <a class="hover:text-white" href="/termos">
+          Termos de uso
+        </a>
+        <a class="hover:text-white" href="/privacidade">
+          Privacidade
+        </a>
       </nav>
     </div>
   </div>

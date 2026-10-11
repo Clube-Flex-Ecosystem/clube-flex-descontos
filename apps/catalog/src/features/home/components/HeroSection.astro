@@ -2,61 +2,89 @@
 import { BookOpen, ChevronDown, Heart, Sparkles } from '@lucide/astro';
 ---
 
-<section class="hero" aria-labelledby="hero-title">
-  <div class="wrap">
+<section
+  class="relative overflow-hidden px-0 py-10 pb-14 lg:py-16 lg:pb-[88px]"
+  aria-labelledby="hero-title"
+>
+  <div class="mx-auto grid w-full max-w-[1200px] items-center gap-10 px-4 md:px-8 lg:grid-cols-[1.1fr_.9fr] lg:gap-14">
     <div>
-      <span class="badge-pill">
-        <i>
-          <Heart class="icon sm" aria-hidden="true" stroke-width={1.75} />
+      <span class="inline-flex items-center gap-2 rounded-full border border-border bg-surface-muted px-3.5 py-1.5 text-sm font-medium text-foreground-soft">
+        <i class="grid h-[22px] w-[22px] place-items-center rounded-full bg-primary text-background">
+          <Heart class="h-4 w-4" aria-hidden="true" stroke-width={1.75} />
         </i>
         Desde 2010 cuidando da sua família
       </span>
-      <h1 class="display" id="hero-title">
-        Saúde e Qualidade de Vida que <em>você e sua família</em> merecem.
+      <h1
+        class="mt-5 max-w-none font-display text-[clamp(38px,9vw,68px)] font-semibold leading-[1.08] tracking-[-0.02em]"
+        id="hero-title"
+      >
+        Saúde e Qualidade de Vida que{' '}
+        <em class="font-semibold not-italic text-accent-foreground">
+          você e sua família
+        </em>{' '}
+        merecem.
       </h1>
-      <p class="lead">
+      <p class="mt-5 max-w-[34em] text-lg leading-[1.5] text-foreground-soft">
         Saúde, Educação, lazer e muito mais. Vantagens reais para você e seu
         bolso. Descontos que merecem ser contados.
       </p>
-      <div class="hero-actions">
-        <button class="btn accent" type="button" data-open-assistant="flex">
+      <div class="mt-7 flex flex-wrap gap-3 [&>a]:flex-1 [&>button]:flex-1 min-[560px]:[&>a]:flex-none min-[560px]:[&>button]:flex-none">
+        <button
+          class="inline-flex min-h-12 flex-initial items-center justify-center gap-2 rounded-full border border-transparent bg-primary px-[22px] text-base font-semibold text-white hover:bg-primary-hover"
+          type="button"
+          data-open-assistant="flex"
+        >
           Vem ser Flex
         </button>
-        <a class="btn secondary" href="#parceiros">
-          Explorar parceiros
-          <ChevronDown class="icon sm" aria-hidden="true" stroke-width={1.75} />
+        <a
+          class="inline-flex min-h-12 flex-initial items-center justify-center gap-2 rounded-full border-[1.5px] border-accent-foreground bg-transparent px-[22px] text-base font-semibold text-accent-foreground no-underline hover:bg-accent-soft"
+          href="#parceiros"
+        >
+          Explorar parceiros{' '}
+          <ChevronDown class="h-4 w-4" aria-hidden="true" stroke-width={1.75} />
         </a>
       </div>
     </div>
-    <div class="hero-art" aria-hidden="true">
-      <div class="blob a"></div>
-      <div class="blob b"></div>
-      <div class="blob c"></div>
-      <div class="float-card one">
-        <span class="float-dot">
-          <Heart class="icon" aria-hidden="true" stroke-width={1.75} />
+    <div
+      class="relative mx-auto aspect-square w-full max-w-[520px]"
+      aria-hidden="true"
+    >
+      <div class="absolute inset-[6%_10%_14%_4%] rounded-[46%_54%_42%_58%/52%_44%_56%_48%] bg-sidebar"></div>
+      <div class="absolute right-[2%] top-[2%] aspect-square w-[38%] rounded-full bg-accent"></div>
+      <div class="absolute bottom-[6%] left-0 aspect-square w-[22%] rounded-full bg-border"></div>
+      <div class="absolute left-[12%] top-[22%] flex items-center gap-3 rounded-lg bg-background p-3.5 px-4 shadow-float animate-[float_7s_ease-in-out_infinite] motion-reduce:animate-none">
+        <span class="grid h-10 w-10 place-items-center rounded-xl bg-surface-muted text-accent-foreground">
+          <Heart class="h-5 w-5" />
         </span>
         <div>
-          <small>Saúde</small>
-          <strong>até 40%</strong>
+          <small class="block text-[13px] text-muted-foreground">Saúde</small>
+          <strong class="block font-display text-[26px] font-semibold leading-none text-accent-foreground">
+            até 40%
+          </strong>
         </div>
       </div>
-      <div class="float-card two">
-        <span class="float-dot">
-          <BookOpen class="icon" aria-hidden="true" stroke-width={1.75} />
+      <div class="absolute bottom-[22%] right-[4%] flex items-center gap-3 rounded-lg bg-background p-3.5 px-4 shadow-float animate-[float_8s_ease-in-out_-2s_infinite] motion-reduce:animate-none">
+        <span class="grid h-10 w-10 place-items-center rounded-xl bg-surface-muted text-accent-foreground">
+          <BookOpen class="h-5 w-5" />
         </span>
         <div>
-          <small>Educação</small>
-          <strong>até 30%</strong>
+          <small class="block text-[13px] text-muted-foreground">
+            Educação
+          </small>
+          <strong class="block font-display text-[26px] font-semibold leading-none text-accent-foreground">
+            até 30%
+          </strong>
         </div>
       </div>
-      <div class="float-card three">
-        <span class="float-dot">
-          <Sparkles class="icon" aria-hidden="true" stroke-width={1.75} />
+      <div class="absolute bottom-[4%] left-[22%] flex items-center gap-3 rounded-lg bg-background p-3.5 px-4 shadow-float animate-[float_9s_ease-in-out_-4s_infinite] motion-reduce:animate-none">
+        <span class="grid h-10 w-10 place-items-center rounded-xl bg-surface-muted text-accent-foreground">
+          <Sparkles class="h-5 w-5" />
         </span>
         <div>
-          <b>Lazer e bem-estar</b>
-          <small>para toda a família</small>
+          <b class="block text-[15px]">Lazer e bem-estar</b>
+          <small class="block text-[13px] text-muted-foreground">
+            para toda a família
+          </small>
         </div>
       </div>
     </div>

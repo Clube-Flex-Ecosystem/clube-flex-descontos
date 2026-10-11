@@ -70,37 +70,50 @@ const jsonLd = partner
   <Header />
   <main id="main" tabindex="-1">
     {partner ? (
-      <div class="wrap partner-page">
-        <a class="back" href={back}>
-        <ArrowLeft class="icon" aria-hidden="true" stroke-width={1.75} />
+      <div class="mx-auto w-full max-w-[1200px] px-4 py-10 md:px-8 lg:py-16">
+        <a
+          class="mb-8 inline-flex items-center gap-2 font-semibold text-accent-foreground"
+          href={back}
+        >
+          <ArrowLeft class="h-5 w-5" aria-hidden="true" stroke-width={1.75} />
           Voltar para parceiros
         </a>
-        <header class="p-head">
-          <div class="cats">
+        <header class="max-w-[760px]">
+          <div class="flex flex-wrap gap-1.5">
             {partner.categories.map((c) => (
-              <span class="tag">{c.name}</span>
+              <span class="inline-flex items-center rounded-full bg-surface-muted px-2.5 py-[3px] text-[13px] font-medium text-foreground-soft">
+                {c.name}
+              </span>
             ))}
             {partner.featured && (
-              <span class="tag featured">
-                <Star class="icon sm" aria-hidden="true" stroke-width={1.75} />
+              <span class="inline-flex items-center gap-1 rounded-full bg-primary px-2.5 py-[3px] text-[13px] font-medium text-background">
+                <Star class="h-4 w-4" aria-hidden="true" stroke-width={1.75} />
                 Destaque
               </span>
             )}
           </div>
-          <h1 class="display">{partner.name}</h1>
-          <p class="desc">{partner.description}</p>
+          <h1 class="mt-4 font-display text-[clamp(36px,7vw,60px)] font-semibold leading-[1.08] tracking-[-0.02em]">
+            {partner.name}
+          </h1>
+          <p class="mt-4 text-lg leading-[1.5] text-foreground-soft">
+            {partner.description}
+          </p>
         </header>
-        <div class="p-layout">
-          <div class="p-main">
-            <section class="panel usage">
+        <div class="mt-10 grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start">
+          <div class="grid gap-4">
+            <section class="rounded-lg border border-border bg-background p-6">
               <h2>
-              <Info class="icon" aria-hidden="true" stroke-width={1.75} />
+                <Info
+                  class="mr-2 inline h-5 w-5"
+                  aria-hidden="true"
+                  stroke-width={1.75}
+                />
                 Como usar o desconto
               </h2>
               <p>{partner.usageInstructions}</p>
             </section>
             {(partner.website || partner.contacts.length > 0) && (
-              <section class="panel">
+              <section class="rounded-lg border border-border bg-background p-6">
                 <h2>Contato</h2>
                 {partner.website && (
                   <p class="website-row">
@@ -108,7 +121,7 @@ const jsonLd = partner
                       {partner.website.replace(/^https?:\/\//, '')}
                     </a>
                     <a
-                      class="btn secondary sm"
+                      class="inline-flex min-h-11 items-center justify-center rounded-full border-[1.5px] border-accent-foreground px-4 text-[15px] font-semibold text-accent-foreground"
                       href={partner.website}
                       target="_blank"
                       rel="noopener"
@@ -117,21 +130,25 @@ const jsonLd = partner
                     </a>
                   </p>
                 )}
-                <ul class="contact-list">
+                <ul class="mt-4 grid gap-2">
                   {partner.contacts.map((c) => (
-                    <li class="contact">
-                      <span class="c-icon">
+                    <li class="flex items-center gap-3 border-t border-border py-3">
+                      <span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-surface-muted text-accent-foreground">
                         {c.type === 'whatsapp' ? (
                           <MessageSquare
-                            class="icon"
+                            class="h-5 w-5"
                             aria-hidden="true"
                             stroke-width={1.75}
                           />
                         ) : (
-                          <Phone class="icon" aria-hidden="true" stroke-width={1.75} />
+                          <Phone
+                            class="h-5 w-5"
+                            aria-hidden="true"
+                            stroke-width={1.75}
+                          />
                         )}
                       </span>
-                      <div class="c-body">
+                      <div class="min-w-0 flex-1">
                         <small>
                           {c.label ??
                             (c.type === 'whatsapp' ? 'WhatsApp' : 'Telefone')}
@@ -139,7 +156,7 @@ const jsonLd = partner
                         <b>{formatPhone(c.value)}</b>
                       </div>
                       <a
-                        class="btn secondary sm"
+                        class="inline-flex min-h-11 items-center justify-center rounded-full border-[1.5px] border-accent-foreground px-4 text-[15px] font-semibold text-accent-foreground"
                         href={
                           c.type === 'whatsapp'
                             ? `https://wa.me/${c.value.replace(/\D/g, '')}`
@@ -153,22 +170,26 @@ const jsonLd = partner
                 </ul>
               </section>
             )}
-            <section class="panel">
+            <section class="rounded-lg border border-border bg-background p-6">
               <h2>
                 {partner.units.length === 1
                   ? 'Unidade'
                   : `Unidades (${partner.units.length})`}
               </h2>
               {partner.units.length ? (
-                <div class="units">
+                <div class="mt-4 grid gap-2">
                   {partner.units.map((u, i) => (
                     <details
-                      class="unit"
+                      class="overflow-hidden rounded-lg border border-border"
                       open={i === 0 && partner!.units.length <= 2}
                     >
                       <summary>
-                        <span class="c-icon">
-                          <MapPin class="icon sm" aria-hidden="true" stroke-width={1.75} />
+                        <span class="grid h-9 w-9 place-items-center rounded-lg bg-surface-muted text-accent-foreground">
+                          <MapPin
+                            class="h-4 w-4"
+                            aria-hidden="true"
+                            stroke-width={1.75}
+                          />
                         </span>
                         <span>
                           <b>{u.name}</b>
@@ -176,9 +197,13 @@ const jsonLd = partner
                             {u.address.neighborhood}, {u.address.city}
                           </small>
                         </span>
-                        <ChevronDown class="icon sm" aria-hidden="true" stroke-width={1.75} />
+                        <ChevronDown
+                          class="h-4 w-4"
+                          aria-hidden="true"
+                          stroke-width={1.75}
+                        />
                       </summary>
-                      <dl class="unit-body">
+                      <dl class="grid gap-3 border-t border-border p-4 text-sm">
                         <div>
                           <dt>Endereço</dt>
                           <dd>{address(u)}</dd>
@@ -200,13 +225,13 @@ const jsonLd = partner
                   ))}
                 </div>
               ) : (
-                <p class="muted">
+                <p class="text-foreground-soft">
                   Este parceiro não possui unidade física. Utilize os contatos
                   ou o site para usar o benefício.
                 </p>
               )}
             </section>
-            <section class="panel assistant-cta">
+            <section class="rounded-lg border border-border bg-background p-6">
               <h2>Ainda não é Flex?</h2>
               <p>
                 Fale com o assistente virtual e deixe seus dados para conhecer
@@ -214,7 +239,7 @@ const jsonLd = partner
               </p>
               <div>
                 <button
-                  class="btn accent sm"
+                  class="inline-flex min-h-11 items-center justify-center rounded-full bg-primary px-4 text-[15px] font-semibold text-white"
                   type="button"
                   data-open-assistant="flex"
                 >
@@ -223,12 +248,12 @@ const jsonLd = partner
               </div>
             </section>
           </div>
-          <aside class="p-aside">
-            <section class="panel benefit">
+          <aside>
+            <section class="rounded-lg border border-border bg-background p-6 lg:sticky lg:top-24">
               <h2 class="sr-only">Benefício</h2>
-              <form method="get" class="field">
+              <form method="get" class="grid gap-1.5">
                 <label for="partner-plan">Seu plano</label>
-                <div class="select-wrap">
+                <div class="relative">
                   <select
                     id="partner-plan"
                     name="plano"
@@ -245,24 +270,24 @@ const jsonLd = partner
                     ))}
                   </select>
                   <ChevronDown
-                    class="select-arrow icon sm"
+                    class="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2"
                     aria-hidden="true"
                     stroke-width={1.75}
                   />
                 </div>
-                <p class="hint">
+                <p class="text-sm text-muted-foreground">
                   Informado por você; não é validado pelo Clube Flex.
                 </p>
               </form>
               {selectedPlan && partner.discountPercentage ? (
-                <div class="benefit-value">
+                <div class="mt-6">
                   <small>Seu desconto</small>
                   <strong>
                     <span>até</span>
                     {partner.discountPercentage}%
                   </strong>
                   {partner.coupon && (
-                    <div class="coupon">
+                    <div class="mt-4 rounded-lg bg-accent-soft p-4 text-accent-foreground">
                       <div>
                         <small>Cupom</small>
                         <code>{partner.coupon}</code>
@@ -271,7 +296,7 @@ const jsonLd = partner
                   )}
                 </div>
               ) : (
-                <div class="benefit-empty">
+                <div class="mt-6 rounded-lg bg-surface-muted p-4 text-sm text-foreground-soft">
                   Escolha seu plano para consultar o desconto disponível.
                 </div>
               )}
@@ -280,10 +305,15 @@ const jsonLd = partner
         </div>
       </div>
     ) : (
-      <div class="wrap not-found">
-        <h1 class="display">Parceiro não encontrado</h1>
+      <div class="mx-auto grid min-h-[50vh] w-full max-w-[1200px] content-center gap-4 px-4 py-16 md:px-8">
+        <h1 class="font-display text-4xl font-semibold">
+          Parceiro não encontrado
+        </h1>
         <p>Este parceiro não está disponível no catálogo.</p>
-        <a class="btn primary" href="/#parceiros">
+        <a
+          class="inline-flex min-h-12 w-fit items-center justify-center rounded-full bg-primary px-[22px] font-semibold text-white no-underline"
+          href="/#parceiros"
+        >
           Ver parceiros
         </a>
       </div>

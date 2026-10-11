@@ -239,14 +239,19 @@ export default function AssistantIsland() {
     placeholder = '',
   ) => (
     <form
-      className="a-form"
+      className="grid gap-2"
       onSubmit={(e) => {
         e.preventDefault();
         void field(name);
       }}
     >
-      <label htmlFor={`assistant-${name}`}>{label}</label>
-      <div className="a-row">
+      <label
+        className="font-semibold text-[15px]"
+        htmlFor={`assistant-${name}`}
+      >
+        {label}
+      </label>
+      <div className="flex gap-2">
         <input
           id={`assistant-${name}`}
           type={type}
@@ -259,20 +264,28 @@ export default function AssistantIsland() {
                 : 'email'
           }
           aria-invalid={Boolean(error(name))}
+          className="min-h-12 min-w-0 flex-1 rounded-lg border border-control-border bg-background px-3 text-base aria-invalid:border-danger"
           {...form.register(name)}
         />
-        <button className="a-send" type="submit" aria-label="Continuar">
+        <button
+          className="grid h-12 w-12 shrink-0 place-items-center rounded-lg border-0 bg-primary text-white"
+          type="submit"
+          aria-label="Continuar"
+        >
           <ArrowRight
-            className="icon sm"
+            className="h-4 w-4"
             aria-hidden="true"
             strokeWidth={1.75}
           />
         </button>
       </div>
       {error(name) && (
-        <p className="a-error" role="alert">
+        <p
+          className="flex items-center gap-1.5 text-sm text-danger"
+          role="alert"
+        >
           <AlertCircle
-            className="icon sm"
+            className="h-4 w-4"
             aria-hidden="true"
             strokeWidth={1.75}
           />{' '}
@@ -285,7 +298,7 @@ export default function AssistantIsland() {
       )}
       {name === 'email' && (
         <button
-          className="link-btn"
+          className="min-h-11 border-0 bg-transparent px-1 text-left text-accent-foreground underline underline-offset-3"
           type="button"
           onClick={() => {
             form.setValue('email', '');
@@ -304,62 +317,79 @@ export default function AssistantIsland() {
   return (
     <>
       <button
-        className="fab"
+        className="fixed bottom-5 right-5 z-40 grid h-14 w-14 place-items-center rounded-full border-0 bg-primary text-white shadow-lg"
         type="button"
         aria-label="Abrir assistente do Clube Flex"
         data-open-assistant
       >
-        <MessageCircle className="icon" aria-hidden="true" strokeWidth={1.75} />
+        <MessageCircle
+          className="h-5 w-5"
+          aria-hidden="true"
+          strokeWidth={1.75}
+        />
       </button>
       {state.step !== 'closed' && (
         <>
           <button
-            className="assistant-backdrop"
+            className="fixed inset-0 z-40 border-0 bg-sidebar/35"
             aria-label="Fechar assistente"
             onClick={close}
           />
           <div
-            className="assistant"
+            className="fixed inset-x-0 bottom-0 z-50 flex max-h-[min(760px,calc(100dvh-16px))] flex-col overflow-hidden rounded-t-[16px] bg-background shadow-lg sm:inset-auto sm:bottom-5 sm:right-5 sm:h-[min(700px,calc(100dvh-40px))] sm:w-[min(420px,calc(100vw-32px))] sm:rounded-[16px]"
             role="dialog"
             aria-modal="true"
             aria-labelledby="assistant-title"
             ref={panel}
             onKeyDown={onKeys}
           >
-            <header className="a-head">
-              <span className="a-avatar" aria-hidden="true">
-                <Bot className="icon" aria-hidden="true" strokeWidth={1.75} />
+            <header className="flex items-center gap-3 border-b border-border bg-sidebar px-5 py-4 text-sidebar-foreground">
+              <span
+                className="grid h-10 w-10 place-items-center rounded-full bg-accent text-white"
+                aria-hidden="true"
+              >
+                <Bot
+                  className="h-5 w-5"
+                  aria-hidden="true"
+                  strokeWidth={1.75}
+                />
               </span>
               <div>
                 <h2 id="assistant-title">Assistente Clube Flex</h2>
                 <small>Atendimento virtual automático</small>
               </div>
               <button
-                className="a-close"
+                className="ml-auto grid h-11 w-11 place-items-center rounded-full border-0 bg-transparent text-sidebar-foreground"
                 type="button"
                 aria-label="Fechar assistente"
                 onClick={close}
               >
-                <X className="icon" aria-hidden="true" strokeWidth={1.75} />
+                <X className="h-5 w-5" aria-hidden="true" strokeWidth={1.75} />
               </button>
             </header>
             <div
-              className="a-log"
+              className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto p-5"
               ref={log}
               role="log"
               aria-label="Conversa com o assistente"
             >
               {state.messages.map((m, i) => (
-                <div className={`msg ${m.by}`} key={i}>
+                <div
+                  className={`max-w-[85%] rounded-[14px] px-3.5 py-2.5 text-[15px] leading-[1.4] ${m.by === 'bot' ? 'self-start rounded-bl-sm bg-surface-muted' : 'self-end rounded-br-sm bg-primary text-white'}`}
+                  key={i}
+                >
                   {m.content}
                 </div>
               ))}
             </div>
-            <div className="a-foot" aria-live="polite">
+            <div
+              className="grid gap-3 border-t border-border bg-surface p-4"
+              aria-live="polite"
+            >
               {state.step === 'welcome' && (
-                <div className="a-options">
+                <div className="grid gap-2">
                   <button
-                    className="btn primary"
+                    className="inline-flex min-h-12 items-center justify-center rounded-full border-0 bg-primary px-[22px] font-semibold text-white"
                     onClick={() =>
                       add(
                         'name',
@@ -371,7 +401,7 @@ export default function AssistantIsland() {
                     Quero ser Flex
                   </button>
                   <button
-                    className="btn secondary"
+                    className="inline-flex min-h-12 items-center justify-center rounded-full border-[1.5px] border-accent-foreground bg-transparent px-[22px] font-semibold text-accent-foreground"
                     onClick={() => {
                       const next = choosePartner(state);
                       dispatch({
@@ -391,15 +421,15 @@ export default function AssistantIsland() {
                 </div>
               )}
               {state.step === 'partner' && (
-                <div className="a-options">
+                <div className="grid gap-2">
                   <a
-                    className="btn primary"
+                    className="inline-flex min-h-12 items-center justify-center rounded-full border-0 bg-primary px-[22px] font-semibold text-white"
                     href="mailto:comercial@flexcard.org.br?subject=Quero%20ser%20parceiro%20do%20Clube%20Flex"
                   >
                     Enviar e-mail
                   </a>
                   <button
-                    className="btn secondary"
+                    className="inline-flex min-h-12 items-center justify-center rounded-full border-[1.5px] border-accent-foreground bg-transparent px-[22px] font-semibold text-accent-foreground"
                     onClick={() => dispatch({ type: 'restart' })}
                   >
                     Voltar ao início
@@ -424,7 +454,7 @@ export default function AssistantIsland() {
                 )}
               {state.step === 'consent' && (
                 <>
-                  <label className="consent">
+                  <label className="flex items-start gap-2 text-sm leading-[1.4]">
                     <input
                       type="checkbox"
                       checked={accepted}
@@ -440,7 +470,7 @@ export default function AssistantIsland() {
                     </span>
                   </label>
                   <button
-                    className="btn primary"
+                    className="inline-flex min-h-12 items-center justify-center rounded-full border-0 bg-primary px-[22px] font-semibold text-white disabled:opacity-50"
                     disabled={!accepted}
                     onClick={() =>
                       add(
@@ -456,14 +486,14 @@ export default function AssistantIsland() {
               )}
               {state.step === 'review' && (
                 <>
-                  <dl className="review">
+                  <dl className="grid gap-2">
                     <div>
                       <div className="r-text">
                         <dt>Nome</dt>
                         <dd>{values.name}</dd>
                       </div>
                       <button
-                        className="btn"
+                        className="min-h-11 rounded-full border border-border bg-transparent px-4 text-sm font-semibold"
                         onClick={() => dispatch({ type: 'step', step: 'name' })}
                       >
                         Editar
@@ -475,7 +505,7 @@ export default function AssistantIsland() {
                         <dd>{values.whatsapp}</dd>
                       </div>
                       <button
-                        className="btn"
+                        className="min-h-11 rounded-full border border-border bg-transparent px-4 text-sm font-semibold"
                         onClick={() =>
                           dispatch({ type: 'step', step: 'whatsapp' })
                         }
@@ -489,7 +519,7 @@ export default function AssistantIsland() {
                         <dd>{values.email || 'Não informado'}</dd>
                       </div>
                       <button
-                        className="btn"
+                        className="min-h-11 rounded-full border border-border bg-transparent px-4 text-sm font-semibold"
                         onClick={() =>
                           dispatch({ type: 'step', step: 'email' })
                         }
@@ -504,26 +534,32 @@ export default function AssistantIsland() {
                       </div>
                     </div>
                   </dl>
-                  <button className="btn primary" onClick={() => void submit()}>
+                  <button
+                    className="inline-flex min-h-12 items-center justify-center rounded-full border-0 bg-primary px-[22px] font-semibold text-white"
+                    onClick={() => void submit()}
+                  >
                     Enviar
                   </button>
-                  <p className="a-note">
+                  <p className="text-sm text-muted-foreground">
                     Seus dados só são enviados quando você tocar em Enviar.
                   </p>
                 </>
               )}
               {state.step === 'sending' && (
-                <button className="btn primary" disabled>
+                <button
+                  className="inline-flex min-h-12 items-center justify-center rounded-full border-0 bg-primary px-[22px] font-semibold text-white disabled:opacity-50"
+                  disabled
+                >
                   Enviando…
                 </button>
               )}
               {state.step === 'error' && (
                 <>
-                  <p className="a-error" role="alert">
+                  <p className="text-sm text-danger" role="alert">
                     Não foi possível enviar seus dados. Tente novamente.
                   </p>
                   <button
-                    className="btn primary"
+                    className="inline-flex min-h-12 items-center justify-center rounded-full border-0 bg-primary px-[22px] font-semibold text-white"
                     onClick={() => dispatch({ type: 'step', step: 'review' })}
                   >
                     Tentar novamente
@@ -531,8 +567,11 @@ export default function AssistantIsland() {
                 </>
               )}
               {state.step === 'success' && (
-                <div className="a-options">
-                  <button className="btn primary" onClick={close}>
+                <div className="grid gap-2">
+                  <button
+                    className="inline-flex min-h-12 items-center justify-center rounded-full border-0 bg-primary px-[22px] font-semibold text-white"
+                    onClick={close}
+                  >
                     Fechar
                   </button>
                 </div>

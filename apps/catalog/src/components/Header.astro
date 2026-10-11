@@ -2,52 +2,100 @@
 import { Menu } from '@lucide/astro';
 ---
 
-<a class="skip-link" href="#main">
+<a
+  class="absolute left-2 -top-15 z-[100] rounded-[8px] bg-primary px-4 py-3 font-semibold text-white focus:top-2"
+  href="#main"
+>
   Ir para o conteúdo
 </a>
-<header class="site-header" id="site-header">
-  <div class="wrap">
-    <a class="logo" href="/" aria-label="Parceiros+ — página inicial">
-      Parceiros<span>+</span>
-      <span class="logo-note" aria-hidden="true">
+<header
+  class="sticky top-0 z-40 border-b border-transparent bg-[#f5f7f8]/92 backdrop-blur-[10px] saturate-[1.4]"
+  id="site-header"
+>
+  <div class="mx-auto flex h-[68px] w-full max-w-[1200px] items-center gap-4 px-4 md:px-8">
+    <a
+      class="inline-flex min-h-11 items-center gap-0.5 font-display text-2xl font-semibold tracking-[-0.02em] text-accent-foreground no-underline"
+      href="/"
+      aria-label="Parceiros+ — página inicial"
+    >
+      Parceiros<span class="text-accent">+</span>
+      <span
+        class="ml-2 rounded border border-dashed border-control-border px-[5px] py-px font-sans text-[10px] font-semibold uppercase tracking-[0.06em] text-muted-foreground"
+        aria-hidden="true"
+      >
         logo provisória
       </span>
     </a>
-    <nav class="main-nav" aria-label="Navegação principal">
-      <a href="/#sobre">Sobre</a>
-      <a href="/#parceiros">Parceiros</a>
-      <a href="/#como-funciona">Como funciona</a>
+    <nav
+      class="ml-auto hidden gap-1 min-[900px]:flex"
+      aria-label="Navegação principal"
+    >
+      <a
+        class="inline-flex min-h-11 items-center rounded-full px-3.5 font-medium text-foreground-soft no-underline hover:bg-surface-muted"
+        href="/#sobre"
+      >
+        Sobre
+      </a>
+      <a
+        class="inline-flex min-h-11 items-center rounded-full px-3.5 font-medium text-foreground-soft no-underline hover:bg-surface-muted"
+        href="/#parceiros"
+      >
+        Parceiros
+      </a>
+      <a
+        class="inline-flex min-h-11 items-center rounded-full px-3.5 font-medium text-foreground-soft no-underline hover:bg-surface-muted"
+        href="/#como-funciona"
+      >
+        Como funciona
+      </a>
     </nav>
     <button
-      class="btn primary sm header-cta"
+      class="ml-2 inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-transparent bg-primary px-4 text-[15px] font-semibold text-white hover:bg-primary-hover max-[420px]:hidden"
       type="button"
       data-open-assistant="flex"
     >
       Vem ser Flex
     </button>
     <button
-      class="menu-toggle"
+      class="ml-1 inline-grid h-11 w-11 place-items-center rounded-full border-0 bg-transparent min-[900px]:hidden max-[420px]:ml-auto"
       type="button"
       aria-expanded="false"
       aria-controls="mobile-nav"
       aria-label="Abrir menu"
     >
-      <Menu class="icon" aria-hidden="true" stroke-width={1.75} />
+      <Menu class="h-5 w-5 shrink-0" aria-hidden="true" stroke-width={1.75} />
     </button>
   </div>
   <nav
-    class="mobile-nav"
+    class="border-t border-border bg-background px-4 pb-4 pt-2 md:px-8 min-[900px]:hidden"
     id="mobile-nav"
     aria-label="Navegação principal"
     hidden
   >
-    <a href="/#sobre">Sobre</a>
-    <a href="/#parceiros">Parceiros</a>
-    <a href="/#como-funciona">Como funciona</a>
+    <a
+      class="flex min-h-12 items-center border-b border-border font-medium no-underline"
+      href="/#sobre"
+    >
+      Sobre
+    </a>
+    <a
+      class="flex min-h-12 items-center border-b border-border font-medium no-underline"
+      href="/#parceiros"
+    >
+      Parceiros
+    </a>
+    <a
+      class="flex min-h-12 items-center border-b border-border font-medium no-underline"
+      href="/#como-funciona"
+    >
+      Como funciona
+    </a>
   </nav>
 </header>
 <script>
-  const button = document.querySelector<HTMLButtonElement>('.menu-toggle');
+  const button = document.querySelector<HTMLButtonElement>(
+    '[aria-controls="mobile-nav"]',
+  );
   const menu = document.querySelector<HTMLElement>('#mobile-nav');
   button?.addEventListener('click', () => {
     const open = button.getAttribute('aria-expanded') === 'true';
@@ -60,7 +108,7 @@ import { Menu } from '@lucide/astro';
     () =>
       document
         .querySelector('#site-header')
-        ?.classList.toggle('scrolled', scrollY > 8),
+        ?.classList.toggle('border-border', scrollY > 8),
     { passive: true },
   );
 </script>
