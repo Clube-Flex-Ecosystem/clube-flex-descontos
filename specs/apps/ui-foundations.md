@@ -85,6 +85,8 @@ Unidade-base de `4px`, com passos intermediários de `2px` e `6px` para ajustes 
 
 Só devem ser criados componentes que tenham uso real. Esta relação define necessidades de interface, não obriga uma biblioteca abstrata antecipada.
 
+No dashboard, primitives externas são usadas apenas quando o comportamento composto justificar: Radix UI administra foco, overlay, teclado e posicionamento de dialogs, sheets, confirmações, menus e toasts. A aparência continua sendo construída com tokens e Tailwind pelos componentes locais. Alertas persistentes, badges, cartões e controles simples não exigem primitive externa.
+
 ## Estados de controles
 
 Controles interativos contemplam, quando aplicável:

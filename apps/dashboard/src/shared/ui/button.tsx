@@ -1,4 +1,6 @@
 import type { ButtonHTMLAttributes, Ref } from 'react';
+import { tv } from 'tailwind-variants';
+import { cn } from './cn';
 
 type Variant =
   'primary' | 'secondary' | 'quiet' | 'danger' | 'danger-quiet' | 'sidebar';
@@ -13,25 +15,28 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   ref?: Ref<HTMLButtonElement>;
 }
 
-// Alvo de 44px em interações móveis; 36px a partir de `md` (ui-foundations).
-const base =
-  't-label inline-flex min-h-11 items-center justify-center gap-2 rounded-md border px-3 whitespace-nowrap no-underline transition-colors duration-fast md:min-h-control-md cursor-pointer disabled:cursor-not-allowed disabled:opacity-60';
-
-const variants: Record<Variant, string> = {
-  primary:
-    'border-primary-edge bg-primary-raised text-primary-foreground shadow-brand-raised hover:bg-primary-raised-hover hover:shadow-brand-raised-hover active:shadow-brand-pressed',
-  secondary:
-    'border-control-border bg-control text-foreground shadow-control-raised hover:border-control-border-hover hover:shadow-control-raised-hover active:shadow-control-pressed',
-  danger:
-    'border-danger-edge bg-danger-raised text-primary-foreground shadow-brand-raised hover:bg-danger hover:shadow-brand-raised-hover active:shadow-brand-pressed',
-  // Ação destrutiva secundária: face de controle com texto de perigo (zonas de risco).
-  'danger-quiet':
-    'border-control-border bg-control text-danger shadow-control-raised hover:border-danger/40 hover:bg-danger-soft active:shadow-control-pressed',
-  quiet:
-    'border-transparent bg-transparent text-muted-foreground hover:bg-surface-muted hover:text-foreground',
-  sidebar:
-    'border-transparent bg-transparent text-sidebar-muted hover:bg-sidebar-hover hover:text-sidebar-foreground',
-};
+const buttonVariants = tv({
+  base: 't-label inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-md border px-3 whitespace-nowrap no-underline transition-colors duration-fast disabled:cursor-not-allowed disabled:opacity-60 md:min-h-control-md',
+  variants: {
+    variant: {
+      primary:
+        'border-primary-edge bg-primary-raised text-primary-foreground shadow-brand-raised hover:bg-primary-raised-hover hover:shadow-brand-raised-hover active:shadow-brand-pressed',
+      secondary:
+        'border-control-border bg-control text-foreground shadow-control-raised hover:border-control-border-hover hover:shadow-control-raised-hover active:shadow-control-pressed',
+      danger:
+        'border-danger-edge bg-danger-raised text-primary-foreground shadow-brand-raised hover:bg-danger hover:shadow-brand-raised-hover active:shadow-brand-pressed',
+      'danger-quiet':
+        'border-control-border bg-control text-danger shadow-control-raised hover:border-danger/40 hover:bg-danger-soft active:shadow-control-pressed',
+      quiet:
+        'border-transparent bg-transparent text-muted-foreground hover:bg-surface-muted hover:text-foreground',
+      sidebar:
+        'border-transparent bg-transparent text-sidebar-muted hover:bg-sidebar-hover hover:text-sidebar-foreground',
+    },
+    compact: { true: 'min-h-9 px-2.5 md:min-h-control-sm' },
+    block: { true: 'w-full' },
+  },
+  defaultVariants: { variant: 'secondary' },
+});
 
 export function Button({
   variant = 'secondary',
@@ -47,15 +52,7 @@ export function Button({
     <button
       type="button"
       {...rest}
-      className={[
-        base,
-        variants[variant],
-        compact ? 'min-h-9 px-2.5 md:min-h-control-sm' : '',
-        block ? 'w-full' : '',
-        className,
-      ]
-        .filter(Boolean)
-        .join(' ')}
+      className={cn(buttonVariants({ variant, compact, block }), className)}
       disabled={disabled || loading}
       aria-busy={loading || undefined}
     >

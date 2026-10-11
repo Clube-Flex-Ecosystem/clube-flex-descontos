@@ -70,6 +70,7 @@ O acento de marca não é usado para erro. Todos os pares de texto e fundo devem
 - Alturas conforme os fundamentos (`32`, `36`, `40px`; `44px` no móvel).
 - Estados: padrão, hover, foco, pressionado, carregando e desabilitado.
 - Botão iconográfico sempre possui nome acessível e tooltip quando o significado não for evidente.
+- As variantes de botão são declaradas com `tailwind-variants`; `tailwind-merge` resolve classes conflitantes recebidas pelo componente.
 
 ### Campos
 
@@ -94,9 +95,14 @@ O acento de marca não é usado para erro. Todos os pares de texto e fundo devem
 
 ### Dialogs
 
-- Dialog lateral atende formulários curtos e detalhes somente leitura.
-- Dialog central atende confirmações sensíveis.
-- Ambos contêm título, fechamento explícito, contenção de foco e restauração do foco de origem.
+- `Drawer` e `DetailDrawer` são sheets laterais compostos com Radix Dialog; atendem, respectivamente, formulários curtos e detalhes somente leitura.
+- `ConfirmDialog` usa Radix Alert Dialog para confirmações sensíveis e não permite fechamento acidental por overlay ou Escape.
+- Dialogs e sheets possuem título, fechamento explícito, contenção e restauração de foco administradas pela primitive.
+
+### Menus contextuais
+
+- `RowMenu` usa Radix Dropdown Menu para posicionamento, foco e navegação por teclado.
+- Itens perigosos mantêm texto e tom destrutivo; divisores continuam sendo declarados no contrato local do menu.
 
 ### Feedback
 
@@ -104,6 +110,7 @@ O acento de marca não é usado para erro. Todos os pares de texto e fundo devem
 - Indicador local representa mutação pontual.
 - Estado vazio explica a ausência e apresenta apenas a ação permitida.
 - Erro persistente aparece junto da região afetada; toast apenas complementa.
+- Toasts de sucesso usam Radix Toast, são dispensáveis e têm duração curta; erros não dependem exclusivamente deles.
 - Conflito de versão interrompe a edição silenciosa e oferece reconciliação com o servidor.
 
 ## Padrões por contexto

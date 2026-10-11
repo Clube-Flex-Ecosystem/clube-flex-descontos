@@ -59,3 +59,8 @@ O catálogo prioriza conteúdo SSR e baixo JavaScript, enquanto o dashboard poss
 - **Dashboard com Tailwind:** a decisão anterior de não definir biblioteca de estilos para o dashboard foi substituída pelo uso de Tailwind CSS 4.
 - **Metadata:** o título deixa de ser atualizado por `useEffect` e passa a ser declarado no `head` de cada rota.
 - **Protótipos:** passam a ser a fonte de construção da UI (ver [fundamentos de interface](../apps/ui-foundations.md)).
+
+## Revisão 2026-10-11
+
+- **Primitives interativas do dashboard:** Radix UI é adotado para dialogs, sheets laterais, confirmações, menus contextuais e toasts. As primitives permanecem encapsuladas em `shared/ui`; módulos não as importam diretamente.
+- **Variantes e classes:** `tailwind-variants` define variantes dos componentes locais e `tailwind-merge` com `clsx` resolve conflitos de classes Tailwind. A adoção não transforma o projeto em uma biblioteca geral de componentes nem altera os tokens visuais aprovados.

@@ -25,6 +25,7 @@ Leia os documentos relevantes à tarefa, sem carregar desnecessariamente toda a 
 - Mantenha as responsabilidades dos módulos separadas.
 - Ao configurar queries do dashboard, preserve a política padrão do `QueryClient` (`staleTime` de 30 segundos, `gcTime` de 5 minutos e atualização ao retornar à aba). Sobrescreva esses valores somente quando houver necessidade específica do domínio e documente a exceção no módulo.
 - Use Lucide como fonte de ícones: `lucide-react` no dashboard e `@lucide/astro` no catálogo. Preserve os adaptadores semânticos locais (`shared/ui/icon.tsx` e `components/Icon.astro`); componentes de tela não devem desenhar SVG manualmente nem importar ícones da biblioteca diretamente.
+- No dashboard, encapsule primitives Radix em `shared/ui`: use-as para dialogs, sheets, confirmações, menus contextuais e toasts; pages e módulos não importam Radix diretamente. Use `tailwind-variants` para variantes e `cn` (`clsx` + `tailwind-merge`) para combinar classes Tailwind. Mantenha componentes simples locais quando não houver comportamento composto que justifique uma primitive externa.
 - Construa a UI a partir do protótipo correspondente, aplicando os tokens com Tailwind; não introduza valores visuais literais. Em conflito, prevalecem a especificação de interface, depois o protótipo e por fim os tokens (ver `specs/apps/ui-foundations.md`).
 - Priorize simplicidade, legibilidade e manutenção.
 - Não invente requisitos para preencher lacunas.
