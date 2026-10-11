@@ -14,6 +14,7 @@
 - Zod Resolver para integrar os esquemas Zod à validação dos formulários.
 - Axios como cliente HTTP.
 - Tailwind CSS 4 como camada de estilos, com tokens em `src/styles/tailwind.css` e utilidades aplicadas diretamente nos componentes.
+- Lucide React como biblioteca única de ícones do dashboard, encapsulada pelo componente semântico `shared/ui/icon.tsx`.
 - Metadata do documento (título) declarada no `head` de cada rota e renderizada por `HeadContent`, sem efeitos manuais.
 - SPA não indexável.
 - Container Docker próprio publicado pelo Coolify.
@@ -83,6 +84,7 @@ No retorno de uma mutação:
 - Atualizações de cache ficam centralizadas no módulo proprietário.
 - Props e contratos locais permanecem pequenos e específicos.
 - Não são criadas interfaces para bibliotecas ou componentes sem necessidade concreta de substituição.
+- Ícones novos devem ser escolhidos do Lucide e adicionados ao mapa semântico de `shared/ui/icon.tsx`; páginas e módulos não importam ícones da biblioteca diretamente.
 
 ## Estado remoto e cache
 

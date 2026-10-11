@@ -56,6 +56,14 @@ O acento de marca não é usado para erro. Todos os pares de texto e fundo devem
 
 ## Componentes
 
+### Ícones
+
+- O dashboard usa `lucide-react` como biblioteca única de ícones.
+- O componente `shared/ui/icon.tsx` mantém um mapa semântico (`plus`, `search`, `partner`, etc.) e traduz esses nomes para os ícones Lucide.
+- Telas e módulos não importam ícones Lucide diretamente; novos ícones entram primeiro no mapa semântico.
+- Ícones decorativos usam `aria-hidden="true"`; ações iconográficas continuam obrigadas a possuir nome acessível no controle que as contém.
+- A espessura padrão é `1.75`, preservando a linguagem de traço do protótipo. Tamanho e cor continuam vindo das classes e tokens existentes.
+
 ### Botões
 
 - Variantes: primário, secundário, silencioso e destrutivo.
