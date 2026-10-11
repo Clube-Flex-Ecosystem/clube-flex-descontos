@@ -1,5 +1,5 @@
 ---
-import Icon from './Icon.astro';
+import { Mail, MapPin, MessageSquare, Phone } from '@lucide/astro';
 ---
 
 <footer class="site-footer">
@@ -35,25 +35,25 @@ import Icon from './Icon.astro';
         <ul>
           <li>
             <a href="tel:+552127029080">
-              <Icon name="phone" small />
+              <Phone class="icon sm" aria-hidden="true" stroke-width={1.75} />
               21 2702-9080
             </a>
           </li>
           <li>
             <a href="https://wa.me/552127029080" target="_blank" rel="noopener">
-              <Icon name="chat" small />
+              <MessageSquare class="icon sm" aria-hidden="true" stroke-width={1.75} />
               WhatsApp
             </a>
           </li>
           <li>
             <a href="mailto:comercial@flexcard.org.br">
-              <Icon name="mail" small />
+              <Mail class="icon sm" aria-hidden="true" stroke-width={1.75} />
               comercial@flexcard.org.br
             </a>
           </li>
           <li>
             <span class="footer-address">
-              <Icon name="pin" small />
+              <MapPin class="icon sm" aria-hidden="true" stroke-width={1.75} />
               Rua Laureano Rosa 100, São Gonçalo, RJ
             </span>
           </li>

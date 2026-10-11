@@ -14,7 +14,7 @@
 - Consumo da API central; sem acesso direto ao PostgreSQL.
 - SEO e experiência móvel como prioridades.
 - Página inicial predominantemente composta por componentes Astro e HTML renderizado no servidor.
-- `@lucide/astro` como biblioteca única de ícones do catálogo, encapsulada pelo componente `src/components/Icon.astro`.
+- `@lucide/astro` como biblioteca única de ícones do catálogo, importada diretamente pelos componentes que os utilizam.
 - Dados iniciais do catálogo consultados no servidor e entregues ao componente interativo como propriedades.
 - Catálogo interativo implementado como React Island hidratado, sem uso de `client:only`.
 - Assistente virtual implementado como React Island independente do catálogo.

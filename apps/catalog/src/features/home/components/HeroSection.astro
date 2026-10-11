@@ -1,5 +1,5 @@
 ---
-import Icon from '../../../components/Icon.astro';
+import { BookOpen, ChevronDown, Heart, Sparkles } from '@lucide/astro';
 ---
 
 <section class="hero" aria-labelledby="hero-title">
@@ -7,7 +7,7 @@ import Icon from '../../../components/Icon.astro';
     <div>
       <span class="badge-pill">
         <i>
-          <Icon name="heart" small />
+          <Heart class="icon sm" aria-hidden="true" stroke-width={1.75} />
         </i>
         Desde 2010 cuidando da sua família
       </span>
@@ -23,7 +23,8 @@ import Icon from '../../../components/Icon.astro';
           Vem ser Flex
         </button>
         <a class="btn secondary" href="#parceiros">
-          Explorar parceiros <Icon name="down" small />
+          Explorar parceiros
+          <ChevronDown class="icon sm" aria-hidden="true" stroke-width={1.75} />
         </a>
       </div>
     </div>
@@ -33,7 +34,7 @@ import Icon from '../../../components/Icon.astro';
       <div class="blob c"></div>
       <div class="float-card one">
         <span class="float-dot">
-          <Icon name="heart" />
+          <Heart class="icon" aria-hidden="true" stroke-width={1.75} />
         </span>
         <div>
           <small>Saúde</small>
@@ -42,7 +43,7 @@ import Icon from '../../../components/Icon.astro';
       </div>
       <div class="float-card two">
         <span class="float-dot">
-          <Icon name="book" />
+          <BookOpen class="icon" aria-hidden="true" stroke-width={1.75} />
         </span>
         <div>
           <small>Educação</small>
@@ -51,7 +52,7 @@ import Icon from '../../../components/Icon.astro';
       </div>
       <div class="float-card three">
         <span class="float-dot">
-          <Icon name="spark" />
+          <Sparkles class="icon" aria-hidden="true" stroke-width={1.75} />
         </span>
         <div>
           <b>Lazer e bem-estar</b>

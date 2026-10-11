@@ -1,5 +1,5 @@
 ---
-import Icon from '../../../components/Icon.astro';
+import { BadgeCheck, CalendarDays, Check, Heart } from '@lucide/astro';
 ---
 
 <section class="section" id="sobre" aria-labelledby="about-title">
@@ -13,7 +13,7 @@ import Icon from '../../../components/Icon.astro';
     <ul class="values">
       <li class="value">
         <span class="v-icon">
-          <Icon name="badge" />
+          <BadgeCheck class="icon" aria-hidden="true" stroke-width={1.75} />
         </span>
         <h3>Parceiros selecionados</h3>
         <p>
@@ -23,7 +23,7 @@ import Icon from '../../../components/Icon.astro';
       </li>
       <li class="value">
         <span class="v-icon">
-          <Icon name="heart" />
+          <Heart class="icon" aria-hidden="true" stroke-width={1.75} />
         </span>
         <h3>Benefícios de verdade</h3>
         <p>
@@ -32,14 +32,14 @@ import Icon from '../../../components/Icon.astro';
       </li>
       <li class="value">
         <span class="v-icon">
-          <Icon name="check" />
+          <Check class="icon" aria-hidden="true" stroke-width={1.75} />
         </span>
         <h3>Sem complicação</h3>
         <p>Escolha o parceiro, siga as instruções de uso e aproveite.</p>
       </li>
       <li class="value">
         <span class="v-icon">
-          <Icon name="calendar" />
+          <CalendarDays class="icon" aria-hidden="true" stroke-width={1.75} />
         </span>
         <h3>Atualizações mensais</h3>
         <p>

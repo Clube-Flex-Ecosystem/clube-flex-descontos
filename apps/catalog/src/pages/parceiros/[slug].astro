@@ -8,7 +8,15 @@ import {
 import PublicLayout from '../../layouts/PublicLayout.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
-import Icon from '../../components/Icon.astro';
+import {
+  ArrowLeft,
+  ChevronDown,
+  Info,
+  MapPin,
+  MessageSquare,
+  Phone,
+  Star,
+} from '@lucide/astro';
 import AssistantIsland from '../../features/assistant/components/AssistantIsland';
 import {
   getPartner,
@@ -64,7 +72,7 @@ const jsonLd = partner
     {partner ? (
       <div class="wrap partner-page">
         <a class="back" href={back}>
-          <Icon name="left" />
+        <ArrowLeft class="icon" aria-hidden="true" stroke-width={1.75} />
           Voltar para parceiros
         </a>
         <header class="p-head">
@@ -74,7 +82,7 @@ const jsonLd = partner
             ))}
             {partner.featured && (
               <span class="tag featured">
-                <Icon name="star" small />
+                <Star class="icon sm" aria-hidden="true" stroke-width={1.75} />
                 Destaque
               </span>
             )}
@@ -86,7 +94,7 @@ const jsonLd = partner
           <div class="p-main">
             <section class="panel usage">
               <h2>
-                <Icon name="info" />
+              <Info class="icon" aria-hidden="true" stroke-width={1.75} />
                 Como usar o desconto
               </h2>
               <p>{partner.usageInstructions}</p>
@@ -113,7 +121,15 @@ const jsonLd = partner
                   {partner.contacts.map((c) => (
                     <li class="contact">
                       <span class="c-icon">
-                        <Icon name={c.type === 'whatsapp' ? 'chat' : 'phone'} />
+                        {c.type === 'whatsapp' ? (
+                          <MessageSquare
+                            class="icon"
+                            aria-hidden="true"
+                            stroke-width={1.75}
+                          />
+                        ) : (
+                          <Phone class="icon" aria-hidden="true" stroke-width={1.75} />
+                        )}
                       </span>
                       <div class="c-body">
                         <small>
@@ -152,7 +168,7 @@ const jsonLd = partner
                     >
                       <summary>
                         <span class="c-icon">
-                          <Icon name="pin" small />
+                          <MapPin class="icon sm" aria-hidden="true" stroke-width={1.75} />
                         </span>
                         <span>
                           <b>{u.name}</b>
@@ -160,7 +176,7 @@ const jsonLd = partner
                             {u.address.neighborhood}, {u.address.city}
                           </small>
                         </span>
-                        <Icon name="down" small />
+                        <ChevronDown class="icon sm" aria-hidden="true" stroke-width={1.75} />
                       </summary>
                       <dl class="unit-body">
                         <div>
@@ -228,7 +244,11 @@ const jsonLd = partner
                       </option>
                     ))}
                   </select>
-                  <span class="select-arrow">⌄</span>
+                  <ChevronDown
+                    class="select-arrow icon sm"
+                    aria-hidden="true"
+                    stroke-width={1.75}
+                  />
                 </div>
                 <p class="hint">
                   Informado por você; não é validado pelo Clube Flex.

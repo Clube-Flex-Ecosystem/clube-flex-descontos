@@ -3,7 +3,7 @@
 **Etapa:** 09 — Interface  
 **Estado:** Aprovado — paleta e tipografia definidas pelo responsável em 2026-10-10; protótipos como referência obrigatória de construção
 
-Este documento centraliza princípios visuais e comportamentos comuns ao catálogo e ao dashboard. Ele não determina compartilhamento de código nem uma biblioteca geral de componentes; para ícones, ambos os frontends adotam Lucide por meio de seus adaptadores locais.
+Este documento centraliza princípios visuais e comportamentos comuns ao catálogo e ao dashboard. Ele não determina compartilhamento de código nem uma biblioteca geral de componentes; o catálogo importa ícones diretamente de `@lucide/astro`, enquanto o dashboard segue o adaptador definido em sua arquitetura.
 
 ## Fonte da interface
 

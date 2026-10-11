@@ -1,5 +1,5 @@
 ---
-import Icon from './Icon.astro';
+import { Menu } from '@lucide/astro';
 ---
 
 <a class="skip-link" href="#main">
@@ -32,7 +32,7 @@ import Icon from './Icon.astro';
       aria-controls="mobile-nav"
       aria-label="Abrir menu"
     >
-      <Icon name="menu" />
+      <Menu class="icon" aria-hidden="true" stroke-width={1.75} />
     </button>
   </div>
   <nav

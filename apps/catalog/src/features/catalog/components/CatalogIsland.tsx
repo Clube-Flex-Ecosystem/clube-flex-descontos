@@ -1,4 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
+import {
+  AlertCircle,
+  ArrowRight,
+  BadgePercent,
+  ChevronDown,
+  MapPin,
+} from 'lucide-react';
 import type {
   PublicCategory,
   PublicPartner,
@@ -94,7 +101,7 @@ export default function CatalogIsland(props: Props) {
               ))}
             </select>
             <span className="select-arrow" aria-hidden="true">
-              ⌄
+              <ChevronDown className="icon sm" aria-hidden="true" strokeWidth={1.75} />
             </span>
           </div>
           <p className="hint">
@@ -159,7 +166,7 @@ export default function CatalogIsland(props: Props) {
       {!plan && (
         <div className="state">
           <span className="s-icon" aria-hidden="true">
-            %
+            <BadgePercent className="icon" aria-hidden="true" strokeWidth={1.75} />
           </span>
           <h3>Escolha seu plano</h3>
           <p>
@@ -182,7 +189,9 @@ export default function CatalogIsland(props: Props) {
       )}
       {status === 'error' && (
         <div className="state error" role="alert">
-          <span className="s-icon">!</span>
+          <span className="s-icon">
+            <AlertCircle className="icon" aria-hidden="true" strokeWidth={1.75} />
+          </span>
           <h3>Não foi possível consultar o catálogo.</h3>
           <p>Verifique sua conexão e tente novamente.</p>
           <button className="btn secondary sm" onClick={retry}>
@@ -192,7 +201,9 @@ export default function CatalogIsland(props: Props) {
       )}
       {status === 'ready' && partners.length === 0 && (
         <div className="state">
-          <span className="s-icon">%</span>
+          <span className="s-icon">
+            <BadgePercent className="icon" aria-hidden="true" strokeWidth={1.75} />
+          </span>
           <h3>Nenhum parceiro encontrado</h3>
           <p>Não há parceiros nesta categoria para o plano escolhido.</p>
           {category && (
@@ -231,7 +242,7 @@ export default function CatalogIsland(props: Props) {
                 </a>
               </h3>
               <p className="loc">
-                ⌖{' '}
+                <MapPin className="icon sm" aria-hidden="true" strokeWidth={1.75} />{' '}
                 {p.units.length === 1
                   ? `${p.units[0]?.address.neighborhood}, ${p.units[0]?.address.city}`
                   : p.units.length
@@ -246,7 +257,14 @@ export default function CatalogIsland(props: Props) {
                     {p.discountPercentage}%
                   </strong>
                 </div>
-                <span className="more">Ver detalhes →</span>
+                <span className="more">
+                  Ver detalhes{' '}
+                  <ArrowRight
+                    className="icon sm"
+                    aria-hidden="true"
+                    strokeWidth={1.75}
+                  />
+                </span>
               </div>
             </article>
           ))}

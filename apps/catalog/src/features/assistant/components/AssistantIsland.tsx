@@ -6,6 +6,7 @@ import {
   type PublicContactRequest,
 } from '@flex/contracts';
 import { useEffect, useReducer, useRef, useState } from 'react';
+import { AlertCircle, ArrowRight, Bot, MessageCircle, X } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import type { z } from 'zod';
 import { getContactConsent, sendContactRequest } from '../api/public-contact';
@@ -261,12 +262,20 @@ export default function AssistantIsland() {
           {...form.register(name)}
         />
         <button className="a-send" type="submit" aria-label="Continuar">
-          →
+          <ArrowRight
+            className="icon sm"
+            aria-hidden="true"
+            strokeWidth={1.75}
+          />
         </button>
       </div>
       {error(name) && (
         <p className="a-error" role="alert">
-          !{' '}
+          <AlertCircle
+            className="icon sm"
+            aria-hidden="true"
+            strokeWidth={1.75}
+          />{' '}
           {error(name) === 'INVALID_PHONE_NUMBER'
             ? 'Informe um WhatsApp com DDD, por exemplo (21) 99999-9999.'
             : error(name) === 'INVALID_EMAIL'
@@ -300,7 +309,7 @@ export default function AssistantIsland() {
         aria-label="Abrir assistente do Clube Flex"
         data-open-assistant
       >
-        <span aria-hidden="true">□</span>
+        <MessageCircle className="icon" aria-hidden="true" strokeWidth={1.75} />
       </button>
       {state.step !== 'closed' && (
         <>
@@ -319,7 +328,7 @@ export default function AssistantIsland() {
           >
             <header className="a-head">
               <span className="a-avatar" aria-hidden="true">
-                □
+                <Bot className="icon" aria-hidden="true" strokeWidth={1.75} />
               </span>
               <div>
                 <h2 id="assistant-title">Assistente Clube Flex</h2>
@@ -331,7 +340,7 @@ export default function AssistantIsland() {
                 aria-label="Fechar assistente"
                 onClick={close}
               >
-                ×
+                <X className="icon" aria-hidden="true" strokeWidth={1.75} />
               </button>
             </header>
             <div
