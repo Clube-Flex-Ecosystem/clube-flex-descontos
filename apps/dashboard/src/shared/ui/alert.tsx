@@ -25,7 +25,7 @@ export function Alert({ tone, title, children, action }: AlertProps) {
       className={`t-small flex items-start gap-2 rounded-md px-3 py-2.5 text-foreground ${tones[tone]}`}
       role={assertive ? 'alert' : 'status'}
     >
-      {title ? <Icon name="alert" className="mt-0.5" /> : null}
+      <Icon name={tone === 'success' ? 'check' : 'alert'} className="mt-0.5" />
       <div className="grid min-w-0 gap-1.5">
         {title ? <strong className="font-semibold">{title}</strong> : null}
         {children ? <div>{children}</div> : null}

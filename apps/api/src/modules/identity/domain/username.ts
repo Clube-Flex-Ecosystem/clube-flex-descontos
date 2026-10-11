@@ -1,14 +1,6 @@
-/** Normaliza o nome completo conforme RN-019: minúsculas, sem acentos, espaços como pontos. */
-export function baseUsername(fullName: string): string {
-  const base = fullName
-    .normalize('NFD')
-    .replace(/\p{Diacritic}/gu, '')
-    .toLowerCase()
-    .replace(/[^a-z0-9\s]/g, '')
-    .trim()
-    .replace(/\s+/g, '.');
-  return base || 'usuario';
-}
+import { baseUsername } from '@flex/contracts';
+
+export { baseUsername };
 
 /** Resolve colisões com sufixo numérico sequencial: `joao.silva`, `joao.silva.2`, ... */
 export function generateUsername(

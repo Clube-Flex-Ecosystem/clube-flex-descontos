@@ -2,7 +2,15 @@ import type { Permission } from '@flex/contracts';
 import type { IconName } from '../shared/ui/icon';
 
 export interface NavItem {
-  to: '/parceiros' | '/planos' | '/categorias' | '/senha';
+  to:
+    | '/leads'
+    | '/origens'
+    | '/parceiros'
+    | '/planos'
+    | '/categorias'
+    | '/usuarios'
+    | '/auditoria'
+    | '/senha';
   label: string;
   icon: IconName;
   /** Itens sem permissão de visualização são ocultados; a API segue como autoridade. */
@@ -15,10 +23,27 @@ export interface NavGroup {
 }
 
 /**
- * Navegação lateral agrupada por responsabilidade. Os grupos Comercial e Administração
- * entram junto com os módulos dos incrementos seguintes.
+ * Navegação lateral agrupada por responsabilidade: Comercial, Catálogo, Administração
+ * e Conta.
  */
 export const navigation: NavGroup[] = [
+  {
+    label: 'Comercial',
+    items: [
+      {
+        to: '/leads',
+        label: 'Leads',
+        icon: 'leads',
+        permission: 'leads.view-own',
+      },
+      {
+        to: '/origens',
+        label: 'Origens',
+        icon: 'source',
+        permission: 'sources.view',
+      },
+    ],
+  },
   {
     label: 'Catálogo',
     items: [
@@ -43,6 +68,23 @@ export const navigation: NavGroup[] = [
     ],
   },
   {
+    label: 'Administração',
+    items: [
+      {
+        to: '/usuarios',
+        label: 'Usuários',
+        icon: 'users',
+        permission: 'users.view',
+      },
+      {
+        to: '/auditoria',
+        label: 'Auditoria',
+        icon: 'audit',
+        permission: 'audit.view',
+      },
+    ],
+  },
+  {
     label: 'Conta',
     items: [{ to: '/senha', label: 'Alterar senha', icon: 'key' }],
   },
@@ -53,7 +95,10 @@ export function visibleNavigation(granted: readonly Permission[]): NavGroup[] {
     .map((group) => ({
       ...group,
       items: group.items.filter(
-        (item) => !item.permission || granted.includes(item.permission),
+        (item) =>
+          !item.permission ||
+          granted.includes(item.permission) ||
+          (item.to === '/leads' && granted.includes('leads.view-all')),
       ),
     }))
     .filter((group) => group.items.length > 0);

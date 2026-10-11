@@ -90,7 +90,7 @@ A página de detalhe reúne:
 
 ## Auditoria
 
-- Tabela paginada com filtros na parte superior.
+- Tabela paginada com filtros na parte superior: período, ação, autor e usuário afetado. As listas de autor e usuário afetado dependem de `users.view`; sem ela, somente período e ação são exibidos.
 - Evento selecionado é exibido em dialog lateral somente para leitura.
 - Valores anterior e novo são apresentados de forma legível, sem permitir edição.
 

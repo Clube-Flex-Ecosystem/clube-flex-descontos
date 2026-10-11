@@ -13,6 +13,8 @@ interface DataTableProps<T> {
   rowKey: (row: T) => string;
   actions: (row: T) => ReactNode;
   emptyTitle: string;
+  /** Torna a linha clicável; os controles internos continuam funcionando por conta própria. */
+  onRowClick?: (row: T) => void;
 }
 
 /**
@@ -25,6 +27,7 @@ export function DataTable<T>({
   rowKey,
   actions,
   emptyTitle,
+  onRowClick,
 }: DataTableProps<T>) {
   return (
     <div className="overflow-x-auto border-t border-border">
@@ -64,7 +67,23 @@ export function DataTable<T>({
             </tr>
           ) : null}
           {rows.map((row) => (
-            <tr key={rowKey(row)} className="group">
+            <tr
+              key={rowKey(row)}
+              className={onRowClick ? 'group cursor-pointer' : 'group'}
+              onClick={
+                onRowClick
+                  ? (event) => {
+                      if (
+                        (event.target as HTMLElement).closest(
+                          'button, a, input, select, textarea',
+                        )
+                      )
+                        return;
+                      onRowClick(row);
+                    }
+                  : undefined
+              }
+            >
               {columns.map((column, index) => (
                 <td
                   key={column.header}
@@ -115,7 +134,7 @@ export function CellMain({
         </span>
       ) : null}
       <div className="min-w-0">
-        <strong className="t-body block font-semibold">
+        <strong className="t-card block">
           {title}
           {extra ? <span className="ml-1.5 align-middle">{extra}</span> : null}
         </strong>

@@ -1,6 +1,7 @@
 import type { ButtonHTMLAttributes, Ref } from 'react';
 
-type Variant = 'primary' | 'secondary' | 'quiet' | 'danger' | 'sidebar';
+type Variant =
+  'primary' | 'secondary' | 'quiet' | 'danger' | 'danger-quiet' | 'sidebar';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: Variant;
@@ -23,6 +24,9 @@ const variants: Record<Variant, string> = {
     'border-control-border bg-control text-foreground shadow-control-raised hover:border-control-border-hover hover:shadow-control-raised-hover active:shadow-control-pressed',
   danger:
     'border-danger-edge bg-danger-raised text-primary-foreground shadow-brand-raised hover:bg-danger hover:shadow-brand-raised-hover active:shadow-brand-pressed',
+  // Ação destrutiva secundária: face de controle com texto de perigo (zonas de risco).
+  'danger-quiet':
+    'border-control-border bg-control text-danger shadow-control-raised hover:border-danger/40 hover:bg-danger-soft active:shadow-control-pressed',
   quiet:
     'border-transparent bg-transparent text-muted-foreground hover:bg-surface-muted hover:text-foreground',
   sidebar:

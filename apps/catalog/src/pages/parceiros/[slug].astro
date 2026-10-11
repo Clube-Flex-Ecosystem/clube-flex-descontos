@@ -1,0 +1,274 @@
+---
+import { AxiosError } from 'axios';
+import {
+  formatPhone,
+  formatPostalCode,
+  type PublicPartner,
+} from '@flex/contracts';
+import PublicLayout from '../../layouts/PublicLayout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import Icon from '../../components/Icon.astro';
+import AssistantIsland from '../../features/assistant/components/AssistantIsland';
+import {
+  getPartner,
+  listPlans,
+} from '../../features/catalog/api/public-catalog';
+const slug = Astro.params.slug!;
+const plans = await listPlans().catch(() => []);
+const planSlug = Astro.url.searchParams.get('plano') ?? undefined;
+const selectedPlan = plans.find((p) => p.slug === planSlug);
+let partner: PublicPartner | undefined;
+try {
+  partner = await getPartner(slug, selectedPlan?.id);
+} catch (error) {
+  if (error instanceof AxiosError && error.response?.status === 404)
+    Astro.response.status = 404;
+  else throw error;
+}
+if (partner && partner.slug !== slug)
+  return Astro.redirect(
+    `/parceiros/${partner.slug}${planSlug ? `?plano=${planSlug}` : ''}`,
+    308,
+  );
+const back = `/?${planSlug ? `plano=${encodeURIComponent(planSlug)}&` : ''}#parceiros`;
+const address = (u: PublicPartner['units'][number]) =>
+  `${u.address.street}, ${u.address.number}${u.address.complement ? ` — ${u.address.complement}` : ''} · ${u.address.neighborhood}, ${u.address.city} — ${u.address.state} · CEP ${formatPostalCode(u.address.postalCode)}`;
+const jsonLd = partner
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      name: partner.name,
+      description: partner.description,
+      url: Astro.url.href,
+      ...(partner.website ? { sameAs: [partner.website] } : {}),
+    }
+  : undefined;
+---
+
+<PublicLayout
+  title={
+    partner
+      ? `${partner.name} — Clube Flex`
+      : 'Parceiro não encontrado — Clube Flex'
+  }
+  description={
+    partner?.description ?? 'Este parceiro não está disponível no catálogo.'
+  }
+>
+  {jsonLd && (
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  )}
+  <Header />
+  <main id="main" tabindex="-1">
+    {partner ? (
+      <div class="wrap partner-page">
+        <a class="back" href={back}>
+          <Icon name="left" />
+          Voltar para parceiros
+        </a>
+        <header class="p-head">
+          <div class="cats">
+            {partner.categories.map((c) => (
+              <span class="tag">{c.name}</span>
+            ))}
+            {partner.featured && (
+              <span class="tag featured">
+                <Icon name="star" small />
+                Destaque
+              </span>
+            )}
+          </div>
+          <h1 class="display">{partner.name}</h1>
+          <p class="desc">{partner.description}</p>
+        </header>
+        <div class="p-layout">
+          <div class="p-main">
+            <section class="panel usage">
+              <h2>
+                <Icon name="info" />
+                Como usar o desconto
+              </h2>
+              <p>{partner.usageInstructions}</p>
+            </section>
+            {(partner.website || partner.contacts.length > 0) && (
+              <section class="panel">
+                <h2>Contato</h2>
+                {partner.website && (
+                  <p class="website-row">
+                    <a href={partner.website} target="_blank" rel="noopener">
+                      {partner.website.replace(/^https?:\/\//, '')}
+                    </a>
+                    <a
+                      class="btn secondary sm"
+                      href={partner.website}
+                      target="_blank"
+                      rel="noopener"
+                    >
+                      Abrir site
+                    </a>
+                  </p>
+                )}
+                <ul class="contact-list">
+                  {partner.contacts.map((c) => (
+                    <li class="contact">
+                      <span class="c-icon">
+                        <Icon name={c.type === 'whatsapp' ? 'chat' : 'phone'} />
+                      </span>
+                      <div class="c-body">
+                        <small>
+                          {c.label ??
+                            (c.type === 'whatsapp' ? 'WhatsApp' : 'Telefone')}
+                        </small>
+                        <b>{formatPhone(c.value)}</b>
+                      </div>
+                      <a
+                        class="btn secondary sm"
+                        href={
+                          c.type === 'whatsapp'
+                            ? `https://wa.me/${c.value.replace(/\D/g, '')}`
+                            : `tel:${c.value}`
+                        }
+                      >
+                        {c.type === 'whatsapp' ? 'WhatsApp' : 'Ligar'}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
+            <section class="panel">
+              <h2>
+                {partner.units.length === 1
+                  ? 'Unidade'
+                  : `Unidades (${partner.units.length})`}
+              </h2>
+              {partner.units.length ? (
+                <div class="units">
+                  {partner.units.map((u, i) => (
+                    <details
+                      class="unit"
+                      open={i === 0 && partner!.units.length <= 2}
+                    >
+                      <summary>
+                        <span class="c-icon">
+                          <Icon name="pin" small />
+                        </span>
+                        <span>
+                          <b>{u.name}</b>
+                          <small>
+                            {u.address.neighborhood}, {u.address.city}
+                          </small>
+                        </span>
+                        <Icon name="down" small />
+                      </summary>
+                      <dl class="unit-body">
+                        <div>
+                          <dt>Endereço</dt>
+                          <dd>{address(u)}</dd>
+                        </div>
+                        {u.openingHours && (
+                          <div>
+                            <dt>Horário</dt>
+                            <dd>{u.openingHours}</dd>
+                          </div>
+                        )}
+                        {u.instructions && (
+                          <div>
+                            <dt>Instruções da unidade</dt>
+                            <dd>{u.instructions}</dd>
+                          </div>
+                        )}
+                      </dl>
+                    </details>
+                  ))}
+                </div>
+              ) : (
+                <p class="muted">
+                  Este parceiro não possui unidade física. Utilize os contatos
+                  ou o site para usar o benefício.
+                </p>
+              )}
+            </section>
+            <section class="panel assistant-cta">
+              <h2>Ainda não é Flex?</h2>
+              <p>
+                Fale com o assistente virtual e deixe seus dados para conhecer
+                os planos.
+              </p>
+              <div>
+                <button
+                  class="btn accent sm"
+                  type="button"
+                  data-open-assistant="flex"
+                >
+                  Vem ser Flex
+                </button>
+              </div>
+            </section>
+          </div>
+          <aside class="p-aside">
+            <section class="panel benefit">
+              <h2 class="sr-only">Benefício</h2>
+              <form method="get" class="field">
+                <label for="partner-plan">Seu plano</label>
+                <div class="select-wrap">
+                  <select
+                    id="partner-plan"
+                    name="plano"
+                    onchange="this.form.submit()"
+                  >
+                    <option value="">Selecione seu plano</option>
+                    {plans.map((p) => (
+                      <option
+                        value={p.slug}
+                        selected={p.id === selectedPlan?.id}
+                      >
+                        {p.name}
+                      </option>
+                    ))}
+                  </select>
+                  <span class="select-arrow">⌄</span>
+                </div>
+                <p class="hint">
+                  Informado por você; não é validado pelo Clube Flex.
+                </p>
+              </form>
+              {selectedPlan && partner.discountPercentage ? (
+                <div class="benefit-value">
+                  <small>Seu desconto</small>
+                  <strong>
+                    <span>até</span>
+                    {partner.discountPercentage}%
+                  </strong>
+                  {partner.coupon && (
+                    <div class="coupon">
+                      <div>
+                        <small>Cupom</small>
+                        <code>{partner.coupon}</code>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div class="benefit-empty">
+                  Escolha seu plano para consultar o desconto disponível.
+                </div>
+              )}
+            </section>
+          </aside>
+        </div>
+      </div>
+    ) : (
+      <div class="wrap not-found">
+        <h1 class="display">Parceiro não encontrado</h1>
+        <p>Este parceiro não está disponível no catálogo.</p>
+        <a class="btn primary" href="/#parceiros">
+          Ver parceiros
+        </a>
+      </div>
+    )}
+  </main>
+  <Footer />
+  <AssistantIsland client:load />
+</PublicLayout>

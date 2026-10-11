@@ -17,6 +17,7 @@ import { SetPlanStatusUseCase } from './modules/catalog/use-cases/set-plan-statu
 import { UpdateCategoryUseCase } from './modules/catalog/use-cases/update-category.use-case';
 import { UpdatePartnerUseCase } from './modules/catalog/use-cases/update-partner.use-case';
 import { UpdatePlanUseCase } from './modules/catalog/use-cases/update-plan.use-case';
+import { PublicCatalogService } from './modules/catalog/use-cases/public-catalog.service';
 import { AccessCodeDelivery } from './modules/identity/access-code-delivery';
 import type {
   ApplicationLogger,
@@ -24,7 +25,15 @@ import type {
   EmailSender,
   PasswordHasher,
 } from './modules/identity/services.types';
+import { QueryAuditEventsUseCase } from './modules/audit/use-cases/query-audit-events.use-case';
 import { AuthenticateUserUseCase } from './modules/identity/use-cases/authenticate-user.use-case';
+import { CreateUserUseCase } from './modules/identity/use-cases/create-user.use-case';
+import { GetUserUseCase } from './modules/identity/use-cases/get-user.use-case';
+import { IssueAccessCodeUseCase } from './modules/identity/use-cases/issue-access-code.use-case';
+import { ListUsersUseCase } from './modules/identity/use-cases/list-users.use-case';
+import { ReplaceUserPermissionsUseCase } from './modules/identity/use-cases/replace-user-permissions.use-case';
+import { SetUserStatusUseCase } from './modules/identity/use-cases/set-user-status.use-case';
+import { UpdateUserUseCase } from './modules/identity/use-cases/update-user.use-case';
 import { BootstrapFirstAdministratorUseCase } from './modules/identity/use-cases/bootstrap-first-administrator.use-case';
 import { ChangePasswordUseCase } from './modules/identity/use-cases/change-password.use-case';
 import { LogoutUseCase } from './modules/identity/use-cases/logout.use-case';
@@ -32,6 +41,8 @@ import { RequestRecoveryUseCase } from './modules/identity/use-cases/request-rec
 import { ResolveSessionUseCase } from './modules/identity/use-cases/resolve-session.use-case';
 import { SetPasswordWithAccessCodeUseCase } from './modules/identity/use-cases/set-password-with-access-code.use-case';
 import { createDatabase } from './infrastructure/database/drizzle/client';
+import { PublicContactService } from './modules/leads/public-contact.service';
+import { CommercialService } from './modules/leads/commercial.service';
 import {
   DrizzleCatalogUnitOfWork,
   createCatalogRepositories,
@@ -54,7 +65,7 @@ export interface CompositionDependencies {
 export function createCompositionRoot(deps: CompositionDependencies) {
   const db = createDatabase(deps.pool);
   const unitOfWork = new DrizzleUnitOfWork(db);
-  const { users, sessions, permissions } = createRepositories(db);
+  const { users, sessions, permissions, audit } = createRepositories(db);
   const catalogUnitOfWork = new DrizzleCatalogUnitOfWork(db);
   const { plans, categories, partners } = createCatalogRepositories(db);
   const delivery = new AccessCodeDelivery(
@@ -63,7 +74,12 @@ export function createCompositionRoot(deps: CompositionDependencies) {
   );
 
   return {
+    leads: {
+      public: new PublicContactService(db, deps.clock),
+      commercial: new CommercialService(db, deps.clock),
+    },
     catalog: {
+      public: new PublicCatalogService(plans, categories, partners),
       listPlans: new ListPlansUseCase(plans),
       getPlan: new GetPlanUseCase(plans),
       createPlan: new CreatePlanUseCase(plans, deps.clock),
@@ -118,7 +134,24 @@ export function createCompositionRoot(deps: CompositionDependencies) {
         delivery,
         deps.clock,
       ),
+      admin: {
+        listUsers: new ListUsersUseCase(unitOfWork),
+        getUser: new GetUserUseCase(users, permissions),
+        createUser: new CreateUserUseCase(unitOfWork, delivery, deps.clock),
+        updateUser: new UpdateUserUseCase(unitOfWork, deps.clock),
+        setUserStatus: new SetUserStatusUseCase(unitOfWork, deps.clock),
+        issueAccessCode: new IssueAccessCodeUseCase(
+          unitOfWork,
+          delivery,
+          deps.clock,
+        ),
+        replaceUserPermissions: new ReplaceUserPermissionsUseCase(
+          unitOfWork,
+          deps.clock,
+        ),
+      },
     },
+    audit: { query: new QueryAuditEventsUseCase(audit) },
   };
 }
 

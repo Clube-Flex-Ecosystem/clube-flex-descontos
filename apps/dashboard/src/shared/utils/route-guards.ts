@@ -11,3 +11,11 @@ export function requirePermission(
 ): void {
   if (!session.permissions.includes(permission)) throw redirect({ to: '/' });
 }
+
+export function requireAnyPermission(
+  session: SessionResponse,
+  required: readonly Permission[],
+): void {
+  if (!required.some((permission) => session.permissions.includes(permission)))
+    throw redirect({ to: '/' });
+}

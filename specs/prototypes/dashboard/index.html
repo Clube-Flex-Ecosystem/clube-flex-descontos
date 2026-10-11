@@ -374,7 +374,7 @@
     .perm-area .check { padding: 3px 0; font-size: 13.5px; }
 
     .code-box { padding: 12px; border-radius: var(--radius); background: var(--subtle); text-align: center; }
-    .code-box strong { display: block; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 22px; letter-spacing: .18em; }
+    .code-box strong { display: block; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 16px; font-weight: 600; letter-spacing: .1em; }
 
     .diff { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
     .diff div { padding: 10px; border-radius: var(--radius); font-size: 13px; }
@@ -845,7 +845,7 @@
                 <div class="card-head"><h2>Acesso</h2></div>
                 <div class="card-body stack" style="gap:12px">
                   <dl class="dl"><div class="dl-row"><dt>Situação</dt><dd id="user-activation"></dd></div><div class="dl-row"><dt>Estado</dt><dd id="user-state"></dd></div></dl>
-                  <div class="code-box" id="code-box" hidden><span class="hint">Código de <span id="code-kind"></span> · válido por 30 min</span><strong id="code-value">482 913</strong><span class="hint">Entregue à pessoa por um canal seguro. Ele não será exibido de novo.</span></div>
+                  <div class="code-box" id="code-box" hidden><span class="hint">Código de <span id="code-kind"></span> · válido por 30 min</span><strong id="code-value">7K4M-92QD-R8WX-3HNB</strong><span class="hint">Entregue à pessoa por um canal seguro. Ele não será exibido de novo.</span></div>
                   <button class="btn" type="button" data-issue-code id="issue-code"></button>
                   <p class="hint">Emitir um novo código invalida o anterior da mesma finalidade.</p>
                 </div>
@@ -869,6 +869,7 @@
                 <select class="control" aria-label="Período"><option>Últimos 30 dias</option><option>Últimos 7 dias</option><option>Hoje</option><option>Todo o período</option></select>
                 <select class="control" id="audit-action" aria-label="Ação"><option value="">Todas as ações</option></select>
                 <select class="control" id="audit-author" aria-label="Autor"><option value="">Todos os autores</option></select>
+                <select class="control" id="audit-target" aria-label="Usuário afetado"><option value="">Todos os afetados</option></select>
               </div>
               <div class="toolbar-end"><button class="btn ghost sm" type="button" data-clear-audit>Limpar filtros</button></div>
             </div>
@@ -1512,9 +1513,9 @@
           field("e-source", "Origem", "Indicação", { options: DATA.sources.filter(s => s.active && !s.protected).map(s => s.name) }), field("e-detail", "Detalhe da origem", "", { optional: true }),
           field("e-owner", "Responsável", ME, { options: ["Sem responsável", ...USERS.filter(u => u.active).map(u => u.name)] }));
       } else if (key === "user") {
-        body.append(field("e-name", "Nome completo"), field("e-login", "Nome de usuário", "", { mono: true, hint: "Gerado a partir do nome; pode ser ajustado." }), field("e-mail", "E-mail", "", { optional: true }),
+        body.append(field("e-name", "Nome completo"), field("e-login", "Nome de usuário", "", { mono: true, readonly: true, hint: "Gerado a partir do nome; recebe um sufixo numérico se já existir. Pode ser ajustado no detalhe do usuário." }), field("e-mail", "E-mail", "", { optional: true }),
           Object.assign(el("div", "alert info"), {}));
-        const a = body.lastChild; a.append(icon("i-alert")); a.append(el("div", "", "A conta começa ativa, sem permissões e aguardando ativação. Emita o código de ativação no detalhe do usuário."));
+        const a = body.lastChild; a.append(icon("i-alert")); a.append(el("div", "", "A conta começa ativa, sem permissões e aguardando ativação. O código de ativação é emitido ao salvar: sem e-mail, ele é exibido uma única vez no detalhe do usuário."));
       }
       drawerSave = () => {
         const name = $("#e-name").value.trim(); if (!name) return toast("Informe o nome.");
@@ -1641,7 +1642,7 @@
     $("[data-issue-code]").addEventListener("click", () => {
       const kind = currentUser.activated ? "recuperação" : "ativação";
       confirmAction({ title: `Emitir código de ${kind}?`, body: `Qualquer código de ${kind} anterior de ${currentUser.name} deixará de funcionar. O novo código vale por 30 minutos e aceita até 5 tentativas.`, ok: "Emitir código",
-        onConfirm: () => { $("#code-kind").textContent = kind; $("#code-value").textContent = String(Math.floor(100000 + Math.random() * 899999)).replace(/(\d{3})(\d{3})/, "$1 $2"); $("#code-box").hidden = false; } });
+        onConfirm: () => { $("#code-kind").textContent = kind; $("#code-value").textContent = Array.from({ length: 4 }, () => Array.from({ length: 4 }, () => "0123456789ABCDEFGHJKMNPQRSTVWXYZ"[Math.floor(Math.random() * 32)]).join("")).join("-"); $("#code-box").hidden = false; } });
     });
     $("[data-toggle-user]").addEventListener("click", () => {
       const u = currentUser;
@@ -1653,8 +1654,8 @@
     /* ───────── Auditoria ───────── */
     const auditDrawer = $("#audit-drawer");
     function renderAudit() {
-      const action = $("#audit-action").value, author = $("#audit-author").value;
-      const rows = AUDIT.filter(a => (!action || a.action === action) && (!author || a.author === author));
+      const action = $("#audit-action").value, author = $("#audit-author").value, target = $("#audit-target").value;
+      const rows = AUDIT.filter(a => (!action || a.action === action) && (!author || a.author === author) && (!target || a.target === target));
       const body = $("#audit-rows"); body.replaceChildren();
       if (!rows.length) { const tr = el("tr", "empty-row"), td = el("td"); td.colSpan = 6; td.append(el("strong", "", "Nenhum evento com esses filtros."), document.createTextNode("Amplie o período ou remova filtros.")); tr.append(td); body.append(tr); }
       rows.forEach(a => {
@@ -1668,7 +1669,7 @@
         tr.addEventListener("click", e => { if (!e.target.closest("button")) openAudit(a); });
         body.append(tr);
       });
-      $("#audit-range").textContent = action || author ? `${rows.length} eventos nesta página` : "1–10 de 128 eventos";
+      $("#audit-range").textContent = action || author || target ?`${rows.length} eventos nesta página` : "1–10 de 128 eventos";
     }
     function openAudit(a) {
       $("#audit-d-title").textContent = a.action; $("#audit-d-sub").textContent = a.at;
@@ -1681,8 +1682,9 @@
     }
     [...new Set(AUDIT.map(a => a.action))].sort().forEach(a => $("#audit-action").append(Object.assign(el("option", "", a), { value: a })));
     [...new Set(AUDIT.map(a => a.author))].forEach(a => $("#audit-author").append(Object.assign(el("option", "", a), { value: a })));
-    $("#audit-action").addEventListener("change", renderAudit); $("#audit-author").addEventListener("change", renderAudit);
-    $("[data-clear-audit]").addEventListener("click", () => { $("#audit-action").value = ""; $("#audit-author").value = ""; renderAudit(); });
+    [...new Set(AUDIT.map(a => a.target).filter(t => t !== "—"))].forEach(a => $("#audit-target").append(Object.assign(el("option", "", a), { value: a })));
+    $("#audit-action").addEventListener("change", renderAudit); $("#audit-author").addEventListener("change", renderAudit); $("#audit-target").addEventListener("change", renderAudit);
+    $("[data-clear-audit]").addEventListener("click", () => { $("#audit-action").value = ""; $("#audit-author").value = ""; $("#audit-target").value = ""; renderAudit(); });
 
     /* ───────── Alterar senha ───────── */
     $("#pw-new").addEventListener("input", e => {

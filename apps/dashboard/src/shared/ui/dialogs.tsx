@@ -89,6 +89,60 @@ export function Drawer({
   );
 }
 
+interface DetailDrawerProps {
+  title: string;
+  description?: string;
+  /** Observação fixa no rodapé, à esquerda (por exemplo, "Registro imutável"). */
+  note?: ReactNode;
+  onClose: () => void;
+  children: ReactNode;
+}
+
+/** Dialog lateral somente leitura: apenas leitura e fechamento, sem envio. */
+export function DetailDrawer({
+  title,
+  description,
+  note,
+  onClose,
+  children,
+}: DetailDrawerProps) {
+  const ref = useModalDialog(onClose);
+  return (
+    <dialog
+      ref={ref}
+      aria-labelledby="detail-drawer-title"
+      className="m-0 mr-0 ml-auto h-dvh max-h-dvh w-full max-w-110 bg-surface p-0 text-foreground shadow-lg backdrop:bg-overlay open:flex open:animate-[drawer-in_var(--duration-base)_ease-out] open:flex-col"
+    >
+      <div className="flex h-full min-h-0 flex-col">
+        <div className="flex items-start justify-between gap-3 border-b border-border px-5 py-4">
+          <div>
+            <h2 id="detail-drawer-title" className="t-section">
+              {title}
+            </h2>
+            {description ? (
+              <p className="t-small muted tnum">{description}</p>
+            ) : null}
+          </div>
+          <Button variant="quiet" aria-label="Fechar" onClick={onClose}>
+            <Icon name="x" />
+          </Button>
+        </div>
+        <div className="grid flex-1 content-start gap-4 overflow-y-auto p-5">
+          {children}
+        </div>
+        <div className="flex items-center justify-end gap-2 border-t border-border bg-surface-hover px-5 py-3">
+          {note ? (
+            <span className="t-caption muted mr-auto inline-flex items-center gap-1.5">
+              {note}
+            </span>
+          ) : null}
+          <Button onClick={onClose}>Fechar</Button>
+        </div>
+      </div>
+    </dialog>
+  );
+}
+
 interface ConfirmDialogProps {
   title: string;
   body: ReactNode;

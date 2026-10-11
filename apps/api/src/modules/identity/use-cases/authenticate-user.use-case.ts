@@ -33,7 +33,11 @@ export class AuthenticateUserUseCase {
     const user = await this.users.findByUsername(
       input.username.trim().toLowerCase(),
     );
-    const eligible = user?.status === 'active' && user.passwordHash;
+    // A redefinição administrativa exige a senha nova: a anterior deixa de valer (RF-015).
+    const eligible =
+      user?.status === 'active' &&
+      user.passwordHash &&
+      !user.passwordChangeRequired;
     const hash =
       (eligible && user?.passwordHash) || (await this.getDummyHash());
     const matches = await this.hasher.verify(input.password, hash);

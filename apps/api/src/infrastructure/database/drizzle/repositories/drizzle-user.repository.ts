@@ -1,14 +1,17 @@
-import { count, eq, sql } from 'drizzle-orm';
+import { and, asc, count, eq, like, sql } from 'drizzle-orm';
+import { administratorPermissions } from '@flex/contracts';
 import type {
   NewUser,
   UserAccount,
+  UserProfile,
   UserRepository,
 } from '../../../../modules/identity/repositories/user.repository.types';
 import type { DatabaseExecutor } from '../client';
 import { users } from '../schema';
 
-// Identificador fixo da trava que serializa a criação do primeiro usuário.
+// Identificadores fixos das travas que serializam operações sobre o conjunto de contas.
 const USER_CREATION_LOCK = 7_301_001;
+const ADMINISTRATION_LOCK = 7_301_002;
 
 type UserRow = typeof users.$inferSelect;
 
@@ -18,6 +21,8 @@ function toAccount(row: UserRow): UserAccount {
     fullName: row.fullName,
     username: row.username,
     status: row.status,
+    passwordChangeRequired: row.passwordChangeRequired,
+    version: row.version,
     ...(row.email ? { email: row.email } : {}),
     ...(row.passwordHash ? { passwordHash: row.passwordHash } : {}),
   };
@@ -39,6 +44,14 @@ export class DrizzleUserRepository implements UserRepository {
     return row ? toAccount(row) : null;
   }
 
+  async list(): Promise<UserAccount[]> {
+    const rows = await this.db
+      .select()
+      .from(users)
+      .orderBy(asc(users.fullName), asc(users.username));
+    return rows.map(toAccount);
+  }
+
   async count(): Promise<number> {
     const [row] = await this.db.select({ total: count() }).from(users);
     return row?.total ?? 0;
@@ -50,6 +63,15 @@ export class DrizzleUserRepository implements UserRepository {
       .from(users)
       .where(eq(users.username, username));
     return Boolean(row);
+  }
+
+  async usernamesStartingWith(base: string): Promise<string[]> {
+    // A base contém apenas letras minúsculas, dígitos e pontos, sem curingas de LIKE.
+    const rows = await this.db
+      .select({ username: users.username })
+      .from(users)
+      .where(like(users.username, `${base}%`));
+    return rows.map((row) => row.username);
   }
 
   async create(user: NewUser, now: Date): Promise<UserAccount> {
@@ -74,8 +96,92 @@ export class DrizzleUserRepository implements UserRepository {
   ): Promise<void> {
     await this.db
       .update(users)
-      .set({ passwordHash, updatedAt: now })
+      .set({ passwordHash, passwordChangeRequired: false, updatedAt: now })
       .where(eq(users.id, userId));
+  }
+
+  async updateProfile(
+    userId: string,
+    expectedVersion: number,
+    profile: UserProfile,
+    now: Date,
+  ): Promise<UserAccount | null> {
+    const [row] = await this.db
+      .update(users)
+      .set({
+        fullName: profile.fullName,
+        username: profile.username,
+        email: profile.email ?? null,
+        version: expectedVersion + 1,
+        updatedAt: now,
+      })
+      .where(and(eq(users.id, userId), eq(users.version, expectedVersion)))
+      .returning();
+    return row ? toAccount(row) : null;
+  }
+
+  async setStatus(
+    userId: string,
+    expectedVersion: number,
+    status: 'active' | 'inactive',
+    now: Date,
+  ): Promise<UserAccount | null> {
+    const [row] = await this.db
+      .update(users)
+      .set({ status, version: expectedVersion + 1, updatedAt: now })
+      .where(and(eq(users.id, userId), eq(users.version, expectedVersion)))
+      .returning();
+    return row ? toAccount(row) : null;
+  }
+
+  async touch(
+    userId: string,
+    expectedVersion: number,
+    now: Date,
+  ): Promise<UserAccount | null> {
+    const [row] = await this.db
+      .update(users)
+      .set({ version: expectedVersion + 1, updatedAt: now })
+      .where(and(eq(users.id, userId), eq(users.version, expectedVersion)))
+      .returning();
+    return row ? toAccount(row) : null;
+  }
+
+  async setPasswordChangeRequired(
+    userId: string,
+    required: boolean,
+    now: Date,
+  ): Promise<void> {
+    await this.db
+      .update(users)
+      .set({ passwordChangeRequired: required, updatedAt: now })
+      .where(eq(users.id, userId));
+  }
+
+  async countOtherAdministrators(excludingUserId: string): Promise<number> {
+    const required = sql.join(
+      administratorPermissions.map((permission) => sql`${permission}`),
+      sql`, `,
+    );
+    const result = await this.db.execute<{ total: number }>(sql`
+      select count(*)::int as total
+      from users u
+      where u.status = 'active'
+        and u.password_hash is not null
+        and u.id <> ${excludingUserId}
+        and (
+          select count(distinct p.permission)
+          from user_permissions p
+          where p.user_id = u.id and p.permission in (${required})
+        ) = ${administratorPermissions.length}
+    `);
+    return result.rows[0]?.total ?? 0;
+  }
+
+  async lockAdministration(): Promise<void> {
+    await this.db.execute(
+      sql`select pg_advisory_xact_lock(${ADMINISTRATION_LOCK})`,
+    );
   }
 
   async lockUserCreation(): Promise<void> {

@@ -1,0 +1,21 @@
+---
+import PublicLayout from '../layouts/PublicLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+Astro.response.status = 404;
+---
+
+<PublicLayout
+  title="Página não encontrada — Clube Flex"
+  description="A página solicitada não foi encontrada."
+>
+  <Header />
+  <main class="container not-found">
+    <h1>Página não encontrada</h1>
+    <p>O endereço pode ter mudado ou não existe.</p>
+    <a class="btn primary" href="/">
+      Voltar ao início
+    </a>
+  </main>
+  <Footer />
+</PublicLayout>

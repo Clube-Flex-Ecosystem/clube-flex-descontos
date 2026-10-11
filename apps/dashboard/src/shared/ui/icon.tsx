@@ -68,6 +68,55 @@ const glyphs = {
       <circle cx="8" cy="9" r="1.2" />
     </>
   ),
+  leads: (
+    <>
+      <rect x="3" y="4" width="5" height="16" rx="1.5" />
+      <rect x="10" y="4" width="5" height="11" rx="1.5" />
+      <rect x="17" y="4" width="4" height="7" rx="1.5" />
+    </>
+  ),
+  source: (
+    <>
+      <circle cx="12" cy="12" r="8" />
+      <circle cx="12" cy="12" r="3" />
+      <path d="M12 4v2M20 12h-2M12 20v-2M4 12h2" />
+    </>
+  ),
+  swap: (
+    <>
+      <path d="M7 7h13M16 3l4 4-4 4M17 17H4M8 13l-4 4 4 4" />
+    </>
+  ),
+  edit: (
+    <>
+      <path d="m4 20 4.5-1 10-10-3.5-3.5-10 10L4 20Z" />
+      <path d="m13.5 7 3.5 3.5" />
+    </>
+  ),
+  users: (
+    <>
+      <circle cx="9" cy="8" r="3.5" />
+      <path d="M2.5 20c.6-3.4 3.2-5.5 6.5-5.5s5.9 2.1 6.5 5.5" />
+      <path d="M16 4.8a3.5 3.5 0 0 1 0 6.4" />
+      <path d="M18 14.9c1.8.7 3 2.4 3.5 5.1" />
+    </>
+  ),
+  audit: (
+    <>
+      <path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9l-6-6Z" />
+      <path d="M14 3v6h6" />
+      <path d="M8 13h8M8 17h5" />
+    </>
+  ),
+  trash: (
+    <>
+      <path d="M4 7h16" />
+      <path d="M10 11v6M14 11v6" />
+      <path d="M6 7l1 13h10l1-13" />
+      <path d="M9 7V4h6v3" />
+    </>
+  ),
+  right: <path d="m9 18 6-6-6-6" />,
 } satisfies Record<string, ReactNode>;
 
 export type IconName = keyof typeof glyphs;

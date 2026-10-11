@@ -75,6 +75,8 @@ export interface PartnerRepository {
   /** Em ordem alfabética, em todos os estados. */
   list(): Promise<PartnerRecord[]>;
   findById(id: string): Promise<PartnerRecord | null>;
+  findBySlug(slug: string): Promise<PartnerRecord | null>;
+  findCurrentSlugByPrevious(slug: string): Promise<string | null>;
   /** Existe outro parceiro com o mesmo nome normalizado? */
   hasSimilarName(name: string, excludingId: string): Promise<boolean>;
   /** O identificador está em uso, atualmente ou por um endereço anterior? */
