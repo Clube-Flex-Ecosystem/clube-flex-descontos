@@ -1,68 +1,53 @@
 ---
 import { BadgeCheck, CalendarDays, Check, Heart } from '@lucide/astro';
+
+const values = [
+  {
+    icon: BadgeCheck,
+    title: 'Parceiros selecionados',
+    text: 'Clínicas, escolas e espaços de lazer escolhidos com cuidado para atender você e sua família.',
+  },
+  {
+    icon: Heart,
+    title: 'Benefícios de verdade',
+    text: 'Descontos claros, de acordo com o seu plano, para usar no dia a dia.',
+  },
+  {
+    icon: Check,
+    title: 'Sem complicação',
+    text: 'Escolha o parceiro, siga as instruções de uso e aproveite.',
+  },
+  {
+    icon: CalendarDays,
+    title: 'Atualizações mensais',
+    text: 'Novos parceiros e condições entram no catálogo com frequência.',
+  },
+];
 ---
 
-<section class="px-0 py-[72px]" id="sobre" aria-labelledby="about-title">
-  <div class="mx-auto w-full max-w-[1200px] px-4 md:px-8">
-    <div class="max-w-[640px]">
-      <p class="text-sm font-semibold uppercase tracking-[0.08em] text-accent-foreground">
+<section class="py-18" id="sobre" aria-labelledby="about-title">
+  <div class="mx-auto w-full max-w-300 px-4 md:px-8">
+    <div class="max-w-170">
+      <p class="text-eyebrow font-stretch-115% uppercase text-accent-foreground">
         Clube Flex
       </p>
       <h2
-        class="mt-2 font-display text-[clamp(32px,6vw,48px)] font-semibold leading-[1.08] tracking-[-0.02em]"
+        class="mt-2.5 font-display text-display font-stretch-110%"
         id="about-title"
       >
         Mais que descontos. Uma rotina mais generosa.
       </h2>
     </div>
     <ul class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      <li class="rounded-lg border border-border bg-surface-muted p-6">
-        <span class="grid h-12 w-12 place-items-center rounded-[14px] border border-border bg-background text-accent-foreground">
-          <BadgeCheck class="h-5 w-5" aria-hidden="true" stroke-width={1.75} />
-        </span>
-        <h3 class="mt-[18px] text-[19px] font-semibold">
-          Parceiros selecionados
-        </h3>
-        <p class="mt-2 leading-[1.5] text-foreground-soft">
-          Clínicas, escolas e espaços de lazer escolhidos com cuidado para
-          atender você e sua família.
-        </p>
-      </li>
-      <li class="rounded-lg border border-border bg-surface-muted p-6">
-        <span class="grid h-12 w-12 place-items-center rounded-[14px] border border-border bg-background text-accent-foreground">
-          <Heart class="h-5 w-5" aria-hidden="true" stroke-width={1.75} />
-        </span>
-        <h3 class="mt-[18px] text-[19px] font-semibold">
-          Benefícios de verdade
-        </h3>
-        <p class="mt-2 leading-[1.5] text-foreground-soft">
-          Descontos claros, de acordo com o seu plano, para usar no dia a dia.
-        </p>
-      </li>
-      <li class="rounded-lg border border-border bg-surface-muted p-6">
-        <span class="grid h-12 w-12 place-items-center rounded-[14px] border border-border bg-background text-accent-foreground">
-          <Check class="h-5 w-5" aria-hidden="true" stroke-width={1.75} />
-        </span>
-        <h3 class="mt-[18px] text-[19px] font-semibold">Sem complicação</h3>
-        <p class="mt-2 leading-[1.5] text-foreground-soft">
-          Escolha o parceiro, siga as instruções de uso e aproveite.
-        </p>
-      </li>
-      <li class="rounded-lg border border-border bg-surface-muted p-6">
-        <span class="grid h-12 w-12 place-items-center rounded-[14px] border border-border bg-background text-accent-foreground">
-          <CalendarDays
-            class="h-5 w-5"
-            aria-hidden="true"
-            stroke-width={1.75}
-          />
-        </span>
-        <h3 class="mt-[18px] text-[19px] font-semibold">
-          Atualizações mensais
-        </h3>
-        <p class="mt-2 leading-[1.5] text-foreground-soft">
-          Novos parceiros e condições entram no catálogo com frequência.
-        </p>
-      </li>
+      {values.map(({ icon: Icon, title, text }) => (
+        <li class="rounded-card border border-border bg-surface p-6">
+          <span class="grid h-12 w-12 place-items-center rounded-[14px] bg-surface-muted text-foreground">
+            <Icon class="h-5 w-5" aria-hidden="true" stroke-width={1.75} />
+          </span>
+          <h3 class="mt-4.5 font-display text-subheading">{title}</h3>
+          <p class="mt-2 text-foreground-soft">{text}</p>
+        </li>
+      ))}
     </ul>
   </div>
 </section>

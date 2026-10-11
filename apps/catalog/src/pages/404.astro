@@ -1,5 +1,6 @@
 ---
 import PublicLayout from '../layouts/PublicLayout.astro';
+import { button } from '../components/ui/button';
 Astro.response.status = 404;
 ---
 
@@ -7,13 +8,14 @@ Astro.response.status = 404;
   title="Página não encontrada — Clube Flex"
   description="A página solicitada não foi encontrada."
 >
-  <div class="mx-auto grid min-h-[50vh] w-full max-w-[1200px] content-center gap-4 px-4 py-16 md:px-8">
-    <h1>Página não encontrada</h1>
-    <p>O endereço pode ter mudado ou não existe.</p>
-    <a
-      class="inline-flex min-h-12 w-fit items-center justify-center rounded-full bg-primary px-[22px] font-semibold text-white no-underline"
-      href="/"
-    >
+  <div class="mx-auto grid min-h-[50vh] w-full max-w-300 content-center justify-items-center gap-4 px-4 py-18 text-center md:px-8">
+    <h1 class="font-display text-display font-stretch-110%">
+      Página não encontrada
+    </h1>
+    <p class="text-muted-foreground">
+      O endereço pode ter mudado ou não existe.
+    </p>
+    <a class={button('primary')} href="/">
       Voltar ao início
     </a>
   </div>

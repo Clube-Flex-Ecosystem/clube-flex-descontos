@@ -1,44 +1,53 @@
-<section
-  class="px-0 py-[72px]"
-  id="como-funciona"
-  aria-labelledby="steps-title"
->
-  <div class="mx-auto w-full max-w-[1200px] px-4 md:px-8">
-    <div class="max-w-[640px]">
-      <p class="text-sm font-semibold uppercase tracking-[0.08em] text-accent-foreground">
+---
+import { button } from '../../../components/ui/button';
+
+const steps = [
+  {
+    title: 'Cadastre-se',
+    text: 'Deixe seus dados e a equipe do Clube Flex entra em contato para apresentar os planos.',
+  },
+  {
+    title: 'Explore parceiros',
+    text: 'Escolha seu plano no catálogo e veja os descontos disponíveis por categoria.',
+  },
+  {
+    title: 'Use seu desconto',
+    text: 'Siga as instruções de utilização de cada parceiro e apresente seu cupom quando houver.',
+  },
+  {
+    title: 'Economize sempre',
+    text: 'Volte ao catálogo sempre que precisar e aproveite novas condições.',
+  },
+];
+---
+
+<section class="py-18" id="como-funciona" aria-labelledby="steps-title">
+  <div class="mx-auto w-full max-w-300 px-4 md:px-8">
+    <div class="max-w-170">
+      <p class="text-eyebrow font-stretch-115% uppercase text-accent-foreground">
         Como funciona
       </p>
       <h2
-        class="mt-2 font-display text-[clamp(32px,6vw,48px)] font-semibold leading-[1.08] tracking-[-0.02em]"
+        class="mt-2.5 font-display text-display font-stretch-110%"
         id="steps-title"
       >
         Em quatro passos.
       </h2>
     </div>
     <ol class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      {[
-        'Cadastre-se',
-        'Explore parceiros',
-        'Use seu desconto',
-        'Economize sempre',
-      ].map((title, i) => (
-        <li class="rounded-lg border border-border bg-background p-6 pt-7">
-          <span class="font-display text-[56px] font-medium leading-none text-accent">
+      {steps.map(({ title, text }, i) => (
+        <li class="rounded-card border border-border bg-surface p-6 pt-7">
+          <span
+            class="font-display text-number-step font-stretch-108% tabular-nums text-accent-strong"
+            aria-hidden="true"
+          >
             {String(i + 1).padStart(2, '0')}
           </span>
-          <h3 class="mt-3 text-xl font-semibold">{title}</h3>
-          <p class="mt-2 leading-[1.5] text-foreground-soft">
-            {i === 0
-              ? 'Deixe seus dados e a equipe do Clube Flex entra em contato para apresentar os planos.'
-              : i === 1
-                ? 'Escolha seu plano no catálogo e veja os descontos disponíveis por categoria.'
-                : i === 2
-                  ? 'Siga as instruções de utilização de cada parceiro e apresente seu cupom quando houver.'
-                  : 'Volte ao catálogo sempre que precisar e aproveite novas condições.'}
-          </p>
+          <h3 class="mt-3 font-display text-subheading">{title}</h3>
+          <p class="mt-2 text-foreground-soft">{text}</p>
           {i === 0 && (
             <button
-              class="mt-[18px] inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-transparent bg-primary px-4 font-semibold text-white hover:bg-primary-hover"
+              class={`${button('primary', 'sm')} mt-4`}
               type="button"
               data-open-assistant="flex"
             >

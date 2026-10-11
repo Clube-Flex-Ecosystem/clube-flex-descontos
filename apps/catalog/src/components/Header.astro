@@ -1,63 +1,60 @@
 ---
 import { Menu } from '@lucide/astro';
+import { button } from './ui/button';
+
+const navLink =
+  'inline-flex min-h-11 items-center rounded-control px-3.5 text-nav font-medium text-foreground no-underline hover:bg-surface-muted';
+const mobileLink =
+  'flex min-h-12 items-center border-b border-border font-medium text-foreground no-underline';
 ---
 
 <a
-  class="absolute left-2 -top-15 z-[100] rounded-[8px] bg-primary px-4 py-3 font-semibold text-white focus:top-2"
+  class="absolute left-2 -top-15 z-100 rounded-control bg-foreground px-4 py-3 font-semibold text-surface focus:top-2"
   href="#main"
 >
   Ir para o conteúdo
 </a>
 <header
-  class="sticky top-0 z-40 border-b border-transparent bg-[#f5f7f8]/92 backdrop-blur-[10px] saturate-[1.4]"
+  class="sticky top-0 z-40 border-b border-transparent bg-background/88 backdrop-blur-[10px] backdrop-saturate-[1.4] transition-colors duration-200"
   id="site-header"
 >
-  <div class="mx-auto flex h-[68px] w-full max-w-[1200px] items-center gap-4 px-4 md:px-8">
+  <div class="mx-auto flex h-17 w-full max-w-300 items-center gap-4 px-4 md:px-8">
     <a
-      class="inline-flex min-h-11 items-center gap-0.5 font-display text-2xl font-semibold tracking-[-0.02em] text-accent-foreground no-underline"
+      class="inline-flex min-h-11 items-center gap-0.5 font-display text-2xl font-bold font-stretch-110% tracking-[-0.02em] text-foreground no-underline"
       href="/"
       aria-label="Parceiros+ — página inicial"
     >
-      Parceiros<span class="text-accent">+</span>
+      Parceiros<span class="text-brand-signal">+</span>
       <span
-        class="ml-2 rounded border border-dashed border-control-border px-[5px] py-px font-sans text-[10px] font-semibold uppercase tracking-[0.06em] text-muted-foreground"
+        class="ml-2 rounded-xs border border-dashed border-border-strong px-1.25 py-px font-sans text-[10px] font-semibold font-stretch-100% uppercase tracking-[0.06em] text-muted-foreground"
         aria-hidden="true"
       >
         logo provisória
       </span>
     </a>
     <nav
-      class="ml-auto hidden gap-1 min-[900px]:flex"
+      class="ml-auto hidden gap-0.5 min-[900px]:flex"
       aria-label="Navegação principal"
     >
-      <a
-        class="inline-flex min-h-11 items-center rounded-full px-3.5 font-medium text-foreground-soft no-underline hover:bg-surface-muted"
-        href="/#sobre"
-      >
+      <a class={navLink} href="/#sobre">
         Sobre
       </a>
-      <a
-        class="inline-flex min-h-11 items-center rounded-full px-3.5 font-medium text-foreground-soft no-underline hover:bg-surface-muted"
-        href="/#parceiros"
-      >
+      <a class={navLink} href="/#parceiros">
         Parceiros
       </a>
-      <a
-        class="inline-flex min-h-11 items-center rounded-full px-3.5 font-medium text-foreground-soft no-underline hover:bg-surface-muted"
-        href="/#como-funciona"
-      >
+      <a class={navLink} href="/#como-funciona">
         Como funciona
       </a>
     </nav>
     <button
-      class="ml-2 inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-transparent bg-primary px-4 text-[15px] font-semibold text-white hover:bg-primary-hover max-[420px]:hidden"
+      class={`${button('primary', 'sm')} ml-auto min-[900px]:ml-2 max-[420px]:hidden`}
       type="button"
       data-open-assistant="flex"
     >
       Vem ser Flex
     </button>
     <button
-      class="ml-1 inline-grid h-11 w-11 place-items-center rounded-full border-0 bg-transparent min-[900px]:hidden max-[420px]:ml-auto"
+      class="ml-1 inline-grid h-11 w-11 place-items-center rounded-control border-0 bg-transparent text-foreground hover:bg-surface-muted min-[900px]:hidden max-[420px]:ml-auto"
       type="button"
       aria-expanded="false"
       aria-controls="mobile-nav"
@@ -72,22 +69,13 @@ import { Menu } from '@lucide/astro';
     aria-label="Navegação principal"
     hidden
   >
-    <a
-      class="flex min-h-12 items-center border-b border-border font-medium no-underline"
-      href="/#sobre"
-    >
+    <a class={mobileLink} href="/#sobre">
       Sobre
     </a>
-    <a
-      class="flex min-h-12 items-center border-b border-border font-medium no-underline"
-      href="/#parceiros"
-    >
+    <a class={mobileLink} href="/#parceiros">
       Parceiros
     </a>
-    <a
-      class="flex min-h-12 items-center border-b border-border font-medium no-underline"
-      href="/#como-funciona"
-    >
+    <a class={mobileLink} href="/#como-funciona">
       Como funciona
     </a>
   </nav>

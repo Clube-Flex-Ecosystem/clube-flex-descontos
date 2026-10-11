@@ -8,6 +8,7 @@ import {
 import { useEffect, useReducer, useRef, useState } from 'react';
 import { AlertCircle, ArrowRight, Bot, MessageCircle, X } from 'lucide-react';
 import { useForm } from 'react-hook-form';
+import { button } from '../../../components/ui/button';
 import type { z } from 'zod';
 import { getContactConsent, sendContactRequest } from '../api/public-contact';
 
@@ -246,7 +247,7 @@ export default function AssistantIsland() {
       }}
     >
       <label
-        className="font-semibold text-[15px]"
+        className="text-control-sm font-semibold"
         htmlFor={`assistant-${name}`}
       >
         {label}
@@ -264,11 +265,11 @@ export default function AssistantIsland() {
                 : 'email'
           }
           aria-invalid={Boolean(error(name))}
-          className="min-h-12 min-w-0 flex-1 rounded-lg border border-control-border bg-background px-3 text-base aria-invalid:border-danger"
+          className="min-h-12 min-w-0 flex-1 rounded-control border-[1.5px] border-control-border bg-surface px-3.5 text-base text-foreground aria-invalid:border-danger"
           {...form.register(name)}
         />
         <button
-          className="grid h-12 w-12 shrink-0 place-items-center rounded-lg border-0 bg-primary text-white"
+          className="grid h-12 w-12 shrink-0 place-items-center rounded-control border-0 bg-primary text-primary-foreground shadow-brand hover:bg-primary-hover active:bg-primary-active active:shadow-brand-pressed"
           type="submit"
           aria-label="Continuar"
         >
@@ -298,7 +299,7 @@ export default function AssistantIsland() {
       )}
       {name === 'email' && (
         <button
-          className="min-h-11 border-0 bg-transparent px-1 text-left text-accent-foreground underline underline-offset-3"
+          className="min-h-11 justify-self-start border-0 bg-transparent px-1 text-left font-semibold text-foreground underline decoration-brand-signal decoration-2 underline-offset-4"
           type="button"
           onClick={() => {
             form.setValue('email', '');
@@ -317,13 +318,13 @@ export default function AssistantIsland() {
   return (
     <>
       <button
-        className="fixed bottom-5 right-5 z-40 grid h-14 w-14 place-items-center rounded-full border-0 bg-primary text-white shadow-lg"
+        className="fixed right-5 bottom-5 z-40 grid h-15 w-15 place-items-center rounded-full border-0 bg-sidebar text-surface shadow-float transition-[background-color,scale] duration-200 ease-out after:absolute after:top-0.5 after:right-0.5 after:h-3 after:w-3 after:rounded-full after:border-2 after:border-background after:bg-brand-signal hover:scale-105 hover:bg-sidebar-raised"
         type="button"
         aria-label="Abrir assistente do Clube Flex"
         data-open-assistant
       >
         <MessageCircle
-          className="h-5 w-5"
+          className="h-6 w-6"
           aria-hidden="true"
           strokeWidth={1.75}
         />
@@ -331,21 +332,21 @@ export default function AssistantIsland() {
       {state.step !== 'closed' && (
         <>
           <button
-            className="fixed inset-0 z-40 border-0 bg-sidebar/35"
+            className="fixed inset-0 z-40 border-0 bg-overlay sm:bg-transparent"
             aria-label="Fechar assistente"
             onClick={close}
           />
           <div
-            className="fixed inset-x-0 bottom-0 z-50 flex max-h-[min(760px,calc(100dvh-16px))] flex-col overflow-hidden rounded-t-[16px] bg-background shadow-lg sm:inset-auto sm:bottom-5 sm:right-5 sm:h-[min(700px,calc(100dvh-40px))] sm:w-[min(420px,calc(100vw-32px))] sm:rounded-[16px]"
+            className="fixed inset-x-0 bottom-0 z-50 flex max-h-[min(760px,calc(100dvh-16px))] flex-col overflow-hidden rounded-t-panel border border-border bg-surface shadow-float sm:inset-auto sm:bottom-5 sm:right-5 sm:h-[min(700px,calc(100dvh-40px))] sm:w-[min(420px,calc(100vw-32px))] sm:rounded-panel"
             role="dialog"
             aria-modal="true"
             aria-labelledby="assistant-title"
             ref={panel}
             onKeyDown={onKeys}
           >
-            <header className="flex items-center gap-3 border-b border-border bg-sidebar px-5 py-4 text-sidebar-foreground">
+            <header className="flex items-center gap-3 border-b border-border py-3.5 pr-3 pl-4.5">
               <span
-                className="grid h-10 w-10 place-items-center rounded-full bg-accent text-white"
+                className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-sidebar text-surface"
                 aria-hidden="true"
               >
                 <Bot
@@ -355,11 +356,18 @@ export default function AssistantIsland() {
                 />
               </span>
               <div>
-                <h2 id="assistant-title">Assistente Clube Flex</h2>
-                <small>Atendimento virtual automático</small>
+                <h2
+                  className="font-display text-base font-semibold"
+                  id="assistant-title"
+                >
+                  Assistente Clube Flex
+                </h2>
+                <small className="block text-caption text-muted-foreground">
+                  Atendimento virtual automático
+                </small>
               </div>
               <button
-                className="ml-auto grid h-11 w-11 place-items-center rounded-full border-0 bg-transparent text-sidebar-foreground"
+                className="ml-auto grid h-11 w-11 place-items-center rounded-control border-0 bg-transparent text-foreground hover:bg-surface-muted"
                 type="button"
                 aria-label="Fechar assistente"
                 onClick={close}
@@ -375,7 +383,7 @@ export default function AssistantIsland() {
             >
               {state.messages.map((m, i) => (
                 <div
-                  className={`max-w-[85%] rounded-[14px] px-3.5 py-2.5 text-[15px] leading-[1.4] ${m.by === 'bot' ? 'self-start rounded-bl-sm bg-surface-muted' : 'self-end rounded-br-sm bg-primary text-white'}`}
+                  className={`max-w-[86%] animate-[pop_.2s_var(--ease-out)] rounded-2xl px-3.5 py-2.5 text-control-sm leading-[1.45] motion-reduce:animate-none ${m.by === 'bot' ? 'self-start rounded-bl-sm bg-surface-muted' : 'self-end rounded-br-sm bg-sidebar text-surface'}`}
                   key={i}
                 >
                   {m.content}
@@ -383,13 +391,13 @@ export default function AssistantIsland() {
               ))}
             </div>
             <div
-              className="grid gap-3 border-t border-border bg-surface p-4"
+              className="grid gap-2.5 border-t border-border bg-surface p-4"
               aria-live="polite"
             >
               {state.step === 'welcome' && (
                 <div className="grid gap-2">
                   <button
-                    className="inline-flex min-h-12 items-center justify-center rounded-full border-0 bg-primary px-[22px] font-semibold text-white"
+                    className={button('primary')}
                     onClick={() =>
                       add(
                         'name',
@@ -401,7 +409,7 @@ export default function AssistantIsland() {
                     Quero ser Flex
                   </button>
                   <button
-                    className="inline-flex min-h-12 items-center justify-center rounded-full border-[1.5px] border-accent-foreground bg-transparent px-[22px] font-semibold text-accent-foreground"
+                    className={button('secondary')}
                     onClick={() => {
                       const next = choosePartner(state);
                       dispatch({
@@ -423,13 +431,13 @@ export default function AssistantIsland() {
               {state.step === 'partner' && (
                 <div className="grid gap-2">
                   <a
-                    className="inline-flex min-h-12 items-center justify-center rounded-full border-0 bg-primary px-[22px] font-semibold text-white"
+                    className={button('primary')}
                     href="mailto:comercial@flexcard.org.br?subject=Quero%20ser%20parceiro%20do%20Clube%20Flex"
                   >
                     Enviar e-mail
                   </a>
                   <button
-                    className="inline-flex min-h-12 items-center justify-center rounded-full border-[1.5px] border-accent-foreground bg-transparent px-[22px] font-semibold text-accent-foreground"
+                    className={button('secondary')}
                     onClick={() => dispatch({ type: 'restart' })}
                   >
                     Voltar ao início
@@ -454,8 +462,9 @@ export default function AssistantIsland() {
                 )}
               {state.step === 'consent' && (
                 <>
-                  <label className="flex items-start gap-2 text-sm leading-[1.4]">
+                  <label className="flex cursor-pointer items-start gap-3 rounded-control bg-surface-muted p-3 text-sm leading-[1.45]">
                     <input
+                      className="mt-px h-5.5 w-5.5 shrink-0 accent-sidebar"
                       type="checkbox"
                       checked={accepted}
                       id="assistant-consent"
@@ -470,7 +479,7 @@ export default function AssistantIsland() {
                     </span>
                   </label>
                   <button
-                    className="inline-flex min-h-12 items-center justify-center rounded-full border-0 bg-primary px-[22px] font-semibold text-white disabled:opacity-50"
+                    className={button('primary')}
                     disabled={!accepted}
                     onClick={() =>
                       add(
@@ -486,26 +495,26 @@ export default function AssistantIsland() {
               )}
               {state.step === 'review' && (
                 <>
-                  <dl className="grid gap-2">
+                  <dl className="grid rounded-card border border-border bg-surface [&>div]:flex [&>div]:items-center [&>div]:gap-2 [&>div]:border-b [&>div]:border-border [&>div]:py-1.5 [&>div]:pr-1.5 [&>div]:pl-3.5 [&>div:last-child]:border-b-0 [&_dd]:font-semibold [&_dt]:text-caption [&_dt]:text-muted-foreground">
                     <div>
-                      <div className="r-text">
+                      <div className="min-w-0 flex-1 py-1">
                         <dt>Nome</dt>
                         <dd>{values.name}</dd>
                       </div>
                       <button
-                        className="min-h-11 rounded-full border border-border bg-transparent px-4 text-sm font-semibold"
+                        className={button('ghost', 'sm')}
                         onClick={() => dispatch({ type: 'step', step: 'name' })}
                       >
                         Editar
                       </button>
                     </div>
                     <div>
-                      <div className="r-text">
+                      <div className="min-w-0 flex-1 py-1">
                         <dt>WhatsApp</dt>
                         <dd>{values.whatsapp}</dd>
                       </div>
                       <button
-                        className="min-h-11 rounded-full border border-border bg-transparent px-4 text-sm font-semibold"
+                        className={button('ghost', 'sm')}
                         onClick={() =>
                           dispatch({ type: 'step', step: 'whatsapp' })
                         }
@@ -514,12 +523,12 @@ export default function AssistantIsland() {
                       </button>
                     </div>
                     <div>
-                      <div className="r-text">
+                      <div className="min-w-0 flex-1 py-1">
                         <dt>E-mail</dt>
                         <dd>{values.email || 'Não informado'}</dd>
                       </div>
                       <button
-                        className="min-h-11 rounded-full border border-border bg-transparent px-4 text-sm font-semibold"
+                        className={button('ghost', 'sm')}
                         onClick={() =>
                           dispatch({ type: 'step', step: 'email' })
                         }
@@ -528,28 +537,25 @@ export default function AssistantIsland() {
                       </button>
                     </div>
                     <div>
-                      <div className="r-text">
+                      <div className="min-w-0 flex-1 py-1">
                         <dt>Consentimento</dt>
                         <dd>Autorizado</dd>
                       </div>
                     </div>
                   </dl>
                   <button
-                    className="inline-flex min-h-12 items-center justify-center rounded-full border-0 bg-primary px-[22px] font-semibold text-white"
+                    className={button('primary')}
                     onClick={() => void submit()}
                   >
                     Enviar
                   </button>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-center text-caption text-muted-foreground">
                     Seus dados só são enviados quando você tocar em Enviar.
                   </p>
                 </>
               )}
               {state.step === 'sending' && (
-                <button
-                  className="inline-flex min-h-12 items-center justify-center rounded-full border-0 bg-primary px-[22px] font-semibold text-white disabled:opacity-50"
-                  disabled
-                >
+                <button className={button('primary')} disabled>
                   Enviando…
                 </button>
               )}
@@ -559,7 +565,7 @@ export default function AssistantIsland() {
                     Não foi possível enviar seus dados. Tente novamente.
                   </p>
                   <button
-                    className="inline-flex min-h-12 items-center justify-center rounded-full border-0 bg-primary px-[22px] font-semibold text-white"
+                    className={button('primary')}
                     onClick={() => dispatch({ type: 'step', step: 'review' })}
                   >
                     Tentar novamente
@@ -568,10 +574,7 @@ export default function AssistantIsland() {
               )}
               {state.step === 'success' && (
                 <div className="grid gap-2">
-                  <button
-                    className="inline-flex min-h-12 items-center justify-center rounded-full border-0 bg-primary px-[22px] font-semibold text-white"
-                    onClick={close}
-                  >
+                  <button className={button('primary')} onClick={close}>
                     Fechar
                   </button>
                 </div>

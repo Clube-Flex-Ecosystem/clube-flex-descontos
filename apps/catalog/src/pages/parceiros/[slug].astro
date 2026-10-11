@@ -9,12 +9,14 @@ import PublicLayout from '../../layouts/PublicLayout.astro';
 import {
   ArrowLeft,
   ChevronDown,
+  Globe,
   Info,
   MapPin,
   MessageSquare,
   Phone,
   Star,
 } from '@lucide/astro';
+import { button } from '../../components/ui/button';
 import AssistantIsland from '../../features/assistant/components/AssistantIsland';
 import {
   getPartner,
@@ -50,6 +52,15 @@ const jsonLd = partner
       ...(partner.website ? { sameAs: [partner.website] } : {}),
     }
   : undefined;
+const panel = 'rounded-panel border p-6';
+const plainPanel = `${panel} border-border bg-surface`;
+const panelTitle = 'font-display text-heading';
+const tag =
+  'inline-flex items-center gap-1 rounded-full px-2.5 py-0.75 text-caption font-medium';
+const unitLabel =
+  'text-caption font-semibold tracking-[0.06em] text-muted-foreground uppercase';
+const contactIcon =
+  'grid h-10 w-10 shrink-0 place-items-center rounded-full bg-surface-muted text-foreground';
 ---
 
 <PublicLayout
@@ -67,70 +78,86 @@ const jsonLd = partner
   )}
   <>
     {partner ? (
-      <div class="mx-auto w-full max-w-[1200px] px-4 py-10 md:px-8 lg:py-16">
+      <div class="mx-auto w-full max-w-300 px-4 pt-6 pb-18 md:px-8">
         <a
-          class="mb-8 inline-flex items-center gap-2 font-semibold text-accent-foreground"
+          class="-ml-2 inline-flex min-h-11 items-center gap-1.5 rounded-control pr-3.5 pl-2 font-semibold text-foreground no-underline hover:bg-surface-muted"
           href={back}
         >
           <ArrowLeft class="h-5 w-5" aria-hidden="true" stroke-width={1.75} />
           Voltar para parceiros
         </a>
-        <header class="max-w-[760px]">
+        <header class="mt-4 grid gap-3.5">
           <div class="flex flex-wrap gap-1.5">
             {partner.categories.map((c) => (
-              <span class="inline-flex items-center rounded-full bg-surface-muted px-2.5 py-[3px] text-[13px] font-medium text-foreground-soft">
+              <span class={`${tag} bg-surface-muted text-foreground-soft`}>
                 {c.name}
               </span>
             ))}
             {partner.featured && (
-              <span class="inline-flex items-center gap-1 rounded-full bg-primary px-2.5 py-[3px] text-[13px] font-medium text-background">
-                <Star class="h-4 w-4" aria-hidden="true" stroke-width={1.75} />
+              <span class={`${tag} bg-sidebar text-surface`}>
+                <Star
+                  class="h-3.5 w-3.5"
+                  aria-hidden="true"
+                  stroke-width={1.75}
+                />
                 Destaque
               </span>
             )}
           </div>
-          <h1 class="mt-4 font-display text-[clamp(36px,7vw,60px)] font-semibold leading-[1.08] tracking-[-0.02em]">
+          <h1 class="font-display text-title font-stretch-110%">
             {partner.name}
           </h1>
-          <p class="mt-4 text-lg leading-[1.5] text-foreground-soft">
+          <p class="max-w-[40em] text-body-lg text-foreground-soft">
             {partner.description}
           </p>
         </header>
-        <div class="mt-10 grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start">
-          <div class="grid gap-4">
-            <section class="rounded-lg border border-border bg-background p-6">
-              <h2>
-                <Info
-                  class="mr-2 inline h-5 w-5"
-                  aria-hidden="true"
-                  stroke-width={1.75}
-                />
+        <div class="mt-8 grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_380px] lg:gap-8">
+          <div class="grid gap-5">
+            <section class={`${panel} border-accent-soft bg-accent-subtle`}>
+              <h2
+                class={`${panelTitle} flex items-center gap-2.5 text-accent-foreground`}
+              >
+                <Info class="h-5 w-5" aria-hidden="true" stroke-width={1.75} />
                 Como usar o desconto
               </h2>
-              <p>{partner.usageInstructions}</p>
+              <p class="mt-2.5 text-[17px] text-foreground-soft">
+                {partner.usageInstructions}
+              </p>
             </section>
             {(partner.website || partner.contacts.length > 0) && (
-              <section class="rounded-lg border border-border bg-background p-6">
-                <h2>Contato</h2>
-                {partner.website && (
-                  <p class="website-row">
-                    <a href={partner.website} target="_blank" rel="noopener">
-                      {partner.website.replace(/^https?:\/\//, '')}
-                    </a>
-                    <a
-                      class="inline-flex min-h-11 items-center justify-center rounded-full border-[1.5px] border-accent-foreground px-4 text-[15px] font-semibold text-accent-foreground"
-                      href={partner.website}
-                      target="_blank"
-                      rel="noopener"
-                    >
-                      Abrir site
-                    </a>
-                  </p>
-                )}
-                <ul class="mt-4 grid gap-2">
+              <section class={plainPanel}>
+                <h2 class={panelTitle}>Contato</h2>
+                <ul class="mt-3 grid">
+                  {partner.website && (
+                    <li class="flex flex-wrap items-center gap-3 border-b border-border py-2.5 last:border-b-0">
+                      <span class={contactIcon}>
+                        <Globe
+                          class="h-5 w-5"
+                          aria-hidden="true"
+                          stroke-width={1.75}
+                        />
+                      </span>
+                      <div class="min-w-0 flex-[1_1_140px]">
+                        <small class="block text-caption text-muted-foreground">
+                          Site
+                        </small>
+                        <b class="font-semibold [overflow-wrap:anywhere]">
+                          {partner.website.replace(/^https?:\/\//, '')}
+                        </b>
+                      </div>
+                      <a
+                        class={button('secondary', 'sm')}
+                        href={partner.website}
+                        target="_blank"
+                        rel="noopener"
+                      >
+                        Abrir site
+                      </a>
+                    </li>
+                  )}
                   {partner.contacts.map((c) => (
-                    <li class="flex items-center gap-3 border-t border-border py-3">
-                      <span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-surface-muted text-accent-foreground">
+                    <li class="flex flex-wrap items-center gap-3 border-b border-border py-2.5 last:border-b-0">
+                      <span class={contactIcon}>
                         {c.type === 'whatsapp' ? (
                           <MessageSquare
                             class="h-5 w-5"
@@ -145,15 +172,17 @@ const jsonLd = partner
                           />
                         )}
                       </span>
-                      <div class="min-w-0 flex-1">
-                        <small>
+                      <div class="min-w-0 flex-[1_1_140px]">
+                        <small class="block text-caption text-muted-foreground">
                           {c.label ??
                             (c.type === 'whatsapp' ? 'WhatsApp' : 'Telefone')}
                         </small>
-                        <b>{formatPhone(c.value)}</b>
+                        <b class="font-semibold tabular-nums">
+                          {formatPhone(c.value)}
+                        </b>
                       </div>
                       <a
-                        class="inline-flex min-h-11 items-center justify-center rounded-full border-[1.5px] border-accent-foreground px-4 text-[15px] font-semibold text-accent-foreground"
+                        class={button('secondary', 'sm')}
                         href={
                           c.type === 'whatsapp'
                             ? `https://wa.me/${c.value.replace(/\D/g, '')}`
@@ -167,21 +196,21 @@ const jsonLd = partner
                 </ul>
               </section>
             )}
-            <section class="rounded-lg border border-border bg-background p-6">
-              <h2>
+            <section class={plainPanel}>
+              <h2 class={panelTitle}>
                 {partner.units.length === 1
                   ? 'Unidade'
                   : `Unidades (${partner.units.length})`}
               </h2>
               {partner.units.length ? (
-                <div class="mt-4 grid gap-2">
+                <div class="mt-3 grid gap-2.5">
                   {partner.units.map((u, i) => (
                     <details
-                      class="overflow-hidden rounded-lg border border-border"
+                      class="group rounded-card border border-border bg-surface"
                       open={i === 0 && partner!.units.length <= 2}
                     >
-                      <summary>
-                        <span class="grid h-9 w-9 place-items-center rounded-lg bg-surface-muted text-accent-foreground">
+                      <summary class="flex min-h-14 cursor-pointer list-none items-center gap-3 rounded-card px-4 py-3 hover:bg-surface-muted [&::-webkit-details-marker]:hidden">
+                        <span class="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-surface-muted text-foreground">
                           <MapPin
                             class="h-4 w-4"
                             aria-hidden="true"
@@ -189,32 +218,32 @@ const jsonLd = partner
                           />
                         </span>
                         <span>
-                          <b>{u.name}</b>
-                          <small>
+                          <b class="block font-semibold">{u.name}</b>
+                          <small class="block text-sm text-muted-foreground">
                             {u.address.neighborhood}, {u.address.city}
                           </small>
                         </span>
                         <ChevronDown
-                          class="h-4 w-4"
+                          class="ml-auto h-5 w-5 shrink-0 transition-transform duration-200 group-open:rotate-180"
                           aria-hidden="true"
                           stroke-width={1.75}
                         />
                       </summary>
-                      <dl class="grid gap-3 border-t border-border p-4 text-sm">
+                      <dl class="grid gap-3.5 px-4 pt-1 pb-4">
                         <div>
-                          <dt>Endereço</dt>
-                          <dd>{address(u)}</dd>
+                          <dt class={unitLabel}>Endereço</dt>
+                          <dd class="mt-0.5">{address(u)}</dd>
                         </div>
                         {u.openingHours && (
                           <div>
-                            <dt>Horário</dt>
-                            <dd>{u.openingHours}</dd>
+                            <dt class={unitLabel}>Horário</dt>
+                            <dd class="mt-0.5">{u.openingHours}</dd>
                           </div>
                         )}
                         {u.instructions && (
                           <div>
-                            <dt>Instruções da unidade</dt>
-                            <dd>{u.instructions}</dd>
+                            <dt class={unitLabel}>Instruções da unidade</dt>
+                            <dd class="mt-0.5">{u.instructions}</dd>
                           </div>
                         )}
                       </dl>
@@ -222,21 +251,23 @@ const jsonLd = partner
                   ))}
                 </div>
               ) : (
-                <p class="text-foreground-soft">
+                <p class="mt-2 text-muted-foreground">
                   Este parceiro não possui unidade física. Utilize os contatos
                   ou o site para usar o benefício.
                 </p>
               )}
             </section>
-            <section class="rounded-lg border border-border bg-background p-6">
-              <h2>Ainda não é Flex?</h2>
-              <p>
+            <section
+              class={`${panel} grid gap-3.5 border-transparent bg-surface-muted`}
+            >
+              <h2 class={panelTitle}>Ainda não é Flex?</h2>
+              <p class="text-foreground-soft">
                 Fale com o assistente virtual e deixe seus dados para conhecer
                 os planos.
               </p>
               <div>
                 <button
-                  class="inline-flex min-h-11 items-center justify-center rounded-full bg-primary px-4 text-[15px] font-semibold text-white"
+                  class={button('primary', 'sm')}
                   type="button"
                   data-open-assistant="flex"
                 >
@@ -245,13 +276,22 @@ const jsonLd = partner
               </div>
             </section>
           </div>
-          <aside>
-            <section class="rounded-lg border border-border bg-background p-6 lg:sticky lg:top-24">
+          <aside class="max-lg:order-first lg:sticky lg:top-22">
+            <section
+              class={`${panel} relative overflow-hidden border-sidebar bg-sidebar text-sidebar-foreground after:absolute after:-top-12.5 after:-right-12.5 after:h-30 after:w-30 after:rounded-full after:bg-brand-signal`}
+              data-surface="dark"
+            >
               <h2 class="sr-only">Benefício</h2>
-              <form method="get" class="grid gap-1.5">
-                <label for="partner-plan">Seu plano</label>
+              <form method="get" class="relative z-10 grid gap-1.5">
+                <label
+                  class="text-control-sm font-semibold text-surface"
+                  for="partner-plan"
+                >
+                  Seu plano
+                </label>
                 <div class="relative">
                   <select
+                    class="min-h-13 w-full cursor-pointer appearance-none rounded-control border-[1.5px] border-surface bg-surface px-4 pr-12 text-base font-medium text-foreground"
                     id="partner-plan"
                     name="plano"
                     onchange="this.form.submit()"
@@ -267,33 +307,41 @@ const jsonLd = partner
                     ))}
                   </select>
                   <ChevronDown
-                    class="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2"
+                    class="pointer-events-none absolute top-1/2 right-4 h-5 w-5 -translate-y-1/2 text-foreground-soft"
                     aria-hidden="true"
                     stroke-width={1.75}
                   />
                 </div>
-                <p class="text-sm text-muted-foreground">
+                <p class="text-sm text-sidebar-muted">
                   Informado por você; não é validado pelo Clube Flex.
                 </p>
               </form>
               {selectedPlan && partner.discountPercentage ? (
-                <div class="mt-6">
-                  <small>Seu desconto</small>
-                  <strong>
-                    <span>até</span>
+                <div class="relative z-10 mt-5">
+                  <small class="block text-sm text-sidebar-muted">
+                    Seu desconto
+                  </small>
+                  <strong class="mt-1.5 block font-display text-number-lg font-stretch-108% tabular-nums text-brand-signal">
+                    <span class="mr-1.5 font-sans text-[22px] font-semibold font-stretch-100% tracking-normal text-sidebar-foreground">
+                      até
+                    </span>
                     {partner.discountPercentage}%
                   </strong>
                   {partner.coupon && (
-                    <div class="mt-4 rounded-lg bg-accent-soft p-4 text-accent-foreground">
+                    <div class="mt-5 flex items-center gap-3 rounded-control bg-surface px-4 py-2.5 text-foreground">
                       <div>
-                        <small>Cupom</small>
-                        <code>{partner.coupon}</code>
+                        <small class="block text-caption text-muted-foreground">
+                          Cupom
+                        </small>
+                        <code class="font-mono text-lg font-bold tracking-[0.06em]">
+                          {partner.coupon}
+                        </code>
                       </div>
                     </div>
                   )}
                 </div>
               ) : (
-                <div class="mt-6 rounded-lg bg-surface-muted p-4 text-sm text-foreground-soft">
+                <div class="relative z-10 mt-5 rounded-control border border-dashed border-sidebar-muted bg-sidebar-raised p-4 text-sm">
                   Escolha seu plano para consultar o desconto disponível.
                 </div>
               )}
@@ -302,15 +350,14 @@ const jsonLd = partner
         </div>
       </div>
     ) : (
-      <div class="mx-auto grid min-h-[50vh] w-full max-w-[1200px] content-center gap-4 px-4 py-16 md:px-8">
-        <h1 class="font-display text-4xl font-semibold">
+      <div class="mx-auto grid min-h-[50vh] w-full max-w-300 content-center justify-items-center gap-4 px-4 py-18 text-center md:px-8">
+        <h1 class="font-display text-display font-stretch-110%">
           Parceiro não encontrado
         </h1>
-        <p>Este parceiro não está disponível no catálogo.</p>
-        <a
-          class="inline-flex min-h-12 w-fit items-center justify-center rounded-full bg-primary px-[22px] font-semibold text-white no-underline"
-          href="/#parceiros"
-        >
+        <p class="text-muted-foreground">
+          Este parceiro não está disponível no catálogo.
+        </p>
+        <a class={button('primary')} href="/#parceiros">
           Ver parceiros
         </a>
       </div>
