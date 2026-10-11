@@ -82,6 +82,8 @@ No retorno de uma mutação:
 ### SOLID pragmático
 
 - Pages compõem estados e componentes da tela.
+- Em listagens que acumulem responsabilidades, a page pode compor um `Suspense`, um componente de lista que consulta e coordena os dados e um componente de apresentação que recebe dados e callbacks. Essa divisão é adotada quando melhora a leitura, sem ser obrigatória para telas simples.
+- Queries com `useSuspenseQuery` usam fallback de `Suspense` para carregamento e um error boundary com reset do TanStack Query para erro e nova tentativa; o esqueleto continua sendo o feedback estrutural.
 - Componentes visuais não acessam Axios diretamente.
 - Queries não contêm regras de apresentação.
 - Atualizações de cache ficam centralizadas no módulo proprietário.

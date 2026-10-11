@@ -2,7 +2,6 @@ import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { firstAllowedModule } from '../../app/navigation';
 import { sessionQueryOptions } from '../../modules/auth/queries/session.query';
-import { pageHead } from '../../shared/utils/page-head';
 
 export const Route = createFileRoute('/_authenticated/')({
   // Sem página inicial de métricas: segue para o primeiro módulo permitido.
@@ -10,7 +9,7 @@ export const Route = createFileRoute('/_authenticated/')({
     const target = firstAllowedModule(context.session.permissions);
     if (target) throw redirect({ to: target });
   },
-  head: () => pageHead('Início'),
+  head: () => ({ meta: [{ title: 'Início — Clube Flex' }] }),
   component: Home,
 });
 

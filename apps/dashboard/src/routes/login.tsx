@@ -1,7 +1,6 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { LoginPage, type LoginNotice } from '../modules/auth/pages/login-page';
 import { sessionQueryOptions } from '../modules/auth/queries/session.query';
-import { pageHead } from '../shared/utils/page-head';
 
 export const Route = createFileRoute('/login')({
   validateSearch: (search: Record<string, unknown>): { aviso?: LoginNotice } =>
@@ -13,7 +12,7 @@ export const Route = createFileRoute('/login')({
       await context.queryClient.ensureQueryData(sessionQueryOptions);
     if (state) throw redirect({ to: '/' });
   },
-  head: () => pageHead('Entrar'),
+  head: () => ({ meta: [{ title: 'Entrar — Clube Flex' }] }),
   component: Login,
 });
 

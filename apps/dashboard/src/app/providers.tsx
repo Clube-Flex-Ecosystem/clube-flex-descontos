@@ -1,4 +1,8 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import {
+  QueryClient,
+  QueryClientProvider,
+  QueryErrorResetBoundary,
+} from '@tanstack/react-query';
 import { RouterProvider } from '@tanstack/react-router';
 import { useState } from 'react';
 import { ToastProvider } from '../shared/feedback/toast';
@@ -29,7 +33,9 @@ export function Providers() {
   return (
     <QueryClientProvider client={queryClient}>
       <ToastProvider>
-        <RouterProvider router={router} />
+        <QueryErrorResetBoundary>
+          <RouterProvider router={router} />
+        </QueryErrorResetBoundary>
       </ToastProvider>
     </QueryClientProvider>
   );
