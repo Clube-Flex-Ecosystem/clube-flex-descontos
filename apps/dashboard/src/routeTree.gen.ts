@@ -14,6 +14,7 @@ import { Route as AtivarRouteImport } from './routes/ativar'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as RecuperarRouteImport } from './routes/recuperar'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
+import { Route as AuthenticatedAuditoriaRouteImport } from './routes/_authenticated/auditoria'
 import { Route as AuthenticatedCategoriasRouteImport } from './routes/_authenticated/categorias'
 import { Route as AuthenticatedOrigensRouteImport } from './routes/_authenticated/origens'
 import { Route as AuthenticatedPlanosRouteImport } from './routes/_authenticated/planos'
@@ -23,6 +24,8 @@ import { Route as AuthenticatedLeadsLeadIdRouteImport } from './routes/_authenti
 import { Route as AuthenticatedParceirosIndexRouteImport } from './routes/_authenticated/parceiros/index'
 import { Route as AuthenticatedParceirosPartnerIdRouteImport } from './routes/_authenticated/parceiros/$partnerId'
 import { Route as AuthenticatedParceirosNovoRouteImport } from './routes/_authenticated/parceiros/novo'
+import { Route as AuthenticatedUsuariosIndexRouteImport } from './routes/_authenticated/usuarios/index'
+import { Route as AuthenticatedUsuariosUserIdRouteImport } from './routes/_authenticated/usuarios/$userId'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
@@ -46,6 +49,11 @@ const RecuperarRoute = RecuperarRouteImport.update({
 const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAuditoriaRoute = AuthenticatedAuditoriaRouteImport.update({
+  id: '/auditoria',
+  path: '/auditoria',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedCategoriasRoute = AuthenticatedCategoriasRouteImport.update({
@@ -97,12 +105,25 @@ const AuthenticatedParceirosNovoRoute =
     path: '/parceiros/novo',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedUsuariosIndexRoute =
+  AuthenticatedUsuariosIndexRouteImport.update({
+    id: '/usuarios/',
+    path: '/usuarios/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedUsuariosUserIdRoute =
+  AuthenticatedUsuariosUserIdRouteImport.update({
+    id: '/usuarios/$userId',
+    path: '/usuarios/$userId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/ativar': typeof AtivarRoute
   '/login': typeof LoginRoute
   '/recuperar': typeof RecuperarRoute
+  '/auditoria': typeof AuthenticatedAuditoriaRoute
   '/categorias': typeof AuthenticatedCategoriasRoute
   '/origens': typeof AuthenticatedOrigensRoute
   '/planos': typeof AuthenticatedPlanosRoute
@@ -110,13 +131,16 @@ export interface FileRoutesByFullPath {
   '/leads/$leadId': typeof AuthenticatedLeadsLeadIdRoute
   '/parceiros/$partnerId': typeof AuthenticatedParceirosPartnerIdRoute
   '/parceiros/novo': typeof AuthenticatedParceirosNovoRoute
+  '/usuarios/$userId': typeof AuthenticatedUsuariosUserIdRoute
   '/leads/': typeof AuthenticatedLeadsIndexRoute
   '/parceiros/': typeof AuthenticatedParceirosIndexRoute
+  '/usuarios/': typeof AuthenticatedUsuariosIndexRoute
 }
 export interface FileRoutesByTo {
   '/ativar': typeof AtivarRoute
   '/login': typeof LoginRoute
   '/recuperar': typeof RecuperarRoute
+  '/auditoria': typeof AuthenticatedAuditoriaRoute
   '/categorias': typeof AuthenticatedCategoriasRoute
   '/origens': typeof AuthenticatedOrigensRoute
   '/planos': typeof AuthenticatedPlanosRoute
@@ -125,8 +149,10 @@ export interface FileRoutesByTo {
   '/leads/$leadId': typeof AuthenticatedLeadsLeadIdRoute
   '/parceiros/$partnerId': typeof AuthenticatedParceirosPartnerIdRoute
   '/parceiros/novo': typeof AuthenticatedParceirosNovoRoute
+  '/usuarios/$userId': typeof AuthenticatedUsuariosUserIdRoute
   '/leads': typeof AuthenticatedLeadsIndexRoute
   '/parceiros': typeof AuthenticatedParceirosIndexRoute
+  '/usuarios': typeof AuthenticatedUsuariosIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -134,6 +160,7 @@ export interface FileRoutesById {
   '/ativar': typeof AtivarRoute
   '/login': typeof LoginRoute
   '/recuperar': typeof RecuperarRoute
+  '/_authenticated/auditoria': typeof AuthenticatedAuditoriaRoute
   '/_authenticated/categorias': typeof AuthenticatedCategoriasRoute
   '/_authenticated/origens': typeof AuthenticatedOrigensRoute
   '/_authenticated/planos': typeof AuthenticatedPlanosRoute
@@ -142,8 +169,10 @@ export interface FileRoutesById {
   '/_authenticated/leads/$leadId': typeof AuthenticatedLeadsLeadIdRoute
   '/_authenticated/parceiros/$partnerId': typeof AuthenticatedParceirosPartnerIdRoute
   '/_authenticated/parceiros/novo': typeof AuthenticatedParceirosNovoRoute
+  '/_authenticated/usuarios/$userId': typeof AuthenticatedUsuariosUserIdRoute
   '/_authenticated/leads/': typeof AuthenticatedLeadsIndexRoute
   '/_authenticated/parceiros/': typeof AuthenticatedParceirosIndexRoute
+  '/_authenticated/usuarios/': typeof AuthenticatedUsuariosIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -152,6 +181,7 @@ export interface FileRouteTypes {
     | '/ativar'
     | '/login'
     | '/recuperar'
+    | '/auditoria'
     | '/categorias'
     | '/origens'
     | '/planos'
@@ -159,13 +189,16 @@ export interface FileRouteTypes {
     | '/leads/$leadId'
     | '/parceiros/$partnerId'
     | '/parceiros/novo'
+    | '/usuarios/$userId'
     | '/leads/'
     | '/parceiros/'
+    | '/usuarios/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/ativar'
     | '/login'
     | '/recuperar'
+    | '/auditoria'
     | '/categorias'
     | '/origens'
     | '/planos'
@@ -174,14 +207,17 @@ export interface FileRouteTypes {
     | '/leads/$leadId'
     | '/parceiros/$partnerId'
     | '/parceiros/novo'
+    | '/usuarios/$userId'
     | '/leads'
     | '/parceiros'
+    | '/usuarios'
   id:
     | '__root__'
     | '/_authenticated'
     | '/ativar'
     | '/login'
     | '/recuperar'
+    | '/_authenticated/auditoria'
     | '/_authenticated/categorias'
     | '/_authenticated/origens'
     | '/_authenticated/planos'
@@ -190,8 +226,10 @@ export interface FileRouteTypes {
     | '/_authenticated/leads/$leadId'
     | '/_authenticated/parceiros/$partnerId'
     | '/_authenticated/parceiros/novo'
+    | '/_authenticated/usuarios/$userId'
     | '/_authenticated/leads/'
     | '/_authenticated/parceiros/'
+    | '/_authenticated/usuarios/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -236,6 +274,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/auditoria': {
+      id: '/_authenticated/auditoria'
+      path: '/auditoria'
+      fullPath: '/auditoria'
+      preLoaderRoute: typeof AuthenticatedAuditoriaRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/categorias': {
@@ -301,10 +346,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedParceirosNovoRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/usuarios/': {
+      id: '/_authenticated/usuarios/'
+      path: '/usuarios'
+      fullPath: '/usuarios/'
+      preLoaderRoute: typeof AuthenticatedUsuariosIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/usuarios/$userId': {
+      id: '/_authenticated/usuarios/$userId'
+      path: '/usuarios/$userId'
+      fullPath: '/usuarios/$userId'
+      preLoaderRoute: typeof AuthenticatedUsuariosUserIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAuditoriaRoute: typeof AuthenticatedAuditoriaRoute
   AuthenticatedCategoriasRoute: typeof AuthenticatedCategoriasRoute
   AuthenticatedOrigensRoute: typeof AuthenticatedOrigensRoute
   AuthenticatedPlanosRoute: typeof AuthenticatedPlanosRoute
@@ -313,11 +373,14 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedLeadsLeadIdRoute: typeof AuthenticatedLeadsLeadIdRoute
   AuthenticatedParceirosPartnerIdRoute: typeof AuthenticatedParceirosPartnerIdRoute
   AuthenticatedParceirosNovoRoute: typeof AuthenticatedParceirosNovoRoute
+  AuthenticatedUsuariosUserIdRoute: typeof AuthenticatedUsuariosUserIdRoute
   AuthenticatedLeadsIndexRoute: typeof AuthenticatedLeadsIndexRoute
   AuthenticatedParceirosIndexRoute: typeof AuthenticatedParceirosIndexRoute
+  AuthenticatedUsuariosIndexRoute: typeof AuthenticatedUsuariosIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAuditoriaRoute: AuthenticatedAuditoriaRoute,
   AuthenticatedCategoriasRoute: AuthenticatedCategoriasRoute,
   AuthenticatedOrigensRoute: AuthenticatedOrigensRoute,
   AuthenticatedPlanosRoute: AuthenticatedPlanosRoute,
@@ -326,8 +389,10 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedLeadsLeadIdRoute: AuthenticatedLeadsLeadIdRoute,
   AuthenticatedParceirosPartnerIdRoute: AuthenticatedParceirosPartnerIdRoute,
   AuthenticatedParceirosNovoRoute: AuthenticatedParceirosNovoRoute,
+  AuthenticatedUsuariosUserIdRoute: AuthenticatedUsuariosUserIdRoute,
   AuthenticatedLeadsIndexRoute: AuthenticatedLeadsIndexRoute,
   AuthenticatedParceirosIndexRoute: AuthenticatedParceirosIndexRoute,
+  AuthenticatedUsuariosIndexRoute: AuthenticatedUsuariosIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

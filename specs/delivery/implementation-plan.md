@@ -96,7 +96,7 @@ Executado em 2026-10-10. Decisões tomadas durante a execução, dentro do escop
 
 Pendências conhecidas, sem bloqueio para os próximos incrementos:
 
-- **Troca de senha obrigatória após redefinição administrativa (`CA-RF-015-11`):** o fluxo aprovado define a senha pelo próprio usuário com o código, e a especificação não descreve como o estado `passwordChangeRequired` é atribuído ou removido. Deve ser resolvido junto à emissão administrativa de códigos, no incremento 7.
+- **Troca de senha obrigatória após redefinição administrativa (`CA-RF-015-11`):** o fluxo aprovado define a senha pelo próprio usuário com o código, e a especificação não descreve como o estado `passwordChangeRequired` é atribuído ou removido. Resolvido no incremento 7 (ver seu registro de execução).
 - **Limpeza de sessões e códigos expirados:** registros expirados são recusados, mas ainda não removidos (encaminhamento da arquitetura da API).
 - **E2E e axe:** a jornada `autenticar no dashboard` da suíte E2E entra no incremento 8; o fluxo foi verificado manualmente em navegador durante a execução.
 
@@ -254,6 +254,20 @@ Completar a governança administrativa da primeira entrega.
 ### Critério de saída
 
 As operações administrativas sensíveis respeitam permissões, produzem auditoria e preservam dados conforme as regras aprovadas.
+
+### Registro de execução
+
+Executado em 2026-10-10. Decisões tomadas durante a execução, dentro do escopo aprovado e detalhadas nos [contratos](../apps/api/contracts/README.md):
+
+- **Troca de senha obrigatória (`CA-RF-015-11`) — pendência do incremento 2 resolvida:** a emissão administrativa de código de recuperação marca a conta como `passwordChangeRequired`; a senha anterior deixa de autenticar até a definição da nova com o código, que limpa a marca. A situação é exibida no dashboard.
+- **Administrador elegível:** conta ativa, com senha definida, que possui `users.manage` e `permissions.manage`. Desativação, revogação e perda do último administrador são recusadas sob trava transacional; autoalteração e concessão de permissão ausente no autor também.
+- **Versão da conta:** `users.version` protege edição, estado e substituição de permissões; o dashboard grava dados e permissões em duas chamadas sequenciais, cada uma com a versão devolvida pela anterior.
+- **Auditoria:** consulta paginada e filtrada, evento somente leitura e imutabilidade reforçada por gatilho no banco (`0006_administration_and_privacy`). O dashboard oferece, além dos filtros do protótipo (período, ação e autor), o filtro por usuário afetado exigido por `RNF-007`; o protótipo foi atualizado.
+- **Exclusão ou anonimização:** regra única em `packages/contracts` (`leadRemovalOutcome`), aplicada pela API e usada pelo dashboard apenas para descrever o efeito. Observações, solicitações já tratadas e eventos de histórico posteriores à entrada contam como histórico a preservar. Texto livre de observações, detalhe de origem e motivo de perda são preservados na anonimização; a auditoria não repete dados pessoais.
+- **Código de acesso:** entregue ao detalhe do usuário somente em memória após a criação, nunca em URL, armazenamento do navegador ou cache de consultas. O campo de nome de usuário do cadastro é apenas informativo (gerado pelo servidor); o protótipo foi alinhado a isso.
+- **Atualização dos caches:** as mutações de usuário substituem a conta na listagem e no detalhe com a resposta confirmada e invalidam somente a consulta de auditoria; a remoção de lead retira o item do cache de leads.
+- **Fora do incremento:** E2E dos fluxos administrativos e verificação axe permanecem no incremento 8.
+- **Verificações:** testes de integração cobrem criação, colisão de nomes, entrega manual e por e-mail, versão, permissões por rota, emissão e invalidação de códigos, recuperação administrativa, proteções, desativação com revogação de sessões, auditoria (ordem, filtros, paginação, imutabilidade e ausência de segredos) e exclusão ou anonimização de lead. A interface foi comparada ao protótipo em navegador Chromium contra API e PostgreSQL reais.
 
 ## Incremento 8 — Hardening e publicação
 

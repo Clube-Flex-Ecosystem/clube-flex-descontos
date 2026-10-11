@@ -95,6 +95,7 @@ export function createTestApp(databaseUrl = testDatabaseUrl) {
     logger,
     checkReadiness: createDatabaseReadinessCheck(pool),
     identity: root.identity,
+    audit: root.audit,
     catalog: root.catalog,
     leads: root.leads,
     allowedOrigins: [DASHBOARD_ORIGIN],

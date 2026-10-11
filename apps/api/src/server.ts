@@ -12,6 +12,7 @@ const app = createApp({
   logger,
   checkReadiness: createDatabaseReadinessCheck(pool),
   identity: root.identity,
+  audit: root.audit,
   catalog: root.catalog,
   leads: root.leads,
   allowedOrigins: [env.DASHBOARD_ORIGIN, env.CATALOG_ORIGIN],

@@ -3,7 +3,14 @@ import type { IconName } from '../shared/ui/icon';
 
 export interface NavItem {
   to:
-    '/leads' | '/origens' | '/parceiros' | '/planos' | '/categorias' | '/senha';
+    | '/leads'
+    | '/origens'
+    | '/parceiros'
+    | '/planos'
+    | '/categorias'
+    | '/usuarios'
+    | '/auditoria'
+    | '/senha';
   label: string;
   icon: IconName;
   /** Itens sem permissão de visualização são ocultados; a API segue como autoridade. */
@@ -16,8 +23,8 @@ export interface NavGroup {
 }
 
 /**
- * Navegação lateral agrupada por responsabilidade. Os grupos Comercial e Administração
- * entram junto com os módulos dos incrementos seguintes.
+ * Navegação lateral agrupada por responsabilidade: Comercial, Catálogo, Administração
+ * e Conta.
  */
 export const navigation: NavGroup[] = [
   {
@@ -57,6 +64,23 @@ export const navigation: NavGroup[] = [
         label: 'Categorias',
         icon: 'category',
         permission: 'categories.view',
+      },
+    ],
+  },
+  {
+    label: 'Administração',
+    items: [
+      {
+        to: '/usuarios',
+        label: 'Usuários',
+        icon: 'users',
+        permission: 'users.view',
+      },
+      {
+        to: '/auditoria',
+        label: 'Auditoria',
+        icon: 'audit',
+        permission: 'audit.view',
       },
     ],
   },

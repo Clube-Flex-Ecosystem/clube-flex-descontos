@@ -49,6 +49,12 @@ export function createAdminCommercialRouter(deps: {
     requirePermissions('leads.update'),
     leads.update,
   );
+  router.delete(
+    '/leads/:id',
+    csrfProtection,
+    requirePermissions('leads.delete'),
+    leads.remove,
+  );
   router.post(
     '/leads/:id/stage-transitions',
     csrfProtection,

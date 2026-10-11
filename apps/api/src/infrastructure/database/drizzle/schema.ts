@@ -27,6 +27,11 @@ export const users = pgTable(
       .default('active'),
     // Ausente enquanto a conta aguarda ativação.
     passwordHash: text('password_hash'),
+    // Após uma redefinição administrativa, o acesso só é restabelecido com a senha nova.
+    passwordChangeRequired: boolean('password_change_required')
+      .notNull()
+      .default(false),
+    version: integer('version').notNull().default(1),
     createdAt: timestamp('created_at', { withTimezone: true })
       .notNull()
       .defaultNow(),
@@ -341,6 +346,8 @@ export const leads = pgTable(
     hasPendingInterest: boolean('has_pending_interest')
       .notNull()
       .default(false),
+    // Preenchido na anonimização por revogação de consentimento (RNF-008).
+    anonymizedAt: timestamp('anonymized_at', { withTimezone: true }),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull(),
   },

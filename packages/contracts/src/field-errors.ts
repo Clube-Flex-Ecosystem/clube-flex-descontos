@@ -11,6 +11,10 @@ export const fieldErrorMessages = {
   PASSWORD_CONFIRMATION_MISMATCH: 'A confirmação não confere com a nova senha.',
   INVALID_CURRENT_PASSWORD: 'A senha atual está incorreta.',
   INVALID_ACCESS_CODE: 'Código inválido, expirado ou já utilizado.',
+  INVALID_EMAIL: 'Informe um e-mail válido.',
+  INVALID_USERNAME:
+    'Use de 3 a 80 caracteres: letras minúsculas, números, ponto, hífen ou sublinhado.',
+  DUPLICATE_USERNAME: 'Este nome de usuário já está em uso.',
   INVALID_PHONE_NUMBER: 'Informe um número válido com DDD.',
   INVALID_URL: 'Informe um endereço iniciado por http:// ou https://.',
   INVALID_POSTAL_CODE: 'Informe um CEP com 8 dígitos.',

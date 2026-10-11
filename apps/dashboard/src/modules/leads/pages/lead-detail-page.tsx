@@ -1,13 +1,21 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Link } from '@tanstack/react-router';
+import { Link, useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
-import type { Lead, LeadStage } from '@flex/contracts';
+import {
+  leadRemovalOutcome,
+  type Lead,
+  type LeadStage,
+  type LeadSummary,
+} from '@flex/contracts';
 import { leadsApi } from '../api/leads.api';
 import {
   historyQueryOptions,
   leadQueryOptions,
   leadsKey,
 } from '../queries/leads.query';
+import { useToast } from '../../../shared/feedback/toast';
+import { Card, CardBody, CardHead } from '../../../shared/ui/card';
+import { ConfirmDialog } from '../../../shared/ui/dialogs';
 import { PageHeader, ListSkeleton } from '../../../shared/ui/page-parts';
 import { Alert } from '../../../shared/ui/alert';
 import { Badge } from '../../../shared/ui/badge';
@@ -34,9 +42,19 @@ export function LeadDetailPage({ id }: { id: string }) {
     session = useSession();
   const [note, setNote] = useState(''),
     [error, setError] = useState<string | null>(null);
-  const canUpdate = useCan('leads.update'),
-    canStage = useCan('leads.change-stage'),
-    canAssign = useCan('leads.assign');
+  const navigate = useNavigate(),
+    toast = useToast();
+  const [confirmingRemoval, setConfirmingRemoval] = useState(false),
+    [removing, setRemoving] = useState(false);
+  const canUpdateLead = useCan('leads.update'),
+    canStageLead = useCan('leads.change-stage'),
+    canAssignLead = useCan('leads.assign'),
+    canDelete = useCan('leads.delete');
+  // Um lead anonimizado preserva apenas a rastreabilidade e não aceita alterações.
+  const locked = Boolean(q.data?.anonymized);
+  const canUpdate = canUpdateLead && !locked,
+    canStage = canStageLead && !locked,
+    canAssign = canAssignLead && !locked;
   const assignees = useQuery({
     queryKey: ['lead-assignees'],
     queryFn: leadsApi.assignees,
@@ -64,6 +82,32 @@ export function LeadDetailPage({ id }: { id: string }) {
       </Alert>
     );
   const l = q.data;
+  const removal = leadRemovalOutcome({
+    observationCount: l.observations.length,
+    eventTypes: (history.data ?? []).map((event) => event.type),
+  });
+  const remove = async () => {
+    setRemoving(true);
+    try {
+      const result = await leadsApi.remove(l.id, l.version);
+      qc.setQueryData<LeadSummary[]>(leadsKey, (old) =>
+        old?.filter((item) => item.id !== l.id),
+      );
+      qc.removeQueries({ queryKey: [...leadsKey, l.id] });
+      void qc.invalidateQueries({ queryKey: ['audit'] });
+      toast(
+        result.deleted
+          ? 'Lead excluído.'
+          : 'Lead anonimizado e removido do pipeline.',
+      );
+      void navigate({ to: '/leads' });
+    } catch (e) {
+      setConfirmingRemoval(false);
+      setError(describeError(e));
+    } finally {
+      setRemoving(false);
+    }
+  };
   return (
     <>
       <Link
@@ -120,6 +164,14 @@ export function LeadDetailPage({ id }: { id: string }) {
           </Badge>
         ) : null}
       </div>
+      {locked ? (
+        <div className="mb-3">
+          <Alert tone="info" title="Lead anonimizado.">
+            Os dados pessoais foram removidos por revogação de consentimento. O
+            histórico operacional e a auditoria foram preservados.
+          </Alert>
+        </div>
+      ) : null}
       {error ? (
         <div className="mb-3">
           <Alert tone="danger" title="Não foi possível salvar a alteração.">
@@ -297,8 +349,54 @@ export function LeadDetailPage({ id }: { id: string }) {
               </>
             ) : null}
           </section>
+          {canDelete && !locked ? (
+            <Card danger>
+              <CardHead
+                danger
+                title="Privacidade"
+                description="Para revogações de consentimento validadas."
+              />
+              <CardBody>
+                <p className="t-small muted">
+                  Leads com histórico são anonimizados; leads sem histórico
+                  podem ser excluídos. A operação gera registro de auditoria.
+                </p>
+                <Button
+                  variant="danger-quiet"
+                  disabled={!history.isSuccess}
+                  onClick={() => setConfirmingRemoval(true)}
+                >
+                  <Icon name="trash" />
+                  Excluir ou anonimizar
+                </Button>
+              </CardBody>
+            </Card>
+          ) : null}
         </aside>
       </div>
+      {confirmingRemoval ? (
+        <ConfirmDialog
+          title={
+            removal === 'anonymize'
+              ? 'Anonimizar este lead?'
+              : 'Excluir este lead?'
+          }
+          body={
+            removal === 'anonymize'
+              ? `${l.name} possui histórico operacional. Nome, WhatsApp e e-mail serão substituídos de forma irreversível; o histórico e a auditoria são preservados.`
+              : `${l.name} não possui histórico operacional. O lead, suas solicitações de contato e seus consentimentos serão excluídos de forma irreversível; a operação fica registrada na auditoria.`
+          }
+          confirmLabel={
+            removing
+              ? 'Aguarde…'
+              : removal === 'anonymize'
+                ? 'Anonimizar'
+                : 'Excluir'
+          }
+          onCancel={() => setConfirmingRemoval(false)}
+          onConfirm={() => void remove()}
+        />
+      ) : null}
     </>
   );
 }

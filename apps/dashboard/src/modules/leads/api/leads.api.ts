@@ -1,6 +1,7 @@
 import type {
   CreateLeadRequest,
   Lead,
+  LeadRemoval,
   LeadHistoryEvent,
   LeadSource,
   LeadStage,
@@ -62,6 +63,9 @@ export const leadsApi = {
         match(version),
       )
     ).data,
+  remove: async (id: string, version: number) =>
+    (await http.delete<LeadRemoval>(`/v1/admin/leads/${id}`, match(version)))
+      .data,
   sources: async () =>
     (await http.get<LeadSource[]>('/v1/admin/lead-sources')).data,
   assignees: async () =>

@@ -7,24 +7,44 @@ export function PageHeader({
   description,
   actions,
   status,
+  leading,
+  monoDescription = false,
 }: {
   title: string;
   description?: string;
   actions?: ReactNode;
   /** Estado do registro, ao lado do título (ex.: badge de rascunho). */
   status?: ReactNode;
+  /** Marca à esquerda do título, como o avatar de uma conta. */
+  leading?: ReactNode;
+  /** Descrição em fonte monoespaçada, para identificadores. */
+  monoDescription?: boolean;
 }) {
+  const heading = (
+    <div className="min-w-0">
+      <div className="flex flex-wrap items-center gap-2.5">
+        <h1 className="t-page">{title}</h1>
+        {status}
+      </div>
+      {description ? (
+        <p
+          className={`t-small muted mt-1 max-w-prose ${monoDescription ? 'font-mono' : ''}`}
+        >
+          {description}
+        </p>
+      ) : null}
+    </div>
+  );
   return (
     <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-      <div className="min-w-0">
-        <div className="flex flex-wrap items-center gap-2.5">
-          <h1 className="t-page">{title}</h1>
-          {status}
+      {leading ? (
+        <div className="flex min-w-0 items-center gap-3.5">
+          {leading}
+          {heading}
         </div>
-        {description ? (
-          <p className="t-small muted mt-1 max-w-prose">{description}</p>
-        ) : null}
-      </div>
+      ) : (
+        heading
+      )}
       {actions ? (
         <div className="flex flex-none flex-wrap gap-2">{actions}</div>
       ) : null}

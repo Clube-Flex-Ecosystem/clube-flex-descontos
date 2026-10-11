@@ -128,6 +128,8 @@ export interface LeadSummary {
   source: LeadSource;
   assignee?: { id: string; fullName: string };
   hasPendingInterest: boolean;
+  /** Presente (verdadeiro) depois da anonimização por revogação de consentimento. */
+  anonymized?: boolean;
   version: number;
   updatedAt: string;
 }
@@ -163,3 +165,6 @@ export interface LeadHistoryEvent {
   data?: Record<string, unknown>;
 }
 export type CreateLeadRequest = z.infer<typeof createLeadRequestSchema>;
+
+/** Resposta de `DELETE /v1/admin/leads/{id}`: exclusão ou anonimização conforme o histórico. */
+export type LeadRemoval = Lead & { deleted: boolean; anonymized: boolean };

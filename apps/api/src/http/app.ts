@@ -17,6 +17,9 @@ import { createAdminCatalogRouter } from './routes/admin-catalog.routes';
 import { createAuthRouter } from './routes/auth.routes';
 import { createPublicCatalogRouter } from './routes/public-catalog.routes';
 import { createPublicContactRouter } from './routes/public-contact.routes';
+import { createAdminGovernanceRouter } from './routes/admin-governance.routes';
+import type { AdminUserUseCases } from '../modules/identity/controllers/admin-users.controllers';
+import type { QueryAuditEventsUseCase } from '../modules/audit/use-cases/query-audit-events.use-case';
 import { createAdminCommercialRouter } from './routes/admin-commercial.routes';
 import type { PublicContactService } from '../modules/leads/public-contact.service';
 import type { CommercialService } from '../modules/leads/commercial.service';
@@ -29,7 +32,11 @@ import {
 export interface AppDependencies {
   logger: Logger;
   checkReadiness: ReadinessCheck;
-  identity: IdentityUseCases & { resolveSession: ResolveSessionUseCase };
+  identity: IdentityUseCases & {
+    resolveSession: ResolveSessionUseCase;
+    admin: AdminUserUseCases;
+  };
+  audit: { query: QueryAuditEventsUseCase };
   catalog: CatalogUseCases & { public: PublicCatalogService };
   leads: { public: PublicContactService; commercial: CommercialService };
   /** Origens com permissão para CORS com credenciais e para operações mutáveis. */
@@ -43,6 +50,7 @@ export function createApp({
   logger,
   checkReadiness,
   identity,
+  audit,
   catalog,
   leads,
   allowedOrigins,
@@ -84,6 +92,16 @@ export function createApp({
     '/v1/admin',
     createAdminCommercialRouter({
       service: leads.commercial,
+      resolveSession: (input) => identity.resolveSession.execute(input),
+      originGuard: createOriginMiddleware(allowedOrigins),
+    }),
+  );
+
+  app.use(
+    '/v1/admin',
+    createAdminGovernanceRouter({
+      users: identity.admin,
+      audit: audit.query,
       resolveSession: (input) => identity.resolveSession.execute(input),
       originGuard: createOriginMiddleware(allowedOrigins),
     }),

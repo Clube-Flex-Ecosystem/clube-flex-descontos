@@ -26,6 +26,7 @@ function actor(req: Request) {
   return {
     id: a.user.id,
     fullName: a.user.fullName,
+    username: a.user.username,
     permissions: a.permissions,
   };
 }
@@ -151,6 +152,12 @@ export function createCommercialControllers(service: CommercialService) {
         v = version(req, res);
       if (i && typeof rid === 'string' && UUID.test(rid) && v !== undefined)
         sendVersioned(res, await service.resolve(actor(req), i, rid, v));
+    }),
+    remove: wrap(async (req, res) => {
+      const i = id(req, res),
+        v = version(req, res);
+      if (i && v !== undefined)
+        sendVersioned(res, await service.remove(actor(req), i, v));
     }),
     history: wrap(async (req, res) => {
       const i = id(req, res);

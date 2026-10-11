@@ -1,4 +1,5 @@
 import { and, asc, desc, eq, sql } from 'drizzle-orm';
+import { leadRemovalOutcome, type LeadRemoval } from '@flex/contracts';
 import type {
   Lead,
   LeadHistoryEvent,
@@ -7,7 +8,9 @@ import type {
   LeadStage,
 } from '@flex/contracts';
 import type { Database } from '../../infrastructure/database/drizzle/client';
+import { DrizzleAuditRepository } from '../../infrastructure/database/drizzle/repositories/drizzle-audit.repository';
 import {
+  leadConsents,
   leadContactRequests,
   leadHistory,
   leadObservations,
@@ -36,7 +39,16 @@ export class CommercialValidationError extends Error {
   }
 }
 
-type Actor = { id: string; fullName: string; permissions: readonly string[] };
+type Actor = {
+  id: string;
+  fullName: string;
+  username: string;
+  permissions: readonly string[];
+};
+
+/** Valores que substituem os dados pessoais; o WhatsApp continua único entre os leads. */
+const ANONYMIZED_NAME = 'Lead anonimizado';
+const anonymizedWhatsapp = (leadId: string) => `anonimizado:${leadId}`;
 const canSee = (actor: Actor, lead: { assigneeId: string | null }) =>
   actor.permissions.includes('leads.view-all') ||
   (actor.permissions.includes('leads.view-own') &&
@@ -138,6 +150,8 @@ export class CommercialService {
     const rows = await this.db
       .select()
       .from(leads)
+      // Leads anonimizados saem do pipeline: nenhum novo contato pode se basear neles.
+      .where(sql`${leads.anonymizedAt} is null`)
       .orderBy(desc(leads.updatedAt));
     return Promise.all(
       rows.filter((l) => canSee(actor, l)).map((l) => this.summary(l)),
@@ -172,6 +186,7 @@ export class CommercialService {
       source: { ...source!, usageCount: usage },
       ...(owner ? { assignee: owner } : {}),
       hasPendingInterest: l.hasPendingInterest,
+      ...(l.anonymizedAt ? { anonymized: true } : {}),
       version: l.version,
       updatedAt: l.updatedAt.toISOString(),
     };
@@ -258,6 +273,9 @@ export class CommercialService {
   ) {
     const l = await this.row(id);
     if (!canSee(actor, l)) throw new CommercialNotFoundError();
+    // Um lead anonimizado preserva apenas a rastreabilidade e não aceita alterações.
+    if (l.anonymizedAt)
+      throw new CommercialConflictError('INVALID_RESOURCE_STATE');
     if (edit && !canEdit(actor, l)) throw new CommercialForbiddenError();
     if (l.version !== version) throw new CommercialConflictError();
     return l;
@@ -534,6 +552,116 @@ export class CommercialService {
       ...(e.data ? { data: e.data as Record<string, unknown> } : {}),
     }));
   }
+  /**
+   * Atende a revogação de consentimento (UC-022): exclui o lead quando nada operacional
+   * precisa ser preservado e, caso contrário, anonimiza seus dados pessoais. A auditoria
+   * registra a operação sem repetir os dados pessoais removidos.
+   */
+  async remove(
+    actor: Actor,
+    id: string,
+    version: number,
+  ): Promise<LeadRemoval> {
+    const current = await this.row(id);
+    if (!canSee(actor, current)) throw new CommercialNotFoundError();
+    const lastRepresentation = await this.detail(actor, id);
+    // Idempotente: um lead já anonimizado retorna a representação atual.
+    if (current.anonymizedAt) {
+      return { ...lastRepresentation, deleted: false, anonymized: true };
+    }
+    if (current.version !== version) throw new CommercialConflictError();
+
+    const history = await this.db
+      .select({ type: leadHistory.type })
+      .from(leadHistory)
+      .where(eq(leadHistory.leadId, id));
+    const outcome = leadRemovalOutcome({
+      observationCount: lastRepresentation.observations.length,
+      eventTypes: history.map((event) => event.type),
+    });
+    const now = this.clock.now();
+
+    await this.db.transaction(async (tx) => {
+      const audit = new DrizzleAuditRepository(tx);
+      const record = {
+        occurredAt: now,
+        actorUserId: actor.id,
+        actorLabel: actor.username,
+        targetType: 'lead',
+        targetId: id,
+        // Somente o início do identificador: nenhum dado pessoal integra a auditoria.
+        targetLabel: `Lead ${id.slice(0, 8)}`,
+      };
+
+      if (outcome === 'delete') {
+        await tx.delete(leadConsents).where(eq(leadConsents.leadId, id));
+        await tx
+          .delete(leadContactRequests)
+          .where(eq(leadContactRequests.leadId, id));
+        await tx.delete(leadHistory).where(eq(leadHistory.leadId, id));
+        const removed = await tx
+          .delete(leads)
+          .where(and(eq(leads.id, id), eq(leads.version, version)))
+          .returning({ id: leads.id });
+        if (removed.length === 0) throw new CommercialConflictError();
+        await audit.record({
+          ...record,
+          action: 'lead.deleted',
+          before: { personalData: 'present', stage: current.stage },
+          after: { personalData: 'deleted' },
+        });
+        return;
+      }
+
+      const [updated] = await tx
+        .update(leads)
+        .set({
+          name: ANONYMIZED_NAME,
+          whatsapp: anonymizedWhatsapp(id),
+          email: null,
+          referredBy: null,
+          hasPendingInterest: false,
+          anonymizedAt: now,
+          version: version + 1,
+          updatedAt: now,
+        })
+        .where(and(eq(leads.id, id), eq(leads.version, version)))
+        .returning({ id: leads.id });
+      if (!updated) throw new CommercialConflictError();
+      // O que o formulário público enviou também é dado pessoal.
+      await tx
+        .update(leadContactRequests)
+        .set({
+          submittedName: ANONYMIZED_NAME,
+          submittedWhatsapp: anonymizedWhatsapp(id),
+          submittedEmail: null,
+        })
+        .where(eq(leadContactRequests.leadId, id));
+      await tx.insert(leadHistory).values({
+        leadId: id,
+        type: 'lead.anonymized',
+        actorUserId: actor.id,
+        occurredAt: now,
+      });
+      await audit.record({
+        ...record,
+        action: 'lead.anonymized',
+        before: { personalData: 'present', stage: current.stage },
+        after: { personalData: 'anonymized' },
+      });
+    });
+
+    if (outcome === 'delete') {
+      return { ...lastRepresentation, deleted: true, anonymized: false };
+    }
+    // A leitura usa a linha confirmada, ainda que o ator tenha perdido o escopo próprio.
+    const confirmed = await this.detail(
+      { ...actor, permissions: [...actor.permissions, 'leads.view-all'] },
+      id,
+    );
+    return { ...confirmed, deleted: false, anonymized: true };
+  }
+
   async activeUsers() {
     return this.db
       .select({ id: users.id, fullName: users.fullName })

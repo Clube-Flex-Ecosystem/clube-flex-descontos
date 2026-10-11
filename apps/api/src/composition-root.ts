@@ -25,7 +25,15 @@ import type {
   EmailSender,
   PasswordHasher,
 } from './modules/identity/services.types';
+import { QueryAuditEventsUseCase } from './modules/audit/use-cases/query-audit-events.use-case';
 import { AuthenticateUserUseCase } from './modules/identity/use-cases/authenticate-user.use-case';
+import { CreateUserUseCase } from './modules/identity/use-cases/create-user.use-case';
+import { GetUserUseCase } from './modules/identity/use-cases/get-user.use-case';
+import { IssueAccessCodeUseCase } from './modules/identity/use-cases/issue-access-code.use-case';
+import { ListUsersUseCase } from './modules/identity/use-cases/list-users.use-case';
+import { ReplaceUserPermissionsUseCase } from './modules/identity/use-cases/replace-user-permissions.use-case';
+import { SetUserStatusUseCase } from './modules/identity/use-cases/set-user-status.use-case';
+import { UpdateUserUseCase } from './modules/identity/use-cases/update-user.use-case';
 import { BootstrapFirstAdministratorUseCase } from './modules/identity/use-cases/bootstrap-first-administrator.use-case';
 import { ChangePasswordUseCase } from './modules/identity/use-cases/change-password.use-case';
 import { LogoutUseCase } from './modules/identity/use-cases/logout.use-case';
@@ -57,7 +65,7 @@ export interface CompositionDependencies {
 export function createCompositionRoot(deps: CompositionDependencies) {
   const db = createDatabase(deps.pool);
   const unitOfWork = new DrizzleUnitOfWork(db);
-  const { users, sessions, permissions } = createRepositories(db);
+  const { users, sessions, permissions, audit } = createRepositories(db);
   const catalogUnitOfWork = new DrizzleCatalogUnitOfWork(db);
   const { plans, categories, partners } = createCatalogRepositories(db);
   const delivery = new AccessCodeDelivery(
@@ -126,7 +134,24 @@ export function createCompositionRoot(deps: CompositionDependencies) {
         delivery,
         deps.clock,
       ),
+      admin: {
+        listUsers: new ListUsersUseCase(unitOfWork),
+        getUser: new GetUserUseCase(users, permissions),
+        createUser: new CreateUserUseCase(unitOfWork, delivery, deps.clock),
+        updateUser: new UpdateUserUseCase(unitOfWork, deps.clock),
+        setUserStatus: new SetUserStatusUseCase(unitOfWork, deps.clock),
+        issueAccessCode: new IssueAccessCodeUseCase(
+          unitOfWork,
+          delivery,
+          deps.clock,
+        ),
+        replaceUserPermissions: new ReplaceUserPermissionsUseCase(
+          unitOfWork,
+          deps.clock,
+        ),
+      },
     },
+    audit: { query: new QueryAuditEventsUseCase(audit) },
   };
 }
 
