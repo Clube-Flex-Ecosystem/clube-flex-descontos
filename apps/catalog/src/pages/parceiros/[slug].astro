@@ -6,8 +6,6 @@ import {
   type PublicPartner,
 } from '@flex/contracts';
 import PublicLayout from '../../layouts/PublicLayout.astro';
-import Header from '../../components/Header.astro';
-import Footer from '../../components/Footer.astro';
 import {
   ArrowLeft,
   ChevronDown,
@@ -67,8 +65,7 @@ const jsonLd = partner
   {jsonLd && (
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   )}
-  <Header />
-  <main id="main" tabindex="-1">
+  <>
     {partner ? (
       <div class="mx-auto w-full max-w-[1200px] px-4 py-10 md:px-8 lg:py-16">
         <a
@@ -318,7 +315,6 @@ const jsonLd = partner
         </a>
       </div>
     )}
-  </main>
-  <Footer />
+  </>
   <AssistantIsland client:load />
 </PublicLayout>

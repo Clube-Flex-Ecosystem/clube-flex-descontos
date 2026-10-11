@@ -42,6 +42,18 @@
 
 Nomes de arquivos e subdivisões internas podem ser ajustados conforme surgirem consumidores reais, sem romper as fronteiras aprovadas entre páginas Astro, features, Islands e código compartilhado.
 
+## Shell público
+
+- `src/layouts/PublicLayout.astro` é o único layout responsável pelo shell
+  público principal do catálogo.
+- O layout monta o `head`, carrega o stylesheet global e a fonte aprovada,
+  compõe `Header`, o único landmark `<main>` com o conteúdo da rota e `Footer`.
+- As páginas públicas fornecem somente o conteúdo específico da rota e não
+  importam nem renderizam `Header`, `Footer` ou outro `<main>`.
+- Header e Footer mantêm sua aparência encapsulada nos próprios componentes
+  por utilities Tailwind; serem globais em composição não os torna estilos
+  globais.
+
 ## Organização modular aprovada
 
 ```text

@@ -1,7 +1,5 @@
 ---
 import PublicLayout from '../layouts/PublicLayout.astro';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
 import AssistantIsland from '../features/assistant/components/AssistantIsland';
 import AboutSection from '../features/home/components/AboutSection.astro';
 import CatalogSection from '../features/home/components/CatalogSection.astro';
@@ -30,8 +28,7 @@ const [initialCategories, initialPartners] = initialPlan
   title="Clube Flex — Parceiros"
   description="Descontos em saúde, educação, lazer e muito mais para você e sua família."
 >
-  <Header />
-  <main id="main" tabindex="-1">
+  <>
     <HeroSection />
     <CategoryRibbon />
     <AboutSection />
@@ -44,7 +41,6 @@ const [initialCategories, initialPartners] = initialPlan
       initialInvalid={initialInvalid}
     />
     <HowItWorksSection />
-  </main>
-  <Footer />
+  </>
   <AssistantIsland client:load />
 </PublicLayout>

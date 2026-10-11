@@ -1,7 +1,5 @@
 ---
 import PublicLayout from '../layouts/PublicLayout.astro';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
 import { ArrowLeft } from '@lucide/astro';
 ---
 
@@ -9,22 +7,18 @@ import { ArrowLeft } from '@lucide/astro';
   title="Privacidade — Clube Flex"
   description="Política de privacidade do Clube Flex."
 >
-  <Header />
-  <main id="main" tabindex="-1">
-    <div class="mx-auto grid w-full max-w-[1200px] gap-5 px-4 py-16 md:px-8">
-      <a
-        class="inline-flex items-center gap-2 font-semibold text-accent-foreground"
-        href="/"
-      >
-        <ArrowLeft class="h-4 w-4" aria-hidden="true" stroke-width={1.75} />
-        Voltar
-      </a>
-      <h1 class="font-display text-4xl font-semibold">Privacidade</h1>
-      <p>
-        Espaço reservado para o texto de privacidade publicado. O conteúdo
-        oficial ainda não foi fornecido.
-      </p>
-    </div>
-  </main>
-  <Footer />
+  <div class="mx-auto grid w-full max-w-[1200px] gap-5 px-4 py-16 md:px-8">
+    <a
+      class="inline-flex items-center gap-2 font-semibold text-accent-foreground"
+      href="/"
+    >
+      <ArrowLeft class="h-4 w-4" aria-hidden="true" stroke-width={1.75} />
+      Voltar
+    </a>
+    <h1 class="font-display text-4xl font-semibold">Privacidade</h1>
+    <p>
+      Espaço reservado para o texto de privacidade publicado. O conteúdo oficial
+      ainda não foi fornecido.
+    </p>
+  </div>
 </PublicLayout>
