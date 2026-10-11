@@ -75,6 +75,27 @@ Fluxo principal:
 
 `route → page → query ou mutation → função de API → Axios`
 
+### Carregamento de páginas de detalhe
+
+Páginas de detalhe seguem uma separação específica para dados obrigatórios:
+
+- `beforeLoad` trata sessão, autorização e contexto compartilhado da rota;
+- `loader` usa as `queryOptions` do módulo e `ensureQueryData` para carregar o
+  recurso necessário à renderização;
+- recurso inexistente (HTTP 404) redireciona para a listagem da própria feature;
+- falhas diferentes de 404 sobem para o `errorComponent` da rota, que oferece
+  nova tentativa usando o reset do TanStack Query;
+- a page recebe o recurso inicial e observa o cache para refletir as respostas
+  completas das mutações;
+- dados secundários podem permanecer em queries próprias quando não forem
+  necessários para a primeira renderização.
+
+O `loader` não substitui as queries do módulo nem acessa Axios diretamente. A
+rota apenas orquestra o carregamento por meio das `queryOptions` públicas do
+módulo. O `QueryClient` mantém sua política padrão de `staleTime`, `gcTime` e
+atualização ao retornar à aba; exceções devem continuar explícitas e
+justificadas no módulo.
+
 No retorno de uma mutação:
 
 `resposta da API → mutation → atualização do cache → page e componentes`

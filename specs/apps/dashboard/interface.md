@@ -87,6 +87,14 @@ A página de detalhe reúne:
 - emissão de código de ativação ou recuperação;
 - ativação ou desativação.
 
+Detalhes de recursos administrativos seguem o comportamento comum abaixo:
+
+- o recurso é carregado antes da composição da page;
+- um identificador inexistente retorna à listagem da feature;
+- falhas de rede ou servidor exibem erro acionável com nova tentativa;
+- o detalhe continua refletindo as respostas confirmadas das mutações pelo
+  cache do TanStack Query.
+
 ## Auditoria
 
 - Tabela paginada com filtros na parte superior: período, ação, autor e usuário afetado. As listas de autor e usuário afetado dependem de `users.view`; sem ela, somente período e ação são exibidos.

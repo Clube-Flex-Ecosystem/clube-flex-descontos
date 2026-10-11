@@ -23,6 +23,7 @@ Leia os documentos relevantes à tarefa, sem carregar desnecessariamente toda a 
 - Não introduza dependências ou abstrações sem justificativa.
 - Não duplique regras de negócio ou contratos.
 - Mantenha as responsabilidades dos módulos separadas.
+- Em páginas de detalhe do dashboard, mantenha autorização no `beforeLoad`, carregamento dos dados obrigatórios no `loader` via `queryOptions` do módulo e tratamento de 404 por redirecionamento para a listagem da feature. Erros restantes devem usar o `errorComponent` da rota; a page não deve duplicar o estado inicial de carregamento e existência do recurso.
 - Ao configurar queries do dashboard, preserve a política padrão do `QueryClient` (`staleTime` de 30 segundos, `gcTime` de 5 minutos e atualização ao retornar à aba). Sobrescreva esses valores somente quando houver necessidade específica do domínio e documente a exceção no módulo.
 - Use Lucide como fonte de ícones: `lucide-react` no dashboard e `@lucide/astro` no catálogo. Preserve os adaptadores semânticos locais (`shared/ui/icon.tsx` e `components/Icon.astro`); componentes de tela não devem desenhar SVG manualmente nem importar ícones da biblioteca diretamente.
 - No dashboard, encapsule primitives Radix em `shared/ui`: use-as para dialogs, sheets, confirmações, menus contextuais e toasts; pages e módulos não importam Radix diretamente. Use `tailwind-variants` para variantes e `cn` (`clsx` + `tailwind-merge`) para combinar classes Tailwind. Mantenha componentes simples locais quando não houver comportamento composto que justifique uma primitive externa.

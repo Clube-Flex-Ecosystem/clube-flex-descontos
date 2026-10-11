@@ -1,7 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
-import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -28,7 +27,7 @@ import {
 import { ConfirmDialog } from '../../../shared/ui/dialogs';
 import { InputField } from '../../../shared/ui/form-controls';
 import { Icon } from '../../../shared/ui/icon';
-import { ListSkeleton, PageHeader } from '../../../shared/ui/page-parts';
+import { PageHeader } from '../../../shared/ui/page-parts';
 import { initialsOf } from '../../../shared/utils/initials';
 import {
   applyServerFieldErrors,
@@ -78,60 +77,18 @@ const backLink = (
   </Link>
 );
 
-/** Detalhe de uma conta: dados, permissões, acesso e ativação. */
-export function UserDetailPage({ userId }: { userId: string }) {
+/** Detalhe de uma conta: os dados obrigatórios são carregados pela rota. */
+export function UserDetailPage({ user }: { user: AdminUser }) {
   const query = useQuery({
-    ...userQueryOptions(userId),
+    ...userQueryOptions(user.id),
+    initialData: user,
     // A edição parte de uma versão fixa; alterações de terceiros surgem como conflito.
     refetchOnWindowFocus: false,
   });
 
-  if (query.isPending) {
-    return (
-      <>
-        {backLink}
-        <ListSkeleton label="Carregando usuário" />
-      </>
-    );
-  }
-
-  if (query.isError || !query.data) {
-    const notFound =
-      axios.isAxiosError(query.error) && query.error.response?.status === 404;
-    return (
-      <>
-        {backLink}
-        <Alert
-          tone="danger"
-          title={
-            notFound
-              ? 'Usuário não encontrado.'
-              : 'Não foi possível carregar o usuário.'
-          }
-          action={
-            notFound ? undefined : (
-              <Button
-                compact
-                loading={query.isFetching}
-                onClick={() => void query.refetch()}
-              >
-                <Icon name="refresh" />
-                Tentar novamente
-              </Button>
-            )
-          }
-        >
-          {notFound
-            ? 'O registro não existe ou não está disponível.'
-            : describeError(query.error)}
-        </Alert>
-      </>
-    );
-  }
-
   return (
     <UserDetail
-      key={query.data.id}
+      key={`${query.data.id}:${query.data.version}`}
       user={query.data}
       reload={async () => (await query.refetch()).data}
     />

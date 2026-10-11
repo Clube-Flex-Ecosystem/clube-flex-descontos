@@ -312,6 +312,35 @@ flowchart LR
     I7 --> I8
 ```
 
+## Refatoração transversal — páginas de detalhe do dashboard
+
+### Objetivo
+
+Reduzir responsabilidades acumuladas nas páginas de detalhe e uniformizar o
+carregamento de recursos obrigatórios, começando pelo detalhe de usuários.
+
+### Execução inicial
+
+Executada em 2026-10-11:
+
+- autorização permanece no `beforeLoad`;
+- o detalhe de usuário carrega sua conta no `loader` com `ensureQueryData`;
+- 404 redireciona para `/usuarios`;
+- erros de carregamento usam o boundary da rota e o reset do TanStack Query;
+- `UserDetailPage` recebe o usuário inicial e mantém a observação do cache para
+  as mutações e a reconciliação de versão.
+
+### Próximos incrementos
+
+- extrair seções de apresentação do detalhe de usuários quando houver ganho de
+  leitura comprovado;
+- aplicar o padrão ao detalhe de leads, separando dados obrigatórios e
+  secundários;
+- aplicar o padrão ao formulário/detalhe de parceiros, incluindo suas
+  dependências;
+- adicionar testes de rota para recurso existente, 404, erro recuperável e
+  reconciliação após conflito.
+
 ## Fora deste plano
 
 - base de assinantes e validação do plano contratado;

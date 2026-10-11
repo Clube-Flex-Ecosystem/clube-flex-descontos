@@ -64,3 +64,4 @@ O catálogo prioriza conteúdo SSR e baixo JavaScript, enquanto o dashboard poss
 
 - **Primitives interativas do dashboard:** Radix UI é adotado para dialogs, sheets laterais, confirmações, menus contextuais e toasts. As primitives permanecem encapsuladas em `shared/ui`; módulos não as importam diretamente.
 - **Variantes e classes:** `tailwind-variants` define variantes dos componentes locais e `tailwind-merge` com `clsx` resolve conflitos de classes Tailwind. A adoção não transforma o projeto em uma biblioteca geral de componentes nem altera os tokens visuais aprovados.
+- **Páginas de detalhe do dashboard:** rotas de detalhe usam `beforeLoad` para autorização e `loader` para carregar dados obrigatórios com as `queryOptions` do módulo. Um recurso inexistente redireciona para sua listagem; outros erros são tratados pelo `errorComponent` da rota. A page recebe o resultado inicial e continua observando o cache para refletir mutações.
