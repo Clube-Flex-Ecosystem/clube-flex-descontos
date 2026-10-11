@@ -21,13 +21,19 @@ Esta pasta é a fonte de referência para o planejamento e a futura implementaç
 
 ## Fonte da interface
 
+- [Processo de evolução da interface](ui-change-process.md): fluxo obrigatório
+  de protótipo, aprovação e implementação para catálogo e dashboard.
 - [Fundamentos compartilhados](apps/ui-foundations.md): tokens, escalas, tipografia e precedência entre fontes.
 - [Design system do dashboard](apps/dashboard/design-system/README.md)
 - [Protótipo navegável do dashboard](prototypes/dashboard/index.html)
 - [Protótipo navegável do catálogo](prototypes/catalog/index.html)
 - Tokens: [`apps/dashboard/src/styles/tailwind.css`](../apps/dashboard/src/styles/tailwind.css)
 
-Os protótipos são a referência de construção da interface: a implementação reproduz sua estrutura, componentes e estados. Eles usam dados ilustrativos e não definem contratos, regras de negócio nem arquitetura.
+Os protótipos são o ponto de partida e a referência de construção da interface:
+qualquer alteração de UI começa no protótipo correspondente, passa por
+aprovação explícita e só então é aplicada ao app. Eles usam dados ilustrativos
+e não definem contratos, regras de negócio nem arquitetura. O fluxo completo
+está em [Processo de evolução da interface](ui-change-process.md).
 
 ## Convenções
 

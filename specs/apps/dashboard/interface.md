@@ -3,6 +3,13 @@
 **Etapa:** 09 — Interface  
 **Estado:** Aprovado
 
+## Processo de alteração
+
+Alterações de UI do dashboard começam exclusivamente no [protótipo navegável](../../prototypes/dashboard/index.html).
+Depois de revisadas e aprovadas, são aplicadas em `apps/dashboard/`. Não se
+deve definir uma alteração diretamente no app. O fluxo completo está
+documentado no [processo de evolução da interface](../../ui-change-process.md).
+
 ## Navegação
 
 A navegação lateral é agrupada por responsabilidade:

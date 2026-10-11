@@ -3,6 +3,13 @@
 **Etapa:** 09 — Interface  
 **Estado:** Aprovado
 
+## Processo de alteração
+
+Alterações de UI do catálogo começam exclusivamente no [protótipo navegável](../../prototypes/catalog/index.html).
+Depois de revisadas e aprovadas, são aplicadas em `apps/catalog/`. Não se deve
+definir uma alteração diretamente no app. O fluxo completo está documentado no
+[processo de evolução da interface](../../ui-change-process.md).
+
 ## Direção visual
 
 - Linguagem editorial e acolhedora, com amplo espaço em branco, construída sobre os tokens e a tipografia compartilhados em [fundamentos de interface](../ui-foundations.md).

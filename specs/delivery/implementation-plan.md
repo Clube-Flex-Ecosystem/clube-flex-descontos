@@ -8,6 +8,9 @@ Este documento organiza a futura implementação. Ele não autoriza o início do
 ## Princípios de entrega
 
 - Cada incremento termina integrado, testável e coerente com os contratos aprovados.
+- Alterações de UI começam no protótipo navegável correspondente, exigem
+  aprovação explícita e só depois são aplicadas em `apps/catalog/` ou
+  `apps/dashboard/`, conforme o [processo de evolução da interface](../ui-change-process.md).
 - Não haverá uma fase final dedicada a conectar partes desenvolvidas isoladamente.
 - Infraestrutura e abstrações são criadas quando o incremento consumidor precisar delas.
 - Migrações, contratos e testes acompanham a funcionalidade correspondente.

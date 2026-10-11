@@ -7,6 +7,12 @@ Este documento centraliza princípios visuais e comportamentos comuns ao catálo
 
 ## Fonte da interface
 
+O fluxo de alteração é obrigatório: uma mudança de UI começa no protótipo
+correspondente em [`specs/prototypes/`](../prototypes/), é submetida à
+aprovação explícita e só depois pode ser aplicada em `apps/catalog/` ou
+`apps/dashboard/`. Os aplicativos não são fonte para definir alterações
+visuais. Consulte o [processo de evolução da interface](../ui-change-process.md).
+
 A interface é construída a partir de três fontes, nesta ordem de precedência quando houver conflito:
 
 1. **Especificação de interface** ([catálogo](catalog/interface.md) e [dashboard](dashboard/interface.md)): fluxos, copy aprovada, estados, regras e comportamento.
