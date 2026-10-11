@@ -27,7 +27,7 @@ A navegação lateral é agrupada por responsabilidade:
 ## Direção visual
 
 - Aparência funcional e menos decorativa que o catálogo público.
-- Tipografia, paleta e escalas vêm dos [fundamentos de interface](../ui-foundations.md) e do arquivo de tokens; `Geist` é a família única.
+- Tipografia, paleta e escalas vêm dos [fundamentos do dashboard](../ui-foundations.md#fundamentos-do-dashboard) e do arquivo de tokens: moldura navy (sidebar escura) com conteúdo claro, laranja para ação, posição e seleção, `Archivo` para texto e pilha monoespaçada do sistema para identificadores (direção A, aprovada em 2026-10-11).
 - A estrutura de telas, componentes e estados segue o [protótipo do dashboard](../../prototypes/dashboard/index.html), com prioridade para legibilidade, densidade controlada e estados operacionais claros.
 - O dashboard não possui compromisso formal WCAG nesta entrega, mas mantém práticas básicas de teclado, foco, rótulos e contraste.
 
