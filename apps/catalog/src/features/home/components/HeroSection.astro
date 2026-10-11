@@ -1,0 +1,63 @@
+---
+import Icon from '../../../components/Icon.astro';
+---
+
+<section class="hero" aria-labelledby="hero-title">
+  <div class="wrap">
+    <div>
+      <span class="badge-pill">
+        <i>
+          <Icon name="heart" small />
+        </i>
+        Desde 2010 cuidando da sua família
+      </span>
+      <h1 class="display" id="hero-title">
+        Saúde e Qualidade de Vida que <em>você e sua família</em> merecem.
+      </h1>
+      <p class="lead">
+        Saúde, Educação, lazer e muito mais. Vantagens reais para você e seu
+        bolso. Descontos que merecem ser contados.
+      </p>
+      <div class="hero-actions">
+        <button class="btn accent" type="button" data-open-assistant="flex">
+          Vem ser Flex
+        </button>
+        <a class="btn secondary" href="#parceiros">
+          Explorar parceiros <Icon name="down" small />
+        </a>
+      </div>
+    </div>
+    <div class="hero-art" aria-hidden="true">
+      <div class="blob a"></div>
+      <div class="blob b"></div>
+      <div class="blob c"></div>
+      <div class="float-card one">
+        <span class="float-dot">
+          <Icon name="heart" />
+        </span>
+        <div>
+          <small>Saúde</small>
+          <strong>até 40%</strong>
+        </div>
+      </div>
+      <div class="float-card two">
+        <span class="float-dot">
+          <Icon name="book" />
+        </span>
+        <div>
+          <small>Educação</small>
+          <strong>até 30%</strong>
+        </div>
+      </div>
+      <div class="float-card three">
+        <span class="float-dot">
+          <Icon name="spark" />
+        </span>
+        <div>
+          <b>Lazer e bem-estar</b>
+          <small>para toda a família</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

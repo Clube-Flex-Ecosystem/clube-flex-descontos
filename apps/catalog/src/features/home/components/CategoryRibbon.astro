@@ -1,0 +1,20 @@
+---
+const ribbon = [
+  'Saúde',
+  'Educação',
+  'Lazer',
+  'Bem-estar',
+  'Família',
+  'Odontologia',
+];
+---
+
+<div class="ribbon-wrap" aria-hidden="true">
+  <div class="ribbon">
+    <div class="ribbon-track">
+      {[...ribbon, ...ribbon].map((item) => (
+        <span>{item}</span>
+      ))}
+    </div>
+  </div>
+</div>
