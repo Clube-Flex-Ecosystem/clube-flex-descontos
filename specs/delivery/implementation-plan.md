@@ -329,6 +329,10 @@ Executada em 2026-10-11:
 - erros de carregamento usam o boundary da rota e o reset do TanStack Query;
 - `UserDetailPage` recebe o usuário inicial e mantém a observação do cache para
   as mutações e a reconciliação de versão.
+- o detalhe de parceiro carrega no `loader` o parceiro, planos, categorias e a
+  coleção usada na validação de duplicidade;
+- 404 no detalhe de parceiro redireciona para `/parceiros`, enquanto a page
+  observa as respostas confirmadas no cache durante a edição.
 
 ### Próximos incrementos
 
@@ -336,8 +340,6 @@ Executada em 2026-10-11:
   leitura comprovado;
 - aplicar o padrão ao detalhe de leads, separando dados obrigatórios e
   secundários;
-- aplicar o padrão ao formulário/detalhe de parceiros, incluindo suas
-  dependências;
 - adicionar testes de rota para recurso existente, 404, erro recuperável e
   reconciliação após conflito.
 
