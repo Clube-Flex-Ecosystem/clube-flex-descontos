@@ -11,7 +11,16 @@ export function Providers() {
         defaultOptions: {
           // Mutações nunca são repetidas automaticamente (arquitetura do dashboard).
           mutations: { retry: false },
-          queries: { retry: false },
+          queries: {
+            // Mantém os dados recentes como fonte local durante a navegação, evitando
+            // uma nova consulta a cada montagem enquanto o cache ainda estiver fresco.
+            staleTime: 30_000,
+            // Conserva queries sem observadores para reutilização ao retornar à tela.
+            gcTime: 5 * 60_000,
+            retry: false,
+            // Queries ativas podem ser atualizadas quando a aba volta ao foco, sem polling.
+            refetchOnWindowFocus: true,
+          },
         },
       }),
   );

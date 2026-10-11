@@ -87,6 +87,8 @@ No retorno de uma mutação:
 ## Estado remoto e cache
 
 - A API é a fonte autoritativa; o dashboard não mantém uma segunda fonte global dos recursos remotos.
+- O `QueryClient` aplica por padrão `staleTime` de 30 segundos e `gcTime` de 5 minutos: durante o período fresco, a montagem ou navegação entre telas reutiliza o cache sem refazer a consulta; queries sem observadores permanecem disponíveis para reutilização durante o `gcTime`.
+- Queries específicas podem sobrescrever esses valores quando o domínio exigir uma política diferente (por exemplo, a sessão), mas a exceção deve ser explícita e justificada no módulo.
 - Query keys são estáveis e representam coleções e detalhes, como `['leads']` e `['leads', leadId]`.
 - Criações inserem a representação retornada na coleção correspondente e no cache de detalhe quando aplicável.
 - Edições e mudanças de estado substituem imutavelmente o recurso nas coleções já carregadas e no detalhe.
@@ -97,7 +99,7 @@ No retorno de uma mutação:
 - `RESOURCE_VERSION_CONFLICT` impede a substituição local silenciosa e exige reconciliação com a versão atual do servidor.
 - Atualizações do cache são imutáveis.
 - Mutações não são repetidas automaticamente após falha ou resposta incerta.
-- Queries ativas são atualizadas quando o usuário retorna à aba do navegador; não haverá polling contínuo ou WebSocket nesta entrega.
+- Queries ativas são atualizadas quando o usuário retorna à aba do navegador, respeitando o `staleTime`; não haverá polling contínuo ou WebSocket nesta entrega.
 
 ### Kanban de leads
 
