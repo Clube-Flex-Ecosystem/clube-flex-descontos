@@ -1,0 +1,70 @@
+---
+import {
+    DEFAULT_OG_IMAGE,
+    SITE_LOCALE,
+    SITE_NAME,
+} from '../shared/config/site';
+import { serializeJsonLd } from '../shared/seo';
+
+interface Props {
+    title: string;
+    description: string;
+    /** Caminho canônico, sem query string. Padrão: o caminho da requisição. */
+    canonicalPath?: string;
+    noindex?: boolean;
+    ogType?: 'website' | 'article';
+    /** Imagem própria da página; usa a imagem institucional quando ausente. */
+    image?: { path: string; width?: number; height?: number; alt?: string };
+    jsonLd?: unknown[];
+}
+
+const {
+    title,
+    description,
+    canonicalPath = Astro.url.pathname,
+    noindex = false,
+    ogType = 'website',
+    image = DEFAULT_OG_IMAGE,
+    jsonLd = [],
+} = Astro.props;
+
+// Origem fixa (`site`): atrás do proxy, `Astro.url` pode refletir host interno.
+const absolute = (path: string) => new URL(path, Astro.site).href;
+const canonical = noindex ? undefined : absolute(canonicalPath);
+const imageUrl = image ? absolute(image.path) : undefined;
+---
+
+<title>{title}</title>
+<meta name="description" content={description} />
+<meta
+    name="robots"
+    content={
+        noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large'
+    }
+/>
+{canonical && <link rel="canonical" href={canonical} />}
+<meta property="og:type" content={ogType} />
+<meta property="og:locale" content={SITE_LOCALE} />
+<meta property="og:site_name" content={SITE_NAME} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+{canonical && <meta property="og:url" content={canonical} />}
+{imageUrl && <meta property="og:image" content={imageUrl} />}
+{image?.width && (
+    <meta property="og:image:width" content={String(image.width)} />
+)}
+{image?.height && (
+    <meta property="og:image:height" content={String(image.height)} />
+)}
+{image?.alt && <meta property="og:image:alt" content={image.alt} />}
+<meta
+    name="twitter:card"
+    content={imageUrl ? 'summary_large_image' : 'summary'}
+/>
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+{imageUrl && <meta name="twitter:image" content={imageUrl} />}
+{image?.alt && <meta name="twitter:image:alt" content={image.alt} />}
+{jsonLd.map((data) => (
+    <script type="application/ld+json" set:html={serializeJsonLd(data)} />
+))}

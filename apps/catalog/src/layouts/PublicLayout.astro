@@ -2,11 +2,17 @@
 import '../styles/tailwind.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import Seo from '../components/Seo.astro';
 interface Props {
     title: string;
     description: string;
+    canonicalPath?: string;
+    noindex?: boolean;
+    ogType?: 'website' | 'article';
+    image?: { path: string; width?: number; height?: number; alt?: string };
+    jsonLd?: unknown[];
 }
-const { title, description } = Astro.props;
+const { title, ...seo } = Astro.props;
 ---
 
 <!doctype html>
@@ -17,17 +23,15 @@ const { title, description } = Astro.props;
             name="viewport"
             content="width=device-width, initial-scale=1, viewport-fit=cover"
         />
-        <meta name="description" content={description} />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={description} />
-        <meta property="og:type" content="website" />
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <Seo title={title} {...seo} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link
             rel="stylesheet"
             href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..800&display=swap"
         />
-        <title>{title}</title>
     </head>
     <body>
         <Header />

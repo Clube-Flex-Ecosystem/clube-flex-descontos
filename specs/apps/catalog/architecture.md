@@ -22,6 +22,16 @@
 - Axios como cliente HTTP dos fluxos interativos.
 - React Hook Form e Zod Resolver no formulário do assistente virtual.
 
+## SEO técnico
+
+- **Origem canônica:** `site` do Astro (`https://parceiros.flexclube.com.br`); URLs absolutas nunca derivam do host da requisição.
+- **Metadados:** `components/Seo.astro`, usado por `PublicLayout`, emite title, description, robots, canonical, Open Graph e Twitter Cards no HTML inicial.
+- **Canonical:** `/` e `/parceiros/{slug}`, sem `plano` nem `categoria`; esses parâmetros continuam funcionais, mas não geram URLs indexáveis distintas.
+- **Sitemap:** `/sitemap.xml` é dinâmico (SSR) e deriva da API pública a união dos parceiros listados por plano ativo. `@astrojs/sitemap` não foi adotado: só enxerga rotas pré-renderizadas e congelaria os parceiros no build. Responde `503` se a API falhar, em vez de publicar lista parcial.
+- **Robots:** `/robots.txt` libera o rastreamento e referencia o sitemap; `noindex` é aplicado à página de parceiro inexistente, ao 404.
+- **Dados estruturados:** `Organization` e `WebSite` na página inicial; `LocalBusiness` (um por unidade) ou `Organization` no detalhe do parceiro.
+- **Imagem Open Graph e favicon:** `public/open-graph.jpg` (1200×630, fallback global, configurado em `DEFAULT_OG_IMAGE` de `shared/config/site.ts`) `public/favicon.ico` (16/32/48) e `public/apple-touch-icon.png` (180×180), referenciados em `PublicLayout`.
+
 ## Evolução durante a implementação
 
 ## Arquitetura de styling
@@ -60,7 +70,6 @@ Nomes de arquivos e subdivisões internas podem ser ajustados conforme surgirem 
 src/
   pages/
     index.astro
-    privacidade.astro
     404.astro
     parceiros/[slug].astro
   layouts/

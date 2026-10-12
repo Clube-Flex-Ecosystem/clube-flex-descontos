@@ -1,7 +1,7 @@
 # Catálogo — módulos
 
 **Aplicação:** Catálogo público  
-**Endereço:** `parceiros.flexclube.org`  
+**Endereço:** `parceiros.flexclube.com.br`  
 **Estado:** Aprovado
 
 ## Responsabilidade

@@ -4,6 +4,7 @@ import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'astro/config';
 
 export default defineConfig({
+    site: 'https://parceiros.flexclube.com.br',
     output: 'server',
     adapter: node({ mode: 'standalone' }),
     integrations: [react()],

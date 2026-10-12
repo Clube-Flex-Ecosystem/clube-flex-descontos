@@ -11,6 +11,7 @@ import {
     listPartners,
     listPlans,
 } from '../features/catalog/api/public-catalog';
+import { ORGANIZATION, SITE_NAME } from '../shared/config/site';
 const plans = await listPlans().catch(() => []);
 const planSlug = Astro.url.searchParams.get('plano');
 const categoryId = Astro.url.searchParams.get('categoria') ?? undefined;
@@ -22,11 +23,35 @@ const [initialCategories, initialPartners] = initialPlan
           listPartners(initialPlan.id, categoryId),
       ]).catch(() => [[], []])
     : [[], []];
+const siteUrl = new URL('/', Astro.site).href;
+const jsonLd = [
+    {
+        '@context': 'https://schema.org',
+        '@type': 'Organization',
+        '@id': `${siteUrl}#organization`,
+        name: ORGANIZATION.name,
+        url: siteUrl,
+        telephone: ORGANIZATION.telephone,
+        email: ORGANIZATION.email,
+        address: { '@type': 'PostalAddress', ...ORGANIZATION.address },
+    },
+    {
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        '@id': `${siteUrl}#website`,
+        name: SITE_NAME,
+        url: siteUrl,
+        inLanguage: 'pt-BR',
+        publisher: { '@id': `${siteUrl}#organization` },
+    },
+];
 ---
 
 <PublicLayout
-    title="Clube Flex — Parceiros"
-    description="Descontos em saúde, educação, lazer e muito mais para você e sua família."
+    title="Clube Flex | Benefícios e descontos exclusivos"
+    description="Conheça os parceiros do Clube Flex e descubra benefícios, descontos e vantagens disponíveis para o seu plano."
+    canonicalPath="/"
+    jsonLd={jsonLd}
 >
     <>
         <HeroSection />

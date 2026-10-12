@@ -77,7 +77,7 @@ O texto visual `Parceiros+` é provisório e será substituído posteriormente p
 - Ação identificada como `WhatsApp`.
 - E-mail oficial: `comercial@flexcard.org.br`.
 - Endereço exibido: `Rua Laureano Rosa 100, São Gonçalo, RJ`.
-- Links para termos de uso e privacidade.
+- Link para termos de uso.
 - O destino técnico da ação de WhatsApp deverá ser fornecido antes da publicação, caso seja diferente do telefone exibido.
 
 ## Catálogo de parceiros
@@ -183,7 +183,7 @@ O assistente é uma interface conversacional determinística e se identifica cla
 1. Solicita nome.
 2. Solicita WhatsApp.
 3. Solicita e-mail, permitindo pular esse campo.
-4. Apresenta consentimento e acesso ao texto de privacidade.
+4. Apresenta o texto de consentimento, sem link para política de privacidade (removido por decisão do responsável em 2026-10-12).
 5. Apresenta resumo editável antes do envio.
 6. Só envia após concordância explícita.
 7. Exibe a mesma confirmação neutra para contato novo ou já existente.

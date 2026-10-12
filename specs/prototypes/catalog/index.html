@@ -574,14 +574,6 @@
     <!-- ═════════ Página do parceiro ═════════ -->
     <div class="view" id="view-partner"><div class="wrap partner-page" id="partner-root"></div></div>
 
-    <!-- ═════════ Privacidade ═════════ -->
-    <div class="view" id="view-privacy">
-      <div class="wrap doc-page">
-        <a class="back" href="#/" data-back-home><svg class="icon" aria-hidden="true"><use href="#i-left"/></svg>Voltar ao início</a>
-        <h1 class="display">Privacidade</h1>
-        <p>Espaço reservado para o texto de privacidade publicado. O conteúdo oficial não faz parte deste protótipo.</p>
-      </div>
-    </div>
   </main>
 
   <!-- ═════════ Rodapé ═════════ -->
@@ -614,7 +606,7 @@
       </div>
       <div class="footer-legal">
         <span>© Clube Flex</span>
-        <nav aria-label="Documentos legais"><a href="#/termos" data-toast="Termos de uso: conteúdo oficial fora do protótipo.">Termos de uso</a><a href="#/privacidade">Privacidade</a></nav>
+        <nav aria-label="Documentos legais"><a href="#/termos" data-toast="Termos de uso: conteúdo oficial fora do protótipo.">Termos de uso</a></nav>
       </div>
     </div>
   </footer>
@@ -760,7 +752,7 @@
         benefits: { essencial: [20], familia: [25], premium: [30] } },
     ];
     const OLD_SLUGS = { "clinica-vida": "clinica-vida-plena" };
-    const CONSENT = { version: "2026-10-01", text: "Autorizo o Clube Flex a utilizar estes dados para contato comercial.", privacyUrl: "#/privacidade" };
+    const CONSENT = { version: "2026-10-01", text: "Autorizo o Clube Flex a utilizar estes dados para contato comercial." };
 
     /* ───────── Utilitários ───────── */
     const $ = (s, r = document) => r.querySelector(s);
@@ -826,7 +818,6 @@
       const r = parseRoute();
       closeMobileMenu();
       if (r.path.startsWith("/parceiros/")) return showPartner(decodeURIComponent(r.path.split("/")[2] || ""), r.plano);
-      if (r.path === "/privacidade") { setView("privacy"); document.title = "Privacidade — Clube Flex"; return; }
       if (r.path === "/termos") { history.replaceState(null, "", "#/"); return route(); }
       const wasHome = $("#view-home").classList.contains("active");
       setView("home");
@@ -1169,7 +1160,7 @@
         const cb = h("input", { type: "checkbox", id: "a-consent" }); cb.checked = A.consent;
         const next = h("button", { class: "btn primary", type: "button", disabled: !A.consent, onclick: () => { you("Autorizo o contato"); A.step = "review"; bot("Confira seus dados antes de enviar. Você pode editar qualquer item."); renderFoot(); focusFoot(); } }, "Continuar");
         cb.addEventListener("change", () => { A.consent = cb.checked; next.disabled = !cb.checked; });
-        foot.append(h("label", { class: "consent", for: "a-consent" }, cb, h("span", {}, CONSENT.text, " ", h("a", { href: CONSENT.privacyUrl, target: "_blank" }, "Ler a política de privacidade"), ".")), next);
+        foot.append(h("label", { class: "consent", for: "a-consent" }, cb, h("span", {}, CONSENT.text)), next);
       } else if (s === "review" || s === "sending" || s === "error") {
         const row = (label, value, step) => h("div", {}, h("div", { class: "r-text" }, h("dt", {}, label), h("dd", {}, value || "Não informado")),
           h("button", { class: "btn ghost", type: "button", disabled: s === "sending", "aria-label": `Editar ${label.toLowerCase()}`, onclick: () => { A.editing = true; A.step = step; bot(`Certo, informe novamente: ${STEPS[step].label.toLowerCase()}.`); renderFoot(); focusFoot(); } }, "Editar"));

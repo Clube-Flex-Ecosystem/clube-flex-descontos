@@ -28,3 +28,14 @@ export const getPartner = async (slug: string, planId?: string) =>
             })
         ).data,
     );
+
+/**
+ * Slugs de todos os parceiros publicamente visíveis. A API só lista parceiros
+ * por plano; como o parceiro elegível possui benefício em ao menos um plano
+ * ativo, a união das listagens por plano equivale ao conjunto indexável.
+ */
+export const listPublicPartnerSlugs = async () => {
+    const plans = await listPlans();
+    const lists = await Promise.all(plans.map((p) => listPartners(p.id)));
+    return [...new Set(lists.flat().map((partner) => partner.slug))].sort();
+};

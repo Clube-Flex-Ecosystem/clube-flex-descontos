@@ -22,6 +22,7 @@ import {
     getPartner,
     listPlans,
 } from '../../features/catalog/api/public-catalog';
+import { truncate } from '../../shared/seo';
 const slug = Astro.params.slug!;
 const plans = await listPlans().catch(() => []);
 const planSlug = Astro.url.searchParams.get('plano') ?? undefined;
@@ -39,19 +40,57 @@ if (partner && partner.slug !== slug)
         `/parceiros/${partner.slug}${planSlug ? `?plano=${planSlug}` : ''}`,
         308,
     );
+const canonicalPath = `/parceiros/${encodeURIComponent(partner?.slug ?? slug)}`;
+const canonicalUrl = new URL(canonicalPath, Astro.site).href;
 const back = `/?${planSlug ? `plano=${encodeURIComponent(planSlug)}&` : ''}#parceiros`;
 const address = (u: PublicPartner['units'][number]) =>
     `${u.address.street}, ${u.address.number}${u.address.complement ? ` — ${u.address.complement}` : ''} · ${u.address.neighborhood}, ${u.address.city} — ${u.address.state} · CEP ${formatPostalCode(u.address.postalCode)}`;
+const toPhone = (u: PublicPartner['units'][number]) =>
+    u.contacts.find((c) => c.type === 'phone')?.value;
+// Parceiros com unidade física são estabelecimentos (um por unidade); os
+// demais, apenas organização. Só dados exibidos na página entram no JSON-LD.
 const jsonLd = partner
-    ? {
-          '@context': 'https://schema.org',
-          '@type': 'Organization',
-          name: partner.name,
-          description: partner.description,
-          url: Astro.url.href,
-          ...(partner.website ? { sameAs: [partner.website] } : {}),
-      }
-    : undefined;
+    ? [
+          partner.units.length
+              ? partner.units.map((u) => ({
+                    '@context': 'https://schema.org',
+                    '@type': 'LocalBusiness',
+                    name: partner!.name,
+                    description: partner!.description,
+                    url: canonicalUrl,
+                    ...(partner!.website ? { sameAs: [partner!.website] } : {}),
+                    ...(toPhone(u) ? { telephone: toPhone(u) } : {}),
+                    address: {
+                        '@type': 'PostalAddress',
+                        streetAddress: `${u.address.street}, ${u.address.number}`,
+                        addressLocality: u.address.city,
+                        addressRegion: u.address.state,
+                        postalCode: u.address.postalCode,
+                        addressCountry: 'BR',
+                    },
+                }))
+              : [
+                    {
+                        '@context': 'https://schema.org',
+                        '@type': 'Organization',
+                        name: partner.name,
+                        description: partner.description,
+                        url: canonicalUrl,
+                        ...(partner.website
+                            ? { sameAs: [partner.website] }
+                            : {}),
+                    },
+                ],
+      ].flat()
+    : [];
+const categoryNames = partner?.categories.map((c) => c.name).join(', ');
+const metaDescription = partner
+    ? truncate(
+          partner.description.length < 90 && categoryNames
+              ? `${partner.description} Parceiro do Clube Flex: ${categoryNames}.`
+              : partner.description,
+      )
+    : 'Este parceiro não está disponível no catálogo.';
 const panel = 'rounded-panel border p-6';
 const plainPanel = `${panel} border-border bg-surface`;
 const panelTitle = 'font-display text-heading';
@@ -66,16 +105,14 @@ const contactIcon =
 <PublicLayout
     title={
         partner
-            ? `${partner.name} — Clube Flex`
-            : 'Parceiro não encontrado — Clube Flex'
+            ? `${partner.name} | Benefícios no Clube Flex`
+            : 'Parceiro não encontrado | Clube Flex'
     }
-    description={
-        partner?.description ?? 'Este parceiro não está disponível no catálogo.'
-    }
+    description={metaDescription}
+    canonicalPath={canonicalPath}
+    noindex={!partner}
+    jsonLd={jsonLd}
 >
-    {jsonLd && (
-        <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
-    )}
     <>
         {partner ? (
             <div class="mx-auto w-full max-w-300 px-4 pt-6 pb-18 md:px-8">

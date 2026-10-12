@@ -10,7 +10,7 @@ A primeira entrega será composta por três aplicações publicáveis independen
 
 | Aplicação | Endereço | Responsabilidade principal |
 | --- | --- | --- |
-| Catálogo | `parceiros.flexclube.org` | Experiência pública, indexável e prioritariamente móvel |
+| Catálogo | `parceiros.flexclube.com.br` | Experiência pública, indexável e prioritariamente móvel |
 | Dashboard | `painel.flexclube.org` | Operação interna autenticada |
 | API | `api.flexclube.org` | Fonte central de regras, dados e contratos |
 

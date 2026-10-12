@@ -573,14 +573,7 @@ export default function AssistantIsland() {
                                             }
                                         />
                                         <span>
-                                            {consent.text}{' '}
-                                            <a
-                                                href={consent.privacyUrl}
-                                                target="_blank"
-                                            >
-                                                Ler a política de privacidade
-                                            </a>
-                                            .
+                                            {consent.text}
                                         </span>
                                     </label>
                                     <button
