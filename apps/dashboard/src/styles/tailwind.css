@@ -1,36 +1,80 @@
-@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap');
+/*
+ * Tokens do dashboard: materialização de specs/apps/ui-foundations.md
+ * (Fundamentos do dashboard). As fontes são carregadas por <link> em index.html.
+ */
 @import 'tailwindcss';
 
 @theme static {
-  --color-background: #f5f7f8;
-  --color-foreground: #0a1428;
+  /* Componentes consomem apenas papéis semânticos; paletas e escalas padrão ficam fora. */
+  --color-*: initial;
+  --shadow-*: initial;
+  --radius-*: initial;
+  --font-*: initial;
+
+  /* Foundation comum aos dois apps (não usar diretamente em componentes). */
+  --color-navy-50: #fafbfd;
+  --color-navy-100: #eef2f7;
+  --color-navy-200: #dce2ec;
+  --color-navy-300: #b4bfd0;
+  --color-navy-400: #7a879e;
+  --color-navy-500: #5e6a82;
+  --color-navy-600: #4a5670;
+  --color-navy-700: #333f59;
+  --color-navy-800: #18284a;
+  --color-navy-900: #04173a;
+  --color-orange-50: #fff6f0;
+  --color-orange-200: #ffcfb2;
+  --color-orange-400: #ff6b1f;
+  --color-orange-500: #fd5200;
+  --color-orange-600: #ea4b00;
+  --color-orange-700: #b83a00;
+
+  /* Superfícies e texto */
+  --color-background: var(--color-navy-50);
   --color-surface: #ffffff;
-  --color-surface-muted: #f1f3f5;
-  --color-surface-hover: #f7f8f9;
-  --color-border: #cbd3dc;
-  --color-border-strong: #8a95a6;
-  --color-control: #fdfdfe;
-  --color-control-border: #c4ccd5;
-  --color-control-border-hover: #aeb8c4;
-  --color-primary-raised: #d1500e;
-  --color-primary-raised-hover: #c5460a;
-  --color-primary-edge: #92350a;
-  --color-danger-raised: #bc2d43;
-  --color-danger-edge: #7f1829;
-  --color-muted: #f1f3f5;
-  --color-muted-foreground: #566173;
-  --color-primary: #cc4a0a;
-  --color-primary-hover: #b83f08;
-  --color-primary-active: #a53806;
-  --color-primary-foreground: #ffffff;
-  --color-secondary: #e6ecf0;
-  --color-secondary-hover: #d9e1e7;
-  --color-accent: #f4651a;
-  --color-accent-soft: #ffeee3;
-  --color-accent-subtle: #fff7f2;
-  --color-accent-foreground: #b23f07;
-  --color-brand-gradient-from: #f2520c;
-  --color-brand-gradient-to: #f68d36;
+  --color-surface-muted: var(--color-navy-100);
+  --color-foreground: var(--color-navy-900);
+  --color-foreground-soft: var(--color-navy-700);
+  --color-muted-foreground: var(--color-navy-600);
+  --color-placeholder: var(--color-navy-500);
+
+  /* Bordas */
+  --color-border: var(--color-navy-200);
+  --color-border-strong: var(--color-navy-300);
+  --color-control-border: var(--color-navy-400);
+  --color-control-border-hover: var(--color-navy-500);
+
+  /* Ação, seleção, atenção e identidade */
+  --color-primary: var(--color-orange-500);
+  --color-primary-hover: var(--color-orange-400);
+  --color-primary-active: var(--color-orange-600);
+  --color-primary-foreground: var(--color-navy-900);
+  --color-selected: var(--color-orange-600);
+  --color-selected-foreground: var(--color-navy-900);
+  --color-selected-soft: var(--color-orange-50);
+  --color-selected-soft-foreground: var(--color-orange-700);
+  --color-selected-border: var(--color-orange-500);
+  --color-signal: var(--color-orange-600);
+  --color-attention-soft: var(--color-orange-50);
+  --color-attention-foreground: var(--color-orange-700);
+  --color-identity: var(--color-orange-50);
+  --color-identity-foreground: var(--color-orange-700);
+
+  /* Navegação: moldura navy */
+  --color-sidebar: var(--color-navy-900);
+  --color-sidebar-hover: var(--color-navy-800);
+  --color-sidebar-selected: var(--color-navy-700);
+  --color-sidebar-foreground: var(--color-navy-100);
+  --color-sidebar-muted: var(--color-navy-300);
+  --color-sidebar-selected-foreground: #ffffff;
+  --color-sidebar-border: var(--color-navy-800);
+  --color-sidebar-scrollbar: var(--color-navy-700);
+  --color-sidebar-count: rgb(253 82 0 / 0.22);
+  --color-sidebar-count-foreground: var(--color-orange-200);
+  --color-signal-inverse: var(--color-orange-400);
+  --color-focus-inverse: var(--color-orange-400);
+
+  /* Estados */
   --color-success: #157347;
   --color-success-soft: #e7f6ee;
   --color-warning: #8a5a00;
@@ -38,75 +82,44 @@
   --color-danger: #b4233a;
   --color-danger-hover: #9c1c31;
   --color-danger-soft: #fdecee;
+  --color-danger-foreground: #ffffff;
   --color-info: #1f56c4;
   --color-info-soft: #e8effc;
-  --color-neutral: #3b4659;
-  --color-neutral-soft: #eef2f6;
-  --color-sidebar: #071024;
-  --color-sidebar-foreground: #e7ebf3;
-  --color-sidebar-muted: #a3acbe;
-  --color-sidebar-hover: #0f1930;
-  --color-sidebar-active: #16213a;
-  --color-sidebar-border: #1a2540;
-  --color-on-dark-success: #4cd290;
-  --color-on-dark-danger: #ff8a99;
-  --color-on-dark-info: #8fb4ff;
-  --color-focus: #f4651a;
-  --color-focus-ring: rgba(244, 101, 26, 0.14);
-  --color-danger-ring: rgba(180, 35, 58, 0.18);
-  --color-overlay: rgba(7, 16, 36, 0.5);
+
+  /* Apoio */
+  --color-inverse: var(--color-navy-900);
+  --color-inverse-foreground: var(--color-navy-50);
+  --color-focus: var(--color-orange-600);
+  --color-overlay: rgb(4 23 58 / 0.45);
+  --color-selection: var(--color-orange-200);
+  --color-selection-foreground: var(--color-navy-900);
+  --color-scrollbar-thumb: var(--color-navy-400);
+  --color-scrollbar-thumb-hover: var(--color-navy-600);
+
   --font-sans:
-    'Geist', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    'Archivo', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
     'Segoe UI', sans-serif;
-  --font-body: var(--font-sans);
-  --font-display: var(--font-sans);
-  --radius-xs: 4px;
-  --radius-sm: 6px;
-  --radius-md: 8px;
-  --radius-lg: 10px;
-  --radius-xl: 12px;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  /* Raios por função */
+  --radius-badge: 6px;
+  --radius-control: 8px;
+  --radius-tile: 10px;
+  --radius-card: 12px;
+  --radius-overlay: 12px;
   --radius-full: 999px;
-  --shadow-sm: 0 1px 2px rgba(10, 20, 40, 0.04);
-  --shadow-control-inset:
-    inset 0 1px 2px rgba(10, 20, 40, 0.05), 0 1px 0 rgba(255, 255, 255, 0.7);
-  --shadow-control-raised:
-    inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 1px 2px rgba(10, 20, 40, 0.06);
-  --shadow-control-raised-hover:
-    inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 1px 3px rgba(10, 20, 40, 0.1);
-  --shadow-control-pressed: inset 0 1px 3px rgba(10, 20, 40, 0.12);
-  --shadow-brand-raised:
-    inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 1px 2px rgba(50, 25, 10, 0.14);
-  --shadow-brand-raised-hover:
-    inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 3px rgba(50, 25, 10, 0.18);
-  --shadow-brand-pressed:
-    inset 0 1px 3px rgba(70, 25, 5, 0.18),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  --shadow-md:
-    0 1px 2px rgba(10, 20, 40, 0.04), 0 6px 16px rgba(10, 20, 40, 0.08);
-  --shadow-lg:
-    0 1px 2px rgba(10, 20, 40, 0.04), 0 16px 40px rgba(10, 20, 40, 0.14);
+
+  /* Elevação real: só o que flutua */
+  --shadow-floating:
+    0 1px 2px rgb(4 23 58 / 0.06), 0 6px 16px rgb(4 23 58 / 0.1);
+  --shadow-overlay:
+    0 2px 6px rgb(4 23 58 / 0.08), 0 24px 48px rgb(4 23 58 / 0.18);
 }
 
 :root {
   color-scheme: light;
   padding-top: env(safe-area-inset-top, 0px);
   padding-bottom: env(safe-area-inset-bottom, 0px);
-  --text-page-size: 1.5rem;
-  --text-page-line: 2rem;
-  --text-section-size: 1rem;
-  --text-section-line: 1.5rem;
-  --text-card-size: 0.875rem;
-  --text-card-line: 1.25rem;
-  --text-metric-size: 1.75rem;
-  --text-metric-line: 2rem;
-  --text-body-size: 0.875rem;
-  --text-body-line: 1.25rem;
-  --text-small-size: 0.8125rem;
-  --text-small-line: 1.125rem;
-  --text-label-size: 0.8125rem;
-  --text-label-line: 1.125rem;
-  --text-caption-size: 0.75rem;
-  --text-caption-line: 1rem;
   --space-0-5: 2px;
   --space-1: 4px;
   --space-1-5: 6px;
@@ -122,10 +135,8 @@
   --control-sm: 32px;
   --control-md: 36px;
   --control-lg: 40px;
-  --table-row-sm: 40px;
-  --table-row-md: 48px;
-  --border-width: 1px;
-  --brand-skew: -14deg;
+  --row-default: 48px;
+  --table-header: 36px;
   --duration-fast: 160ms;
   --duration-base: 200ms;
   --sidebar-width: 232px;
@@ -133,13 +144,15 @@
   --header-height: 48px;
   --nav-item-height: 32px;
   --content-max: 1600px;
-  --content-pad-x: 32px;
+  --content-pad-x: 28px;
 }
 
 @theme inline {
   --spacing-control-sm: var(--control-sm);
   --spacing-control-md: var(--control-md);
   --spacing-control-lg: var(--control-lg);
+  --spacing-row-default: var(--row-default);
+  --spacing-table-header: var(--table-header);
   --spacing-0_5: var(--space-0-5);
   --spacing-1: var(--space-1);
   --spacing-1_5: var(--space-1-5);
@@ -170,9 +183,9 @@
     margin: 0;
     background: var(--color-background);
     color: var(--color-foreground);
-    font-family: var(--font-body);
-    font-size: var(--text-body-size);
-    line-height: var(--text-body-line);
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    line-height: 1.25rem;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
@@ -190,26 +203,149 @@
     font: inherit;
     color: inherit;
   }
+  /* Seletor com o chevron do protótipo (traço em muted-foreground, navy-600). */
+  select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%234a5670' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 6 4 4 4-4'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+  }
   a {
-    color: var(--color-accent-foreground);
+    color: var(--color-foreground);
+    text-decoration-line: underline;
+    text-decoration-color: var(--color-primary);
+    text-underline-offset: 3px;
   }
   img,
   svg {
     max-width: 100%;
   }
-  ::selection {
-    background: var(--color-primary);
-    color: var(--color-primary-foreground);
+  [hidden] {
+    display: none !important;
   }
-  * {
-    scrollbar-color: var(--color-primary) transparent;
+
+  /* Estados globais do browser */
+  ::selection {
+    background: var(--color-selection);
+    color: var(--color-selection-foreground);
+  }
+  ::-moz-selection {
+    background: var(--color-selection);
+    color: var(--color-selection-foreground);
   }
   :focus-visible {
     outline: 2px solid var(--color-focus);
     outline-offset: 2px;
   }
-  [hidden] {
-    display: none !important;
+  input,
+  textarea {
+    caret-color: var(--color-focus);
+  }
+  ::placeholder {
+    color: var(--color-placeholder);
+    opacity: 1;
+  }
+  input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px var(--color-surface-muted) inset;
+    -webkit-text-fill-color: var(--color-foreground);
+  }
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-scrollbar-thumb);
+    background-clip: padding-box;
+    border: 2px solid transparent;
+    border-radius: 999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--color-scrollbar-thumb-hover);
+  }
+  /* Moldura navy: foco e scrollbar próprios da superfície escura. */
+  [data-surface='inverse'] :focus-visible {
+    outline-color: var(--color-focus-inverse);
+  }
+  [data-surface='inverse'] ::-webkit-scrollbar-thumb {
+    background-color: var(--color-sidebar-scrollbar);
+  }
+  /* Só onde não há pseudo-elementos WebKit: no Chromium, scrollbar-color anularia o bloco acima. */
+  @supports not selector(::-webkit-scrollbar) {
+    * {
+      scrollbar-color: var(--color-scrollbar-thumb) transparent;
+      scrollbar-width: thin;
+    }
+  }
+}
+
+/* Tipografia em components: utilitários (ex.: font-semibold) podem ajustar o peso. */
+@layer components {
+  /* Escala tipográfica (ui-foundations.md — Tipografia do dashboard) */
+  .t-display {
+    font-weight: 650;
+    font-size: 1.625rem;
+    line-height: 2.125rem;
+    letter-spacing: -0.015em;
+    font-variation-settings: 'wdth' 110;
+  }
+  .t-page {
+    font-weight: 650;
+    font-size: 1.375rem;
+    line-height: 1.75rem;
+    letter-spacing: -0.015em;
+    font-variation-settings: 'wdth' 110;
+  }
+  .t-section {
+    font-weight: 600;
+    font-size: 1rem;
+    line-height: 1.375rem;
+    letter-spacing: -0.005em;
+  }
+  .t-heading {
+    font-weight: 600;
+    font-size: 0.8125rem;
+    line-height: 1.125rem;
+  }
+  .t-body {
+    font-weight: 400;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+  .t-body-small {
+    font-weight: 400;
+    font-size: 0.8125rem;
+    line-height: 1.125rem;
+  }
+  .t-label {
+    font-weight: 500;
+    font-size: 0.8125rem;
+    line-height: 1.125rem;
+  }
+  .t-button {
+    font-weight: 600;
+    font-size: 0.8125rem;
+    line-height: 1.125rem;
+  }
+  .t-table-header {
+    font-weight: 500;
+    font-size: 0.75rem;
+    line-height: 1rem;
+    letter-spacing: 0.01em;
+  }
+  .t-caption {
+    font-weight: 500;
+    font-size: 0.75rem;
+    line-height: 1rem;
+  }
+  .t-overline {
+    font-weight: 600;
+    font-size: 0.6875rem;
+    line-height: 1rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
   }
 }
 
@@ -230,54 +366,6 @@
   }
   .tnum {
     font-variant-numeric: tabular-nums;
-  }
-  .t-page {
-    font-family: var(--font-display);
-    font-weight: 600;
-    font-size: var(--text-page-size);
-    line-height: var(--text-page-line);
-    letter-spacing: -0.025em;
-  }
-  .t-section {
-    font-family: var(--font-body);
-    letter-spacing: -0.01em;
-    font-weight: 600;
-    font-size: var(--text-section-size);
-    line-height: var(--text-section-line);
-  }
-  .t-card {
-    font-family: var(--font-body);
-    font-weight: 600;
-    font-size: var(--text-card-size);
-    line-height: var(--text-card-line);
-  }
-  .t-metric {
-    font-family: var(--font-body);
-    font-weight: 600;
-    font-size: var(--text-metric-size);
-    line-height: var(--text-metric-line);
-    font-variant-numeric: tabular-nums;
-    letter-spacing: -0.03em;
-  }
-  .t-body {
-    font-size: var(--text-body-size);
-    line-height: var(--text-body-line);
-    font-weight: 400;
-  }
-  .t-small {
-    font-size: var(--text-small-size);
-    line-height: var(--text-small-line);
-    font-weight: 400;
-  }
-  .t-label {
-    font-size: var(--text-label-size);
-    line-height: var(--text-label-line);
-    font-weight: 500;
-  }
-  .t-caption {
-    font-size: var(--text-caption-size);
-    line-height: var(--text-caption-line);
-    font-weight: 500;
   }
   .ic {
     display: inline-block;
@@ -311,6 +399,17 @@
 @keyframes spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+/* Indicador de atualização sem desmontar a tabela (auditoria). */
+@keyframes indeterminate {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(250%);
   }
 }
 

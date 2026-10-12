@@ -14,6 +14,7 @@
 - Consumo da API central; sem acesso direto ao PostgreSQL.
 - SEO e experiência móvel como prioridades.
 - Página inicial predominantemente composta por componentes Astro e HTML renderizado no servidor.
+- `@lucide/astro` como biblioteca única de ícones do catálogo, importada diretamente pelos componentes que os utilizam.
 - Dados iniciais do catálogo consultados no servidor e entregues ao componente interativo como propriedades.
 - Catálogo interativo implementado como React Island hidratado, sem uso de `client:only`.
 - Assistente virtual implementado como React Island independente do catálogo.
@@ -23,7 +24,35 @@
 
 ## Evolução durante a implementação
 
+## Arquitetura de styling
+
+- `src/styles/tailwind.css` contém somente os tokens executáveis do catálogo,
+  a base global mínima, regras globais de acessibilidade e keyframes/motion
+  compartilhados quando necessários.
+- A interface é composta com utilities Tailwind nos componentes proprietários
+  da página, das estruturas compartilhadas e das features.
+- Primitives independentes de domínio podem viver em `components/ui/` quando
+  houver reutilização concreta e uma API pequena. Componentes específicos de
+  catálogo, assistente, parceiro ou home permanecem dentro da feature.
+- Não devem ser criadas classes semânticas globais para esconder a composição
+  visual de header, footer, hero, cards, filtros, estados ou assistente.
+- A migração de styling é classificada como refactor técnico sem mudança
+  intencional de comportamento; valores aprovados e comportamento responsivo
+  devem ser preservados.
+
 Nomes de arquivos e subdivisões internas podem ser ajustados conforme surgirem consumidores reais, sem romper as fronteiras aprovadas entre páginas Astro, features, Islands e código compartilhado.
+
+## Shell público
+
+- `src/layouts/PublicLayout.astro` é o único layout responsável pelo shell
+  público principal do catálogo.
+- O layout monta o `head`, carrega o stylesheet global e a fonte aprovada,
+  compõe `Header`, o único landmark `<main>` com o conteúdo da rota e `Footer`.
+- As páginas públicas fornecem somente o conteúdo específico da rota e não
+  importam nem renderizam `Header`, `Footer` ou outro `<main>`.
+- Header e Footer mantêm sua aparência encapsulada nos próprios componentes
+  por utilities Tailwind; serem globais em composição não os torna estilos
+  globais.
 
 ## Organização modular aprovada
 

@@ -26,7 +26,7 @@ export function ActivatePage() {
           await navigate({ to: '/login', search: { aviso: 'ativada' } });
         }}
       />
-      <div className="t-small flex flex-wrap justify-between gap-3">
+      <div className="t-body-small flex flex-wrap justify-between gap-3">
         <Link to="/login">Voltar para entrar</Link>
       </div>
     </AuthLayout>

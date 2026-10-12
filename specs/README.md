@@ -1,6 +1,20 @@
 # Especificações — Clube Flex
 
-Esta pasta é a fonte de referência para o planejamento e a futura implementação do Clube Flex.
+Esta pasta é a fonte oficial da definição do sistema Clube Flex e a referência
+obrigatória para o planejamento e a implementação. O modelo de governança está
+consolidado em [Governança SDD](governance.md).
+
+O repositório segue esta separação:
+
+```text
+specs/     = definição oficial do sistema
+AGENTS.md  = protocolo operacional para agentes
+apps/      = implementação das especificações
+```
+
+`AGENTS.md` orienta o trabalho do agente, mas não cria requisitos, regras de
+negócio, contratos, decisões arquiteturais ou decisões visuais concorrentes.
+As aplicações implementam as fontes aprovadas e não redefinem o sistema.
 
 ## Estado das etapas
 
@@ -18,16 +32,31 @@ Esta pasta é a fonte de referência para o planejamento e a futura implementaç
 | 10 — Qualidade | [quality/strategy.md](quality/strategy.md) | Aprovada |
 | 11 — Implementação | [delivery/implementation-plan.md](delivery/implementation-plan.md) | Aprovada |
 | 12 — Revisão | [review.md](review.md) | Aprovada |
+| Governança SDD | [governance.md](governance.md) | Referência operacional |
 
 ## Fonte da interface
 
-- [Fundamentos compartilhados](apps/ui-foundations.md): tokens, escalas, tipografia e precedência entre fontes.
+- [Processo de evolução da interface](ui-change-process.md): fluxo obrigatório
+  de protótipo, aprovação e implementação para catálogo e dashboard.
+- [Fundamentos compartilhados](apps/ui-foundations.md): tokens, escalas, tipografia e papéis das fontes de interface.
 - [Design system do dashboard](apps/dashboard/design-system/README.md)
 - [Protótipo navegável do dashboard](prototypes/dashboard/index.html)
 - [Protótipo navegável do catálogo](prototypes/catalog/index.html)
-- Tokens: [`apps/dashboard/src/styles/tailwind.css`](../apps/dashboard/src/styles/tailwind.css)
+- [Auditoria do sistema visual do catálogo](prototypes/catalog/proposals/2026-10-sistema-visual/README.md)
+  e [protótipo comparativo](prototypes/catalog/proposals/2026-10-sistema-visual/index.html) — registro da decisão aprovada em 2026-10-11 (direção A).
+- [Auditoria do sistema visual do dashboard](prototypes/dashboard/proposals/2026-10-sistema-visual/README.md)
+  e [protótipo comparativo](prototypes/dashboard/proposals/2026-10-sistema-visual/index.html) — registro da decisão aprovada em 2026-10-11 (direção A, que substituiu a direção B aprovada anteriormente no mesmo dia).
+- [Auditoria de UX e fluxos do dashboard](prototypes/dashboard/proposals/2026-10-ux-fluxos/README.md)
+  e [protótipo comparativo](prototypes/dashboard/proposals/2026-10-ux-fluxos/index.html) — aprovada em 2026-10-11 com ajustes (sem filtros na URL; salvar e publicar separados), consolidada no protótipo e em `interface.md`.
+- Definição dos tokens: [`apps/ui-foundations.md`](apps/ui-foundations.md)
+- Materialização atual dos tokens: [`apps/dashboard/src/styles/tailwind.css`](../apps/dashboard/src/styles/tailwind.css)
 
-Os protótipos são a referência de construção da interface: a implementação reproduz sua estrutura, componentes e estados. Eles usam dados ilustrativos e não definem contratos, regras de negócio nem arquitetura.
+Os protótipos são a fonte vinculante de construção visual e estrutural da
+interface:
+qualquer alteração de UI começa no protótipo correspondente, passa por
+aprovação explícita e só então é aplicada ao app. Eles usam dados ilustrativos
+e não definem contratos, regras de negócio nem arquitetura. O fluxo completo
+está em [Processo de evolução da interface](ui-change-process.md).
 
 ## Convenções
 

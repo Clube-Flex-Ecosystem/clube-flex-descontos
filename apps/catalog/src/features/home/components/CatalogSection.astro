@@ -1,0 +1,44 @@
+---
+import type {
+  PublicCategory,
+  PublicPartner,
+  PublicPlan,
+} from '@flex/contracts';
+import CatalogIsland from '../../catalog/components/CatalogIsland';
+
+interface Props {
+  plans: PublicPlan[];
+  initialPlan?: PublicPlan;
+  initialCategory?: string;
+  initialCategories: PublicCategory[];
+  initialPartners: PublicPartner[];
+  initialInvalid?: boolean;
+}
+
+const {
+  plans,
+  initialPlan,
+  initialCategory,
+  initialCategories,
+  initialPartners,
+  initialInvalid,
+} = Astro.props;
+---
+
+<section
+  class="bg-surface-muted py-18"
+  id="parceiros"
+  aria-labelledby="catalog-title"
+>
+  <div class="mx-auto w-full max-w-300 px-4 md:px-8">
+    <CatalogIsland
+      client:load
+      plans={plans}
+      initialPlan={initialPlan}
+      initialCategory={initialCategory}
+      initialCategories={initialCategories}
+      initialPartners={initialPartners}
+      initialInvalid={initialInvalid}
+    />
+  </div>
+</section>

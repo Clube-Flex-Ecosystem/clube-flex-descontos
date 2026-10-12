@@ -1,0 +1,61 @@
+---
+import { button } from '../../../components/ui/button';
+
+const steps = [
+  {
+    title: 'Cadastre-se',
+    text: 'Deixe seus dados e a equipe do Clube Flex entra em contato para apresentar os planos.',
+  },
+  {
+    title: 'Explore parceiros',
+    text: 'Escolha seu plano no catálogo e veja os descontos disponíveis por categoria.',
+  },
+  {
+    title: 'Use seu desconto',
+    text: 'Siga as instruções de utilização de cada parceiro e apresente seu cupom quando houver.',
+  },
+  {
+    title: 'Economize sempre',
+    text: 'Volte ao catálogo sempre que precisar e aproveite novas condições.',
+  },
+];
+---
+
+<section class="py-18" id="como-funciona" aria-labelledby="steps-title">
+  <div class="mx-auto w-full max-w-300 px-4 md:px-8">
+    <div class="max-w-170">
+      <p class="text-eyebrow font-stretch-115% uppercase text-accent-foreground">
+        Como funciona
+      </p>
+      <h2
+        class="mt-2.5 font-display text-display font-stretch-110%"
+        id="steps-title"
+      >
+        Em quatro passos.
+      </h2>
+    </div>
+    <ol class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {steps.map(({ title, text }, i) => (
+        <li class="rounded-card border border-border bg-surface p-6 pt-7">
+          <span
+            class="font-display text-number-step font-stretch-108% tabular-nums text-accent-strong"
+            aria-hidden="true"
+          >
+            {String(i + 1).padStart(2, '0')}
+          </span>
+          <h3 class="mt-3 font-display text-subheading">{title}</h3>
+          <p class="mt-2 text-foreground-soft">{text}</p>
+          {i === 0 && (
+            <button
+              class={`${button('primary', 'sm')} mt-4`}
+              type="button"
+              data-open-assistant="flex"
+            >
+              Quero ser Flex
+            </button>
+          )}
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>

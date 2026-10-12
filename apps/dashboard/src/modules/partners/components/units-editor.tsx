@@ -3,23 +3,51 @@ import { get, useFieldArray, useFormContext, useWatch } from 'react-hook-form';
 import { formatPostalCode } from '@flex/contracts';
 import { Badge } from '../../../shared/ui/badge';
 import { Button } from '../../../shared/ui/button';
+import { Icon } from '../../../shared/ui/icon';
 import {
   InputField,
   Switch,
   TextareaField,
 } from '../../../shared/ui/form-controls';
 import { fieldMessage } from '../../../shared/validation/server-errors';
-import { emptyUnit, type PartnerFormValues } from '../schemas/partner-form';
+import {
+  emptyUnit,
+  type PartnerFormValues,
+  type UnitFormValues,
+} from '../schemas/partner-form';
 import { ContactsEditor } from './contacts-editor';
+
+/** Adiciona uma unidade (cabeçalho da seção); unidades novas começam abertas. */
+export function AddUnitButton() {
+  const { getValues, setValue } = useFormContext<PartnerFormValues>();
+  return (
+    <Button
+      compact
+      onClick={() =>
+        setValue('units', [...getValues('units'), emptyUnit()], {
+          shouldDirty: true,
+        })
+      }
+    >
+      <Icon name="plus" />
+      Adicionar unidade
+    </Button>
+  );
+}
 
 /** Unidades físicas do parceiro: opcionais e editadas dentro do mesmo agregado. */
 export function UnitsEditor() {
   const {
     control,
     register,
+    getValues,
     formState: { errors },
   } = useFormContext<PartnerFormValues>();
-  const { fields, append, remove } = useFieldArray({ control, name: 'units' });
+  const { fields, insert, remove } = useFieldArray({ control, name: 'units' });
+  // Unidades removidas continuam indicadas, com "Desfazer", até o salvamento.
+  const [removed, setRemoved] = useState<
+    { key: string; index: number; value: UnitFormValues }[]
+  >([]);
   const units = useWatch({ control, name: 'units' });
   // Unidades novas começam abertas; as já salvas, resumidas até serem editadas. O conjunto
   // guarda as que o usuário inverteu em relação a esse padrão.
@@ -38,8 +66,8 @@ export function UnitsEditor() {
 
   return (
     <div className="grid gap-2">
-      {fields.length === 0 ? (
-        <p className="t-small muted">
+      {fields.length === 0 && removed.length === 0 ? (
+        <p className="t-body-small muted">
           Nenhuma unidade. O parceiro pode operar sem unidade física.
         </p>
       ) : null}
@@ -52,7 +80,7 @@ export function UnitsEditor() {
           ? [unit.street, unit.number].filter(Boolean).join(', ')
           : '';
         return (
-          <div key={field.id} className="rounded-lg border border-border">
+          <div key={field.id} className="rounded-card border border-border">
             <div className="flex items-start justify-between gap-3 p-3">
               <div className="min-w-0">
                 <strong className="t-body font-semibold">
@@ -65,7 +93,7 @@ export function UnitsEditor() {
                 ) : (
                   <Badge dot>Inativa</Badge>
                 )}
-                <p className="t-small muted">
+                <p className="t-body-small muted">
                   {[
                     address,
                     unit?.neighborhood,
@@ -76,26 +104,21 @@ export function UnitsEditor() {
                     .filter(Boolean)
                     .join(' · ') || 'Endereço não informado.'}
                 </p>
-                <p className="t-small muted tnum">
+                <p className="t-body-small muted tnum">
                   {unit && unit.contacts.length > 0
                     ? `${unit.contacts.length} ${unit.contacts.length === 1 ? 'contato próprio' : 'contatos próprios'}`
                     : 'Usa os contatos gerais'}
                   {unit?.openingHours ? ` · ${unit.openingHours}` : ''}
                 </p>
               </div>
-              <div className="flex flex-none gap-1">
-                <Button
-                  variant="quiet"
-                  compact
-                  aria-expanded={open}
-                  onClick={() => toggle(field.id)}
-                >
-                  {open ? 'Recolher' : 'Editar'}
-                </Button>
-                <Button variant="quiet" compact onClick={() => remove(index)}>
-                  Remover
-                </Button>
-              </div>
+              <Button
+                variant="quiet"
+                compact
+                aria-expanded={open}
+                onClick={() => toggle(field.id)}
+              >
+                {open ? 'Recolher' : 'Editar'}
+              </Button>
             </div>
             {open ? (
               <div className="grid gap-4 border-t border-border p-3">
@@ -181,16 +204,67 @@ export function UnitsEditor() {
                   }
                   {...register(`units.${index}.active`)}
                 />
+                <div className="flex flex-wrap justify-between gap-2 border-t border-border pt-3">
+                  <Button
+                    variant="danger-quiet"
+                    compact
+                    onClick={() => {
+                      // Captura o valor antes de remover: o updater roda depois.
+                      const value = getValues(`units.${index}`);
+                      setRemoved((current) => [
+                        ...current,
+                        { key: field.id, index, value },
+                      ]);
+                      remove(index);
+                    }}
+                  >
+                    <Icon name="trash" />
+                    Remover unidade
+                  </Button>
+                  <Button compact onClick={() => toggle(field.id)}>
+                    Recolher
+                  </Button>
+                </div>
               </div>
             ) : null}
           </div>
         );
       })}
-      <div>
-        <Button compact onClick={() => append(emptyUnit())}>
-          Adicionar unidade
-        </Button>
-      </div>
+      {removed.map((item) => (
+        <div
+          key={item.key}
+          className="flex items-start justify-between gap-3 rounded-card border border-dashed border-border bg-surface-muted p-3"
+        >
+          <div className="min-w-0 text-placeholder line-through">
+            <strong className="t-body font-semibold">
+              {item.value.name || 'Nova unidade'}
+            </strong>
+            <p className="t-body-small">
+              {[item.value.street, item.value.number]
+                .filter(Boolean)
+                .join(', ') || 'Endereço não informado.'}
+            </p>
+          </div>
+          <span className="flex flex-none items-center gap-2">
+            <span className="t-caption muted">Removida ao salvar</span>
+            <Button
+              variant="quiet"
+              compact
+              onClick={() => {
+                insert(
+                  Math.min(item.index, getValues('units').length),
+                  item.value,
+                );
+                setRemoved((current) =>
+                  current.filter((entry) => entry.key !== item.key),
+                );
+              }}
+            >
+              Desfazer
+            </Button>
+          </span>
+        </div>
+      ))}
     </div>
   );
 }

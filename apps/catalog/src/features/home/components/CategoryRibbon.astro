@@ -1,0 +1,22 @@
+---
+const ribbon = [
+  'Saúde',
+  'Educação',
+  'Lazer',
+  'Bem-estar',
+  'Família',
+  'Odontologia',
+];
+---
+
+<div class="overflow-hidden py-4 pb-6" aria-hidden="true">
+  <div class="-mx-2 rotate-[-1.2deg] overflow-hidden bg-sidebar py-4.5 text-sidebar-foreground">
+    <div class="flex w-max animate-[marquee_40s_linear_infinite] motion-reduce:animate-none">
+      {[...ribbon, ...ribbon].map((item) => (
+        <span class="inline-flex items-center gap-10 whitespace-nowrap px-5 font-display text-[clamp(22px,4vw,32px)] font-semibold font-stretch-110% after:font-extrabold after:text-brand-signal after:content-['+']">
+          {item}
+        </span>
+      ))}
+    </div>
+  </div>
+</div>

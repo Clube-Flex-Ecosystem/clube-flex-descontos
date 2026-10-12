@@ -6,14 +6,20 @@ import {
   type SelectHTMLAttributes,
   type TextareaHTMLAttributes,
 } from 'react';
+import { Icon } from './icon';
 
-const controlBase =
-  'w-full rounded-md border border-control-border bg-control px-3 shadow-control-inset hover:border-control-border-hover focus:border-focus focus:ring-4 focus:ring-focus-ring focus:outline-hidden aria-invalid:border-danger aria-invalid:focus:ring-danger-ring read-only:bg-surface-muted read-only:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-60';
+/**
+ * Aparência de campo: limite ≥ 3:1, foco por borda e anel de 1px, somente leitura
+ * legível e desabilitado sem opacidade. Exportada para controles nativos compostos
+ * diretamente nas features (selects e textareas ligados ao formulário).
+ */
+export const controlClass =
+  'w-full rounded-control border border-control-border bg-surface px-2.5 text-foreground hover:border-control-border-hover focus-visible:border-focus focus-visible:ring-1 focus-visible:ring-focus focus-visible:outline-hidden aria-invalid:border-danger [&:is(input,textarea)]:read-only:border-border [&:is(input,textarea)]:read-only:bg-surface-muted disabled:cursor-not-allowed disabled:border-border disabled:bg-surface-muted disabled:text-placeholder';
 
-/** Altura compacta em sub-tabelas; padrão de formulário (`40px`; `44px` no móvel). */
+/** Formulário no padrão (`36px`), sub-tabelas compactas (`32px`); `44px` no móvel. */
 const sizes = {
-  form: 'min-h-11 md:min-h-control-lg',
-  compact: 'min-h-11 md:min-h-control-md',
+  form: 'min-h-11 md:min-h-control-md',
+  compact: 'min-h-11 md:min-h-control-sm',
 } as const;
 
 interface FieldFrameProps {
@@ -44,7 +50,7 @@ function FieldFrame({
       <label htmlFor={id} className="t-label">
         {label}
         {optional ? (
-          <span className="ml-1 font-medium text-muted-foreground">
+          <span className="ml-1 font-normal text-muted-foreground">
             (opcional)
           </span>
         ) : null}
@@ -57,9 +63,10 @@ function FieldFrame({
       ) : null}
       {error ? (
         <p
-          className="t-caption flex items-center gap-1.5 text-danger"
+          className="t-caption flex items-start gap-1.5 text-danger"
           id={`${id}-error`}
         >
+          <Icon name="alert" size="sm" className="mt-px" />
           {error}
         </p>
       ) : null}
@@ -108,7 +115,7 @@ export function InputField({
       aria-invalid={error ? true : undefined}
       aria-describedby={describedBy(id, hint, error)}
       className={[
-        controlBase,
+        controlClass,
         sizes.form,
         mono ? 'font-mono' : '',
         prefix ? 'rounded-l-none' : '',
@@ -129,7 +136,7 @@ export function InputField({
     >
       {prefix ? (
         <div className="flex">
-          <span className="t-small inline-flex items-center rounded-l-md border border-r-0 border-control-border bg-surface-muted px-3 whitespace-nowrap text-muted-foreground">
+          <span className="t-body-small inline-flex items-center rounded-l-control border border-r-0 border-control-border bg-surface-muted px-2.5 whitespace-nowrap text-muted-foreground">
             {prefix}
           </span>
           {field}
@@ -176,7 +183,7 @@ export function TextareaField({
         id={id}
         aria-invalid={error ? true : undefined}
         aria-describedby={describedBy(id, hint, error)}
-        className={[controlBase, 'min-h-20 resize-y py-2', className]
+        className={[controlClass, 'min-h-20 resize-y py-2', className]
           .filter(Boolean)
           .join(' ')}
       />
@@ -220,7 +227,7 @@ export function SelectField({
         aria-invalid={error ? true : undefined}
         aria-describedby={describedBy(id, hint, error)}
         className={[
-          controlBase,
+          controlClass,
           compact ? sizes.compact : sizes.form,
           'pr-8',
           className,
@@ -246,10 +253,10 @@ interface SwitchProps extends Omit<
 /** Alternância liga/desliga com o estado também em texto (hint) e foco visível. */
 export function Switch({ label, hint, ref, ...input }: SwitchProps) {
   return (
-    <label className="relative inline-flex cursor-pointer items-center gap-2.5 has-disabled:cursor-not-allowed has-disabled:opacity-60">
+    <label className="relative inline-flex cursor-pointer items-center gap-2.5 has-disabled:cursor-not-allowed has-disabled:text-placeholder">
       <input {...input} ref={ref} type="checkbox" className="peer sr-only" />
       <span
-        className="relative h-5 w-8 flex-none rounded-full bg-border-strong transition-colors duration-fast peer-checked:bg-primary peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-focus after:absolute after:top-0.5 after:left-0.5 after:size-4 after:rounded-full after:bg-surface after:shadow-sm after:transition-transform after:duration-fast peer-checked:after:translate-x-3"
+        className="relative h-5 w-8 flex-none rounded-full bg-control-border transition-colors duration-fast peer-checked:bg-selected peer-disabled:bg-border peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-focus after:absolute after:top-0.5 after:left-0.5 after:size-4 after:rounded-full after:bg-surface after:transition-transform after:duration-fast peer-checked:after:translate-x-3"
         aria-hidden="true"
       />
       <span>
@@ -281,7 +288,7 @@ export function Chip({
       disabled={disabled}
       title={title}
       onClick={onToggle}
-      className="t-label inline-flex min-h-11 cursor-pointer items-center gap-1.5 rounded-full border border-control-border bg-surface px-3 hover:border-control-border-hover disabled:cursor-not-allowed disabled:border-dashed disabled:text-muted-foreground aria-pressed:border-accent aria-pressed:bg-accent-soft aria-pressed:text-accent-foreground md:min-h-control-md"
+      className="t-label inline-flex min-h-11 cursor-pointer items-center gap-1.5 rounded-full border border-border-strong bg-surface px-3 hover:border-control-border disabled:cursor-not-allowed disabled:border-dashed disabled:border-border disabled:bg-surface-muted disabled:text-placeholder aria-pressed:border-selected-border aria-pressed:bg-selected-soft aria-pressed:text-selected-soft-foreground md:min-h-control-sm"
     >
       {pressed ? <span aria-hidden="true">✓</span> : null}
       {children}
@@ -289,8 +296,7 @@ export function Chip({
   );
 }
 
-const tableControl =
-  'min-h-11 w-full rounded-md border border-control-border bg-control px-2.5 shadow-control-inset hover:border-control-border-hover focus:border-focus focus:ring-4 focus:ring-focus-ring focus:outline-hidden aria-invalid:border-danger aria-invalid:focus:ring-danger-ring read-only:bg-surface-muted read-only:text-muted-foreground md:min-h-control-md';
+const tableControl = `${controlClass} min-h-11 md:min-h-control-sm`;
 
 /** Campo de sub-tabela: o rótulo é a coluna, exposto por `aria-label`. */
 export function TableInput({

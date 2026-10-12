@@ -8,6 +8,9 @@ Este documento organiza a futura implementação. Ele não autoriza o início do
 ## Princípios de entrega
 
 - Cada incremento termina integrado, testável e coerente com os contratos aprovados.
+- Alterações de UI começam no protótipo navegável correspondente, exigem
+  aprovação explícita e só depois são aplicadas em `apps/catalog/` ou
+  `apps/dashboard/`, conforme o [processo de evolução da interface](../ui-change-process.md).
 - Não haverá uma fase final dedicada a conectar partes desenvolvidas isoladamente.
 - Infraestrutura e abstrações são criadas quando o incremento consumidor precisar delas.
 - Migrações, contratos e testes acompanham a funcionalidade correspondente.
@@ -88,7 +91,7 @@ Executado em 2026-10-10. Decisões tomadas durante a execução, dentro do escop
 - **E-mail:** a API chama diretamente a API HTTP do Resend por `fetch`, sem SDK. Sem `RESEND_API_KEY`, toda entrega cai no fluxo manual previsto (código exibido uma única vez).
 - **Token CSRF:** derivado da sessão (HMAC do identificador, sem novo armazenamento) e entregue no cabeçalho `X-CSRF-Token` da consulta da sessão, preservando o corpo contratado.
 - **Limitação de tentativas:** limitador progressivo em memória, adequado a uma única instância da API.
-- **Estilos do dashboard:** Tailwind CSS 4 com os tokens do `index.css` do responsável, hoje em `apps/dashboard/src/styles/tailwind.css` (paleta laranja/navy e Geist, substituindo a paleta verde proposta). Os protótipos foram realinhados aos tokens e passam a ser a fonte de construção da UI.
+- **Estilos do dashboard:** Tailwind CSS 4 materializa em `apps/dashboard/src/styles/tailwind.css` os tokens definidos nos fundamentos de interface (paleta laranja/navy e tipografia dos fundamentos do dashboard, hoje `Archivo`, substituindo a paleta verde proposta). Os protótipos foram realinhados aos tokens e passam a ser a fonte de construção da UI.
 - **Metadata de rota:** o título do documento é declarado no `head` de cada rota (`HeadContent` na raiz), sem `useEffect`.
 - **Auditoria:** a tabela de eventos nasce aqui para registrar o bootstrap (`user.created`, `user.permissions.updated`, `user.access-code.issued`); imutabilidade reforçada no banco, consulta e filtros ficam para o incremento 7.
 - **Catálogo de permissões:** identificadores definidos em `packages/contracts` (ver contratos).
@@ -232,7 +235,7 @@ Executado em 2026-10-10. Decisões tomadas durante a execução, dentro do escop
 - **Agregado e concorrência:** leads, origens, observações e solicitações foram integrados ao PostgreSQL; toda mutação interna do lead usa `version`, `ETag` e `If-Match` e devolve a representação completa atualizada.
 - **Escopo:** `leads.view-own` limita a consulta aos leads atribuídos ao usuário; `leads.view-all` inclui todos e os sem responsável. Editar outro responsável exige visualização global, e o responsável pode devolver o próprio lead sem a permissão de redistribuição.
 - **Histórico:** criação, contato/origem, etapa, atribuição, observações e tratamento de interesse produzem eventos imutáveis. A correção de observação preserva o texto anterior no evento.
-- **Interface:** Kanban, filtros, destaque de novo interesse, detalhe, histórico, cadastro manual e origens seguem o protótipo do dashboard e os tokens existentes. A movimentação possui arraste e controle explícito acessível.
+- **Interface:** Kanban, filtros, destaque de novo interesse, detalhe, histórico, cadastro manual e origens seguem o protótipo do dashboard e os tokens existentes. Em 2026-10-11, o Kanban passou a usar `@dnd-kit/core`, com movimentação exclusivamente por arraste, sensores de ponteiro e teclado, overlay e confirmação ao soltar em etapas sensíveis; não há controle ou dialog de seleção manual de etapa.
 - **Limite do incremento:** exclusão ou anonimização de lead permanece no incremento 7, como definido no plano; o incremento 6 não expõe essa operação na interface.
 - **Verificações:** testes de integração cobrem cadastro, pipeline, conflito de versão, histórico, escopo próprio e devolução; lint, TypeScript e builds foram executados.
 
@@ -311,6 +314,80 @@ flowchart LR
     I6 --> I8
     I7 --> I8
 ```
+
+## Refatoração transversal — páginas de detalhe do dashboard
+
+### Objetivo
+
+Reduzir responsabilidades acumuladas nas páginas de detalhe e uniformizar o
+carregamento de recursos obrigatórios, começando pelo detalhe de usuários.
+
+### Execução inicial
+
+Executada em 2026-10-11:
+
+- autorização permanece no `beforeLoad`;
+- o detalhe de usuário carrega sua conta no `loader` com `ensureQueryData`;
+- 404 redireciona para `/usuarios`;
+- erros de carregamento usam o boundary da rota e o reset do TanStack Query;
+- `UserDetailPage` recebe o usuário inicial e mantém a observação do cache para
+  as mutações e a reconciliação de versão.
+- o detalhe de parceiro carrega no `loader` o parceiro, planos, categorias e a
+  coleção usada na validação de duplicidade;
+- 404 no detalhe de parceiro redireciona para `/parceiros`, enquanto a page
+  observa as respostas confirmadas no cache durante a edição.
+
+- o detalhe de lead carrega o lead no `loader` (o histórico permanece em query
+  própria, por ser secundário); 404 redireciona para `/leads` (executado com a
+  revisão de fluxos de UX, abaixo).
+
+### Próximos incrementos
+
+- extrair seções de apresentação do detalhe de usuários quando houver ganho de
+  leitura comprovado;
+- adicionar testes de rota para recurso existente, 404, erro recuperável e
+  reconciliação após conflito.
+
+## Revisão de fluxos de UX do dashboard
+
+### Objetivo
+
+Aplicar a [auditoria de UX aprovada](../prototypes/dashboard/proposals/2026-10-ux-fluxos/README.md)
+e alinhar o app a tudo o que o protótipo do dashboard demonstra, sem alterar a
+API.
+
+### Execução
+
+Executada em 2026-10-11:
+
+- protótipo consolidado e `interface.md`, `architecture.md`, `ui-foundations.md`
+  e o design system atualizados;
+- contexto das listagens em memória (`shared/utils/list-context.ts`) e
+  restauração de rolagem no roteador;
+- shell: navegação recolhível, conta no rodapé, contador de novo interesse;
+- leads: cartão inteiro clicável com botão "Alterar etapa", dialog de etapa
+  compartilhado, filtros por pessoa e e-mail, vazio por filtro, detalhe
+  reorganizado (faixa de interesse, observações com correção, histórico legível,
+  editar dados, copiar WhatsApp, atribuir a mim), duplicidade no cadastro;
+- listagens: padrão único de ações de linha, "Limpar filtros", contagens de
+  parceiros em planos e categorias, interruptor "Ativo" nos dialogs; Origens
+  reescrita no padrão (busca, abas, exclusão de origem nunca usada);
+- parceiro e usuário: barra de salvamento; benefícios habilitados na primeira
+  coluna; unidades com remoção desfazível; permissões por área; código com
+  copiar; aviso ao sair com alterações;
+- auditoria: filtros preservados e atualização sem desmontar a tela;
+- telas sem sessão em duas colunas e critérios de senha verificados ao digitar.
+
+Verificação: typecheck, lint, build e roteiro de 60 verificações executado no
+app contra uma instância isolada da API (banco temporário), além de 36
+verificações de interação no protótipo.
+
+### Pendências
+
+- testes automatizados do dashboard (não existem nesta entrega);
+- API: a criação e a edição de origem não aplicam a unicidade normalizada de
+  `RN-030` (por exemplo, "abordagem" e "Abordagem" coexistem) — fora do escopo
+  desta revisão, que não altera a API.
 
 ## Fora deste plano
 

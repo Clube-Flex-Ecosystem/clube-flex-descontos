@@ -23,8 +23,8 @@ export interface NavGroup {
 }
 
 /**
- * Navegação lateral agrupada por responsabilidade: Comercial, Catálogo, Administração
- * e Conta.
+ * Navegação lateral agrupada por responsabilidade: Comercial, Catálogo e Administração.
+ * A conta (Alterar senha e Sair) fica no rodapé da navegação.
  */
 export const navigation: NavGroup[] = [
   {
@@ -84,11 +84,13 @@ export const navigation: NavGroup[] = [
       },
     ],
   },
-  {
-    label: 'Conta',
-    items: [{ to: '/senha', label: 'Alterar senha', icon: 'key' }],
-  },
 ];
+
+/** Páginas da conta, acessadas pelo rodapé da navegação; usadas na trilha. */
+export const accountNavigation: NavGroup = {
+  label: 'Conta',
+  items: [{ to: '/senha', label: 'Alterar senha', icon: 'key' }],
+};
 
 export function visibleNavigation(granted: readonly Permission[]): NavGroup[] {
   return navigation

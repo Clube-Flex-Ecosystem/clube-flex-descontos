@@ -28,7 +28,7 @@ export function PageHeader({
       </div>
       {description ? (
         <p
-          className={`t-small muted mt-1 max-w-prose ${monoDescription ? 'font-mono' : ''}`}
+          className={`t-body-small muted mt-0.5 max-w-prose ${monoDescription ? 'font-mono' : ''}`}
         >
           {description}
         </p>
@@ -36,9 +36,9 @@ export function PageHeader({
     </div>
   );
   return (
-    <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+    <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
       {leading ? (
-        <div className="flex min-w-0 items-center gap-3.5">
+        <div className="flex min-w-0 items-center gap-3">
           {leading}
           {heading}
         </div>
@@ -52,7 +52,10 @@ export function PageHeader({
   );
 }
 
-/** Estado vazio: explica a ausência e oferece somente a ação permitida. */
+/**
+ * Estado vazio dentro da região que ficou vazia: explica a ausência e oferece somente
+ * a ação permitida (secundária quando a página já possui a ação principal).
+ */
 export function EmptyState({
   icon,
   title,
@@ -65,14 +68,10 @@ export function EmptyState({
   action?: ReactNode;
 }) {
   return (
-    <div className="rounded-xl border border-dashed border-border-strong bg-surface p-8 text-center">
-      <Icon
-        name={icon}
-        size="lg"
-        className="mx-auto mb-2 text-muted-foreground"
-      />
-      <strong className="t-card block">{title}</strong>
-      <p className="t-small muted mx-auto mt-0.5 mb-3 max-w-prose">
+    <div className="rounded-card border border-border bg-surface px-4 py-10 text-center">
+      <Icon name={icon} size="lg" className="mx-auto mb-1.5 text-placeholder" />
+      <strong className="t-body block font-semibold">{title}</strong>
+      <p className="t-body-small muted mx-auto mt-0.5 mb-3 max-w-prose">
         {children}
       </p>
       {action}
@@ -81,25 +80,26 @@ export function EmptyState({
 }
 
 const skeleton =
-  'animate-[shimmer_1.4s_ease-in-out_infinite] bg-linear-to-r from-secondary via-muted to-secondary bg-[length:200%_100%]';
+  'animate-[shimmer_1.4s_ease-in-out_infinite] rounded-badge bg-linear-to-r from-surface-muted via-background to-surface-muted bg-[length:200%_100%]';
 
-/** Carregamento estrutural: preserva a forma das linhas que serão exibidas. */
+/** Carregamento estrutural: preserva a moldura e a altura das linhas da tabela. */
 export function ListSkeleton({ label }: { label: string }) {
   return (
     <div
-      className="rounded-xl border border-border bg-surface p-4 shadow-sm"
+      className="overflow-hidden rounded-card border border-border bg-surface"
       role="status"
       aria-label={label}
     >
-      {[0, 1, 2, 3].map((row) => (
+      <div className="h-12 border-b border-border" />
+      <div className="h-table-header border-b border-border-strong" />
+      {[0, 1, 2, 3, 4].map((row) => (
         <div
           key={row}
-          className="grid grid-cols-[32px_1fr_90px_70px] items-center gap-3 border-b border-border py-2.5 last:border-b-0"
+          className="grid h-row-default grid-cols-[1fr_120px_72px] items-center gap-3 border-b border-border px-4 last:border-b-0"
         >
-          <div className={`${skeleton} size-8 rounded-md`} />
-          <div className={`${skeleton} h-3 w-2/3 rounded-sm`} />
-          <div className={`${skeleton} h-3 rounded-sm`} />
-          <div className={`${skeleton} h-3 rounded-sm`} />
+          <div className={`${skeleton} h-2.5 w-2/3`} />
+          <div className={`${skeleton} h-2.5`} />
+          <div className={`${skeleton} h-4`} />
         </div>
       ))}
     </div>

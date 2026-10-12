@@ -1,4 +1,5 @@
 import { useId, useState, type InputHTMLAttributes, type Ref } from 'react';
+import { Icon } from './icon';
 
 interface TextFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
@@ -40,9 +41,9 @@ export function TextField({
           aria-invalid={error ? true : undefined}
           aria-describedby={describedBy}
           className={[
-            'min-h-11 w-full rounded-md border border-control-border bg-control px-3 shadow-control-inset md:min-h-control-lg',
-            'hover:border-control-border-hover focus:border-focus focus:ring-4 focus:ring-focus-ring focus:outline-hidden',
-            'aria-invalid:border-danger aria-invalid:focus:ring-danger-ring',
+            'min-h-11 w-full rounded-control border border-control-border bg-surface px-3 text-foreground md:min-h-control-lg',
+            'hover:border-control-border-hover focus-visible:border-focus focus-visible:ring-1 focus-visible:ring-focus focus-visible:outline-hidden',
+            'aria-invalid:border-danger',
             revealable ? 'pr-20' : '',
           ]
             .filter(Boolean)
@@ -51,7 +52,7 @@ export function TextField({
         {revealable ? (
           <button
             type="button"
-            className="t-caption absolute inset-y-1 right-1 cursor-pointer rounded-sm px-2.5 text-muted-foreground hover:bg-surface-muted hover:text-foreground"
+            className="t-caption absolute inset-y-1 right-1 cursor-pointer rounded-badge px-2.5 text-muted-foreground hover:bg-surface-muted hover:text-foreground"
             aria-pressed={revealed}
             onClick={() => setRevealed((value) => !value)}
           >
@@ -65,7 +66,11 @@ export function TextField({
         </p>
       ) : null}
       {error ? (
-        <p className="t-caption text-danger" id={`${id}-error`}>
+        <p
+          className="t-caption flex items-start gap-1.5 text-danger"
+          id={`${id}-error`}
+        >
+          <Icon name="alert" size="sm" className="mt-px" />
           {error}
         </p>
       ) : null}

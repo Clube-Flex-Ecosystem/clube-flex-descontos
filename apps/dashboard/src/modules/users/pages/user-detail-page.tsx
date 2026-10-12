@@ -1,7 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery } from '@tanstack/react-query';
-import { Link } from '@tanstack/react-router';
-import axios from 'axios';
+import { useBlocker } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -21,14 +20,17 @@ import { Badge } from '../../../shared/ui/badge';
 import { Button } from '../../../shared/ui/button';
 import {
   Card,
+  CardStack,
   CardBody,
   CardHead,
   DefinitionList,
 } from '../../../shared/ui/card';
+import { CopyButton } from '../../../shared/ui/copy-button';
 import { ConfirmDialog } from '../../../shared/ui/dialogs';
 import { InputField } from '../../../shared/ui/form-controls';
 import { Icon } from '../../../shared/ui/icon';
-import { ListSkeleton, PageHeader } from '../../../shared/ui/page-parts';
+import { PageHeader } from '../../../shared/ui/page-parts';
+import { SaveBar } from '../../../shared/ui/save-bar';
 import { initialsOf } from '../../../shared/utils/initials';
 import {
   applyServerFieldErrors,
@@ -68,70 +70,18 @@ const toValues = (user: AdminUser): ProfileValues => ({
   email: user.email ?? '',
 });
 
-const backLink = (
-  <Link
-    to="/usuarios"
-    className="t-label mb-2 inline-flex min-h-11 items-center gap-1 text-muted-foreground no-underline hover:text-foreground md:min-h-0"
-  >
-    <Icon name="left" />
-    Usuários
-  </Link>
-);
-
-/** Detalhe de uma conta: dados, permissões, acesso e ativação. */
-export function UserDetailPage({ userId }: { userId: string }) {
+/** Detalhe de uma conta: os dados obrigatórios são carregados pela rota. */
+export function UserDetailPage({ user }: { user: AdminUser }) {
   const query = useQuery({
-    ...userQueryOptions(userId),
+    ...userQueryOptions(user.id),
+    initialData: user,
     // A edição parte de uma versão fixa; alterações de terceiros surgem como conflito.
     refetchOnWindowFocus: false,
   });
 
-  if (query.isPending) {
-    return (
-      <>
-        {backLink}
-        <ListSkeleton label="Carregando usuário" />
-      </>
-    );
-  }
-
-  if (query.isError || !query.data) {
-    const notFound =
-      axios.isAxiosError(query.error) && query.error.response?.status === 404;
-    return (
-      <>
-        {backLink}
-        <Alert
-          tone="danger"
-          title={
-            notFound
-              ? 'Usuário não encontrado.'
-              : 'Não foi possível carregar o usuário.'
-          }
-          action={
-            notFound ? undefined : (
-              <Button
-                compact
-                loading={query.isFetching}
-                onClick={() => void query.refetch()}
-              >
-                <Icon name="refresh" />
-                Tentar novamente
-              </Button>
-            )
-          }
-        >
-          {notFound
-            ? 'O registro não existe ou não está disponível.'
-            : describeError(query.error)}
-        </Alert>
-      </>
-    );
-  }
-
   return (
     <UserDetail
-      key={query.data.id}
+      key={`${query.data.id}:${query.data.version}`}
       user={query.data}
       reload={async () => (await query.refetch()).data}
     />
@@ -190,6 +140,15 @@ function UserDetail({
   const grantsChanged = !sameSet(grants, user.permissions);
   const dirty = isDirty || grantsChanged;
   const busy = update.isPending || replace.isPending;
+  const added = [...grants].filter((p) => !user.permissions.includes(p)).length;
+  const revoked = user.permissions.filter((p) => !grants.has(p)).length;
+
+  // Sair com alterações não salvas pede confirmação (mesmo padrão do parceiro).
+  const blocker = useBlocker({
+    shouldBlockFn: () => dirty,
+    enableBeforeUnload: () => dirty,
+    withResolver: true,
+  });
 
   const syncFrom = (next: AdminUser) => {
     reset(toValues(next));
@@ -214,7 +173,9 @@ function UserDetail({
     setFailure(null);
     let current = user;
     try {
-      if (isDirty && canManage) {
+      const savedProfile = isDirty && canManage;
+      const savedGrants = grantsChanged && canGrant && !self;
+      if (savedProfile) {
         current = await update.mutateAsync({
           id: user.id,
           version: current.version,
@@ -226,7 +187,7 @@ function UserDetail({
         });
         reset(toValues(current));
       }
-      if (grantsChanged && canGrant && !self) {
+      if (savedGrants) {
         current = await replace.mutateAsync({
           id: user.id,
           version: current.version,
@@ -234,7 +195,13 @@ function UserDetail({
         });
         setGrants(new Set(current.permissions));
       }
-      toast('Usuário atualizado. Permissões já estão em vigor.');
+      toast(
+        savedGrants
+          ? savedProfile
+            ? 'Dados e permissões salvos. As permissões já estão em vigor.'
+            : 'Permissões salvas. Já estão em vigor.'
+          : 'Dados da conta salvos.',
+      );
     } catch (error) {
       fail(error);
     }
@@ -293,11 +260,10 @@ function UserDetail({
 
   return (
     <>
-      {backLink}
       <PageHeader
         leading={
           <span
-            className="t-card grid size-10 flex-none place-items-center rounded-full bg-accent-soft font-bold text-accent-foreground"
+            className="t-heading grid size-10 flex-none place-items-center rounded-full bg-identity text-identity-foreground"
             aria-hidden="true"
           >
             {initialsOf(user.fullName)}
@@ -314,24 +280,35 @@ function UserDetail({
             ) : null}
           </span>
         }
-        actions={
-          canEditSomething ? (
-            <>
-              <Button onClick={discard} disabled={busy}>
-                Descartar
-              </Button>
-              <Button
-                variant="primary"
-                loading={busy}
-                disabled={!dirty}
-                onClick={() => void save()}
-              >
-                Salvar alterações
-              </Button>
-            </>
-          ) : null
-        }
       />
+
+      {issued && issued.delivery === 'manual' && issued.code ? (
+        <div
+          className="mb-4 flex flex-wrap items-center gap-4 rounded-card bg-info-soft px-3.5 py-3"
+          role="status"
+        >
+          <div className="min-w-55 flex-1">
+            <strong className="block font-semibold">
+              Código de{' '}
+              {issued.purpose === 'recovery' ? 'recuperação' : 'ativação'} ·
+              válido por {ACCESS_CODE_VALIDITY_MINUTES} min
+            </strong>
+            <span className="block font-mono text-lg leading-6.5 tracking-widest">
+              {issued.code}
+            </span>
+            <p className="t-body-small text-foreground-soft">
+              Entregue a {user.fullName.split(' ')[0]} por um canal seguro. Ele
+              não será exibido de novo.
+            </p>
+          </div>
+          <CopyButton
+            value={issued.code}
+            label="Copiar código"
+            compact={false}
+            variant="secondary"
+          />
+        </div>
+      ) : null}
 
       {failure ? (
         <div className="mb-3">
@@ -357,7 +334,7 @@ function UserDetail({
       ) : null}
 
       <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
-        <div className="grid gap-4">
+        <CardStack>
           <Card>
             <CardHead title="Dados da conta" />
             <CardBody grid>
@@ -391,7 +368,7 @@ function UserDetail({
               title="Permissões"
               description="Concedidas individualmente. Alterações valem imediatamente, inclusive em sessões abertas."
               aside={
-                <Badge tone="outline">
+                <Badge tone="tag">
                   <span className="tnum">
                     {grants.size} de {allPermissions.length}
                   </span>
@@ -421,11 +398,21 @@ function UserDetail({
                   return next;
                 })
               }
+              onToggleArea={(permissions, enabled) =>
+                setGrants((current) => {
+                  const next = new Set(current);
+                  for (const permission of permissions) {
+                    if (enabled) next.add(permission);
+                    else next.delete(permission);
+                  }
+                  return next;
+                })
+              }
             />
           </Card>
-        </div>
+        </CardStack>
 
-        <aside className="grid gap-4">
+        <CardStack>
           <Card>
             <CardHead title="Acesso" />
             <div className="grid gap-3 p-4">
@@ -446,25 +433,6 @@ function UserDetail({
                   },
                 ]}
               />
-              {issued && issued.delivery === 'manual' && issued.code ? (
-                <div
-                  className="grid gap-1 rounded-md bg-surface-muted p-3 text-center"
-                  role="status"
-                >
-                  <span className="t-small muted">
-                    Código de{' '}
-                    {issued.purpose === 'recovery' ? 'recuperação' : 'ativação'}{' '}
-                    · válido por {ACCESS_CODE_VALIDITY_MINUTES} min
-                  </span>
-                  <strong className="font-mono text-base font-semibold tracking-widest">
-                    {issued.code}
-                  </strong>
-                  <span className="t-small muted">
-                    Entregue à pessoa por um canal seguro. Ele não será exibido
-                    de novo.
-                  </span>
-                </div>
-              ) : null}
               {issued && issued.delivery === 'email' ? (
                 <Alert tone="success">
                   O código de{' '}
@@ -487,7 +455,7 @@ function UserDetail({
                     <Icon name="key" />
                     Emitir código de {kind}
                   </Button>
-                  <p className="t-small muted">
+                  <p className="t-body-small muted">
                     Emitir um novo código invalida o anterior da mesma
                     finalidade.
                   </p>
@@ -497,9 +465,8 @@ function UserDetail({
           </Card>
 
           {canSetStatus ? (
-            <Card danger>
+            <Card>
               <CardHead
-                danger
                 title={
                   user.status === 'active'
                     ? 'Desativar conta'
@@ -536,8 +503,44 @@ function UserDetail({
               </div>
             </Card>
           ) : null}
-        </aside>
+        </CardStack>
       </div>
+
+      {canEditSomething && dirty ? (
+        <SaveBar
+          saveLabel="Salvar alterações"
+          summary={
+            grantsChanged ? (
+              <>
+                <b className="font-semibold text-foreground">+{added}</b>{' '}
+                {added === 1 ? 'concedida' : 'concedidas'} ·{' '}
+                <b className="font-semibold text-foreground">−{revoked}</b>{' '}
+                {revoked === 1 ? 'revogada' : 'revogadas'} · valem imediatamente
+                ao salvar
+              </>
+            ) : (
+              'Dados da conta'
+            )
+          }
+          loading={busy}
+          onSave={() => void save()}
+          onDiscard={discard}
+        />
+      ) : null}
+
+      {blocker.status === 'blocked' ? (
+        <ConfirmDialog
+          title="Sair sem salvar?"
+          body={
+            grantsChanged
+              ? `${added + revoked} ${added + revoked === 1 ? 'alteração de permissão será descartada' : 'alterações de permissão serão descartadas'}. A conta continua com as permissões atuais.`
+              : 'As alterações nos dados da conta serão descartadas.'
+          }
+          confirmLabel="Descartar alterações"
+          onCancel={() => blocker.reset()}
+          onConfirm={() => blocker.proceed()}
+        />
+      ) : null}
 
       {confirm === 'issue' ? (
         <ConfirmDialog

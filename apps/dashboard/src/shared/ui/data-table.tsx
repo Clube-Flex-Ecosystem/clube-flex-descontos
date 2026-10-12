@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { Button } from './button';
 
 export interface Column<T> {
   header: string;
@@ -15,11 +16,16 @@ interface DataTableProps<T> {
   emptyTitle: string;
   /** Torna a linha clicável; os controles internos continuam funcionando por conta própria. */
   onRowClick?: (row: T) => void;
+  /** Vazio por filtro: oferece "Limpar filtros". */
+  onClearFilters?: () => void;
 }
 
+/** Célula com recuo de 16px. */
+const cellX = 'px-4';
+
 /**
- * Tabela de listagem: cabeçalho sem preenchimento, divisórias discretas, coluna de
- * identificação fixa na rolagem horizontal e ações à direita.
+ * Tabela de listagem: cabeçalho com borda, linhas de altura padrão,
+ * coluna de identificação fixa na rolagem horizontal e ações à direita.
  */
 export function DataTable<T>({
   columns,
@@ -28,9 +34,10 @@ export function DataTable<T>({
   actions,
   emptyTitle,
   onRowClick,
+  onClearFilters,
 }: DataTableProps<T>) {
   return (
-    <div className="overflow-x-auto border-t border-border">
+    <div className="overflow-x-auto">
       <table className="w-full min-w-180 border-separate border-spacing-0">
         <thead>
           <tr>
@@ -39,7 +46,8 @@ export function DataTable<T>({
                 key={column.header}
                 scope="col"
                 className={[
-                  't-small h-9 border-b border-border bg-surface px-4 font-medium whitespace-nowrap text-muted-foreground',
+                  't-table-header h-table-header border-y border-border bg-surface whitespace-nowrap text-muted-foreground',
+                  cellX,
                   column.align === 'right' ? 'text-right' : 'text-left',
                   index === 0 ? 'sticky left-0 z-1' : '',
                 ].join(' ')}
@@ -47,7 +55,10 @@ export function DataTable<T>({
                 {column.header}
               </th>
             ))}
-            <th scope="col" className="border-b border-border bg-surface">
+            <th
+              scope="col"
+              className={`border-y border-border bg-surface ${cellX}`}
+            >
               <span className="sr-only">Ações</span>
             </th>
           </tr>
@@ -57,12 +68,19 @@ export function DataTable<T>({
             <tr>
               <td
                 colSpan={columns.length + 1}
-                className="px-4 py-10 text-center text-muted-foreground"
+                className="t-body-small px-4 py-10 text-center text-muted-foreground"
               >
-                <strong className="block font-semibold text-foreground">
+                <strong className="t-body block font-semibold text-foreground">
                   {emptyTitle}
                 </strong>
                 Ajuste a busca ou o filtro de estado.
+                {onClearFilters ? (
+                  <span className="mt-2.5 block">
+                    <Button compact onClick={onClearFilters}>
+                      Limpar filtros
+                    </Button>
+                  </span>
+                ) : null}
               </td>
             </tr>
           ) : null}
@@ -88,17 +106,18 @@ export function DataTable<T>({
                 <td
                   key={column.header}
                   className={[
-                    'h-12 border-b border-border px-4 py-1.5 whitespace-nowrap group-last:border-b-0 group-hover:bg-surface-hover',
+                    'h-row-default border-b border-border py-1 whitespace-nowrap group-last:border-b-0 group-hover:bg-surface-muted',
+                    cellX,
                     column.align === 'right' ? 'tnum text-right' : '',
-                    index === 0
-                      ? 'sticky left-0 z-1 bg-surface group-hover:bg-surface-hover'
-                      : '',
+                    index === 0 ? 'sticky left-0 z-1 bg-surface' : '',
                   ].join(' ')}
                 >
                   {column.cell(row)}
                 </td>
               ))}
-              <td className="h-12 w-px border-b border-border px-2.5 py-1.5 text-right whitespace-nowrap group-last:border-b-0 group-hover:bg-surface-hover">
+              <td
+                className={`h-row-default w-px border-b border-border py-1 text-right whitespace-nowrap group-last:border-b-0 group-hover:bg-surface-muted ${cellX}`}
+              >
                 <div className="inline-flex items-center gap-0.5">
                   {actions(row)}
                 </div>
@@ -111,35 +130,55 @@ export function DataTable<T>({
   );
 }
 
-/** Identificação de uma linha: marca com iniciais, nome e legenda secundária. */
+/**
+ * Identificação de uma linha: nome e legenda secundária. Pessoas recebem avatar
+ * circular; entidades, quadrado de iniciais.
+ */
 export function CellMain({
   title,
   subtitle,
+  avatar,
   mark,
+  mono = false,
   extra,
 }: {
   title: string;
   subtitle?: string;
+  /** Iniciais de uma pessoa. */
+  avatar?: string;
+  /** Iniciais de uma entidade (parceiro, plano). */
   mark?: string;
+  /** Legenda em fonte monoespaçada, para identificadores. */
+  mono?: boolean;
   extra?: ReactNode;
 }) {
   return (
     <div className="flex min-w-0 items-center gap-2.5">
+      {avatar ? (
+        <span
+          className="t-caption grid size-7 flex-none place-items-center rounded-full bg-identity font-semibold text-identity-foreground"
+          aria-hidden="true"
+        >
+          {avatar}
+        </span>
+      ) : null}
       {mark ? (
         <span
-          className="t-caption grid size-8 flex-none place-items-center rounded-md bg-surface-muted font-bold text-accent-foreground ring-1 ring-border ring-inset"
+          className="t-caption grid size-7.5 flex-none place-items-center rounded-control bg-surface-muted font-bold text-identity-foreground ring-1 ring-border ring-inset"
           aria-hidden="true"
         >
           {mark}
         </span>
       ) : null}
       <div className="min-w-0">
-        <strong className="t-card block">
+        <strong className="t-body block font-semibold">
           {title}
           {extra ? <span className="ml-1.5 align-middle">{extra}</span> : null}
         </strong>
         {subtitle ? (
-          <small className="t-small block text-muted-foreground">
+          <small
+            className={`t-caption block font-normal text-muted-foreground ${mono ? 'font-mono' : ''}`}
+          >
             {subtitle}
           </small>
         ) : null}

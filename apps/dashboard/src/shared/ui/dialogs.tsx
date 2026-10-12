@@ -1,33 +1,8 @@
-import {
-  useEffect,
-  useRef,
-  type FormEventHandler,
-  type ReactNode,
-} from 'react';
+import * as AlertDialogPrimitive from '@radix-ui/react-alert-dialog';
+import * as DialogPrimitive from '@radix-ui/react-dialog';
+import type { FormEventHandler, ReactNode } from 'react';
 import { Button } from './button';
 import { Icon } from './icon';
-
-/** Abre o `<dialog>` modal na montagem: o navegador contém e restaura o foco. */
-function useModalDialog(onClose: () => void) {
-  const ref = useRef<HTMLDialogElement>(null);
-  const onCloseRef = useRef(onClose);
-  useEffect(() => {
-    onCloseRef.current = onClose;
-  });
-
-  useEffect(() => {
-    const dialog = ref.current;
-    if (!dialog) return;
-    if (!dialog.open) dialog.showModal();
-    const handleClose = () => onCloseRef.current();
-    dialog.addEventListener('close', handleClose);
-    // Desmontar remove o elemento e, com ele, o modal; fechá-lo aqui dispararia `close`
-    // de forma assíncrona (e duas vezes sob StrictMode), acionando `onClose` indevidamente.
-    return () => dialog.removeEventListener('close', handleClose);
-  }, []);
-
-  return ref;
-}
 
 interface DrawerProps {
   title: string;
@@ -40,7 +15,26 @@ interface DrawerProps {
   children: ReactNode;
 }
 
-/** Dialog lateral para formulários curtos; montado apenas enquanto estiver aberto. */
+function DrawerFrame({
+  children,
+  onClose,
+}: {
+  children: ReactNode;
+  onClose: () => void;
+}) {
+  return (
+    <DialogPrimitive.Root open onOpenChange={(open) => !open && onClose()}>
+      <DialogPrimitive.Portal>
+        <DialogPrimitive.Overlay className="fixed inset-0 z-70 bg-overlay data-[state=open]:animate-[overlay-in_var(--duration-fast)_ease-out]" />
+        <DialogPrimitive.Content className="fixed inset-y-0 right-0 z-80 flex h-dvh w-full max-w-105 flex-col bg-surface p-0 text-foreground shadow-overlay data-[state=open]:animate-[drawer-in_var(--duration-base)_ease-out]">
+          {children}
+        </DialogPrimitive.Content>
+      </DialogPrimitive.Portal>
+    </DialogPrimitive.Root>
+  );
+}
+
+/** Sheet lateral para formulários curtos; Radix administra foco, Escape e overlay. */
 export function Drawer({
   title,
   description,
@@ -50,42 +44,102 @@ export function Drawer({
   onClose,
   children,
 }: DrawerProps) {
-  const ref = useModalDialog(onClose);
   return (
-    <dialog
-      ref={ref}
-      aria-labelledby="drawer-title"
-      className="m-0 mr-0 ml-auto h-dvh max-h-dvh w-full max-w-110 bg-surface p-0 text-foreground shadow-lg backdrop:bg-overlay open:flex open:animate-[drawer-in_var(--duration-base)_ease-out] open:flex-col"
-    >
+    <DrawerFrame onClose={onClose}>
       <form
         className="flex h-full min-h-0 flex-col"
         noValidate
         onSubmit={onSubmit}
       >
-        <div className="flex items-start justify-between gap-3 border-b border-border px-5 py-4">
+        <div className="flex items-start justify-between gap-3 border-b border-border px-5 py-3.5">
           <div>
-            <h2 id="drawer-title" className="t-section">
+            <DialogPrimitive.Title className="t-section">
               {title}
-            </h2>
+            </DialogPrimitive.Title>
             {description ? (
-              <p className="t-small muted">{description}</p>
+              <DialogPrimitive.Description className="t-body-small muted mt-0.5">
+                {description}
+              </DialogPrimitive.Description>
             ) : null}
           </div>
-          <Button variant="quiet" aria-label="Fechar" onClick={onClose}>
-            <Icon name="x" />
-          </Button>
+          <DialogPrimitive.Close asChild>
+            <Button variant="quiet" compact aria-label="Fechar">
+              <Icon name="x" />
+            </Button>
+          </DialogPrimitive.Close>
         </div>
         <div className="grid flex-1 content-start gap-4 overflow-y-auto p-5">
           {children}
         </div>
-        <div className="flex justify-end gap-2 border-t border-border bg-surface-hover px-5 py-3">
-          <Button onClick={onClose}>Cancelar</Button>
+        <div className="flex justify-end gap-2 border-t border-border bg-surface px-5 py-3">
+          <DialogPrimitive.Close asChild>
+            <Button>Cancelar</Button>
+          </DialogPrimitive.Close>
           <Button type="submit" variant="primary" loading={loading}>
             {submitLabel}
           </Button>
         </div>
       </form>
-    </dialog>
+    </DrawerFrame>
+  );
+}
+
+interface ModalDialogProps {
+  title: string;
+  description?: string;
+  submitLabel: string;
+  loading?: boolean;
+  onSubmit: FormEventHandler<HTMLFormElement>;
+  onClose: () => void;
+  children: ReactNode;
+}
+
+/** Dialog central para uma decisão curta com campos (ex.: alterar etapa do lead). */
+export function ModalDialog({
+  title,
+  description,
+  submitLabel,
+  loading = false,
+  onSubmit,
+  onClose,
+  children,
+}: ModalDialogProps) {
+  return (
+    <DialogPrimitive.Root open onOpenChange={(open) => !open && onClose()}>
+      <DialogPrimitive.Portal>
+        <DialogPrimitive.Overlay className="fixed inset-0 z-70 bg-overlay data-[state=open]:animate-[overlay-in_var(--duration-fast)_ease-out]" />
+        <DialogPrimitive.Content className="fixed top-1/2 left-1/2 z-80 w-[min(440px,calc(100vw-32px))] -translate-x-1/2 -translate-y-1/2 rounded-overlay border border-border bg-surface p-0 text-foreground shadow-overlay data-[state=open]:animate-[dialog-in_var(--duration-base)_ease-out]">
+          <form noValidate onSubmit={onSubmit}>
+            <div className="flex items-start justify-between gap-3 px-5 pt-3.5">
+              <div>
+                <DialogPrimitive.Title className="t-section">
+                  {title}
+                </DialogPrimitive.Title>
+                {description ? (
+                  <DialogPrimitive.Description className="t-body-small muted mt-0.5">
+                    {description}
+                  </DialogPrimitive.Description>
+                ) : null}
+              </div>
+              <DialogPrimitive.Close asChild>
+                <Button variant="quiet" compact aria-label="Fechar">
+                  <Icon name="x" />
+                </Button>
+              </DialogPrimitive.Close>
+            </div>
+            <div className="grid gap-4 px-5 pt-2 pb-5">{children}</div>
+            <div className="flex justify-end gap-2 px-5 pb-5">
+              <DialogPrimitive.Close asChild>
+                <Button>Cancelar</Button>
+              </DialogPrimitive.Close>
+              <Button type="submit" variant="primary" loading={loading}>
+                {submitLabel}
+              </Button>
+            </div>
+          </form>
+        </DialogPrimitive.Content>
+      </DialogPrimitive.Portal>
+    </DialogPrimitive.Root>
   );
 }
 
@@ -98,7 +152,7 @@ interface DetailDrawerProps {
   children: ReactNode;
 }
 
-/** Dialog lateral somente leitura: apenas leitura e fechamento, sem envio. */
+/** Sheet lateral somente leitura. */
 export function DetailDrawer({
   title,
   description,
@@ -106,40 +160,41 @@ export function DetailDrawer({
   onClose,
   children,
 }: DetailDrawerProps) {
-  const ref = useModalDialog(onClose);
   return (
-    <dialog
-      ref={ref}
-      aria-labelledby="detail-drawer-title"
-      className="m-0 mr-0 ml-auto h-dvh max-h-dvh w-full max-w-110 bg-surface p-0 text-foreground shadow-lg backdrop:bg-overlay open:flex open:animate-[drawer-in_var(--duration-base)_ease-out] open:flex-col"
-    >
+    <DrawerFrame onClose={onClose}>
       <div className="flex h-full min-h-0 flex-col">
-        <div className="flex items-start justify-between gap-3 border-b border-border px-5 py-4">
+        <div className="flex items-start justify-between gap-3 border-b border-border px-5 py-3.5">
           <div>
-            <h2 id="detail-drawer-title" className="t-section">
+            <DialogPrimitive.Title className="t-section">
               {title}
-            </h2>
+            </DialogPrimitive.Title>
             {description ? (
-              <p className="t-small muted tnum">{description}</p>
+              <DialogPrimitive.Description className="t-body-small muted tnum mt-0.5">
+                {description}
+              </DialogPrimitive.Description>
             ) : null}
           </div>
-          <Button variant="quiet" aria-label="Fechar" onClick={onClose}>
-            <Icon name="x" />
-          </Button>
+          <DialogPrimitive.Close asChild>
+            <Button variant="quiet" compact aria-label="Fechar">
+              <Icon name="x" />
+            </Button>
+          </DialogPrimitive.Close>
         </div>
         <div className="grid flex-1 content-start gap-4 overflow-y-auto p-5">
           {children}
         </div>
-        <div className="flex items-center justify-end gap-2 border-t border-border bg-surface-hover px-5 py-3">
+        <div className="flex items-center justify-end gap-2 border-t border-border bg-surface px-5 py-3">
           {note ? (
             <span className="t-caption muted mr-auto inline-flex items-center gap-1.5">
               {note}
             </span>
           ) : null}
-          <Button onClick={onClose}>Fechar</Button>
+          <DialogPrimitive.Close asChild>
+            <Button>Fechar</Button>
+          </DialogPrimitive.Close>
         </div>
       </div>
-    </dialog>
+    </DrawerFrame>
   );
 }
 
@@ -147,13 +202,13 @@ interface ConfirmDialogProps {
   title: string;
   body: ReactNode;
   confirmLabel: string;
-  /** Ações destrutivas usam o tom de perigo; as demais, o da marca. */
+  /** Ações destrutivas usam o tom de perigo (com ícone); as demais, a ação principal. */
   tone?: 'danger' | 'primary';
   onConfirm: () => void;
   onCancel: () => void;
 }
 
-/** Confirmação central de ação sensível; descreve o efeito antes de executá-lo. */
+/** Confirmação sensível; Alert Dialog evita fechamento acidental. */
 export function ConfirmDialog({
   title,
   body,
@@ -162,28 +217,47 @@ export function ConfirmDialog({
   onConfirm,
   onCancel,
 }: ConfirmDialogProps) {
-  const ref = useModalDialog(onCancel);
   return (
-    <dialog
-      ref={ref}
-      aria-labelledby="confirm-title"
-      className="m-auto w-[min(440px,calc(100vw-32px))] rounded-xl bg-surface p-0 text-foreground shadow-lg backdrop:bg-overlay open:animate-[dialog-in_var(--duration-base)_ease-out]"
+    <AlertDialogPrimitive.Root
+      open
+      onOpenChange={(open) => !open && onCancel()}
     >
-      <div className="grid gap-3 p-5">
-        <h2 id="confirm-title" className="t-section">
-          {title}
-        </h2>
-        <p className="t-body muted">{body}</p>
-      </div>
-      <div className="flex justify-end gap-2 px-5 pb-5">
-        <Button onClick={onCancel}>Cancelar</Button>
-        <Button
-          variant={tone === 'danger' ? 'danger' : 'primary'}
-          onClick={onConfirm}
-        >
-          {confirmLabel}
-        </Button>
-      </div>
-    </dialog>
+      <AlertDialogPrimitive.Portal>
+        <AlertDialogPrimitive.Overlay className="fixed inset-0 z-70 bg-overlay data-[state=open]:animate-[overlay-in_var(--duration-fast)_ease-out]" />
+        <AlertDialogPrimitive.Content className="fixed top-1/2 left-1/2 z-80 w-[min(440px,calc(100vw-32px))] -translate-x-1/2 -translate-y-1/2 rounded-overlay border border-border bg-surface p-0 text-foreground shadow-overlay data-[state=open]:animate-[dialog-in_var(--duration-base)_ease-out]">
+          <div className="flex items-start gap-3 px-5 pt-5 pb-4">
+            {tone === 'danger' ? (
+              <span
+                className="grid size-8 flex-none place-items-center rounded-full bg-danger-soft text-danger"
+                aria-hidden="true"
+              >
+                <Icon name="alert" />
+              </span>
+            ) : null}
+            <div className="grid min-w-0 gap-1">
+              <AlertDialogPrimitive.Title className="t-section pt-1.5">
+                {title}
+              </AlertDialogPrimitive.Title>
+              <AlertDialogPrimitive.Description asChild>
+                <div className="t-body-small text-foreground-soft">{body}</div>
+              </AlertDialogPrimitive.Description>
+            </div>
+          </div>
+          <div className="flex justify-end gap-2 px-5 pb-5">
+            <AlertDialogPrimitive.Cancel asChild>
+              <Button>Cancelar</Button>
+            </AlertDialogPrimitive.Cancel>
+            <AlertDialogPrimitive.Action asChild>
+              <Button
+                variant={tone === 'danger' ? 'danger' : 'primary'}
+                onClick={onConfirm}
+              >
+                {confirmLabel}
+              </Button>
+            </AlertDialogPrimitive.Action>
+          </div>
+        </AlertDialogPrimitive.Content>
+      </AlertDialogPrimitive.Portal>
+    </AlertDialogPrimitive.Root>
   );
 }

@@ -1,11 +1,7 @@
 import { get, useFormContext, useWatch } from 'react-hook-form';
 import type { Plan } from '@flex/contracts';
 import { Badge } from '../../../shared/ui/badge';
-import {
-  InputField,
-  Switch,
-  TableInput,
-} from '../../../shared/ui/form-controls';
+import { InputField, TableInput } from '../../../shared/ui/form-controls';
 import { fieldMessage } from '../../../shared/validation/server-errors';
 import type { PartnerFormValues } from '../schemas/partner-form';
 
@@ -17,6 +13,7 @@ export function BenefitsEditor({ plans }: { plans: readonly Plan[] }) {
   const {
     control,
     register,
+    setFocus,
     formState: { errors },
   } = useFormContext<PartnerFormValues>();
   const benefits = useWatch({ control, name: 'benefits' });
@@ -37,7 +34,7 @@ export function BenefitsEditor({ plans }: { plans: readonly Plan[] }) {
         {...register('generalCoupon')}
       />
       {benefits.length === 0 ? (
-        <p className="t-small muted">
+        <p className="t-body-small muted">
           Nenhum plano ativo cadastrado. Cadastre planos para definir os
           benefícios.
         </p>
@@ -48,24 +45,21 @@ export function BenefitsEditor({ plans }: { plans: readonly Plan[] }) {
               <tr>
                 <th
                   scope="col"
-                  className="t-small pr-2 pb-1.5 text-left font-medium text-muted-foreground"
+                  className="t-body-small pr-2 pb-1.5 text-left font-medium text-muted-foreground"
                 >
                   Plano
                 </th>
                 <th
                   scope="col"
-                  className="t-small w-28 pr-2 pb-1.5 text-left font-medium text-muted-foreground"
+                  className="t-body-small w-28 pr-2 pb-1.5 text-left font-medium text-muted-foreground"
                 >
                   Desconto (até %)
                 </th>
                 <th
                   scope="col"
-                  className="t-small pr-2 pb-1.5 text-left font-medium text-muted-foreground"
+                  className="t-body-small pr-2 pb-1.5 text-left font-medium text-muted-foreground"
                 >
                   Cupom do plano (opcional)
-                </th>
-                <th scope="col" className="pb-1.5 text-right">
-                  <span className="sr-only">Oferece benefício</span>
                 </th>
               </tr>
             </thead>
@@ -77,10 +71,29 @@ export function BenefitsEditor({ plans }: { plans: readonly Plan[] }) {
                   `benefits.${index}.discountPercentage`,
                 );
                 const couponError = message(`benefits.${index}.coupon`);
+                const enabled = register(`benefits.${index}.enabled`);
                 return (
                   <tr key={benefit.planId} className="align-top">
                     <td className="border-t border-border py-2 pr-2">
-                      <strong className="t-body font-semibold">{name}</strong>
+                      {/* Habilitar fica junto ao nome; o foco segue para o percentual. */}
+                      <label className="inline-flex cursor-pointer items-center gap-2">
+                        <input
+                          type="checkbox"
+                          className="size-4 flex-none accent-selected"
+                          aria-label={`Oferecer benefício no plano ${name}`}
+                          {...enabled}
+                          onChange={(event) => {
+                            void enabled.onChange(event);
+                            if (event.target.checked)
+                              requestAnimationFrame(() =>
+                                setFocus(
+                                  `benefits.${index}.discountPercentage`,
+                                ),
+                              );
+                          }}
+                        />
+                        <strong className="t-body font-semibold">{name}</strong>
+                      </label>
                       {plan?.status === 'inactive' ? (
                         <span className="ml-2">
                           <Badge dot>Plano inativo</Badge>
@@ -121,16 +134,6 @@ export function BenefitsEditor({ plans }: { plans: readonly Plan[] }) {
                           {couponError}
                         </p>
                       ) : null}
-                    </td>
-                    <td className="border-t border-border py-2 text-right">
-                      <Switch
-                        label={
-                          <span className="sr-only">
-                            Oferecer benefício no plano {name}
-                          </span>
-                        }
-                        {...register(`benefits.${index}.enabled`)}
-                      />
                     </td>
                   </tr>
                 );

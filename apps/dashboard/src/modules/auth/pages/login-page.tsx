@@ -69,10 +69,16 @@ export function LoginPage({ notice }: { notice?: LoginNotice | undefined }) {
           error={fieldMessage(errors.password?.message)}
           {...register('password')}
         />
-        <Button type="submit" variant="primary" block loading={login.isPending}>
+        <Button
+          type="submit"
+          variant="primary"
+          block
+          className="md:min-h-control-lg"
+          loading={login.isPending}
+        >
           Entrar
         </Button>
-        <div className="t-small flex flex-wrap justify-between gap-3">
+        <div className="t-body-small flex flex-wrap justify-between gap-3">
           <Link to="/ativar">Ativar conta</Link>
           <Link to="/recuperar">Esqueci minha senha</Link>
         </div>

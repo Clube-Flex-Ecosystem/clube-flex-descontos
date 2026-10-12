@@ -11,6 +11,11 @@ import { http } from '../../../shared/http/client';
 const match = (version: number) => ({
   headers: { 'If-Match': `"${version}"` },
 });
+export type UpdateLeadRequest = Omit<CreateLeadRequest, 'leaveUnassigned'>;
+export interface SourceRequest {
+  name: string;
+  requiresReferral: boolean;
+}
 export const leadsApi = {
   list: async () => (await http.get<LeadSummary[]>('/v1/admin/leads')).data,
   get: async (id: string) =>
@@ -19,11 +24,7 @@ export const leadsApi = {
     (await http.get<LeadHistoryEvent[]>(`/v1/admin/leads/${id}/history`)).data,
   create: async (data: CreateLeadRequest) =>
     (await http.post<Lead>('/v1/admin/leads', data)).data,
-  update: async (
-    id: string,
-    version: number,
-    data: Omit<CreateLeadRequest, 'leaveUnassigned'>,
-  ) =>
+  update: async (id: string, version: number, data: UpdateLeadRequest) =>
     (await http.patch<Lead>(`/v1/admin/leads/${id}`, data, match(version)))
       .data,
   stage: async (
@@ -55,6 +56,19 @@ export const leadsApi = {
         match(version),
       )
     ).data,
+  correctObservation: async (
+    id: string,
+    version: number,
+    observationId: string,
+    text: string,
+  ) =>
+    (
+      await http.patch<Lead>(
+        `/v1/admin/leads/${id}/observations/${observationId}`,
+        { text },
+        match(version),
+      )
+    ).data,
   resolve: async (id: string, version: number, requestId: string) =>
     (
       await http.post<Lead>(
@@ -66,12 +80,37 @@ export const leadsApi = {
   remove: async (id: string, version: number) =>
     (await http.delete<LeadRemoval>(`/v1/admin/leads/${id}`, match(version)))
       .data,
-  sources: async () =>
-    (await http.get<LeadSource[]>('/v1/admin/lead-sources')).data,
   assignees: async () =>
     (
       await http.get<{ id: string; fullName: string }[]>(
         '/v1/admin/leads/assignees',
       )
     ).data,
+};
+
+/** Tipos de origem administrados no dashboard. */
+export const sourcesApi = {
+  list: async () =>
+    (await http.get<LeadSource[]>('/v1/admin/lead-sources')).data,
+  create: async (body: SourceRequest) =>
+    (await http.post<LeadSource>('/v1/admin/lead-sources', body)).data,
+  update: async (id: string, version: number, body: SourceRequest) =>
+    (
+      await http.patch<LeadSource>(
+        `/v1/admin/lead-sources/${id}`,
+        body,
+        match(version),
+      )
+    ).data,
+  setActive: async (id: string, version: number, active: boolean) =>
+    (
+      await http.post<LeadSource>(
+        `/v1/admin/lead-sources/${id}/${active ? 'activate' : 'deactivate'}`,
+        {},
+        match(version),
+      )
+    ).data,
+  remove: async (id: string, version: number) => {
+    await http.delete(`/v1/admin/lead-sources/${id}`, match(version));
+  },
 };

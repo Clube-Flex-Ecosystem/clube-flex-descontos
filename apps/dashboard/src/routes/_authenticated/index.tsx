@@ -2,7 +2,6 @@ import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { firstAllowedModule } from '../../app/navigation';
 import { sessionQueryOptions } from '../../modules/auth/queries/session.query';
-import { pageHead } from '../../shared/utils/page-head';
 
 export const Route = createFileRoute('/_authenticated/')({
   // Sem página inicial de métricas: segue para o primeiro módulo permitido.
@@ -10,7 +9,7 @@ export const Route = createFileRoute('/_authenticated/')({
     const target = firstAllowedModule(context.session.permissions);
     if (target) throw redirect({ to: target });
   },
-  head: () => pageHead('Início'),
+  head: () => ({ meta: [{ title: 'Início — Clube Flex' }] }),
   component: Home,
 });
 
@@ -21,11 +20,11 @@ function Home() {
 
   return (
     <>
-      <div className="mb-5">
+      <div className="mb-4">
         <h1 className="t-page">Olá, {current.user.fullName.split(' ')[0]}</h1>
       </div>
       <section
-        className="grid justify-items-start gap-1.5 rounded-xl border border-border bg-surface p-6 shadow-sm"
+        className="grid justify-items-start gap-1.5 rounded-card border border-border bg-surface p-6"
         aria-labelledby="home-title"
       >
         {current.permissions.length === 0 ? (

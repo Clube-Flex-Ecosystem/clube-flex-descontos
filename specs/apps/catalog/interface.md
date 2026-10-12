@@ -3,16 +3,25 @@
 **Etapa:** 09 — Interface  
 **Estado:** Aprovado
 
+## Processo de alteração
+
+Alterações de UI do catálogo começam exclusivamente no [protótipo navegável](../../prototypes/catalog/index.html).
+Depois de revisadas e aprovadas, são aplicadas em `apps/catalog/`. Não se deve
+definir uma alteração diretamente no app. O fluxo completo está documentado no
+[processo de evolução da interface](../../ui-change-process.md).
+
 ## Direção visual
 
 - Linguagem editorial e acolhedora, com amplo espaço em branco, construída sobre os tokens e a tipografia compartilhados em [fundamentos de interface](../ui-foundations.md).
-- Paleta e tipografia: fundo neutro claro, texto navy, laranja como cor de ação e destaque, navy como superfície escura e `Geist` como família única. Os valores vêm do arquivo de tokens, não são repetidos aqui.
+- Paleta e tipografia: canvas claro e frio, navy como estrutura, laranja do logo reservado à ação e ao valor, e `Archivo` como família única. Papéis, escalas, regras de uso de cor e contrastes estão em [Fundamentos do catálogo](../ui-foundations.md#fundamentos-do-catálogo) e não são repetidos aqui.
 - A estrutura e os componentes seguem o [protótipo do catálogo](../../prototypes/catalog/index.html).
 - A experiência móvel é prioritária.
 - O catálogo deve comunicar descontos em diferentes áreas e evitar aparência ou linguagem que o confunda com plano de saúde.
-- Texto laranja sobre fundo claro usa `accent-foreground`; texto pequeno sobre ações usa `primary` (contraste AA). Animações respeitam `prefers-reduced-motion`.
+- A ação principal usa `primary` com rótulo `primary-foreground` (navy). Texto laranja pequeno usa `accent-foreground`; percentuais e números de destaque usam `accent-strong`. Animações respeitam `prefers-reduced-motion`.
 
 > **Revisão de 2026-10-10:** a paleta cream/forest/coral e as famílias DM Sans/Fraunces aprovadas anteriormente foram substituídas, por decisão do responsável, pela paleta e pela tipografia do arquivo de tokens. A copy aprovada permanece inalterada.
+
+> **Revisão de 2026-10-11:** aprovada pelo responsável a direção A da [proposta de sistema visual](../../prototypes/catalog/proposals/2026-10-sistema-visual/README.md) ("Estrutura navy, ação luminosa"), com escopo restrito ao catálogo: paleta própria, `Archivo` no lugar de `Geist`, ação principal retangular com rótulo navy e estados globais do browser (seleção, scrollbar, foco, caret, placeholder e autofill). Copy, estrutura e comportamento permanecem inalterados.
 
 ## Estrutura da página inicial
 
@@ -41,6 +50,12 @@ O texto visual `Parceiros+` é provisório e será substituído posteriormente p
 - Ações: `Vem ser Flex` e `Explorar parceiros`.
 - `Vem ser Flex` abre diretamente o assistente na jornada `Quero ser Flex`.
 - `Explorar parceiros` leva o foco e a navegação à seção do catálogo.
+
+### Composição do hero
+
+- O título usa uma única cor; a hierarquia vem da tipografia, sem trechos destacados em laranja.
+- À direita, um palco claro apresenta o Flex Card inclinado e dois cartões de benefício (`Saúde até 40%` e `Educação até 30%`).
+- O Flex Card é uma **representação ilustrativa provisória**, sem dados reais de associado, e será substituído pela arte oficial quando fornecida. Ele é decorativo e não é anunciado por tecnologia assistiva.
 
 ### Copy aprovada da seção institucional
 
@@ -193,3 +208,4 @@ O assistente é uma interface conversacional determinística e se identifica cla
 ## Pendências
 
 - A logo oficial permanece como pendência não bloqueante, conforme [fundamentos compartilhados](../ui-foundations.md).
+- A arte oficial do Flex Card permanece como pendência não bloqueante; até lá o hero usa a representação ilustrativa provisória.

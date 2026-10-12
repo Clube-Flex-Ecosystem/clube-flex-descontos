@@ -6,9 +6,17 @@ import {
   type PublicPartner,
 } from '@flex/contracts';
 import PublicLayout from '../../layouts/PublicLayout.astro';
-import Header from '../../components/Header.astro';
-import Footer from '../../components/Footer.astro';
-import Icon from '../../components/Icon.astro';
+import {
+  ArrowLeft,
+  ChevronDown,
+  Globe,
+  Info,
+  MapPin,
+  MessageSquare,
+  Phone,
+  Star,
+} from '@lucide/astro';
+import { button } from '../../components/ui/button';
 import AssistantIsland from '../../features/assistant/components/AssistantIsland';
 import {
   getPartner,
@@ -44,6 +52,15 @@ const jsonLd = partner
       ...(partner.website ? { sameAs: [partner.website] } : {}),
     }
   : undefined;
+const panel = 'rounded-panel border p-6';
+const plainPanel = `${panel} border-border bg-surface`;
+const panelTitle = 'font-display text-heading';
+const tag =
+  'inline-flex items-center gap-1 rounded-full px-2.5 py-0.75 text-caption font-medium';
+const unitLabel =
+  'text-caption font-semibold tracking-[0.06em] text-muted-foreground uppercase';
+const contactIcon =
+  'grid h-10 w-10 shrink-0 place-items-center rounded-full bg-surface-muted text-foreground';
 ---
 
 <PublicLayout
@@ -59,71 +76,113 @@ const jsonLd = partner
   {jsonLd && (
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   )}
-  <Header />
-  <main id="main" tabindex="-1">
+  <>
     {partner ? (
-      <div class="wrap partner-page">
-        <a class="back" href={back}>
-          <Icon name="left" />
+      <div class="mx-auto w-full max-w-300 px-4 pt-6 pb-18 md:px-8">
+        <a
+          class="-ml-2 inline-flex min-h-11 items-center gap-1.5 rounded-control pr-3.5 pl-2 font-semibold text-foreground no-underline hover:bg-surface-muted"
+          href={back}
+        >
+          <ArrowLeft class="h-5 w-5" aria-hidden="true" stroke-width={1.75} />
           Voltar para parceiros
         </a>
-        <header class="p-head">
-          <div class="cats">
+        <header class="mt-4 grid gap-3.5">
+          <div class="flex flex-wrap gap-1.5">
             {partner.categories.map((c) => (
-              <span class="tag">{c.name}</span>
+              <span class={`${tag} bg-surface-muted text-foreground-soft`}>
+                {c.name}
+              </span>
             ))}
             {partner.featured && (
-              <span class="tag featured">
-                <Icon name="star" small />
+              <span class={`${tag} bg-sidebar text-surface`}>
+                <Star
+                  class="h-3.5 w-3.5"
+                  aria-hidden="true"
+                  stroke-width={1.75}
+                />
                 Destaque
               </span>
             )}
           </div>
-          <h1 class="display">{partner.name}</h1>
-          <p class="desc">{partner.description}</p>
+          <h1 class="font-display text-title font-stretch-110%">
+            {partner.name}
+          </h1>
+          <p class="max-w-[40em] text-body-lg text-foreground-soft">
+            {partner.description}
+          </p>
         </header>
-        <div class="p-layout">
-          <div class="p-main">
-            <section class="panel usage">
-              <h2>
-                <Icon name="info" />
+        <div class="mt-8 grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_380px] lg:gap-8">
+          <div class="grid gap-5">
+            <section class={`${panel} border-accent-soft bg-accent-subtle`}>
+              <h2
+                class={`${panelTitle} flex items-center gap-2.5 text-accent-foreground`}
+              >
+                <Info class="h-5 w-5" aria-hidden="true" stroke-width={1.75} />
                 Como usar o desconto
               </h2>
-              <p>{partner.usageInstructions}</p>
+              <p class="mt-2.5 text-[17px] text-foreground-soft">
+                {partner.usageInstructions}
+              </p>
             </section>
             {(partner.website || partner.contacts.length > 0) && (
-              <section class="panel">
-                <h2>Contato</h2>
-                {partner.website && (
-                  <p class="website-row">
-                    <a href={partner.website} target="_blank" rel="noopener">
-                      {partner.website.replace(/^https?:\/\//, '')}
-                    </a>
-                    <a
-                      class="btn secondary sm"
-                      href={partner.website}
-                      target="_blank"
-                      rel="noopener"
-                    >
-                      Abrir site
-                    </a>
-                  </p>
-                )}
-                <ul class="contact-list">
-                  {partner.contacts.map((c) => (
-                    <li class="contact">
-                      <span class="c-icon">
-                        <Icon name={c.type === 'whatsapp' ? 'chat' : 'phone'} />
+              <section class={plainPanel}>
+                <h2 class={panelTitle}>Contato</h2>
+                <ul class="mt-3 grid">
+                  {partner.website && (
+                    <li class="flex flex-wrap items-center gap-3 border-b border-border py-2.5 last:border-b-0">
+                      <span class={contactIcon}>
+                        <Globe
+                          class="h-5 w-5"
+                          aria-hidden="true"
+                          stroke-width={1.75}
+                        />
                       </span>
-                      <div class="c-body">
-                        <small>
+                      <div class="min-w-0 flex-[1_1_140px]">
+                        <small class="block text-caption text-muted-foreground">
+                          Site
+                        </small>
+                        <b class="font-semibold [overflow-wrap:anywhere]">
+                          {partner.website.replace(/^https?:\/\//, '')}
+                        </b>
+                      </div>
+                      <a
+                        class={button('secondary', 'sm')}
+                        href={partner.website}
+                        target="_blank"
+                        rel="noopener"
+                      >
+                        Abrir site
+                      </a>
+                    </li>
+                  )}
+                  {partner.contacts.map((c) => (
+                    <li class="flex flex-wrap items-center gap-3 border-b border-border py-2.5 last:border-b-0">
+                      <span class={contactIcon}>
+                        {c.type === 'whatsapp' ? (
+                          <MessageSquare
+                            class="h-5 w-5"
+                            aria-hidden="true"
+                            stroke-width={1.75}
+                          />
+                        ) : (
+                          <Phone
+                            class="h-5 w-5"
+                            aria-hidden="true"
+                            stroke-width={1.75}
+                          />
+                        )}
+                      </span>
+                      <div class="min-w-0 flex-[1_1_140px]">
+                        <small class="block text-caption text-muted-foreground">
                           {c.label ??
                             (c.type === 'whatsapp' ? 'WhatsApp' : 'Telefone')}
                         </small>
-                        <b>{formatPhone(c.value)}</b>
+                        <b class="font-semibold tabular-nums">
+                          {formatPhone(c.value)}
+                        </b>
                       </div>
                       <a
-                        class="btn secondary sm"
+                        class={button('secondary', 'sm')}
                         href={
                           c.type === 'whatsapp'
                             ? `https://wa.me/${c.value.replace(/\D/g, '')}`
@@ -137,46 +196,54 @@ const jsonLd = partner
                 </ul>
               </section>
             )}
-            <section class="panel">
-              <h2>
+            <section class={plainPanel}>
+              <h2 class={panelTitle}>
                 {partner.units.length === 1
                   ? 'Unidade'
                   : `Unidades (${partner.units.length})`}
               </h2>
               {partner.units.length ? (
-                <div class="units">
+                <div class="mt-3 grid gap-2.5">
                   {partner.units.map((u, i) => (
                     <details
-                      class="unit"
+                      class="group rounded-card border border-border bg-surface"
                       open={i === 0 && partner!.units.length <= 2}
                     >
-                      <summary>
-                        <span class="c-icon">
-                          <Icon name="pin" small />
+                      <summary class="flex min-h-14 cursor-pointer list-none items-center gap-3 rounded-card px-4 py-3 hover:bg-surface-muted [&::-webkit-details-marker]:hidden">
+                        <span class="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-surface-muted text-foreground">
+                          <MapPin
+                            class="h-4 w-4"
+                            aria-hidden="true"
+                            stroke-width={1.75}
+                          />
                         </span>
                         <span>
-                          <b>{u.name}</b>
-                          <small>
+                          <b class="block font-semibold">{u.name}</b>
+                          <small class="block text-sm text-muted-foreground">
                             {u.address.neighborhood}, {u.address.city}
                           </small>
                         </span>
-                        <Icon name="down" small />
+                        <ChevronDown
+                          class="ml-auto h-5 w-5 shrink-0 transition-transform duration-200 group-open:rotate-180"
+                          aria-hidden="true"
+                          stroke-width={1.75}
+                        />
                       </summary>
-                      <dl class="unit-body">
+                      <dl class="grid gap-3.5 px-4 pt-1 pb-4">
                         <div>
-                          <dt>Endereço</dt>
-                          <dd>{address(u)}</dd>
+                          <dt class={unitLabel}>Endereço</dt>
+                          <dd class="mt-0.5">{address(u)}</dd>
                         </div>
                         {u.openingHours && (
                           <div>
-                            <dt>Horário</dt>
-                            <dd>{u.openingHours}</dd>
+                            <dt class={unitLabel}>Horário</dt>
+                            <dd class="mt-0.5">{u.openingHours}</dd>
                           </div>
                         )}
                         {u.instructions && (
                           <div>
-                            <dt>Instruções da unidade</dt>
-                            <dd>{u.instructions}</dd>
+                            <dt class={unitLabel}>Instruções da unidade</dt>
+                            <dd class="mt-0.5">{u.instructions}</dd>
                           </div>
                         )}
                       </dl>
@@ -184,21 +251,23 @@ const jsonLd = partner
                   ))}
                 </div>
               ) : (
-                <p class="muted">
+                <p class="mt-2 text-muted-foreground">
                   Este parceiro não possui unidade física. Utilize os contatos
                   ou o site para usar o benefício.
                 </p>
               )}
             </section>
-            <section class="panel assistant-cta">
-              <h2>Ainda não é Flex?</h2>
-              <p>
+            <section
+              class={`${panel} grid gap-3.5 border-transparent bg-surface-muted`}
+            >
+              <h2 class={panelTitle}>Ainda não é Flex?</h2>
+              <p class="text-foreground-soft">
                 Fale com o assistente virtual e deixe seus dados para conhecer
                 os planos.
               </p>
               <div>
                 <button
-                  class="btn accent sm"
+                  class={button('primary', 'sm')}
                   type="button"
                   data-open-assistant="flex"
                 >
@@ -207,13 +276,22 @@ const jsonLd = partner
               </div>
             </section>
           </div>
-          <aside class="p-aside">
-            <section class="panel benefit">
+          <aside class="max-lg:order-first lg:sticky lg:top-22">
+            <section
+              class={`${panel} relative overflow-hidden border-sidebar bg-sidebar text-sidebar-foreground after:absolute after:-top-12.5 after:-right-12.5 after:h-30 after:w-30 after:rounded-full after:bg-brand-signal`}
+              data-surface="dark"
+            >
               <h2 class="sr-only">Benefício</h2>
-              <form method="get" class="field">
-                <label for="partner-plan">Seu plano</label>
-                <div class="select-wrap">
+              <form method="get" class="relative z-10 grid gap-1.5">
+                <label
+                  class="text-control-sm font-semibold text-surface"
+                  for="partner-plan"
+                >
+                  Seu plano
+                </label>
+                <div class="relative">
                   <select
+                    class="min-h-13 w-full cursor-pointer appearance-none rounded-control border-[1.5px] border-surface bg-surface px-4 pr-12 text-base font-medium text-foreground"
                     id="partner-plan"
                     name="plano"
                     onchange="this.form.submit()"
@@ -228,30 +306,42 @@ const jsonLd = partner
                       </option>
                     ))}
                   </select>
-                  <span class="select-arrow">⌄</span>
+                  <ChevronDown
+                    class="pointer-events-none absolute top-1/2 right-4 h-5 w-5 -translate-y-1/2 text-foreground-soft"
+                    aria-hidden="true"
+                    stroke-width={1.75}
+                  />
                 </div>
-                <p class="hint">
+                <p class="text-sm text-sidebar-muted">
                   Informado por você; não é validado pelo Clube Flex.
                 </p>
               </form>
               {selectedPlan && partner.discountPercentage ? (
-                <div class="benefit-value">
-                  <small>Seu desconto</small>
-                  <strong>
-                    <span>até</span>
+                <div class="relative z-10 mt-5">
+                  <small class="block text-sm text-sidebar-muted">
+                    Seu desconto
+                  </small>
+                  <strong class="mt-1.5 block font-display text-number-lg font-stretch-108% tabular-nums text-brand-signal">
+                    <span class="mr-1.5 font-sans text-[22px] font-semibold font-stretch-100% tracking-normal text-sidebar-foreground">
+                      até
+                    </span>
                     {partner.discountPercentage}%
                   </strong>
                   {partner.coupon && (
-                    <div class="coupon">
+                    <div class="mt-5 flex items-center gap-3 rounded-control bg-surface px-4 py-2.5 text-foreground">
                       <div>
-                        <small>Cupom</small>
-                        <code>{partner.coupon}</code>
+                        <small class="block text-caption text-muted-foreground">
+                          Cupom
+                        </small>
+                        <code class="font-mono text-lg font-bold tracking-[0.06em]">
+                          {partner.coupon}
+                        </code>
                       </div>
                     </div>
                   )}
                 </div>
               ) : (
-                <div class="benefit-empty">
+                <div class="relative z-10 mt-5 rounded-control border border-dashed border-sidebar-muted bg-sidebar-raised p-4 text-sm">
                   Escolha seu plano para consultar o desconto disponível.
                 </div>
               )}
@@ -260,15 +350,18 @@ const jsonLd = partner
         </div>
       </div>
     ) : (
-      <div class="wrap not-found">
-        <h1 class="display">Parceiro não encontrado</h1>
-        <p>Este parceiro não está disponível no catálogo.</p>
-        <a class="btn primary" href="/#parceiros">
+      <div class="mx-auto grid min-h-[50vh] w-full max-w-300 content-center justify-items-center gap-4 px-4 py-18 text-center md:px-8">
+        <h1 class="font-display text-display font-stretch-110%">
+          Parceiro não encontrado
+        </h1>
+        <p class="text-muted-foreground">
+          Este parceiro não está disponível no catálogo.
+        </p>
+        <a class={button('primary')} href="/#parceiros">
           Ver parceiros
         </a>
       </div>
     )}
-  </main>
-  <Footer />
+  </>
   <AssistantIsland client:load />
 </PublicLayout>

@@ -3,10 +3,10 @@ import { Badge } from '../../../shared/ui/badge';
 
 const presentation: Record<
   PartnerStatus,
-  { tone: 'success' | 'warning' | 'neutral'; label: string }
+  { tone: 'success' | 'info' | 'neutral'; label: string }
 > = {
   published: { tone: 'success', label: 'Publicado' },
-  draft: { tone: 'warning', label: 'Rascunho' },
+  draft: { tone: 'info', label: 'Rascunho' },
   inactive: { tone: 'neutral', label: 'Desativado' },
 };
 

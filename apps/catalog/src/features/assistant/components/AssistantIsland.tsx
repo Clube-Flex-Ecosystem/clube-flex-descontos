@@ -6,7 +6,9 @@ import {
   type PublicContactRequest,
 } from '@flex/contracts';
 import { useEffect, useReducer, useRef, useState } from 'react';
+import { AlertCircle, ArrowRight, Bot, MessageCircle, X } from 'lucide-react';
 import { useForm } from 'react-hook-form';
+import { button } from '../../../components/ui/button';
 import type { z } from 'zod';
 import { getContactConsent, sendContactRequest } from '../api/public-contact';
 
@@ -238,14 +240,19 @@ export default function AssistantIsland() {
     placeholder = '',
   ) => (
     <form
-      className="a-form"
+      className="grid gap-2"
       onSubmit={(e) => {
         e.preventDefault();
         void field(name);
       }}
     >
-      <label htmlFor={`assistant-${name}`}>{label}</label>
-      <div className="a-row">
+      <label
+        className="text-control-sm font-semibold"
+        htmlFor={`assistant-${name}`}
+      >
+        {label}
+      </label>
+      <div className="flex gap-2">
         <input
           id={`assistant-${name}`}
           type={type}
@@ -258,15 +265,31 @@ export default function AssistantIsland() {
                 : 'email'
           }
           aria-invalid={Boolean(error(name))}
+          className="min-h-12 min-w-0 flex-1 rounded-control border-[1.5px] border-control-border bg-surface px-3.5 text-base text-foreground aria-invalid:border-danger"
           {...form.register(name)}
         />
-        <button className="a-send" type="submit" aria-label="Continuar">
-          →
+        <button
+          className="grid h-12 w-12 shrink-0 place-items-center rounded-control border-0 bg-primary text-primary-foreground shadow-brand hover:bg-primary-hover active:bg-primary-active active:shadow-brand-pressed"
+          type="submit"
+          aria-label="Continuar"
+        >
+          <ArrowRight
+            className="h-4 w-4"
+            aria-hidden="true"
+            strokeWidth={1.75}
+          />
         </button>
       </div>
       {error(name) && (
-        <p className="a-error" role="alert">
-          !{' '}
+        <p
+          className="flex items-center gap-1.5 text-sm text-danger"
+          role="alert"
+        >
+          <AlertCircle
+            className="h-4 w-4"
+            aria-hidden="true"
+            strokeWidth={1.75}
+          />{' '}
           {error(name) === 'INVALID_PHONE_NUMBER'
             ? 'Informe um WhatsApp com DDD, por exemplo (21) 99999-9999.'
             : error(name) === 'INVALID_EMAIL'
@@ -276,7 +299,7 @@ export default function AssistantIsland() {
       )}
       {name === 'email' && (
         <button
-          className="link-btn"
+          className="min-h-11 justify-self-start border-0 bg-transparent px-1 text-left font-semibold text-foreground underline decoration-brand-signal decoration-2 underline-offset-4"
           type="button"
           onClick={() => {
             form.setValue('email', '');
@@ -295,62 +318,86 @@ export default function AssistantIsland() {
   return (
     <>
       <button
-        className="fab"
+        className="fixed right-5 bottom-5 z-40 grid h-15 w-15 place-items-center rounded-full border-0 bg-sidebar text-surface shadow-float transition-[background-color,scale] duration-200 ease-out after:absolute after:top-0.5 after:right-0.5 after:h-3 after:w-3 after:rounded-full after:border-2 after:border-background after:bg-brand-signal hover:scale-105 hover:bg-sidebar-raised"
         type="button"
         aria-label="Abrir assistente do Clube Flex"
         data-open-assistant
       >
-        <span aria-hidden="true">□</span>
+        <MessageCircle
+          className="h-6 w-6"
+          aria-hidden="true"
+          strokeWidth={1.75}
+        />
       </button>
       {state.step !== 'closed' && (
         <>
           <button
-            className="assistant-backdrop"
+            className="fixed inset-0 z-40 border-0 bg-overlay sm:bg-transparent"
             aria-label="Fechar assistente"
             onClick={close}
           />
           <div
-            className="assistant"
+            className="fixed inset-x-0 bottom-0 z-50 flex max-h-[min(760px,calc(100dvh-16px))] flex-col overflow-hidden rounded-t-panel border border-border bg-surface shadow-float sm:inset-auto sm:bottom-5 sm:right-5 sm:h-[min(700px,calc(100dvh-40px))] sm:w-[min(420px,calc(100vw-32px))] sm:rounded-panel"
             role="dialog"
             aria-modal="true"
             aria-labelledby="assistant-title"
             ref={panel}
             onKeyDown={onKeys}
           >
-            <header className="a-head">
-              <span className="a-avatar" aria-hidden="true">
-                □
+            <header className="flex items-center gap-3 border-b border-border py-3.5 pr-3 pl-4.5">
+              <span
+                className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-sidebar text-surface"
+                aria-hidden="true"
+              >
+                <Bot
+                  className="h-5 w-5"
+                  aria-hidden="true"
+                  strokeWidth={1.75}
+                />
               </span>
               <div>
-                <h2 id="assistant-title">Assistente Clube Flex</h2>
-                <small>Atendimento virtual automático</small>
+                <h2
+                  className="font-display text-base font-semibold"
+                  id="assistant-title"
+                >
+                  Assistente Clube Flex
+                </h2>
+                <small className="block text-caption text-muted-foreground">
+                  Atendimento virtual automático
+                </small>
               </div>
               <button
-                className="a-close"
+                className="ml-auto grid h-11 w-11 place-items-center rounded-control border-0 bg-transparent text-foreground hover:bg-surface-muted"
                 type="button"
                 aria-label="Fechar assistente"
                 onClick={close}
               >
-                ×
+                <X className="h-5 w-5" aria-hidden="true" strokeWidth={1.75} />
               </button>
             </header>
             <div
-              className="a-log"
+              className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto p-5"
               ref={log}
               role="log"
               aria-label="Conversa com o assistente"
             >
               {state.messages.map((m, i) => (
-                <div className={`msg ${m.by}`} key={i}>
+                <div
+                  className={`max-w-[86%] animate-[pop_.2s_var(--ease-out)] rounded-2xl px-3.5 py-2.5 text-control-sm leading-[1.45] motion-reduce:animate-none ${m.by === 'bot' ? 'self-start rounded-bl-sm bg-surface-muted' : 'self-end rounded-br-sm bg-sidebar text-surface'}`}
+                  key={i}
+                >
                   {m.content}
                 </div>
               ))}
             </div>
-            <div className="a-foot" aria-live="polite">
+            <div
+              className="grid gap-2.5 border-t border-border bg-surface p-4"
+              aria-live="polite"
+            >
               {state.step === 'welcome' && (
-                <div className="a-options">
+                <div className="grid gap-2">
                   <button
-                    className="btn primary"
+                    className={button('primary')}
                     onClick={() =>
                       add(
                         'name',
@@ -362,7 +409,7 @@ export default function AssistantIsland() {
                     Quero ser Flex
                   </button>
                   <button
-                    className="btn secondary"
+                    className={button('secondary')}
                     onClick={() => {
                       const next = choosePartner(state);
                       dispatch({
@@ -382,15 +429,15 @@ export default function AssistantIsland() {
                 </div>
               )}
               {state.step === 'partner' && (
-                <div className="a-options">
+                <div className="grid gap-2">
                   <a
-                    className="btn primary"
+                    className={button('primary')}
                     href="mailto:comercial@flexcard.org.br?subject=Quero%20ser%20parceiro%20do%20Clube%20Flex"
                   >
                     Enviar e-mail
                   </a>
                   <button
-                    className="btn secondary"
+                    className={button('secondary')}
                     onClick={() => dispatch({ type: 'restart' })}
                   >
                     Voltar ao início
@@ -415,8 +462,9 @@ export default function AssistantIsland() {
                 )}
               {state.step === 'consent' && (
                 <>
-                  <label className="consent">
+                  <label className="flex cursor-pointer items-start gap-3 rounded-control bg-surface-muted p-3 text-sm leading-[1.45]">
                     <input
+                      className="mt-px h-5.5 w-5.5 shrink-0 accent-sidebar"
                       type="checkbox"
                       checked={accepted}
                       id="assistant-consent"
@@ -431,7 +479,7 @@ export default function AssistantIsland() {
                     </span>
                   </label>
                   <button
-                    className="btn primary"
+                    className={button('primary')}
                     disabled={!accepted}
                     onClick={() =>
                       add(
@@ -447,26 +495,26 @@ export default function AssistantIsland() {
               )}
               {state.step === 'review' && (
                 <>
-                  <dl className="review">
+                  <dl className="grid rounded-card border border-border bg-surface [&>div]:flex [&>div]:items-center [&>div]:gap-2 [&>div]:border-b [&>div]:border-border [&>div]:py-1.5 [&>div]:pr-1.5 [&>div]:pl-3.5 [&>div:last-child]:border-b-0 [&_dd]:font-semibold [&_dt]:text-caption [&_dt]:text-muted-foreground">
                     <div>
-                      <div className="r-text">
+                      <div className="min-w-0 flex-1 py-1">
                         <dt>Nome</dt>
                         <dd>{values.name}</dd>
                       </div>
                       <button
-                        className="btn"
+                        className={button('ghost', 'sm')}
                         onClick={() => dispatch({ type: 'step', step: 'name' })}
                       >
                         Editar
                       </button>
                     </div>
                     <div>
-                      <div className="r-text">
+                      <div className="min-w-0 flex-1 py-1">
                         <dt>WhatsApp</dt>
                         <dd>{values.whatsapp}</dd>
                       </div>
                       <button
-                        className="btn"
+                        className={button('ghost', 'sm')}
                         onClick={() =>
                           dispatch({ type: 'step', step: 'whatsapp' })
                         }
@@ -475,12 +523,12 @@ export default function AssistantIsland() {
                       </button>
                     </div>
                     <div>
-                      <div className="r-text">
+                      <div className="min-w-0 flex-1 py-1">
                         <dt>E-mail</dt>
                         <dd>{values.email || 'Não informado'}</dd>
                       </div>
                       <button
-                        className="btn"
+                        className={button('ghost', 'sm')}
                         onClick={() =>
                           dispatch({ type: 'step', step: 'email' })
                         }
@@ -489,32 +537,35 @@ export default function AssistantIsland() {
                       </button>
                     </div>
                     <div>
-                      <div className="r-text">
+                      <div className="min-w-0 flex-1 py-1">
                         <dt>Consentimento</dt>
                         <dd>Autorizado</dd>
                       </div>
                     </div>
                   </dl>
-                  <button className="btn primary" onClick={() => void submit()}>
+                  <button
+                    className={button('primary')}
+                    onClick={() => void submit()}
+                  >
                     Enviar
                   </button>
-                  <p className="a-note">
+                  <p className="text-center text-caption text-muted-foreground">
                     Seus dados só são enviados quando você tocar em Enviar.
                   </p>
                 </>
               )}
               {state.step === 'sending' && (
-                <button className="btn primary" disabled>
+                <button className={button('primary')} disabled>
                   Enviando…
                 </button>
               )}
               {state.step === 'error' && (
                 <>
-                  <p className="a-error" role="alert">
+                  <p className="text-sm text-danger" role="alert">
                     Não foi possível enviar seus dados. Tente novamente.
                   </p>
                   <button
-                    className="btn primary"
+                    className={button('primary')}
                     onClick={() => dispatch({ type: 'step', step: 'review' })}
                   >
                     Tentar novamente
@@ -522,8 +573,8 @@ export default function AssistantIsland() {
                 </>
               )}
               {state.step === 'success' && (
-                <div className="a-options">
-                  <button className="btn primary" onClick={close}>
+                <div className="grid gap-2">
+                  <button className={button('primary')} onClick={close}>
                     Fechar
                   </button>
                 </div>

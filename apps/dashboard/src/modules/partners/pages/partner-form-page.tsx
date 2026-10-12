@@ -1,11 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
 import axios from 'axios';
+import type { Category, Partner, Plan } from '@flex/contracts';
 import { categoriesQueryOptions } from '../../categories';
 import { plansQueryOptions } from '../../plans';
 import { describeError } from '../../../shared/http/problem';
 import { Alert } from '../../../shared/ui/alert';
-import { Button } from '../../../shared/ui/button';
+import { Button, buttonVariants } from '../../../shared/ui/button';
 import { ListSkeleton } from '../../../shared/ui/page-parts';
 import { PartnerForm } from '../components/partner-form';
 import {
@@ -13,8 +14,31 @@ import {
   partnersQueryOptions,
 } from '../queries/partners.query';
 
+interface PartnerDetailInitialData {
+  partner: Partner;
+  plans: Plan[];
+  categories: Category[];
+  partners: Partner[];
+}
+
 /** Cadastro (`partnerId` ausente) ou edição de um parceiro. */
-export function PartnerFormPage({ partnerId }: { partnerId?: string }) {
+export function PartnerFormPage({
+  partnerId,
+  initialData,
+}: {
+  partnerId?: string;
+  initialData?: PartnerDetailInitialData;
+}) {
+  if (initialData && partnerId) {
+    return (
+      <LoadedPartnerForm partnerId={partnerId} initialData={initialData} />
+    );
+  }
+
+  return <PartnerCreateFormPage partnerId={partnerId} />;
+}
+
+function PartnerCreateFormPage({ partnerId }: { partnerId?: string }) {
   const partner = useQuery({
     ...partnerQueryOptions(partnerId ?? ''),
     enabled: Boolean(partnerId),
@@ -33,10 +57,7 @@ export function PartnerFormPage({ partnerId }: { partnerId?: string }) {
     partner.error.response?.status === 404;
 
   const back = (
-    <Link
-      to="/parceiros"
-      className="t-label inline-flex min-h-11 items-center rounded-md border border-control-border bg-control px-3 text-foreground no-underline shadow-control-raised md:min-h-control-sm"
-    >
+    <Link to="/parceiros" className={buttonVariants({ compact: true })}>
       Voltar para parceiros
     </Link>
   );
@@ -86,6 +107,44 @@ export function PartnerFormPage({ partnerId }: { partnerId?: string }) {
       plans={plans.data}
       categories={categories.data}
       partners={partners.data ?? []}
+    />
+  );
+}
+
+function LoadedPartnerForm({
+  partnerId,
+  initialData,
+}: {
+  partnerId: string;
+  initialData: PartnerDetailInitialData;
+}) {
+  const partner = useQuery({
+    ...partnerQueryOptions(partnerId),
+    initialData: initialData.partner,
+    // O formulário parte de uma versão fixa: alterações de terceiros aparecem como
+    // conflito ao salvar, nunca descartando silenciosamente o que está sendo editado.
+    refetchOnWindowFocus: false,
+  });
+  const plans = useQuery({
+    ...plansQueryOptions,
+    initialData: initialData.plans,
+  });
+  const categories = useQuery({
+    ...categoriesQueryOptions,
+    initialData: initialData.categories,
+  });
+  const partners = useQuery({
+    ...partnersQueryOptions,
+    initialData: initialData.partners,
+  });
+
+  return (
+    <PartnerForm
+      key={`${partner.data.id}:${partner.data.version}`}
+      partner={partner.data}
+      plans={plans.data}
+      categories={categories.data}
+      partners={partners.data}
     />
   );
 }
