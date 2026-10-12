@@ -206,6 +206,9 @@ importers:
       '@lucide/astro':
         specifier: ^1.55.0
         version: 1.55.0(astro@7.3.8(@types/node@24.19.2)(@vercel/functions@3.9.11)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
+      '@rolldown/binding-linux-x64-gnu':
+        specifier: 1.2.13
+        version: 1.2.13
       '@tailwindcss/vite':
         specifier: ^4.1.14
         version: 4.3.3(vite@8.3.4(@types/node@24.19.2)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1))
@@ -227,6 +230,9 @@ importers:
       react-hook-form:
         specifier: 7.89.0
         version: 7.89.0(@types/react@19.3.0)(react@19.3.0)
+      rolldown:
+        specifier: 1.2.13
+        version: 1.2.13
       tailwindcss:
         specifier: ^4.1.14
         version: 4.3.3
@@ -6822,8 +6828,7 @@ snapshots:
   '@rolldown/binding-linux-s390x-gnu@1.2.13':
     optional: true
 
-  '@rolldown/binding-linux-x64-gnu@1.2.13':
-    optional: true
+  '@rolldown/binding-linux-x64-gnu@1.2.13': {}
 
   '@rolldown/binding-linux-x64-musl@1.2.13':
     optional: true

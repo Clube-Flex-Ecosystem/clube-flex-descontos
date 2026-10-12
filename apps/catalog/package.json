@@ -13,6 +13,7 @@
     "@astrojs/vercel": "^11.0.13",
     "@hookform/resolvers": "5.9.1",
     "@lucide/astro": "^1.55.0",
+    "@rolldown/binding-linux-x64-gnu": "1.2.13",
     "@tailwindcss/vite": "^4.1.14",
     "astro": "^7.3.8",
     "axios": "^1.12.2",
@@ -20,6 +21,7 @@
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "react-hook-form": "7.89.0",
+    "rolldown": "1.2.13",
     "tailwindcss": "^4.1.14",
     "zod": "^4.6.5"
   },

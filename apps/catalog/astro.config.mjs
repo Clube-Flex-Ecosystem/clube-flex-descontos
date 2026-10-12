@@ -7,6 +7,9 @@ export default defineConfig({
   output: 'server',
   adapter: vercel(),
   integrations: [react()],
-  vite: { plugins: [tailwindcss()] },
+  vite: {
+    plugins: [tailwindcss()],
+    ssr: { external: ['rolldown'] },
+  },
   server: { host: true, port: 4321 },
 });
