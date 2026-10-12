@@ -4,15 +4,15 @@ import type { PermissionRepository } from './permission.repository';
 import type { UserRepository } from './user.repository';
 
 export interface TransactionalRepositories {
-  users: UserRepository;
-  permissions: PermissionRepository;
-  accessCodes: AccessCodeRepository;
-  audit: AuditRepository;
+    users: UserRepository;
+    permissions: PermissionRepository;
+    accessCodes: AccessCodeRepository;
+    audit: AuditRepository;
 }
 
 /** Executa o trabalho em uma única transação; qualquer exceção desfaz todas as escritas. */
 export interface UnitOfWork {
-  run<T>(
-    work: (repositories: TransactionalRepositories) => Promise<T>,
-  ): Promise<T>;
+    run<T>(
+        work: (repositories: TransactionalRepositories) => Promise<T>,
+    ): Promise<T>;
 }

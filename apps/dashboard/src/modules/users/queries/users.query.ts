@@ -5,12 +5,12 @@ export const usersKey = ['users'] as const;
 
 /** Coleção completa de contas internas; a listagem não é paginada. */
 export const usersQueryOptions = queryOptions({
-  queryKey: usersKey,
-  queryFn: listUsers,
+    queryKey: usersKey,
+    queryFn: listUsers,
 });
 
 export const userQueryOptions = (id: string) =>
-  queryOptions({
-    queryKey: [...usersKey, id],
-    queryFn: () => getUser(id),
-  });
+    queryOptions({
+        queryKey: [...usersKey, id],
+        queryFn: () => getUser(id),
+    });

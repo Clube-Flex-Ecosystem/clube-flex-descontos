@@ -4,12 +4,12 @@
  * colisão é resolvido somente pelo servidor.
  */
 export function baseUsername(fullName: string): string {
-  const base = fullName
-    .normalize('NFD')
-    .replace(/\p{Diacritic}/gu, '')
-    .toLowerCase()
-    .replace(/[^a-z0-9\s]/g, '')
-    .trim()
-    .replace(/\s+/g, '.');
-  return base || 'usuario';
+    const base = fullName
+        .normalize('NFD')
+        .replace(/\p{Diacritic}/gu, '')
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]/g, '')
+        .trim()
+        .replace(/\s+/g, '.');
+    return base || 'usuario';
 }

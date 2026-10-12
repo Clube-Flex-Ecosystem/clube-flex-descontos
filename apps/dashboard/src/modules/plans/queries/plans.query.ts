@@ -5,6 +5,6 @@ export const plansKey = ['plans'] as const;
 
 /** Coleção completa de planos (ativos e inativos); a listagem não é paginada. */
 export const plansQueryOptions = queryOptions({
-  queryKey: plansKey,
-  queryFn: listPlans,
+    queryKey: plansKey,
+    queryFn: listPlans,
 });

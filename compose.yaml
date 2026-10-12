@@ -1,37 +1,37 @@
 # PostgreSQL local e descartável. `docker compose down -v` apaga os dados.
 services:
-  db:
-    image: postgres:17
-    environment:
-      POSTGRES_USER: flex
-      POSTGRES_PASSWORD: flex
-      POSTGRES_DB: flex
-    ports:
-      - '5434:5432'
-    volumes:
-      - db-data:/var/lib/postgresql/data
-    healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U flex -d flex']
-      interval: 2s
-      timeout: 3s
-      retries: 20
+    db:
+        image: postgres:17
+        environment:
+            POSTGRES_USER: flex
+            POSTGRES_PASSWORD: flex
+            POSTGRES_DB: flex
+        ports:
+            - '5434:5432'
+        volumes:
+            - db-data:/var/lib/postgresql/data
+        healthcheck:
+            test: ['CMD-SHELL', 'pg_isready -U flex -d flex']
+            interval: 2s
+            timeout: 3s
+            retries: 20
 
-  # Banco isolado e efêmero (em memória) usado pela suíte de integração.
-  db-test:
-    image: postgres:17
-    environment:
-      POSTGRES_USER: flex
-      POSTGRES_PASSWORD: flex
-      POSTGRES_DB: flex_test
-    ports:
-      - '5433:5432'
-    tmpfs:
-      - /var/lib/postgresql/data
-    healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U flex -d flex_test']
-      interval: 2s
-      timeout: 3s
-      retries: 20
+    # Banco isolado e efêmero (em memória) usado pela suíte de integração.
+    db-test:
+        image: postgres:17
+        environment:
+            POSTGRES_USER: flex
+            POSTGRES_PASSWORD: flex
+            POSTGRES_DB: flex_test
+        ports:
+            - '5433:5432'
+        tmpfs:
+            - /var/lib/postgresql/data
+        healthcheck:
+            test: ['CMD-SHELL', 'pg_isready -U flex -d flex_test']
+            interval: 2s
+            timeout: 3s
+            retries: 20
 
 volumes:
-  db-data:
+    db-data:

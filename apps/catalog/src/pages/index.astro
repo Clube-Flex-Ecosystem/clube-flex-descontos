@@ -7,9 +7,9 @@ import CategoryRibbon from '../features/home/components/CategoryRibbon.astro';
 import HeroSection from '../features/home/components/HeroSection.astro';
 import HowItWorksSection from '../features/home/components/HowItWorksSection.astro';
 import {
-  listCategories,
-  listPartners,
-  listPlans,
+    listCategories,
+    listPartners,
+    listPlans,
 } from '../features/catalog/api/public-catalog';
 const plans = await listPlans().catch(() => []);
 const planSlug = Astro.url.searchParams.get('plano');
@@ -17,30 +17,30 @@ const categoryId = Astro.url.searchParams.get('categoria') ?? undefined;
 const initialPlan = plans.find((p) => p.slug === planSlug);
 const initialInvalid = Boolean(planSlug && !initialPlan);
 const [initialCategories, initialPartners] = initialPlan
-  ? await Promise.all([
-      listCategories(initialPlan.id),
-      listPartners(initialPlan.id, categoryId),
-    ]).catch(() => [[], []])
-  : [[], []];
+    ? await Promise.all([
+          listCategories(initialPlan.id),
+          listPartners(initialPlan.id, categoryId),
+      ]).catch(() => [[], []])
+    : [[], []];
 ---
 
 <PublicLayout
-  title="Clube Flex — Parceiros"
-  description="Descontos em saúde, educação, lazer e muito mais para você e sua família."
+    title="Clube Flex — Parceiros"
+    description="Descontos em saúde, educação, lazer e muito mais para você e sua família."
 >
-  <>
-    <HeroSection />
-    <CategoryRibbon />
-    <AboutSection />
-    <CatalogSection
-      plans={plans}
-      initialPlan={initialPlan}
-      initialCategory={categoryId}
-      initialCategories={initialCategories}
-      initialPartners={initialPartners}
-      initialInvalid={initialInvalid}
-    />
-    <HowItWorksSection />
-  </>
-  <AssistantIsland client:load />
+    <>
+        <HeroSection />
+        <CategoryRibbon />
+        <AboutSection />
+        <CatalogSection
+            plans={plans}
+            initialPlan={initialPlan}
+            initialCategory={categoryId}
+            initialCategories={initialCategories}
+            initialPartners={initialPartners}
+            initialInvalid={initialInvalid}
+        />
+        <HowItWorksSection />
+    </>
+    <AssistantIsland client:load />
 </PublicLayout>

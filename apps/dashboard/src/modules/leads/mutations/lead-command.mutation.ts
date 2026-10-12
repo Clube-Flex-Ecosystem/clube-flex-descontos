@@ -9,17 +9,17 @@ import { leadsKey } from '../queries/leads.query';
  * detalhe e atualiza o histórico; cada instância tem o próprio estado de processamento.
  */
 export function useLeadCommand() {
-  const queryClient = useQueryClient();
-  return useMutation<Lead, Error, () => Promise<Lead>>({
-    mutationFn: (run) => run(),
-    onSuccess: (lead) => {
-      queryClient.setQueryData<Lead>([...leadsKey, lead.id], lead);
-      queryClient.setQueryData<LeadSummary[]>(leadsKey, (current) =>
-        current ? upsertById(current, lead) : current,
-      );
-      void queryClient.invalidateQueries({
-        queryKey: [...leadsKey, lead.id, 'history'],
-      });
-    },
-  });
+    const queryClient = useQueryClient();
+    return useMutation<Lead, Error, () => Promise<Lead>>({
+        mutationFn: (run) => run(),
+        onSuccess: (lead) => {
+            queryClient.setQueryData<Lead>([...leadsKey, lead.id], lead);
+            queryClient.setQueryData<LeadSummary[]>(leadsKey, (current) =>
+                current ? upsertById(current, lead) : current,
+            );
+            void queryClient.invalidateQueries({
+                queryKey: [...leadsKey, lead.id, 'history'],
+            });
+        },
+    });
 }

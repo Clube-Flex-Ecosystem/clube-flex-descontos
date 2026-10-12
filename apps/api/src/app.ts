@@ -7,10 +7,10 @@ import { pool } from './infrastructure/database/drizzle/runtime';
 export const env = loadEnv();
 export const logger = createLogger(env);
 export const app = createApp({
-  logger,
-  checkReadiness: createDatabaseReadinessCheck(pool),
-  dashboardOrigin: env.DASHBOARD_ORIGIN,
-  catalogOrigin: env.CATALOG_ORIGIN,
-  authSecret: env.AUTH_SECRET,
-  trustProxyHops: env.TRUST_PROXY_HOPS,
+    logger,
+    checkReadiness: createDatabaseReadinessCheck(pool),
+    dashboardOrigin: env.DASHBOARD_ORIGIN,
+    catalogOrigin: env.CATALOG_ORIGIN,
+    authSecret: env.AUTH_SECRET,
+    trustProxyHops: env.TRUST_PROXY_HOPS,
 });

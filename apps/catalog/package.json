@@ -1,32 +1,32 @@
 {
-  "name": "@flex/catalog",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "dev": "astro dev",
-    "build": "astro build",
-    "typecheck": "astro check"
-  },
-  "dependencies": {
-    "@astrojs/react": "^5.0.2",
-    "@astrojs/node": "^11.1.7",
-    "@hookform/resolvers": "5.9.1",
-    "@lucide/astro": "^1.55.0",
-    "@tailwindcss/vite": "^4.1.14",
-    "astro": "^7.3.8",
-    "axios": "^1.12.2",
-    "lucide-react": "^1.55.0",
-    "react": "^19.3.0",
-    "react-dom": "^19.3.0",
-    "react-hook-form": "7.89.0",
-    "tailwindcss": "^4.1.14",
-    "zod": "^4.6.5"
-  },
-  "devDependencies": {
-    "@astrojs/check": "^0.9.10",
-    "@flex/contracts": "workspace:*",
-    "@types/react": "^19.3.0",
-    "@types/react-dom": "^19.3.0",
-    "typescript": "^6.0.3"
-  }
+    "name": "@flex/catalog",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "astro dev",
+        "build": "astro build",
+        "typecheck": "astro check"
+    },
+    "dependencies": {
+        "@astrojs/react": "^5.0.2",
+        "@astrojs/node": "^11.1.7",
+        "@hookform/resolvers": "5.9.1",
+        "@lucide/astro": "^1.55.0",
+        "@tailwindcss/vite": "^4.1.14",
+        "astro": "^7.3.8",
+        "axios": "^1.12.2",
+        "lucide-react": "^1.55.0",
+        "react": "^19.3.0",
+        "react-dom": "^19.3.0",
+        "react-hook-form": "7.89.0",
+        "tailwindcss": "^4.1.14",
+        "zod": "^4.6.5"
+    },
+    "devDependencies": {
+        "@astrojs/check": "^0.9.10",
+        "@flex/contracts": "workspace:*",
+        "@types/react": "^19.3.0",
+        "@types/react-dom": "^19.3.0",
+        "typescript": "^6.0.3"
+    }
 }

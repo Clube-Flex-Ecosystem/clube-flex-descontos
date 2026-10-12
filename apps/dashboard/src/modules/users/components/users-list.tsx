@@ -11,34 +11,34 @@ const textOf = (user: AdminUser) => `${user.fullName} ${user.username}`;
 
 /** Busca os usuários e prepara os dados e callbacks para a apresentação. */
 export function UsersList({
-  canManage,
-  onCreate,
+    canManage,
+    onCreate,
 }: {
-  canManage: boolean;
-  onCreate: () => void;
+    canManage: boolean;
+    onCreate: () => void;
 }) {
-  const { data: users } = useSuspenseQuery(usersQueryOptions);
-  const session = useSession();
-  const navigate = useNavigate();
-  const filter = useListFilter('users', users, { stateOf, textOf });
+    const { data: users } = useSuspenseQuery(usersQueryOptions);
+    const session = useSession();
+    const navigate = useNavigate();
+    const filter = useListFilter('users', users, { stateOf, textOf });
 
-  const openUser = (user: AdminUser) =>
-    void navigate({ to: '/usuarios/$userId', params: { userId: user.id } });
+    const openUser = (user: AdminUser) =>
+        void navigate({ to: '/usuarios/$userId', params: { userId: user.id } });
 
-  return (
-    <UsersData
-      users={filter.filtered}
-      canManage={canManage}
-      currentUserId={session?.user.id}
-      activeStatus={filter.state}
-      onStatusChange={filter.setState}
-      statusCount={filter.countOf}
-      search={filter.search}
-      onSearchChange={filter.setSearch}
-      onClearFilters={filter.clear}
-      total={filter.total}
-      onOpenUser={openUser}
-      onCreate={onCreate}
-    />
-  );
+    return (
+        <UsersData
+            users={filter.filtered}
+            canManage={canManage}
+            currentUserId={session?.user.id}
+            activeStatus={filter.state}
+            onStatusChange={filter.setState}
+            statusCount={filter.countOf}
+            search={filter.search}
+            onSearchChange={filter.setSearch}
+            onClearFilters={filter.clear}
+            total={filter.total}
+            onOpenUser={openUser}
+            onCreate={onCreate}
+        />
+    );
 }

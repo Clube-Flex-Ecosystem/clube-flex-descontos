@@ -4,51 +4,53 @@ import { firstAllowedModule } from '../../app/navigation';
 import { sessionQueryOptions } from '../../modules/auth/queries/session.query';
 
 export const Route = createFileRoute('/_authenticated/')({
-  // Sem página inicial de métricas: segue para o primeiro módulo permitido.
-  beforeLoad: ({ context }) => {
-    const target = firstAllowedModule(context.session.permissions);
-    if (target) throw redirect({ to: target });
-  },
-  head: () => ({ meta: [{ title: 'Início — Clube Flex' }] }),
-  component: Home,
+    // Sem página inicial de métricas: segue para o primeiro módulo permitido.
+    beforeLoad: ({ context }) => {
+        const target = firstAllowedModule(context.session.permissions);
+        if (target) throw redirect({ to: target });
+    },
+    head: () => ({ meta: [{ title: 'Início — Clube Flex' }] }),
+    component: Home,
 });
 
 function Home() {
-  const { session } = Route.useRouteContext();
-  const { data } = useQuery(sessionQueryOptions);
-  const current = data?.session ?? session;
+    const { session } = Route.useRouteContext();
+    const { data } = useQuery(sessionQueryOptions);
+    const current = data?.session ?? session;
 
-  return (
-    <>
-      <div className="mb-4">
-        <h1 className="t-page">Olá, {current.user.fullName.split(' ')[0]}</h1>
-      </div>
-      <section
-        className="grid justify-items-start gap-1.5 rounded-card border border-border bg-surface p-6"
-        aria-labelledby="home-title"
-      >
-        {current.permissions.length === 0 ? (
-          <>
-            <h2 id="home-title" className="t-section">
-              Sua conta ainda não possui permissões
-            </h2>
-            <p className="muted">
-              Solicite a um administrador as permissões necessárias para usar o
-              painel.
-            </p>
-          </>
-        ) : (
-          <>
-            <h2 id="home-title" className="t-section">
-              Nenhum módulo disponível ainda
-            </h2>
-            <p className="muted">
-              Os módulos do painel aparecerão no menu lateral conforme forem
-              liberados para a sua conta.
-            </p>
-          </>
-        )}
-      </section>
-    </>
-  );
+    return (
+        <>
+            <div className="mb-4">
+                <h1 className="t-page">
+                    Olá, {current.user.fullName.split(' ')[0]}
+                </h1>
+            </div>
+            <section
+                className="grid justify-items-start gap-1.5 rounded-card border border-border bg-surface p-6"
+                aria-labelledby="home-title"
+            >
+                {current.permissions.length === 0 ? (
+                    <>
+                        <h2 id="home-title" className="t-section">
+                            Sua conta ainda não possui permissões
+                        </h2>
+                        <p className="muted">
+                            Solicite a um administrador as permissões
+                            necessárias para usar o painel.
+                        </p>
+                    </>
+                ) : (
+                    <>
+                        <h2 id="home-title" className="t-section">
+                            Nenhum módulo disponível ainda
+                        </h2>
+                        <p className="muted">
+                            Os módulos do painel aparecerão no menu lateral
+                            conforme forem liberados para a sua conta.
+                        </p>
+                    </>
+                )}
+            </section>
+        </>
+    );
 }

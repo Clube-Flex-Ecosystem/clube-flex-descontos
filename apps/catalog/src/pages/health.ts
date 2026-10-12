@@ -5,6 +5,6 @@ export const prerender = false;
 
 // Verificação de processo ativo: não depende da API.
 export const GET: APIRoute = () => {
-  const body: HealthStatus = { status: 'ok' };
-  return Response.json(body);
+    const body: HealthStatus = { status: 'ok' };
+    return Response.json(body);
 };

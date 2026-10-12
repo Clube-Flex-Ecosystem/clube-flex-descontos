@@ -7,21 +7,21 @@ import { SubmitPublicContactUseCase } from './use-cases/submit-public-contact.us
 
 const getConsent = new GetContactConsentUseCase();
 const submitContact = new SubmitPublicContactUseCase(
-  new DrizzlePublicContactRepository(),
-  clock,
+    new DrizzlePublicContactRepository(),
+    clock,
 );
 
 export const getContactConsentController: RequestHandler = (_req, res) => {
-  res.json(getConsent.execute());
+    res.json(getConsent.execute());
 };
 
 export const submitPublicContactController: RequestHandler = async (
-  req,
-  res,
+    req,
+    res,
 ) => {
-  const body = publicContactRequestSchema.parse(req.body);
-  await submitContact.execute(body);
-  res.status(202).json({
-    message: 'Recebemos seus dados. Nossa equipe entrará em contato.',
-  });
+    const body = publicContactRequestSchema.parse(req.body);
+    await submitContact.execute(body);
+    res.status(202).json({
+        message: 'Recebemos seus dados. Nossa equipe entrará em contato.',
+    });
 };

@@ -1,5 +1,5 @@
 /** API pública do módulo de planos. */
 export {
-  categoriesQueryOptions,
-  categoriesKey,
+    categoriesQueryOptions,
+    categoriesKey,
 } from './queries/categories.query';

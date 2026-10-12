@@ -8,25 +8,25 @@ import type { Request, Response } from 'express';
 export const SESSION_COOKIE = '__Host-session';
 
 const cookieOptions = {
-  httpOnly: true,
-  secure: true,
-  sameSite: 'strict',
-  path: '/',
+    httpOnly: true,
+    secure: true,
+    sameSite: 'strict',
+    path: '/',
 } as const;
 
 export function readAuthToken(req: Request): string | undefined {
-  const value = req.cookies?.[SESSION_COOKIE] as unknown;
-  return typeof value === 'string' && value ? value : undefined;
+    const value = req.cookies?.[SESSION_COOKIE] as unknown;
+    return typeof value === 'string' && value ? value : undefined;
 }
 
 export function setAuthCookie(
-  res: Response,
-  token: string,
-  expiresAt: Date,
+    res: Response,
+    token: string,
+    expiresAt: Date,
 ): void {
-  res.cookie(SESSION_COOKIE, token, { ...cookieOptions, expires: expiresAt });
+    res.cookie(SESSION_COOKIE, token, { ...cookieOptions, expires: expiresAt });
 }
 
 export function clearAuthCookie(res: Response): void {
-  res.clearCookie(SESSION_COOKIE, cookieOptions);
+    res.clearCookie(SESSION_COOKIE, cookieOptions);
 }

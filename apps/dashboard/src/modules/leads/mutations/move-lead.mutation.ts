@@ -5,14 +5,14 @@ import { leadsKey } from '../queries/leads.query';
 import { upsertById } from '../../../shared/http/versioning';
 
 interface MoveLeadInput {
-  lead: LeadSummary;
-  stage: LeadStage;
-  lossReason?: string;
+    lead: LeadSummary;
+    stage: LeadStage;
+    lossReason?: string;
 }
 
 interface MoveLeadSnapshot {
-  list?: LeadSummary[];
-  detail?: Lead;
+    list?: LeadSummary[];
+    detail?: Lead;
 }
 
 /**
@@ -20,40 +20,40 @@ interface MoveLeadSnapshot {
  * representação versionada devolvida pela API e restaurada integralmente em falha.
  */
 export function useMoveLead() {
-  const queryClient = useQueryClient();
+    const queryClient = useQueryClient();
 
-  return useMutation<Lead, Error, MoveLeadInput, MoveLeadSnapshot>({
-    mutationFn: ({ lead, stage, lossReason }) =>
-      leadsApi.stage(lead.id, lead.version, stage, lossReason),
-    onMutate: async ({ lead, stage }) => {
-      await queryClient.cancelQueries({ queryKey: leadsKey });
-      const snapshot = {
-        list: queryClient.getQueryData<LeadSummary[]>(leadsKey),
-        detail: queryClient.getQueryData<Lead>([...leadsKey, lead.id]),
-      };
+    return useMutation<Lead, Error, MoveLeadInput, MoveLeadSnapshot>({
+        mutationFn: ({ lead, stage, lossReason }) =>
+            leadsApi.stage(lead.id, lead.version, stage, lossReason),
+        onMutate: async ({ lead, stage }) => {
+            await queryClient.cancelQueries({ queryKey: leadsKey });
+            const snapshot = {
+                list: queryClient.getQueryData<LeadSummary[]>(leadsKey),
+                detail: queryClient.getQueryData<Lead>([...leadsKey, lead.id]),
+            };
 
-      queryClient.setQueryData<LeadSummary[]>(leadsKey, (current) =>
-        current?.map((item) =>
-          item.id === lead.id ? { ...item, stage } : item,
-        ),
-      );
-      queryClient.setQueryData<Lead>([...leadsKey, lead.id], (current) =>
-        current ? { ...current, stage } : current,
-      );
-      return snapshot;
-    },
-    onError: (_error, variables, snapshot) => {
-      queryClient.setQueryData(leadsKey, snapshot?.list);
-      queryClient.setQueryData(
-        [...leadsKey, variables.lead.id],
-        snapshot?.detail,
-      );
-    },
-    onSuccess: (lead) => {
-      queryClient.setQueryData<LeadSummary[]>(leadsKey, (current) =>
-        current ? upsertById(current, lead) : current,
-      );
-      queryClient.setQueryData<Lead>([...leadsKey, lead.id], lead);
-    },
-  });
+            queryClient.setQueryData<LeadSummary[]>(leadsKey, (current) =>
+                current?.map((item) =>
+                    item.id === lead.id ? { ...item, stage } : item,
+                ),
+            );
+            queryClient.setQueryData<Lead>([...leadsKey, lead.id], (current) =>
+                current ? { ...current, stage } : current,
+            );
+            return snapshot;
+        },
+        onError: (_error, variables, snapshot) => {
+            queryClient.setQueryData(leadsKey, snapshot?.list);
+            queryClient.setQueryData(
+                [...leadsKey, variables.lead.id],
+                snapshot?.detail,
+            );
+        },
+        onSuccess: (lead) => {
+            queryClient.setQueryData<LeadSummary[]>(leadsKey, (current) =>
+                current ? upsertById(current, lead) : current,
+            );
+            queryClient.setQueryData<Lead>([...leadsKey, lead.id], lead);
+        },
+    });
 }

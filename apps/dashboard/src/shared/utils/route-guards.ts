@@ -6,16 +6,18 @@ import type { Permission, SessionResponse } from '@flex/contracts';
  * API continua sendo a autoridade e recusa a operação de qualquer forma.
  */
 export function requirePermission(
-  session: SessionResponse,
-  permission: Permission,
+    session: SessionResponse,
+    permission: Permission,
 ): void {
-  if (!session.permissions.includes(permission)) throw redirect({ to: '/' });
+    if (!session.permissions.includes(permission)) throw redirect({ to: '/' });
 }
 
 export function requireAnyPermission(
-  session: SessionResponse,
-  required: readonly Permission[],
+    session: SessionResponse,
+    required: readonly Permission[],
 ): void {
-  if (!required.some((permission) => session.permissions.includes(permission)))
-    throw redirect({ to: '/' });
+    if (
+        !required.some((permission) => session.permissions.includes(permission))
+    )
+        throw redirect({ to: '/' });
 }

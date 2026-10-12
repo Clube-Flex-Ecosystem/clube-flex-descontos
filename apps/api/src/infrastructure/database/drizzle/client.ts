@@ -3,11 +3,11 @@ import pg from 'pg';
 import * as schema from './schema';
 
 export function createPool(databaseUrl: string): pg.Pool {
-  return new pg.Pool({ connectionString: databaseUrl });
+    return new pg.Pool({ connectionString: databaseUrl });
 }
 
 export function createDatabase(pool: pg.Pool) {
-  return drizzle(pool, { schema });
+    return drizzle(pool, { schema });
 }
 
 export type Database = ReturnType<typeof createDatabase>;
@@ -16,11 +16,11 @@ export type Database = ReturnType<typeof createDatabase>;
 export let db: Database;
 
 export function setDatabase(pool: pg.Pool): void {
-  db = createDatabase(pool);
+    db = createDatabase(pool);
 }
 
 /** Banco ou transação: ambos aceitam as mesmas consultas dos repositories. */
 export type DatabaseExecutor = Pick<
-  Database,
-  'select' | 'insert' | 'update' | 'delete' | 'execute'
+    Database,
+    'select' | 'insert' | 'update' | 'delete' | 'execute'
 >;

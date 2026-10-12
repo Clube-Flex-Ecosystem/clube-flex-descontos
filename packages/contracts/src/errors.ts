@@ -1,41 +1,41 @@
 import { z } from 'zod';
 
 export const errorCodes = [
-  'MALFORMED_REQUEST',
-  'AUTHENTICATION_REQUIRED',
-  'INVALID_CREDENTIALS',
-  'PERMISSION_DENIED',
-  'RESOURCE_NOT_FOUND',
-  'VALIDATION_ERROR',
-  'PUBLICATION_REQUIREMENTS_NOT_MET',
-  'DUPLICATE_RESOURCE',
-  'INVALID_RESOURCE_STATE',
-  'RESOURCE_VERSION_CONFLICT',
-  'PROTECTED_RESOURCE',
-  'RESOURCE_VERSION_REQUIRED',
-  'RATE_LIMIT_EXCEEDED',
-  'INTERNAL_SERVER_ERROR',
-  'SERVICE_UNAVAILABLE',
+    'MALFORMED_REQUEST',
+    'AUTHENTICATION_REQUIRED',
+    'INVALID_CREDENTIALS',
+    'PERMISSION_DENIED',
+    'RESOURCE_NOT_FOUND',
+    'VALIDATION_ERROR',
+    'PUBLICATION_REQUIREMENTS_NOT_MET',
+    'DUPLICATE_RESOURCE',
+    'INVALID_RESOURCE_STATE',
+    'RESOURCE_VERSION_CONFLICT',
+    'PROTECTED_RESOURCE',
+    'RESOURCE_VERSION_REQUIRED',
+    'RATE_LIMIT_EXCEEDED',
+    'INTERNAL_SERVER_ERROR',
+    'SERVICE_UNAVAILABLE',
 ] as const;
 
 export const errorCodeSchema = z.enum(errorCodes);
 export type ErrorCode = z.infer<typeof errorCodeSchema>;
 
 export const fieldErrorSchema = z.object({
-  field: z.string(),
-  code: z.string(),
-  message: z.string(),
+    field: z.string(),
+    code: z.string(),
+    message: z.string(),
 });
 export type FieldError = z.infer<typeof fieldErrorSchema>;
 
 /** Erro HTTP no formato `application/problem+json` (RFC 9457). */
 export const problemDetailsSchema = z.object({
-  type: z.string(),
-  title: z.string(),
-  status: z.number().int(),
-  code: errorCodeSchema,
-  detail: z.string(),
-  requestId: z.string().uuid(),
-  errors: z.array(fieldErrorSchema).optional(),
+    type: z.string(),
+    title: z.string(),
+    status: z.number().int(),
+    code: errorCodeSchema,
+    detail: z.string(),
+    requestId: z.string().uuid(),
+    errors: z.array(fieldErrorSchema).optional(),
 });
 export type ProblemDetails = z.infer<typeof problemDetailsSchema>;

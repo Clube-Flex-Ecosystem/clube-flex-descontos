@@ -6,7 +6,7 @@ import { sessionQueryOptions } from './queries/session.query';
 
 /** Sessão atual com as permissões vigentes (renovadas quando a aba volta ao foco). */
 export function useSession(): SessionResponse | undefined {
-  return useQuery(sessionQueryOptions).data?.session;
+    return useQuery(sessionQueryOptions).data?.session;
 }
 
 /**
@@ -14,5 +14,5 @@ export function useSession(): SessionResponse | undefined {
  * continua sendo a autoridade de acesso.
  */
 export function useCan(permission: Permission): boolean {
-  return useSession()?.permissions.includes(permission) ?? false;
+    return useSession()?.permissions.includes(permission) ?? false;
 }

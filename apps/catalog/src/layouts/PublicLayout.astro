@@ -3,37 +3,37 @@ import '../styles/tailwind.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 interface Props {
-  title: string;
-  description: string;
+    title: string;
+    description: string;
 }
 const { title, description } = Astro.props;
 ---
 
 <!doctype html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, viewport-fit=cover"
-    />
-    <meta name="description" content={description} />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-    <meta property="og:type" content="website" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..800&display=swap"
-    />
-    <title>{title}</title>
-  </head>
-  <body>
-    <Header />
-    <main id="main" tabindex="-1">
-      <slot />
-    </main>
-    <Footer />
-  </body>
+    <head>
+        <meta charset="utf-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, viewport-fit=cover"
+        />
+        <meta name="description" content={description} />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:type" content="website" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..800&display=swap"
+        />
+        <title>{title}</title>
+    </head>
+    <body>
+        <Header />
+        <main id="main" tabindex="-1">
+            <slot />
+        </main>
+        <Footer />
+    </body>
 </html>
