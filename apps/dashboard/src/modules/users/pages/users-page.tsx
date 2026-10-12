@@ -28,10 +28,7 @@ export function UsersPage() {
       />
 
       <Suspense fallback={<ListSkeleton label="Carregando usuários" />}>
-        <UsersList
-          canManage={canManage}
-          onCreate={() => setCreating(true)}
-        />
+        <UsersList canManage={canManage} onCreate={() => setCreating(true)} />
       </Suspense>
 
       {creating ? (
