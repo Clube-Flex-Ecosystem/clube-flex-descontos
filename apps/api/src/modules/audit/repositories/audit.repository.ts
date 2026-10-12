@@ -1,7 +1,7 @@
 export interface NewAuditEvent {
   action: string;
   occurredAt: Date;
-  /** Usuário autor; nulo para atores técnicos como `system/bootstrap`. */
+  /** Usuário autor; nulo para atores técnicos como seeds e tarefas internas. */
   actorUserId: string | null;
   actorLabel: string;
   targetType: string;

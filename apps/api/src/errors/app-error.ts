@@ -1,7 +1,6 @@
-import type { Request, Response } from 'express';
-import type { ErrorCode, FieldError, ProblemDetails } from '@flex/contracts';
+import type { ErrorCode, FieldError } from '@flex/contracts';
 
-const catalog: Record<
+const definitions: Record<
   ErrorCode,
   { status: number; title: string; detail: string }
 > = {
@@ -24,11 +23,6 @@ const catalog: Record<
     status: 403,
     title: 'Permissão negada',
     detail: 'Você não possui permissão para realizar esta operação.',
-  },
-  CSRF_VALIDATION_FAILED: {
-    status: 403,
-    title: 'Validação de segurança falhou',
-    detail: 'Não foi possível validar a origem da requisição.',
   },
   RESOURCE_NOT_FOUND: {
     status: 404,
@@ -89,35 +83,29 @@ const catalog: Record<
   },
 };
 
-const typeSlug = (code: ErrorCode) => code.toLowerCase().replaceAll('_', '-');
+export class AppError extends Error {
+  readonly status: number;
+  readonly title: string;
 
-export interface ProblemOptions {
-  /** Erros localizados por campo. */
-  errors?: FieldError[];
-  /** Substitui a mensagem padrão por uma mensagem de domínio, já em português. */
-  detail?: string;
-  headers?: Record<string, string>;
-}
-
-export function sendProblem(
-  req: Request,
-  res: Response,
-  code: ErrorCode,
-  options: ProblemOptions = {},
-): void {
-  const { status, title, detail: defaultDetail } = catalog[code];
-  const detail = options.detail ?? defaultDetail;
-  const body: ProblemDetails = {
-    type: `urn:flex:error:${typeSlug(code)}`,
-    title,
-    status,
-    code,
-    detail,
-    requestId: String(req.id),
-    ...(options.errors?.length ? { errors: options.errors } : {}),
-  };
-  for (const [name, value] of Object.entries(options.headers ?? {})) {
-    res.setHeader(name, value);
+  constructor(
+    readonly code: ErrorCode,
+    options: {
+      detail?: string;
+      errors?: FieldError[];
+      headers?: Record<string, string>;
+    } = {},
+  ) {
+    const definition = definitions[code];
+    super(options.detail ?? definition.detail);
+    this.name = this.constructor.name;
+    this.status = definition.status;
+    this.title = definition.title;
+    this.errors = options.errors;
+    this.headers = options.headers;
   }
-  res.status(status).type('application/problem+json').json(body);
+
+  readonly errors?: FieldError[];
+  readonly headers?: Record<string, string>;
 }
+
+export class HttpError extends AppError {}

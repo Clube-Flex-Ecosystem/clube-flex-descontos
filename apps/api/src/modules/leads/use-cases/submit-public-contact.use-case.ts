@@ -1,8 +1,13 @@
 import { CONTACT_CONSENT, type PublicContactRequest } from '@flex/contracts';
+import { AppError } from '../../../errors/app-error';
 import type { Clock } from '../../identity/services.types';
 import type { PublicContactRepository } from '../repositories/public-contact.repository';
 
-export class OutdatedConsentError extends Error {}
+export class OutdatedConsentError extends AppError {
+  constructor() {
+    super('VALIDATION_ERROR');
+  }
+}
 
 export class SubmitPublicContactUseCase {
   constructor(

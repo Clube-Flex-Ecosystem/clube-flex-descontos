@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import type { HealthStatus } from '@flex/contracts';
-import { sendProblem } from '../problem';
+import { HttpError } from '../../errors/app-error';
 
 export type ReadinessCheck = () => Promise<void>;
 
@@ -15,13 +15,10 @@ export function createHealthRouter(checkReadiness: ReadinessCheck): Router {
 
   // Prontidão: depende da conexão com o PostgreSQL.
   router.get('/ready', async (req, res) => {
-    try {
-      await checkReadiness();
-    } catch (error) {
+    await checkReadiness().catch((error: unknown) => {
       req.log.warn({ err: error }, 'API não está pronta');
-      sendProblem(req, res, 'SERVICE_UNAVAILABLE');
-      return;
-    }
+      throw new HttpError('SERVICE_UNAVAILABLE');
+    });
     const body: HealthStatus = { status: 'ok' };
     res.json(body);
   });

@@ -147,21 +147,6 @@ describe('rotas de autenticação', () => {
     ]);
   });
 
-  it('protege mutações por origem e aceita a origem do dashboard', async () => {
-    await seedUser(context, { password: STRONG_PASSWORD });
-    const cookie = cookieFrom(await login('maria.silva'));
-    const denied = await request(context.app)
-      .post('/v1/auth/logout')
-      .set('origin', 'https://origem-invalida.example')
-      .set('cookie', cookie)
-      .send({});
-    const allowed = await post('/v1/auth/logout', {}, cookie);
-
-    expect(denied.status).toBe(403);
-    expect(denied.body.code).toBe('CSRF_VALIDATION_FAILED');
-    expect(allowed.status).toBe(204);
-  });
-
   it('mantém a recuperação neutra e permite redefinir a senha', async () => {
     await seedUser(context, {
       username: 'com.email',

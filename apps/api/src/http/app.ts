@@ -1,4 +1,5 @@
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import express, { type Express, type RequestHandler } from 'express';
 import helmet from 'helmet';
 import type { Logger } from 'pino';
@@ -14,7 +15,6 @@ import { adminCommercialRouter } from './routes/admin-commercial.route';
 import { adminGovernanceRouter } from './routes/admin-governance.route';
 import { authRouter } from './routes/auth.route';
 import { createHealthRouter, type ReadinessCheck } from './routes/health.route';
-import { sendProblem } from './problem';
 
 export interface AppDependencies {
   logger: Logger;
@@ -45,40 +45,26 @@ export function createApp({
 
   app.use(createHttpLogger(logger));
   app.use(helmet());
+  app.use(
+    cors({
+      origin: [dashboardOrigin, catalogOrigin],
+      credentials: true,
+      exposedHeaders: ['x-request-id', 'retry-after', 'etag'],
+      allowedHeaders: ['content-type', 'if-match'],
+      methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+      maxAge: 600,
+    }),
+  );
   app.use(express.json({ limit: '100kb' }));
+  app.use(cookieParser());
 
   app.use('/v1/health', createHealthRouter(checkReadiness));
-  app.use(
-    '/v1/public',
-    cors({ origin: catalogOrigin, methods: ['GET', 'POST'] }),
-    publicCatalogRouter,
-    publicContactRouter,
-  );
+  app.use('/v1/public', publicCatalogRouter, publicContactRouter);
 
-  const dashboardCors = cors({
-    origin: dashboardOrigin,
-    credentials: true,
-    exposedHeaders: ['x-request-id', 'retry-after', 'etag'],
-    allowedHeaders: ['content-type', 'if-match'],
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-    maxAge: 600,
-  });
-  const dashboardOriginGuard: RequestHandler = (req, res, next) => {
-    if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) return next();
-    const declared = req.headers.origin ?? refererOrigin(req.headers.referer);
-    if (declared && declared !== dashboardOrigin) {
-      sendProblem(req, res, 'CSRF_VALIDATION_FAILED');
-      return;
-    }
-    next();
-  };
-
-  app.use('/v1/auth', noStore, dashboardCors, dashboardOriginGuard, authRouter);
+  app.use('/v1/auth', noStore, authRouter);
   app.use(
     '/v1/admin',
     noStore,
-    dashboardCors,
-    dashboardOriginGuard,
     authenticate,
     adminCatalogRouter,
     adminCommercialRouter,
@@ -88,13 +74,4 @@ export function createApp({
   app.use(notFoundMiddleware);
   app.use(globalErrorHandler);
   return app;
-}
-
-function refererOrigin(value: string | undefined): string | undefined {
-  if (!value) return undefined;
-  try {
-    return new URL(value).origin;
-  } catch {
-    return undefined;
-  }
 }

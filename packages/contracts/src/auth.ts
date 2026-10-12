@@ -85,6 +85,3 @@ export type SessionResponse = z.infer<typeof sessionResponseSchema>;
 
 export const recoveryResponseSchema = z.object({ message: z.string() });
 export type RecoveryResponse = z.infer<typeof recoveryResponseSchema>;
-
-/** Cabeçalho que entrega o token CSRF vinculado à sessão atual. */
-export const CSRF_HEADER = 'x-csrf-token';

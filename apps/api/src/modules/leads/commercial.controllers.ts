@@ -6,19 +6,10 @@ import {
   observationRequestSchema,
   stageTransitionRequestSchema,
   updateLeadRequestSchema,
-  type ErrorCode,
-  type FieldErrorCode,
 } from '@flex/contracts';
-import { sendProblem } from '../../http/problem';
-import { parseBody, fieldError } from '../../http/validation';
+import { HttpError } from '../../errors/app-error';
 import { readExpectedVersion, sendVersioned } from '../../http/versioning';
-import {
-  CommercialConflictError,
-  CommercialForbiddenError,
-  CommercialNotFoundError,
-  CommercialValidationError,
-} from './commercial.errors';
-import { clock } from '../../infrastructure/services';
+import { clock } from '../../infrastructure/clock';
 import { DrizzleCommercialRepository } from './repositories/drizzle-commercial.repository';
 import { ListCommercialLeadsUseCase } from './use-cases/list-commercial-leads.use-case';
 import { GetCommercialLeadUseCase } from './use-cases/get-commercial-lead.use-case';
@@ -79,52 +70,25 @@ function actor(req: Request) {
     permissions: a.permissions,
   };
 }
-function fail(error: unknown, req: Request, res: Response) {
-  if (error instanceof CommercialNotFoundError)
-    sendProblem(req, res, 'RESOURCE_NOT_FOUND');
-  else if (error instanceof CommercialForbiddenError)
-    sendProblem(req, res, 'PERMISSION_DENIED');
-  else if (error instanceof CommercialValidationError)
-    sendProblem(req, res, 'VALIDATION_ERROR', {
-      errors: [fieldError(error.field, error.code as FieldErrorCode)],
-    });
-  else if (error instanceof CommercialConflictError)
-    sendProblem(req, res, error.code as ErrorCode, {
-      ...(error.existingId ? { detail: error.existingId } : {}),
-    });
-  else throw error;
-}
-const wrap =
-  (handler: (req: Request, res: Response) => Promise<void>): RequestHandler =>
-  async (req, res) => {
-    try {
-      await handler(req, res);
-    } catch (e) {
-      fail(e, req, res);
-    }
-  };
-const id = (req: Request, res: Response) => {
+const wrap = (
+  handler: (req: Request, res: Response) => Promise<void>,
+): RequestHandler => handler;
+const id = (req: Request, _res: Response) => {
+  void _res;
   const value = req.params.id;
   if (typeof value !== 'string' || !UUID.test(value)) {
-    sendProblem(req, res, 'RESOURCE_NOT_FOUND');
-    return;
+    throw new HttpError('RESOURCE_NOT_FOUND');
   }
   return value;
 };
 const version = (req: Request, res: Response) => readExpectedVersion(req, res);
 const parsed = <T>(
   schema: {
-    safeParse: (v: unknown) => { success: boolean; data?: T; error?: unknown };
+    parse: (value: unknown) => T;
   },
   req: Request,
-  res: Response,
 ): T | undefined => {
-  const p = parseBody(schema as never, req.body);
-  if (!p.success) {
-    sendProblem(req, res, 'VALIDATION_ERROR', { errors: p.errors });
-    return;
-  }
-  return p.data as T;
+  return schema.parse(req.body);
 };
 
 export const commercialControllers = {
@@ -137,20 +101,20 @@ export const commercialControllers = {
       if (i) sendVersioned(res, await getLead.execute(actor(req), i));
     }),
     create: wrap(async (req, res) => {
-      const b = parsed(createLeadRequestSchema, req, res);
+      const b = parsed(createLeadRequestSchema, req);
       if (b) sendVersioned(res, await createLead.execute(actor(req), b), 201);
     }),
     update: wrap(async (req, res) => {
       const i = id(req, res),
         v = version(req, res),
-        b = parsed(updateLeadRequestSchema, req, res);
+        b = parsed(updateLeadRequestSchema, req);
       if (i && v !== undefined && b)
         sendVersioned(res, await updateLead.execute(actor(req), i, v, b));
     }),
     stage: wrap(async (req, res) => {
       const i = id(req, res),
         v = version(req, res),
-        b = parsed(stageTransitionRequestSchema, req, res);
+        b = parsed(stageTransitionRequestSchema, req);
       if (i && v !== undefined && b)
         sendVersioned(
           res,
@@ -160,7 +124,7 @@ export const commercialControllers = {
     assign: wrap(async (req, res) => {
       const i = id(req, res),
         v = version(req, res),
-        b = parsed(assigneeRequestSchema, req, res);
+        b = parsed(assigneeRequestSchema, req);
       if (i && v !== undefined && b)
         sendVersioned(
           res,
@@ -170,7 +134,7 @@ export const commercialControllers = {
     observe: wrap(async (req, res) => {
       const i = id(req, res),
         v = version(req, res),
-        b = parsed(observationRequestSchema, req, res);
+        b = parsed(observationRequestSchema, req);
       if (i && v !== undefined && b)
         sendVersioned(
           res,
@@ -182,7 +146,7 @@ export const commercialControllers = {
       const i = id(req, res),
         oid = req.params.observationId,
         v = version(req, res),
-        b = parsed(observationRequestSchema, req, res);
+        b = parsed(observationRequestSchema, req);
       if (
         i &&
         typeof oid === 'string' &&
@@ -221,7 +185,7 @@ export const commercialControllers = {
       res.json(await listSources.execute());
     }),
     create: wrap(async (req, res) => {
-      const b = parsed(leadSourceRequestSchema, req, res);
+      const b = parsed(leadSourceRequestSchema, req);
       if (b) sendVersioned(res, await createSource.execute(b), 201);
     }),
     get: wrap(async (req, res) => {
@@ -233,7 +197,7 @@ export const commercialControllers = {
     update: wrap(async (req, res) => {
       const i = id(req, res),
         v = version(req, res),
-        b = parsed(leadSourceRequestSchema, req, res);
+        b = parsed(leadSourceRequestSchema, req);
       if (i && v !== undefined && b)
         sendVersioned(res, await updateSource.execute(i, v, b));
     }),

@@ -1,7 +1,7 @@
 import { Router, type RequestHandler } from 'express';
 import { commercialControllers } from '../../modules/leads/commercial.controllers';
 import { requirePermissions } from '../middlewares/require-permissions.middleware';
-import { sendProblem } from '../problem';
+import { HttpError } from '../../errors/app-error';
 
 export const adminCommercialRouter = Router();
 const router = adminCommercialRouter;
@@ -11,7 +11,9 @@ const viewLeads: RequestHandler = (req, res, next) =>
     (p) => p === 'leads.view-own' || p === 'leads.view-all',
   )
     ? next()
-    : sendProblem(req, res, 'PERMISSION_DENIED');
+    : (() => {
+        throw new HttpError('PERMISSION_DENIED');
+      })();
 router.get('/leads', viewLeads, leads.list);
 router.get(
   '/leads/assignees',

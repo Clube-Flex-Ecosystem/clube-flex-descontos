@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import { sendProblem } from './problem';
+import { HttpError } from '../errors/app-error';
 
 /**
  * Versão conhecida pelo cliente, vinda de `If-Match` (`"3"`, `W/"3"` ou `3`). Sem um valor
@@ -7,14 +7,14 @@ import { sendProblem } from './problem';
  */
 export function readExpectedVersion(
   req: Request,
-  res: Response,
+  _res: Response,
 ): number | undefined {
+  void _res;
   const header = req.headers['if-match'];
   const raw = Array.isArray(header) ? header[0] : header;
   const match = raw ? /^(?:W\/)?"?(\d+)"?$/.exec(raw.trim()) : null;
   if (!match) {
-    sendProblem(req, res, 'RESOURCE_VERSION_REQUIRED');
-    return undefined;
+    throw new HttpError('RESOURCE_VERSION_REQUIRED');
   }
   return Number(match[1]);
 }

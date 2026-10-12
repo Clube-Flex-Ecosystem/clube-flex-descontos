@@ -1,4 +1,4 @@
-﻿import type { Request, RequestHandler, Response } from 'express';
+import type { Request, RequestHandler, Response } from 'express';
 import {
   categoryRequestSchema,
   createPartnerRequestSchema,
@@ -11,24 +11,13 @@ import {
   type PartnerWarning,
   type Plan,
 } from '@flex/contracts';
-import { sendProblem } from '../../../http/problem';
-import { fieldError, parseBody } from '../../../http/validation';
+import { HttpError } from '../../../errors/app-error';
 import { readExpectedVersion, sendVersioned } from '../../../http/versioning';
-import { clock } from '../../../infrastructure/services';
+import { clock } from '../../../infrastructure/clock';
 import { DrizzleCatalogUnitOfWork } from '../../../infrastructure/database/drizzle/drizzle-catalog-unit-of-work';
 import { DrizzlePlanRepository } from '../repositories/drizzle-plan.repository';
 import { DrizzleCategoryRepository } from '../repositories/drizzle-category.repository';
 import { DrizzlePartnerRepository } from '../repositories/drizzle-partner.repository';
-import {
-  DuplicateResourceError,
-  InvalidResourceStateError,
-  ProtectedResourceError,
-  PublicationRequirementsError,
-  ReferenceValidationError,
-  ResourceNotFoundError,
-  VersionConflictError,
-  type FieldIssue,
-} from '../errors';
 import type { CategoryRecord } from '../repositories/category.repository';
 import type {
   PartnerRecord,
@@ -168,41 +157,6 @@ function partnerBody(
 
 // ───────── Tradução de erros de aplicação ─────────
 
-const issuesToErrors = (issues: FieldIssue[]) =>
-  issues.map((issue) => fieldError(issue.field, issue.code));
-
-/** Converte um erro conhecido do catálogo em resposta. Retorna `false` se não for conhecido. */
-function respondToCatalogError(
-  error: unknown,
-  req: Request,
-  res: Response,
-): boolean {
-  if (error instanceof ResourceNotFoundError) {
-    sendProblem(req, res, 'RESOURCE_NOT_FOUND');
-  } else if (error instanceof VersionConflictError) {
-    sendProblem(req, res, 'RESOURCE_VERSION_CONFLICT');
-  } else if (error instanceof DuplicateResourceError) {
-    sendProblem(req, res, 'DUPLICATE_RESOURCE', {
-      errors: issuesToErrors(error.issues),
-    });
-  } else if (error instanceof InvalidResourceStateError) {
-    sendProblem(req, res, 'INVALID_RESOURCE_STATE', { detail: error.message });
-  } else if (error instanceof ProtectedResourceError) {
-    sendProblem(req, res, 'PROTECTED_RESOURCE', { detail: error.message });
-  } else if (error instanceof PublicationRequirementsError) {
-    sendProblem(req, res, 'PUBLICATION_REQUIREMENTS_NOT_MET', {
-      errors: issuesToErrors(error.issues),
-    });
-  } else if (error instanceof ReferenceValidationError) {
-    sendProblem(req, res, 'VALIDATION_ERROR', {
-      errors: issuesToErrors(error.issues),
-    });
-  } else {
-    return false;
-  }
-  return true;
-}
-
 /** Controllers do catálogo: validam a entrada, executam o caso de uso e montam a resposta. */
 // Repository e use cases são criados neste módulo, junto aos controllers.
 /** Envolve o handler com a tradução de erros e a validação do `:id` da rota. */
@@ -213,25 +167,14 @@ const withId =
   async (req, res) => {
     const id = req.params.id;
     if (typeof id !== 'string' || !UUID.test(id)) {
-      sendProblem(req, res, 'RESOURCE_NOT_FOUND');
-      return;
+      throw new HttpError('RESOURCE_NOT_FOUND');
     }
-    try {
-      await handler(id, req, res);
-    } catch (error) {
-      if (!respondToCatalogError(error, req, res)) throw error;
-    }
+    await handler(id, req, res);
   };
 
-const withoutId =
-  (handler: (req: Request, res: Response) => Promise<void>): RequestHandler =>
-  async (req, res) => {
-    try {
-      await handler(req, res);
-    } catch (error) {
-      if (!respondToCatalogError(error, req, res)) throw error;
-    }
-  };
+const withoutId = (
+  handler: (req: Request, res: Response) => Promise<void>,
+): RequestHandler => handler;
 
 // ───── Planos ─────
 
@@ -253,32 +196,20 @@ const plans = {
     sendVersioned(res, planBody(await useCases.getPlan.execute({ id })));
   }),
   create: withoutId(async (req, res) => {
-    const body = parseBody(createPlanRequestSchema, req.body);
-    if (!body.success) {
-      sendProblem(req, res, 'VALIDATION_ERROR', { errors: body.errors });
-      return;
-    }
-    sendVersioned(
-      res,
-      planBody(await useCases.createPlan.execute(body.data)),
-      201,
-    );
+    const body = createPlanRequestSchema.parse(req.body);
+    sendVersioned(res, planBody(await useCases.createPlan.execute(body)), 201);
   }),
   update: withId(async (id, req, res) => {
     const version = readExpectedVersion(req, res);
     if (version === undefined) return;
-    const body = parseBody(updatePlanRequestSchema, req.body);
-    if (!body.success) {
-      sendProblem(req, res, 'VALIDATION_ERROR', { errors: body.errors });
-      return;
-    }
+    const body = updatePlanRequestSchema.parse(req.body);
     sendVersioned(
       res,
       planBody(
         await useCases.updatePlan.execute({
           id,
           version,
-          name: body.data.name,
+          name: body.name,
         }),
       ),
     );
@@ -312,32 +243,24 @@ const categories = {
     );
   }),
   create: withoutId(async (req, res) => {
-    const body = parseBody(categoryRequestSchema, req.body);
-    if (!body.success) {
-      sendProblem(req, res, 'VALIDATION_ERROR', { errors: body.errors });
-      return;
-    }
+    const body = categoryRequestSchema.parse(req.body);
     sendVersioned(
       res,
-      categoryBody(await useCases.createCategory.execute(body.data)),
+      categoryBody(await useCases.createCategory.execute(body)),
       201,
     );
   }),
   update: withId(async (id, req, res) => {
     const version = readExpectedVersion(req, res);
     if (version === undefined) return;
-    const body = parseBody(categoryRequestSchema, req.body);
-    if (!body.success) {
-      sendProblem(req, res, 'VALIDATION_ERROR', { errors: body.errors });
-      return;
-    }
+    const body = categoryRequestSchema.parse(req.body);
     sendVersioned(
       res,
       categoryBody(
         await useCases.updateCategory.execute({
           id,
           version,
-          name: body.data.name,
+          name: body.name,
         }),
       ),
     );
@@ -368,28 +291,18 @@ const partners = {
     sendVersioned(res, partnerBody(await useCases.getPartner.execute({ id })));
   }),
   create: withoutId(async (req, res) => {
-    const body = parseBody(createPartnerRequestSchema, req.body);
-    if (!body.success) {
-      sendProblem(req, res, 'VALIDATION_ERROR', { errors: body.errors });
-      return;
-    }
-    const { partner, warnings } = await useCases.createPartner.execute(
-      body.data,
-    );
+    const body = createPartnerRequestSchema.parse(req.body);
+    const { partner, warnings } = await useCases.createPartner.execute(body);
     sendVersioned(res, partnerBody(partner, warnings), 201);
   }),
   update: withId(async (id, req, res) => {
     const version = readExpectedVersion(req, res);
     if (version === undefined) return;
-    const body = parseBody(updatePartnerRequestSchema, req.body);
-    if (!body.success) {
-      sendProblem(req, res, 'VALIDATION_ERROR', { errors: body.errors });
-      return;
-    }
+    const body = updatePartnerRequestSchema.parse(req.body);
     const { partner, warnings } = await useCases.updatePartner.execute({
       id,
       version,
-      data: body.data,
+      data: body,
     });
     sendVersioned(res, partnerBody(partner, warnings));
   }),

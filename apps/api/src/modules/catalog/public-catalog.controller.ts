@@ -1,5 +1,5 @@
-import type { Request, RequestHandler, Response } from 'express';
-import { sendProblem } from '../../http/problem';
+import type { Request, RequestHandler } from 'express';
+import { HttpError } from '../../errors/app-error';
 import { DrizzlePlanRepository } from './repositories/drizzle-plan.repository';
 import { DrizzleCategoryRepository } from './repositories/drizzle-category.repository';
 import { DrizzlePartnerRepository } from './repositories/drizzle-partner.repository';
@@ -43,61 +43,50 @@ export const listPublicCategoriesController: RequestHandler = async (
   req,
   res,
 ) => {
-  const planId = readId(req, res, 'planId');
-  if (!planId) return;
+  const planId = readId(req, 'planId');
   const result = await listCategories.execute(planId);
   if (result) res.json(result.map(({ id, name }) => ({ id, name })));
-  else sendProblem(req, res, 'RESOURCE_NOT_FOUND');
+  else throw new HttpError('RESOURCE_NOT_FOUND');
 };
 
 export const listPublicPartnersController: RequestHandler = async (
   req,
   res,
 ) => {
-  const planId = readId(req, res, 'planId');
-  if (!planId) return;
-  const categoryId = readOptionalId(req, res, 'categoryId');
-  if (categoryId === false) return;
-  const result = await listPartners.execute(planId, categoryId || undefined);
+  const planId = readId(req, 'planId');
+  const categoryId = readOptionalId(req, 'categoryId');
+  const result = await listPartners.execute(planId, categoryId);
   if (result)
     res.json(result.map((partner) => toPublicPartner(partner, planId)));
-  else sendProblem(req, res, 'RESOURCE_NOT_FOUND');
+  else throw new HttpError('RESOURCE_NOT_FOUND');
 };
 
 export const getPublicPartnerController: RequestHandler = async (req, res) => {
   const slug = req.params.slug;
   if (typeof slug !== 'string' || !slug)
-    return sendProblem(req, res, 'RESOURCE_NOT_FOUND');
-  const planId = readOptionalId(req, res, 'planId');
-  if (planId === false) return;
-  const result = await getPartner.execute(slug, planId || undefined);
+    throw new HttpError('RESOURCE_NOT_FOUND');
+  const planId = readOptionalId(req, 'planId');
+  const result = await getPartner.execute(slug, planId);
   if (result.redirectSlug) {
     const query = planId ? `?planId=${encodeURIComponent(planId)}` : '';
     res.redirect(308, `/v1/public/partners/${result.redirectSlug}${query}`);
-  } else if (result.partner)
-    res.json(toPublicPartner(result.partner, planId || undefined));
-  else sendProblem(req, res, 'RESOURCE_NOT_FOUND');
+  } else if (result.partner) res.json(toPublicPartner(result.partner, planId));
+  else throw new HttpError('RESOURCE_NOT_FOUND');
 };
 
-function readId(req: Request, res: Response, key: string): string | undefined {
+function readId(req: Request, key: string): string {
   const value = req.query[key];
   if (typeof value !== 'string' || !UUID.test(value)) {
-    sendProblem(req, res, 'VALIDATION_ERROR');
-    return undefined;
+    throw new HttpError('VALIDATION_ERROR');
   }
   return value;
 }
 
-function readOptionalId(
-  req: Request,
-  res: Response,
-  key: string,
-): string | false | undefined {
+function readOptionalId(req: Request, key: string): string | undefined {
   const value = req.query[key];
   if (value === undefined) return undefined;
   if (typeof value !== 'string' || !UUID.test(value)) {
-    sendProblem(req, res, 'VALIDATION_ERROR');
-    return false;
+    throw new HttpError('VALIDATION_ERROR');
   }
   return value;
 }

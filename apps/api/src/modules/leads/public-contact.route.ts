@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { rateLimit } from 'express-rate-limit';
-import { sendProblem } from '../../http/problem';
+import { HttpError } from '../../errors/app-error';
 import {
   getContactConsentController,
   submitPublicContactController,
@@ -11,7 +11,9 @@ const limiter = rateLimit({
   limit: 10,
   standardHeaders: 'draft-8',
   legacyHeaders: false,
-  handler: (req, res) => sendProblem(req, res, 'RATE_LIMIT_EXCEEDED'),
+  handler: () => {
+    throw new HttpError('RATE_LIMIT_EXCEEDED');
+  },
 });
 
 export const publicContactRouter = Router();

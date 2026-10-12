@@ -1,10 +1,10 @@
 import type { Permission } from '@flex/contracts';
 import type { RequestHandler } from 'express';
 import { verifyAuthToken } from '../../infrastructure/security/jwt';
-import { clock } from '../../infrastructure/services';
+import { clock } from '../../infrastructure/clock';
 import { DrizzlePermissionRepository } from '../../modules/identity/repositories/drizzle-permission.repository';
 import { DrizzleUserRepository } from '../../modules/identity/repositories/drizzle-user.repository';
-import { sendProblem } from '../problem';
+import { HttpError } from '../../errors/app-error';
 import { clearAuthCookie, readAuthToken } from '../session-cookie';
 
 export interface AuthenticatedContext {
@@ -40,8 +40,7 @@ export const authenticate: RequestHandler = async (req, res, next) => {
     user.authVersion !== token.authVersion
   ) {
     if (raw) clearAuthCookie(res);
-    sendProblem(req, res, 'AUTHENTICATION_REQUIRED');
-    return;
+    throw new HttpError('AUTHENTICATION_REQUIRED');
   }
 
   req.auth = {

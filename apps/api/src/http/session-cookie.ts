@@ -15,17 +15,8 @@ const cookieOptions = {
 } as const;
 
 export function readAuthToken(req: Request): string | undefined {
-  const header = req.headers.cookie;
-  if (!header) return undefined;
-  for (const part of header.split(';')) {
-    const separator = part.indexOf('=');
-    if (separator === -1) continue;
-    if (part.slice(0, separator).trim() === SESSION_COOKIE) {
-      const value = part.slice(separator + 1).trim();
-      return value || undefined;
-    }
-  }
-  return undefined;
+  const value = req.cookies?.[SESSION_COOKIE] as unknown;
+  return typeof value === 'string' && value ? value : undefined;
 }
 
 export function setAuthCookie(

@@ -169,7 +169,7 @@ Ordem conceitual:
 
 ### Senhas
 
-- Hash com Argon2id e parâmetros mínimos recomendados pela OWASP, calibrados na VPS.
+- Hash de senhas com bcrypt e custo configurável, usando 12 rounds por padrão.
 - Comprimento entre 15 e 128 caracteres.
 - Unicode, espaços e colagem permitidos.
 - Sem regras obrigatórias de composição e sem expiração periódica.
@@ -187,7 +187,7 @@ Ordem conceitual:
 
 - Origens permitidas são declaradas explicitamente; `*` não é permitido com credenciais.
 - Operações mutáveis nunca utilizam `GET`.
-- Operações mutáveis validam `Origin` ou `Referer` quando declarado; a política `SameSite=Strict` impede o envio normal do cookie em contexto entre sites.
+- O CORS aceita somente as origens configuradas para o dashboard e o catálogo; a política `SameSite=Strict` impede o envio normal do cookie em contexto entre sites.
 - Endpoints públicos do catálogo não recebem o cookie administrativo.
 
 ### Códigos de acesso

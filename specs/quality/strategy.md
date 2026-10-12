@@ -48,7 +48,7 @@ Devem possuir testes automatizados:
 - autenticação e encerramento de sessão;
 - efeito imediato de alterações de permissões;
 - escopo de visualização e edição de leads;
-- rejeição de mutações autenticadas provenientes de origem declarada não autorizada;
+- autenticação por cookie `HttpOnly`, `Secure` e `SameSite=Strict`;
 - resposta neutra contra enumeração de contatos e contas;
 - expiração, tentativas, uso único e invalidação de códigos;
 - fallback manual seguro quando o envio administrativo de código falhar;

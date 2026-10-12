@@ -24,10 +24,7 @@ const envSchema = z
     TRUST_PROXY_HOPS: z.coerce.number().int().min(0).max(10).default(0),
     RESEND_API_KEY: optionalText,
     EMAIL_FROM: optionalText,
-    // Parâmetros do Argon2id, calibrados por ambiente (padrão: mínimo da OWASP).
-    ARGON2_MEMORY_KIB: z.coerce.number().int().min(8).default(19_456),
-    ARGON2_PASSES: z.coerce.number().int().min(1).default(2),
-    ARGON2_PARALLELISM: z.coerce.number().int().min(1).default(1),
+    BCRYPT_ROUNDS: z.coerce.number().int().min(10).max(15).default(12),
   })
   .superRefine((env, context) => {
     if (env.NODE_ENV === 'production' && !env.DASHBOARD_ORIGIN) {

@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { CSRF_HEADER } from '@flex/contracts';
 
 declare module 'axios' {
   interface AxiosRequestConfig {
@@ -13,23 +12,6 @@ export const http = axios.create({
   // O cookie de sessão é do host da API e inacessível ao JavaScript.
   withCredentials: true,
   headers: { Accept: 'application/json' },
-});
-
-const SAFE_METHODS = new Set(['get', 'head', 'options']);
-
-let csrfToken: string | undefined;
-
-/** O token vem da consulta da sessão e acompanha as operações mutáveis. */
-export function setCsrfToken(token: string | undefined): void {
-  csrfToken = token;
-}
-
-http.interceptors.request.use((config) => {
-  const method = (config.method ?? 'get').toLowerCase();
-  if (csrfToken && !SAFE_METHODS.has(method)) {
-    config.headers.set(CSRF_HEADER, csrfToken);
-  }
-  return config;
 });
 
 type UnauthenticatedHandler = () => void;

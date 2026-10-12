@@ -5,14 +5,14 @@ import type { Permission } from '@flex/contracts';
 import { createApp } from '../src/http/app';
 import { setDatabase } from '../src/infrastructure/database/drizzle/client';
 import { createRepositories } from '../src/infrastructure/database/drizzle/drizzle-unit-of-work';
-import { DrizzleUnitOfWork } from '../src/infrastructure/database/drizzle/drizzle-unit-of-work';
 import { createDatabaseReadinessCheck } from '../src/infrastructure/database/readiness';
 import { createLogger } from '../src/infrastructure/logger/logger';
-import { Argon2PasswordHasher } from '../src/infrastructure/security/argon2-password-hasher';
-import { setServices } from '../src/infrastructure/services';
+import { passwordHash } from '../src/infrastructure/security/password';
+import {
+  emailSender as configuredEmailSender,
+  MemoryEmailSender,
+} from '../src/infrastructure/email/email';
 import { issueAccessCode } from '../src/modules/identity/access-code-issuer';
-import { AccessCodeDelivery } from '../src/modules/identity/access-code-delivery';
-import { BootstrapFirstAdministratorUseCase } from '../src/modules/identity/use-cases/bootstrap-first-administrator.use-case';
 import type { AccessCodePurpose } from '../src/modules/identity/repositories/access-code.repository';
 import type {
   Clock,
@@ -78,24 +78,11 @@ export function createTestApp() {
     logs.stream,
   );
   const clock = new MutableClock();
-  const emailSender = new FakeEmailSender();
-  // Parâmetros mínimos: a suíte exercita o fluxo, não o custo do Argon2id.
-  const hasher = new Argon2PasswordHasher({
-    memory: 64,
-    passes: 1,
-    parallelism: 1,
-  });
+  const emailSender = configuredEmailSender as MemoryEmailSender;
+  emailSender.sent.length = 0;
+  emailSender.failing = false;
+  const hasher = passwordHash;
   setDatabase(pool);
-  setServices({ hasher, emailSender, clock, logger });
-  const root = {
-    identity: {
-      bootstrapFirstAdministrator: new BootstrapFirstAdministratorUseCase(
-        new DrizzleUnitOfWork(),
-        new AccessCodeDelivery(emailSender, DASHBOARD_ORIGIN),
-        clock,
-      ),
-    },
-  };
   const app = createApp({
     logger,
     checkReadiness: createDatabaseReadinessCheck(pool),
@@ -103,7 +90,7 @@ export function createTestApp() {
     catalogOrigin: 'http://localhost:4321',
     authSecret: 'segredo-de-testes-do-clube-flex-com-tamanho-suficiente',
   });
-  return { app, pool, logs, logger, root, clock, emailSender, hasher };
+  return { app, pool, logs, logger, clock, emailSender, hasher };
 }
 
 export type TestContext = ReturnType<typeof createTestApp>;

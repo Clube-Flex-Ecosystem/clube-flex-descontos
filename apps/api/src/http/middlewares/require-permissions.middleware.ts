@@ -1,6 +1,6 @@
 import type { Permission } from '@flex/contracts';
 import type { RequestHandler } from 'express';
-import { sendProblem } from '../problem';
+import { HttpError } from '../../errors/app-error';
 
 /**
  * Declara as permissões exigidas pela rota. Todas são necessárias; a verificação usa as
@@ -9,13 +9,11 @@ import { sendProblem } from '../problem';
 export function requirePermissions(...required: Permission[]): RequestHandler {
   return (req, res, next) => {
     if (!req.auth) {
-      sendProblem(req, res, 'AUTHENTICATION_REQUIRED');
-      return;
+      throw new HttpError('AUTHENTICATION_REQUIRED');
     }
     const granted = new Set(req.auth.permissions);
     if (!required.every((permission) => granted.has(permission))) {
-      sendProblem(req, res, 'PERMISSION_DENIED');
-      return;
+      throw new HttpError('PERMISSION_DENIED');
     }
     next();
   };

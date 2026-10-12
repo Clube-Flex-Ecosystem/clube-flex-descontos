@@ -95,7 +95,7 @@ export const auditEvents = pgTable(
     id: uuid('id').primaryKey().defaultRandom(),
     action: text('action').notNull(),
     occurredAt: timestamp('occurred_at', { withTimezone: true }).notNull(),
-    // Ator técnico (`system/bootstrap`) não possui usuário associado.
+    // Atores técnicos, como seeds e tarefas internas, não possuem usuário associado.
     actorUserId: uuid('actor_user_id').references(() => users.id),
     actorLabel: text('actor_label').notNull(),
     targetType: text('target_type').notNull(),

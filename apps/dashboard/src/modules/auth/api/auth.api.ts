@@ -1,6 +1,5 @@
 import axios from 'axios';
 import {
-  CSRF_HEADER,
   sessionResponseSchema,
   type ChangePasswordRequest,
   type LoginRequest,
@@ -8,11 +7,10 @@ import {
   type SessionResponse,
   type SetPasswordWithCodeRequest,
 } from '@flex/contracts';
-import { http, setCsrfToken } from '../../../shared/http/client';
+import { http } from '../../../shared/http/client';
 
 export interface SessionState {
   session: SessionResponse;
-  csrfToken: string;
 }
 
 /** Consulta a sessão atual. Retorna `null` quando não há sessão autenticada. */
@@ -21,15 +19,11 @@ export async function fetchSession(): Promise<SessionState | null> {
     const response = await http.get('/v1/auth/session', {
       skipUnauthenticatedHandler: true,
     });
-    const csrfToken = String(response.headers[CSRF_HEADER] ?? '');
-    setCsrfToken(csrfToken || undefined);
     return {
       session: sessionResponseSchema.parse(response.data),
-      csrfToken,
     };
   } catch (error) {
     if (axios.isAxiosError(error) && error.response?.status === 401) {
-      setCsrfToken(undefined);
       return null;
     }
     throw error;

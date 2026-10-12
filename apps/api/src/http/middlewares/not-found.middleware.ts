@@ -1,6 +1,6 @@
 import type { RequestHandler } from 'express';
-import { sendProblem } from '../problem';
+import { HttpError } from '../../errors/app-error';
 
-export const notFoundMiddleware: RequestHandler = (req, res) => {
-  sendProblem(req, res, 'RESOURCE_NOT_FOUND');
+export const notFoundMiddleware: RequestHandler = () => {
+  throw new HttpError('RESOURCE_NOT_FOUND');
 };

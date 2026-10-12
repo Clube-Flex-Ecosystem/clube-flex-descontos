@@ -1,12 +1,13 @@
-﻿import type {
+import { AppError } from '../../../errors/app-error';
+import type {
   AuditFilter,
   AuditRepository,
   StoredAuditEvent,
 } from '../repositories/audit.repository';
 
-export class AuditEventNotFoundError extends Error {
+export class AuditEventNotFoundError extends AppError {
   constructor() {
-    super('Evento de auditoria não encontrado');
+    super('RESOURCE_NOT_FOUND');
   }
 }
 

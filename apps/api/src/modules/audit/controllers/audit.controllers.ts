@@ -1,17 +1,13 @@
-﻿import type { Request, RequestHandler } from 'express';
+import type { Request, RequestHandler } from 'express';
 import {
   auditQuerySchema,
   type AuditEvent,
   type AuditEventPage,
 } from '@flex/contracts';
-import { sendProblem } from '../../../http/problem';
-import { parseBody } from '../../../http/validation';
+import { HttpError } from '../../../errors/app-error';
 import { DrizzleAuditRepository } from '../repositories/drizzle-audit.repository';
 import type { StoredAuditEvent } from '../repositories/audit.repository';
-import {
-  AuditEventNotFoundError,
-  QueryAuditEventsUseCase,
-} from '../use-cases/query-audit-events.use-case';
+import { QueryAuditEventsUseCase } from '../use-cases/query-audit-events.use-case';
 
 const useCase = new QueryAuditEventsUseCase(new DrizzleAuditRepository());
 
@@ -39,12 +35,8 @@ function toRepresentation(event: StoredAuditEvent): AuditEvent {
 
 // Consulta da auditoria composta diretamente no controller.
 const list: RequestHandler = async (req: Request, res) => {
-  const query = parseBody(auditQuerySchema, req.query);
-  if (!query.success) {
-    sendProblem(req, res, 'VALIDATION_ERROR', { errors: query.errors });
-    return;
-  }
-  const { page, pageSize, occurredFrom, occurredTo, ...rest } = query.data;
+  const query = auditQuerySchema.parse(req.query);
+  const { page, pageSize, occurredFrom, occurredTo, ...rest } = query;
   const result = await useCase.list({
     page,
     pageSize,
@@ -66,18 +58,9 @@ const list: RequestHandler = async (req: Request, res) => {
 const get: RequestHandler = async (req, res) => {
   const id = req.params.id;
   if (typeof id !== 'string' || !UUID.test(id)) {
-    sendProblem(req, res, 'RESOURCE_NOT_FOUND');
-    return;
+    throw new HttpError('RESOURCE_NOT_FOUND');
   }
-  try {
-    res.json(toRepresentation(await useCase.get(id)));
-  } catch (error) {
-    if (error instanceof AuditEventNotFoundError) {
-      sendProblem(req, res, 'RESOURCE_NOT_FOUND');
-      return;
-    }
-    throw error;
-  }
+  res.json(toRepresentation(await useCase.get(id)));
 };
 
 export const auditControllers = { list, get };

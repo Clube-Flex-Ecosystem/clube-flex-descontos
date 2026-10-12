@@ -46,9 +46,6 @@ export function describeError(error: unknown): string {
   if (problem?.code === 'PERMISSION_DENIED') {
     return 'Você não possui permissão para realizar esta operação.';
   }
-  if (problem?.code === 'CSRF_VALIDATION_FAILED') {
-    return 'Sua sessão precisa ser atualizada. Recarregue a página e tente novamente.';
-  }
   if (problem?.code === 'RESOURCE_VERSION_CONFLICT') {
     return 'Outra pessoa alterou este registro. Suas mudanças não foram salvas; carregue a versão atual para continuar.';
   }

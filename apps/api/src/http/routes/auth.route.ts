@@ -2,7 +2,7 @@ import { Router } from 'express';
 import rateLimit from 'express-rate-limit';
 import { identityControllers } from '../../modules/identity/controllers/identity.controllers';
 import { authenticate } from '../middlewares/authentication.middleware';
-import { sendProblem } from '../problem';
+import { HttpError } from '../../errors/app-error';
 
 const authRouter = Router();
 
@@ -12,7 +12,9 @@ const loginLimiter = rateLimit({
   skipSuccessfulRequests: true,
   standardHeaders: 'draft-8',
   legacyHeaders: false,
-  handler: (req, res) => sendProblem(req, res, 'RATE_LIMIT_EXCEEDED'),
+  handler: () => {
+    throw new HttpError('RATE_LIMIT_EXCEEDED');
+  },
 });
 
 const accessCodeLimiter = rateLimit({
@@ -21,7 +23,9 @@ const accessCodeLimiter = rateLimit({
   skipSuccessfulRequests: true,
   standardHeaders: 'draft-8',
   legacyHeaders: false,
-  handler: (req, res) => sendProblem(req, res, 'RATE_LIMIT_EXCEEDED'),
+  handler: () => {
+    throw new HttpError('RATE_LIMIT_EXCEEDED');
+  },
 });
 
 const recoveryRequestLimiter = rateLimit({
@@ -29,7 +33,9 @@ const recoveryRequestLimiter = rateLimit({
   limit: 5,
   standardHeaders: 'draft-8',
   legacyHeaders: false,
-  handler: (req, res) => sendProblem(req, res, 'RATE_LIMIT_EXCEEDED'),
+  handler: () => {
+    throw new HttpError('RATE_LIMIT_EXCEEDED');
+  },
 });
 
 authRouter.post('/login', loginLimiter, identityControllers.login);

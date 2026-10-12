@@ -25,6 +25,7 @@ A API precisa permitir diagnóstico por um único mantenedor sem expor credencia
 - Validar o JWT e consultar a conta e as permissões atuais no middleware de autenticação por repositories do módulo.
 - Aplicar validação de origem, autenticação e autorização antes dos controllers conforme a natureza da rota.
 - Centralizar rotas inexistentes e tradução de erros em middlewares finais.
+- Erros esperados estendem `AppError`; controllers deixam sua tradução para o middleware global.
 - Expor erros inesperados de forma genérica e registrar internamente o stack trace com o mesmo `requestId`.
 
 ## Consequências

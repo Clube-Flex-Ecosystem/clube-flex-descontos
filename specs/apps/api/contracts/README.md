@@ -80,7 +80,7 @@ Erros seguem `application/problem+json`:
 | --- | --- |
 | `400` | `MALFORMED_REQUEST` |
 | `401` | `AUTHENTICATION_REQUIRED`, `INVALID_CREDENTIALS` |
-| `403` | `PERMISSION_DENIED`, `CSRF_VALIDATION_FAILED` |
+| `403` | `PERMISSION_DENIED` |
 | `404` | `RESOURCE_NOT_FOUND` |
 | `409` | `DUPLICATE_RESOURCE`, `INVALID_RESOURCE_STATE`, `RESOURCE_VERSION_CONFLICT`, `PROTECTED_RESOURCE` |
 | `422` | `VALIDATION_ERROR`, `PUBLICATION_REQUIREMENTS_NOT_MET` |
@@ -303,8 +303,7 @@ Cookie de sessão:
 Cookie e origem:
 
 - Logout permanece idempotente e apaga o cookie mesmo sem autenticação válida.
-- Operações mutáveis recusam `Origin` ou `Referer` declarado fora da origem do dashboard com `403 CSRF_VALIDATION_FAILED`.
-- O CORS libera apenas a origem do dashboard, com credenciais, e expõe `X-Request-Id`, `Retry-After` e `ETag`.
+- O CORS libera as origens configuradas do dashboard e catálogo, com credenciais, e expõe `X-Request-Id`, `Retry-After` e `ETag`.
 - Alterar ou recuperar a senha e desativar a conta invalidam JWTs anteriores por meio da versão de autenticação da conta.
 
 Erros de campo (`422 VALIDATION_ERROR`, `errors[].code`):

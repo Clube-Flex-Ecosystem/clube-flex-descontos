@@ -7,25 +7,14 @@ import {
   type RecoveryResponse,
   type SessionResponse,
 } from '@flex/contracts';
-import { sendProblem } from '../../../http/problem';
 import { clearAuthCookie, setAuthCookie } from '../../../http/session-cookie';
-import { fieldError, parseBody } from '../../../http/validation';
-import {
-  applicationLogger,
-  clock,
-  emailSender,
-  hasher,
-} from '../../../infrastructure/services';
+import { clock } from '../../../infrastructure/clock';
+import { emailSender } from '../../../infrastructure/email/email';
+import { passwordHash } from '../../../infrastructure/security/password';
 import { DrizzleUnitOfWork } from '../../../infrastructure/database/drizzle/drizzle-unit-of-work';
 import { DrizzleUserRepository } from '../repositories/drizzle-user.repository';
 import { issueAuthToken } from '../../../infrastructure/security/jwt';
 import { AccessCodeDelivery } from '../access-code-delivery';
-import {
-  InvalidAccessCodeError,
-  InvalidCredentialsError,
-  InvalidCurrentPasswordError,
-  PasswordPolicyError,
-} from '../errors';
 import type { AccessCodePurpose } from '../repositories/access-code.repository';
 import { AuthenticateUserUseCase } from '../use-cases/authenticate-user.use-case';
 import { ChangePasswordUseCase } from '../use-cases/change-password.use-case';
@@ -40,19 +29,19 @@ const delivery = new AccessCodeDelivery(
 );
 
 const useCases = {
-  authenticateUser: new AuthenticateUserUseCase(usersRepository, hasher),
+  authenticateUser: new AuthenticateUserUseCase(usersRepository, passwordHash),
   setPasswordWithAccessCode: new SetPasswordWithAccessCodeUseCase(
     unitOfWork,
-    hasher,
+    passwordHash,
     clock,
   ),
   requestRecovery: new RequestRecoveryUseCase(
     unitOfWork,
     delivery,
     clock,
-    applicationLogger,
+    console,
   ),
-  changePassword: new ChangePasswordUseCase(unitOfWork, hasher, clock),
+  changePassword: new ChangePasswordUseCase(unitOfWork, passwordHash, clock),
 };
 
 const NEUTRAL_RECOVERY_MESSAGE =
@@ -61,23 +50,11 @@ const NEUTRAL_RECOVERY_MESSAGE =
 /** Controllers de identidade: validam a entrada, executam o caso de uso e montam a resposta. */
 // A composição fica próxima dos controllers, como nas demais operações HTTP.
 const login: RequestHandler = async (req, res) => {
-  const body = parseBody(loginRequestSchema, req.body);
-  if (!body.success) {
-    sendProblem(req, res, 'VALIDATION_ERROR', { errors: body.errors });
-    return;
-  }
-  try {
-    const identity = await useCases.authenticateUser.execute(body.data);
-    const { token, expiresAt } = await issueAuthToken(identity, clock.now());
-    setAuthCookie(res, token, expiresAt);
-    res.status(204).end();
-  } catch (error) {
-    if (error instanceof InvalidCredentialsError) {
-      sendProblem(req, res, 'INVALID_CREDENTIALS');
-      return;
-    }
-    throw error;
-  }
+  const body = loginRequestSchema.parse(req.body);
+  const identity = await useCases.authenticateUser.execute(body);
+  const { token, expiresAt } = await issueAuthToken(identity, clock.now());
+  setAuthCookie(res, token, expiresAt);
+  res.status(204).end();
 };
 
 const logout: RequestHandler = async (req, res) => {
@@ -102,80 +79,36 @@ const session: RequestHandler = (req, res) => {
 const setPasswordWithCode =
   (purpose: AccessCodePurpose): RequestHandler =>
   async (req, res) => {
-    const body = parseBody(setPasswordWithCodeRequestSchema, req.body);
-    if (!body.success) {
-      sendProblem(req, res, 'VALIDATION_ERROR', { errors: body.errors });
-      return;
-    }
-    try {
-      await useCases.setPasswordWithAccessCode.execute({
-        purpose,
-        code: body.data.code,
-        newPassword: body.data.newPassword,
-      });
-      res.status(204).end();
-    } catch (error) {
-      if (error instanceof InvalidAccessCodeError) {
-        sendProblem(req, res, 'VALIDATION_ERROR', {
-          errors: [fieldError('code', 'INVALID_ACCESS_CODE')],
-        });
-        return;
-      }
-      if (error instanceof PasswordPolicyError) {
-        sendProblem(req, res, 'VALIDATION_ERROR', {
-          errors: [fieldError('newPassword', error.code)],
-        });
-        return;
-      }
-      throw error;
-    }
+    const body = setPasswordWithCodeRequestSchema.parse(req.body);
+    await useCases.setPasswordWithAccessCode.execute({
+      purpose,
+      code: body.code,
+      newPassword: body.newPassword,
+    });
+    res.status(204).end();
   };
 
 const requestRecovery: RequestHandler = async (req, res) => {
-  const body = parseBody(recoveryRequestSchema, req.body);
-  if (!body.success) {
-    sendProblem(req, res, 'VALIDATION_ERROR', { errors: body.errors });
-    return;
-  }
-  await useCases.requestRecovery.execute({ username: body.data.username });
+  const body = recoveryRequestSchema.parse(req.body);
+  await useCases.requestRecovery.execute({ username: body.username });
   const response: RecoveryResponse = { message: NEUTRAL_RECOVERY_MESSAGE };
   res.status(202).json(response);
 };
 
 const changePassword: RequestHandler = async (req, res) => {
   const auth = requireAuth(req);
-  const body = parseBody(changePasswordRequestSchema, req.body);
-  if (!body.success) {
-    sendProblem(req, res, 'VALIDATION_ERROR', { errors: body.errors });
-    return;
-  }
-  try {
-    const user = await useCases.changePassword.execute({
-      userId: auth.user.id,
-      currentPassword: body.data.currentPassword,
-      newPassword: body.data.newPassword,
-    });
-    const { token, expiresAt } = await issueAuthToken(
-      { userId: user.id, authVersion: user.authVersion },
-      clock.now(),
-    );
-    setAuthCookie(res, token, expiresAt);
-    res.status(204).end();
-  } catch (error) {
-    if (error instanceof InvalidCurrentPasswordError) {
-      sendProblem(req, res, 'VALIDATION_ERROR', {
-        errors: [fieldError('currentPassword', 'INVALID_CURRENT_PASSWORD')],
-      });
-      return;
-    }
-    if (error instanceof PasswordPolicyError) {
-      sendProblem(req, res, 'VALIDATION_ERROR', {
-        errors: [fieldError('newPassword', error.code)],
-      });
-      return;
-    }
-    throw error;
-  }
+  const body = changePasswordRequestSchema.parse(req.body);
+  const user = await useCases.changePassword.execute({
+    userId: auth.user.id,
+    currentPassword: body.currentPassword,
+    newPassword: body.newPassword,
+  });
+  const { token, expiresAt } = await issueAuthToken(
+    { userId: user.id, authVersion: user.authVersion },
+    clock.now(),
+  );
+  setAuthCookie(res, token, expiresAt);
+  res.status(204).end();
 };
 
 export const identityControllers = {

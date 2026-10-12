@@ -10,14 +10,14 @@ O dashboard administra dados pessoais e permissões granulares. A autenticação
 
 ## Decisão
 
-- Armazenar senhas com Argon2id.
+- Armazenar senhas com bcrypt, usando 12 rounds por padrão.
 - Exigir de 15 a 128 caracteres, sem regras artificiais de composição ou expiração periódica.
 - Recusar senhas comuns ou comprometidas.
 - Utilizar JWT assinado, com validade de 8 horas, sem refresh token e sem persistência de sessão.
 - Transportar o JWT em cookie host-only `__Host-`, `Secure`, `HttpOnly` e `SameSite=Strict`.
 - Manter uma versão de autenticação na conta. Alterar ou recuperar a senha e desativar a conta incrementam essa versão e invalidam os JWTs anteriores.
 - Consultar a situação da conta e as permissões em toda requisição autenticada, preservando o efeito imediato dessas alterações.
-- Proteger operações mutáveis pela política `SameSite=Strict`, CORS explícito e rejeição de `Origin` ou `Referer` declarado fora da origem do dashboard.
+- Proteger o cookie com `SameSite=Strict` e permitir no CORS somente as origens configuradas.
 - Limitar tentativas de autenticação, códigos e formulário público.
 - Permitir uso transitório do IP para rate limiting, sem persistência como dado do lead ou consentimento.
 - Tornar códigos de ativação e recuperação únicos, válidos por 30 minutos e limitados a cinco tentativas.
