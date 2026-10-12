@@ -189,15 +189,13 @@ export class DrizzleCommercialRepository implements CommercialRepository {
         now: Date,
         data?: Record<string, unknown>,
     ): Promise<void> {
-        await db
-            .insert(leadHistory)
-            .values({
-                leadId,
-                type,
-                actorUserId: actorId,
-                occurredAt: now,
-                data,
-            });
+        await db.insert(leadHistory).values({
+            leadId,
+            type,
+            actorUserId: actorId,
+            occurredAt: now,
+            data,
+        });
     }
 
     async activeUser(id: string): Promise<boolean> {

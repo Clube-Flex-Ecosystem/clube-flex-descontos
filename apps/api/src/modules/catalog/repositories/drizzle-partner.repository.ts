@@ -261,14 +261,12 @@ export class DrizzlePartnerRepository implements PartnerRepository {
             .where(eq(partnerCategories.partnerId, partnerId));
         const categoryIds = [...new Set(data.categoryIds)];
         if (categoryIds.length > 0) {
-            await this.db
-                .insert(partnerCategories)
-                .values(
-                    categoryIds.map((categoryId) => ({
-                        partnerId,
-                        categoryId,
-                    })),
-                );
+            await this.db.insert(partnerCategories).values(
+                categoryIds.map((categoryId) => ({
+                    partnerId,
+                    categoryId,
+                })),
+            );
         }
 
         await this.db
