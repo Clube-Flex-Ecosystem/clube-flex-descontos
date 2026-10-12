@@ -102,7 +102,8 @@ As regras de uso e a tabela de contraste validado estão nos [fundamentos](../..
 - O carregamento preserva a barra e o cabeçalho, com skeleton nas linhas.
 - O vazio distingue "nenhum cadastro" (explicação e ação permitida, secundária quando a página já possui a primária) de "nenhum resultado" (com limpeza dos filtros).
 - Filtros por estado atuam sobre a coleção carregada, conforme a especificação funcional.
-- Ação principal fica visível; ações menos frequentes usam menu contextual.
+- A linha inteira abre o registro. A ação mais frequente fica visível como botão compacto; o menu contextual reúne apenas o que não está visível (mudanças de estado e, separadas, as destrutivas) e não aparece quando ficaria vazio.
+- O rodapé mostra somente a contagem (`N itens` ou `N de M itens`).
 - No mobile, a tabela preserva sua estrutura com rolagem horizontal; a coluna de identificação pode permanecer fixa quando necessário.
 
 ### Dialogs
@@ -125,6 +126,9 @@ As regras de uso e a tabela de contraste validado estão nos [fundamentos](../..
 - Erro persistente aparece junto da região afetada; toast apenas complementa.
 - Toasts de sucesso usam Radix Toast, são inversos (`inverse`, ícone `signal-inverse`, raio `tile`), dispensáveis e de duração curta; erros não dependem exclusivamente deles.
 - Conflito de versão interrompe a edição silenciosa e oferece reconciliação com o servidor.
+- Toast pode trazer uma ação de continuidade (botão compacto no próprio toast).
+- **Barra de salvamento:** faixa fixa no rodapé do conteúdo (`surface`, borda superior `border`, `shadow-floating`) visível somente com alterações pendentes; à esquerda o indicador "Alterações não salvas" (`warning`) e o resumo, à direita "Descartar" (quiet) e a ação primária. Usada em formulários longos (parceiro, usuário).
+- **Copiar:** botão compacto com ícone; após copiar, troca para "Copiado" com ícone de confirmação por cerca de 2s, sem toast.
 
 ## Padrões por contexto
 
@@ -143,6 +147,8 @@ As regras de uso e a tabela de contraste validado estão nos [fundamentos](../..
 - Navegação interna apresenta seção atual, erros, completude e alterações não salvas.
 - O formulário não simula um fluxo linear e realiza um único salvamento atômico.
 - Sair com alterações pendentes exige confirmação.
+- Salvar e descartar ficam na barra de salvamento; publicar e mudanças de estado ficam no resumo lateral.
+- Benefícios: caixa de seleção com o nome do plano na primeira coluna.
 
 ## Como usar
 

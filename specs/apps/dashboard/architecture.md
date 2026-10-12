@@ -114,6 +114,18 @@ No retorno de uma mutação:
 - Primitives Radix ficam encapsuladas em `shared/ui`; pages e módulos consomem somente os componentes locais (`Drawer`, `ConfirmDialog`, `RowMenu` e `useToast`).
 - Componentes de baixa complexidade e sem comportamento composto, como alertas persistentes, badges e cards, permanecem locais e usam variantes Tailwind quando necessário.
 
+### Contexto das listagens
+
+- Filtros, busca, aba de estado e página das listagens ficam em um armazenamento
+  de memória do cliente (`shared/utils/list-context.ts`), com uma chave por
+  listagem. O estado sobrevive à navegação dentro da SPA e é descartado ao
+  recarregar a página ou encerrar a sessão (o `QueryClient` é limpo e o
+  armazenamento também). Não há filtros na URL nem uso de `localStorage`.
+- O roteador restaura a posição de rolagem (`scrollRestoration`).
+- Filtros que mudam a chave de uma query com `useSuspenseQuery` (auditoria) são
+  aplicados dentro de `startTransition`: a tela anterior permanece visível com
+  indicador de atualização, sem voltar ao fallback de `Suspense`.
+
 ## Estado remoto e cache
 
 - A API é a fonte autoritativa; o dashboard não mantém uma segunda fonte global dos recursos remotos.

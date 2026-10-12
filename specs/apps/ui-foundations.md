@@ -179,6 +179,7 @@ resolve estrutura, texto e limites.
 | `signal-inverse` | `orange-400` | marcador e ícone do item atual, "+Flex" da marca invertida, ícone do toast |
 | `focus-inverse` | `orange-400` | anel de foco sobre superfícies escuras (sidebar, painel de acesso) |
 | `sidebar-scrollbar` | `navy-700` | thumb da barra de rolagem na sidebar |
+| `sidebar-count` / `sidebar-count-foreground` | `orange-500` a 22% / `orange-200` | contador de pendências no item da navegação (novo interesse em Leads) |
 | `danger-hover` / `danger-foreground` | `#9C1C31` / `#FFFFFF` | botão destrutivo |
 | `inverse` / `inverse-foreground` | `navy-900` / `navy-50` | tooltip e toast |
 | `focus` | `orange-600` | anel de foco sobre superfícies claras |
@@ -232,6 +233,7 @@ usam a pilha monoespaçada do sistema (`ui-monospace`, `SF Mono`, `Menlo`,
 
 | Papel | Tamanho / entrelinha | Peso | Tracking | Uso |
 | --- | --- | --- | --- | --- |
+| `display` | 26 / 34, `wdth 110` | 650 | −0.015em | frase do painel de acesso (telas sem sessão) |
 | `page-title` | 22 / 28, `wdth 110` | 650 | −0.015em | h1 da página |
 | `section-title` | 16 / 22 | 600 | −0.005em | seção de painel, título de dialog e sheet |
 | `heading` | 13 / 18 | 600 | 0 | coluna do Kanban, área de permissão, subgrupo |
@@ -242,7 +244,7 @@ usam a pilha monoespaçada do sistema (`ui-monospace`, `SF Mono`, `Menlo`,
 | `table-header` | 12 / 16 | 500 | 0.01em | cabeçalho de tabela |
 | `caption` | 12 / 16 | 500 | 0 | data, rodapé, badge |
 | `overline` | 11 / 16 | 600 | 0.06em, caixa alta | rótulo de grupo da sidebar |
-| `mono` | 13 / 18 (16 / 24 em código emitido) | 400 | 0 (0.08em em código) | slug, usuário, cupom, código |
+| `mono` | 13 / 18 (18 / 26 em código emitido) | 400 | 0 (0.08em em código) | slug, usuário, cupom, código |
 
 Nomes de entidade nas tabelas e no Kanban usam peso 600. Números usam
 algarismos tabulares; contagens enfatizadas usam peso 500.

@@ -337,14 +337,57 @@ Executada em 2026-10-11:
 - 404 no detalhe de parceiro redireciona para `/parceiros`, enquanto a page
   observa as respostas confirmadas no cache durante a edição.
 
+- o detalhe de lead carrega o lead no `loader` (o histórico permanece em query
+  própria, por ser secundário); 404 redireciona para `/leads` (executado com a
+  revisão de fluxos de UX, abaixo).
+
 ### Próximos incrementos
 
 - extrair seções de apresentação do detalhe de usuários quando houver ganho de
   leitura comprovado;
-- aplicar o padrão ao detalhe de leads, separando dados obrigatórios e
-  secundários;
 - adicionar testes de rota para recurso existente, 404, erro recuperável e
   reconciliação após conflito.
+
+## Revisão de fluxos de UX do dashboard
+
+### Objetivo
+
+Aplicar a [auditoria de UX aprovada](../prototypes/dashboard/proposals/2026-10-ux-fluxos/README.md)
+e alinhar o app a tudo o que o protótipo do dashboard demonstra, sem alterar a
+API.
+
+### Execução
+
+Executada em 2026-10-11:
+
+- protótipo consolidado e `interface.md`, `architecture.md`, `ui-foundations.md`
+  e o design system atualizados;
+- contexto das listagens em memória (`shared/utils/list-context.ts`) e
+  restauração de rolagem no roteador;
+- shell: navegação recolhível, conta no rodapé, contador de novo interesse;
+- leads: cartão inteiro clicável com botão "Alterar etapa", dialog de etapa
+  compartilhado, filtros por pessoa e e-mail, vazio por filtro, detalhe
+  reorganizado (faixa de interesse, observações com correção, histórico legível,
+  editar dados, copiar WhatsApp, atribuir a mim), duplicidade no cadastro;
+- listagens: padrão único de ações de linha, "Limpar filtros", contagens de
+  parceiros em planos e categorias, interruptor "Ativo" nos dialogs; Origens
+  reescrita no padrão (busca, abas, exclusão de origem nunca usada);
+- parceiro e usuário: barra de salvamento; benefícios habilitados na primeira
+  coluna; unidades com remoção desfazível; permissões por área; código com
+  copiar; aviso ao sair com alterações;
+- auditoria: filtros preservados e atualização sem desmontar a tela;
+- telas sem sessão em duas colunas e critérios de senha verificados ao digitar.
+
+Verificação: typecheck, lint, build e roteiro de 60 verificações executado no
+app contra uma instância isolada da API (banco temporário), além de 36
+verificações de interação no protótipo.
+
+### Pendências
+
+- testes automatizados do dashboard (não existem nesta entrega);
+- API: a criação e a edição de origem não aplicam a unicidade normalizada de
+  `RN-030` (por exemplo, "abordagem" e "Abordagem" coexistem) — fora do escopo
+  desta revisão, que não altera a API.
 
 ## Fora deste plano
 

@@ -498,6 +498,55 @@
     .toast .icon { color: var(--signal-inverse); }
     @keyframes rise { from { transform: translateY(8px); opacity: 0; } }
 
+    .toast .btn { height: 26px; margin-left: 4px; border-color: var(--sidebar-selected); background: transparent; color: var(--inverse-foreground); pointer-events: auto; }
+    .toast .btn:hover { background: var(--sidebar-hover); }
+
+    /* ───────── Fluxos (auditoria de UX aprovada em 2026-10-11) ───────── */
+    .lead:hover { border-color: var(--control-border); }
+    .lead:has(.lead-name:focus-visible) { outline: 2px solid var(--focus); outline-offset: 2px; }
+    .lead .lead-name:focus-visible { outline: none; }
+    .board-empty { padding: 40px 16px; }
+    .pending-bar { margin-bottom: 16px; padding: 10px 12px 10px 14px; border-radius: var(--radius-card); background: var(--attention-soft); display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .pending-bar .int-dot { width: 8px; height: 8px; }
+    .pending-bar div { flex: 1; min-width: 220px; }
+    .pending-bar strong { color: var(--attention-foreground); font-weight: 600; }
+    .pending-bar p { color: var(--foreground-soft); font-size: 13px; line-height: 18px; }
+    .composer.top { border-top: 0; border-bottom: 1px solid var(--border); }
+    .copy-row { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; }
+    .copy-row .num { white-space: nowrap; }
+    .copy-row .btn { height: 24px; padding: 0 8px; font-size: 12px; }
+    details.collapsed > summary { list-style: none; padding: 12px 16px; display: flex; justify-content: space-between; gap: 8px; cursor: pointer; font-weight: 600; }
+    details.collapsed > summary::-webkit-details-marker { display: none; }
+    details.collapsed > summary::after { content: "Mostrar"; color: var(--muted); font-weight: 500; font-size: 13px; }
+    details.collapsed[open] > summary::after { content: "Ocultar"; }
+    details.collapsed[open] > summary { border-bottom: 1px solid var(--border); }
+    .note-edit { display: grid; gap: 8px; margin-top: 6px; }
+    .note-edit textarea { width: 100%; min-height: 56px; padding: 8px 10px; border: 1px solid var(--focus); border-radius: var(--radius-control); box-shadow: 0 0 0 1px var(--focus); resize: vertical; }
+    .note-edit div { display: flex; gap: 8px; justify-content: flex-end; }
+    /* Barra de salvamento: fixa no rodapé do conteúdo, só com alterações pendentes. */
+    .savebar { position: sticky; bottom: 0; z-index: 25; margin: 16px -28px 0; padding: 10px 28px; border-top: 1px solid var(--border); background: var(--surface); box-shadow: var(--shadow-floating); display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .savebar .summary { color: var(--muted); font-size: 13px; line-height: 18px; }
+    .savebar .summary b { color: var(--foreground); font-weight: 600; }
+    .savebar .actions { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; }
+    .sub-table label.plan { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; cursor: pointer; }
+    .sub-table label.plan input { width: 16px; height: 16px; margin: 0; accent-color: var(--selected); }
+    .unit.removed { border-style: dashed; background: var(--surface-muted); }
+    .unit.removed strong, .unit.removed p { color: var(--placeholder); text-decoration: line-through; }
+    .unit-edit { margin-top: 8px; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius-card); display: grid; gap: 12px; }
+    .unit-edit .row { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+    .perm-area h3 { align-items: center; }
+    .perm-area h3 > span:first-of-type { flex: 1; }
+    .perm-area h3 .btn { height: 24px; padding: 0 8px; font-size: 12px; margin-left: 8px; }
+    .code-banner { margin-bottom: 16px; padding: 12px 14px; border-radius: var(--radius-card); background: var(--info-soft); display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .code-banner div { flex: 1; min-width: 220px; }
+    .code-banner strong { display: block; font-weight: 600; }
+    .code-banner .mono { font-size: 18px; line-height: 26px; letter-spacing: .08em; }
+    .code-banner p { color: var(--foreground-soft); font-size: 13px; line-height: 18px; }
+    .table-progress { height: 2px; background: var(--surface-muted); overflow: hidden; }
+    .table-progress::after { content: ""; display: block; width: 40%; height: 100%; background: var(--selected); animation: indeterminate 1s ease-in-out infinite; }
+    @keyframes indeterminate { from { transform: translateX(-100%); } to { transform: translateX(250%); } }
+    tbody.refreshing { opacity: .5; }
+
     .proto { position: fixed; z-index: 70; right: 16px; bottom: 16px; padding: 4px 4px 4px 12px; border: 1px solid var(--border-strong); border-radius: 999px; background: var(--surface); box-shadow: var(--shadow-floating); display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: var(--muted); }
     .proto select { height: 28px; border-radius: 999px; font-size: 12px; }
 
@@ -584,6 +633,7 @@
     <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
     <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></symbol>
     <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4Z"/><path d="m13 7 4 4"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></symbol>
     <symbol id="i-phone" viewBox="0 0 24 24"><path d="M5 4h3l2 5-2.5 1.5a11 11 0 0 0 6 6L15 14l5 2v3a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></symbol>
     <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3.5 2.6 5.3 5.9.9-4.2 4.1 1 5.8L12 16.8l-5.3 2.8 1-5.8-4.2-4.1 5.9-.9L12 3.5Z"/></symbol>
     <symbol id="i-inbox" viewBox="0 0 24 24"><path d="M3 13h5l1.5 3h5L16 13h5"/><path d="M5 5h14l2 8v6H3v-6l2-8Z"/></symbol>
@@ -661,12 +711,13 @@
           <div class="filterbar">
             <div class="toolbar">
               <div class="toolbar-start">
-                <div class="search-box"><svg class="icon" aria-hidden="true"><use href="#i-search"/></svg><input class="control" type="search" id="lead-search" placeholder="Nome ou WhatsApp" aria-label="Filtrar leads por nome ou WhatsApp"></div>
+                <div class="search-box"><svg class="icon" aria-hidden="true"><use href="#i-search"/></svg><input class="control" type="search" id="lead-search" placeholder="Nome, WhatsApp ou e-mail" aria-label="Filtrar leads por nome, WhatsApp ou e-mail"></div>
                 <select class="control" id="lead-owner" aria-label="Responsável"><option value="">Todos os responsáveis</option><option value="me">Meus leads</option><option value="none">Sem responsável</option></select>
                 <select class="control" id="lead-source" aria-label="Origem"><option value="">Todas as origens</option></select>
               </div>
               <div class="toolbar-end">
                 <button class="btn sm toggle" type="button" id="lead-interest-filter" aria-pressed="false"><span class="int-dot" aria-hidden="true"></span>Novo interesse<span class="num" id="lead-interest-count"></span></button>
+                <button class="btn ghost sm" type="button" id="lead-clear" hidden>Limpar filtros</button>
                 <span class="divider-v" aria-hidden="true"></span>
                 <span class="muted num" id="lead-total" aria-live="polite"></span>
               </div>
@@ -674,6 +725,7 @@
           </div>
           <div class="alert danger board-error" role="alert" id="board-error" hidden><svg class="icon" aria-hidden="true"><use href="#i-alert"/></svg><div><strong>Não foi possível mover o lead.</strong><span id="board-error-text">O card voltou para a etapa confirmada.</span> <button class="btn sm" type="button" data-dismiss-error>Entendi</button></div></div>
           <div class="board" id="board"></div>
+          <div class="card" id="board-empty" hidden><div class="empty board-empty"><svg class="icon" aria-hidden="true"><use href="#i-search"/></svg><strong>Nenhum lead com estes filtros</strong><p>Ajuste a busca ou remova filtros.</p><button class="btn sm" type="button" data-clear-leads>Limpar filtros</button></div></div>
         </section>
 
         <!-- Detalhe do lead -->
@@ -685,25 +737,24 @@
               <button class="btn primary" type="button" data-lead-stage><svg class="icon" aria-hidden="true"><use href="#i-swap"/></svg>Alterar etapa</button>
             </div>
           </div>
+          <div class="pending-bar" role="status" id="lead-pending" hidden><span class="int-dot" aria-hidden="true"></span><div><strong>Novo interesse pendente</strong><p class="num" id="lead-pending-text"></p></div><button class="btn sm" type="button" data-resolve-interest><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Marcar como tratada</button></div>
           <div class="detail">
             <div class="card-stack">
-              <div class="card" id="lead-requests-card">
-                <div class="card-head"><div><h2>Solicitações de contato</h2><p>Envios do formulário público para este WhatsApp.</p></div><span id="lead-requests-count"></span></div>
-                <ul class="list" id="lead-requests"></ul>
-              </div>
               <div class="card">
-                <div class="card-head"><div><h2>Observações</h2><p>Somente o autor pode corrigir a própria observação.</p></div></div>
-                <ul class="list" id="lead-notes"></ul>
-                <form class="composer" data-note-form>
+                <div class="card-head"><div><h2>Observações</h2><p>Mais recentes primeiro. Somente o autor pode corrigir a própria observação.</p></div></div>
+                <form class="composer top" data-note-form>
                   <label class="sr-only" for="note-text">Nova observação</label>
                   <textarea id="note-text" placeholder="Registrar uma observação sobre o atendimento…"></textarea>
                   <div><button class="btn sm" type="submit">Adicionar observação</button></div>
                 </form>
+                <ul class="list" id="lead-notes"></ul>
               </div>
               <div class="card">
-                <div class="card-head"><div><h2>Histórico</h2><p>Alterações registradas automaticamente.</p></div></div>
+                <div class="card-head"><div><h2>Histórico</h2><p>Registro imutável das alterações relevantes.</p></div></div>
                 <ol class="timeline" id="lead-history"></ol>
+                <div class="card-foot" id="lead-history-foot"><span class="num" id="lead-history-count"></span><button class="btn ghost sm" type="button" data-history-all>Ver histórico completo</button></div>
               </div>
+              <details class="card collapsed" id="lead-requests-card"><summary id="lead-requests-summary"></summary><ul class="list" id="lead-requests"></ul></details>
             </div>
             <aside class="card-stack">
               <div class="card">
@@ -711,7 +762,7 @@
                 <div class="card-body" style="padding-top:4px;padding-bottom:4px"><dl class="dl" id="lead-data"></dl></div>
               </div>
               <div class="card">
-                <div class="card-head"><h2>Responsável</h2></div>
+                <div class="card-head"><h2>Responsável</h2><button class="btn sm" type="button" data-assign-me>Atribuir a mim</button></div>
                 <div class="card-body stack">
                   <label class="sr-only" for="lead-assign">Responsável</label>
                   <select class="control" id="lead-assign"></select>
@@ -751,7 +802,6 @@
         <section class="view" id="view-partner-form" aria-labelledby="form-title">
           <div class="page-head">
             <div><div class="title-row"><h1 id="form-title">Novo parceiro</h1><span class="badge info dot">Rascunho</span></div><p>Criado como rascunho; só aparece no catálogo depois de publicado.</p></div>
-            <div class="page-actions"><button class="btn" type="button" data-leave-form>Cancelar</button><button class="btn primary" type="button" data-save-partner>Salvar</button></div>
           </div>
           <div class="form-layout">
             <nav class="section-nav" aria-label="Seções do formulário">
@@ -796,11 +846,8 @@
               </section>
 
               <section class="card" id="sec-units" aria-labelledby="sec-units-t">
-                <div class="card-head"><div><h2 id="sec-units-t">Unidades</h2><p>Opcional. Unidades sem contato próprio exibem os contatos gerais.</p></div><button class="btn sm" type="button"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>Adicionar unidade</button></div>
-                <div class="card-body">
-                  <div class="unit"><div><strong>Unidade Tijuca</strong> <span class="badge success dot" style="margin-left:4px">Ativa</span><p>Rua Conde de Bonfim, 420 · Tijuca, Rio de Janeiro – RJ · CEP 20520-054</p><p>Seg. a sex., 8h às 18h · usa contatos gerais</p></div><button class="btn ghost sm" type="button">Editar</button></div>
-                  <div class="unit"><div><strong>Unidade Méier</strong> <span class="badge success dot" style="margin-left:4px">Ativa</span><p>Rua Dias da Cruz, 188, sala 302 · Méier, Rio de Janeiro – RJ · CEP 20720-011</p><p class="num">1 contato próprio</p></div><button class="btn ghost sm" type="button">Editar</button></div>
-                </div>
+                <div class="card-head"><div><h2 id="sec-units-t">Unidades</h2><p>Opcional. Unidades sem contato próprio exibem os contatos gerais.</p></div><button class="btn sm" type="button" data-add-unit><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>Adicionar unidade</button></div>
+                <div class="card-body" id="p-units"></div>
               </section>
 
               <section class="card" id="sec-benefits" aria-labelledby="sec-benefits-t">
@@ -808,7 +855,7 @@
                 <div class="card-body stack" style="gap:16px">
                   <div class="field" style="max-width:320px"><label for="p-coupon">Cupom geral <span class="opt">(opcional)</span></label><input id="p-coupon" class="mono" value="FLEXVIDA"></div>
                   <table class="sub-table">
-                    <thead><tr><th scope="col">Plano</th><th scope="col">Desconto</th><th scope="col">Cupom do plano <span style="color:var(--muted)">(opcional)</span></th><th scope="col"><span class="sr-only">Oferece</span></th></tr></thead>
+                    <thead><tr><th scope="col">Plano</th><th scope="col">Desconto</th><th scope="col">Cupom do plano <span style="color:var(--muted)">(opcional)</span></th></tr></thead>
                     <tbody id="p-benefits"></tbody>
                   </table>
                 </div>
@@ -845,6 +892,7 @@
               </div>
             </aside>
           </div>
+          <div class="savebar" role="region" aria-label="Alterações não salvas" id="partner-savebar"><span class="unsaved">Alterações não salvas</span><span class="summary" id="partner-savebar-summary">Cadastro novo · será salvo como rascunho</span><div class="actions"><button class="btn ghost" type="button" data-leave-form>Descartar</button><button class="btn primary" type="button" data-save-partner>Salvar</button></div></div>
         </section>
 
         <!-- Planos -->
@@ -878,8 +926,8 @@
         <section class="view" id="view-user" aria-labelledby="user-title">
           <div class="page-head">
             <div style="display:flex;gap:14px;align-items:center"><span class="avatar lg" id="user-avatar" aria-hidden="true"></span><div><div class="title-row"><h1 id="user-title"></h1><span id="user-badges" style="display:inline-flex;gap:6px"></span></div><p class="mono" id="user-sub"></p></div></div>
-            <div class="page-actions"><button class="btn" type="button" data-discard-perms>Descartar</button><button class="btn primary" type="button" data-save-user>Salvar alterações</button></div>
           </div>
+          <div class="code-banner" role="status" id="code-box" hidden><div><strong>Código de <span id="code-kind"></span> · válido por 30 min</strong><span class="mono" id="code-value">7K4M-92QD-R8WX-3HNB</span><p>Entregue à pessoa por um canal seguro. Ele não será exibido de novo.</p></div><button class="btn" type="button" data-copy-code><svg class="icon" aria-hidden="true"><use href="#i-copy"/></svg>Copiar código</button></div>
           <div class="detail">
             <div class="card-stack">
               <div class="card">
@@ -901,7 +949,6 @@
                 <div class="card-head"><h2>Acesso</h2></div>
                 <div class="card-body stack" style="gap:12px">
                   <dl class="dl"><div class="dl-row"><dt>Situação</dt><dd id="user-activation"></dd></div><div class="dl-row"><dt>Estado</dt><dd id="user-state"></dd></div></dl>
-                  <div class="code-box" id="code-box" hidden><span class="hint">Código de <span id="code-kind"></span> · válido por 30 min</span><strong id="code-value">7K4M-92QD-R8WX-3HNB</strong><span class="hint">Entregue à pessoa por um canal seguro. Ele não será exibido de novo.</span></div>
                   <button class="btn" type="button" data-issue-code id="issue-code"></button>
                   <p class="hint">Emitir um novo código invalida o anterior da mesma finalidade.</p>
                 </div>
@@ -912,6 +959,7 @@
               </div>
             </aside>
           </div>
+          <div class="savebar" role="region" aria-label="Alterações não salvas" id="user-savebar" hidden><span class="unsaved">Alterações não salvas</span><span class="summary" id="user-savebar-summary"></span><div class="actions"><button class="btn ghost" type="button" data-discard-perms>Descartar</button><button class="btn primary" type="button" data-save-user>Salvar alterações</button></div></div>
         </section>
 
         <!-- Auditoria -->
@@ -927,8 +975,9 @@
                 <select class="control" id="audit-author" aria-label="Autor"><option value="">Todos os autores</option></select>
                 <select class="control" id="audit-target" aria-label="Usuário afetado"><option value="">Todos os afetados</option></select>
               </div>
-              <div class="toolbar-end"><button class="btn ghost sm" type="button" data-clear-audit>Limpar filtros</button></div>
+              <div class="toolbar-end"><button class="btn ghost sm" type="button" data-clear-audit hidden>Limpar filtros</button></div>
             </div>
+            <div class="table-progress" role="progressbar" aria-label="Atualizando eventos" id="audit-progress" hidden></div>
             <div class="table-wrap">
               <table class="table">
                 <thead><tr><th scope="col">Data e hora</th><th scope="col">Ação</th><th scope="col">Autor</th><th scope="col">Afetado</th><th scope="col">Objeto</th><th scope="col"><span class="sr-only">Detalhes</span></th></tr></thead>
@@ -1171,9 +1220,17 @@
       if (onClick) b.addEventListener("click", onClick);
       return b;
     };
-    function toast(msg) {
-      const t = el("div", "toast"); t.append(icon("i-check"), document.createTextNode(msg));
-      $("#toasts").append(t); setTimeout(() => t.remove(), 2800);
+    /* Toast curto; pode oferecer uma ação de continuidade (ex.: "Abrir lead"). */
+    function toast(msg, action) {
+      const t = el("div", "toast"); const text = el("span", "", msg); text.style.flex = "1";
+      t.append(icon("i-check"), text);
+      if (action) t.append(button("btn sm", action.label, () => { t.remove(); action.run(); }));
+      $("#toasts").append(t); setTimeout(() => t.remove(), action ? 5000 : 2800);
+    }
+    /* "Copiar" confirma no próprio botão por 2s, sem toast. */
+    function copyFeedback(btn, label) {
+      btn.replaceChildren(icon("i-check"), document.createTextNode("Copiado"));
+      setTimeout(() => btn.replaceChildren(icon("i-copy"), document.createTextNode(label)), 2000);
     }
     function withLoading(btn, done, ms = 700) {
       btn.classList.add("loading"); btn.setAttribute("aria-busy", "true");
@@ -1230,13 +1287,19 @@
         (leadFilters.owner === "" || (leadFilters.owner === "me" ? l.owner === ME : leadFilters.owner === "none" ? !l.owner : l.owner === leadFilters.owner)) &&
         (!leadFilters.source || l.source === leadFilters.source) &&
         (!leadFilters.interest || l.interest) &&
-        (!leadFilters.q || l.name.toLowerCase().includes(leadFilters.q) || l.phone.replace(/\D/g, "").includes(leadFilters.q.replace(/\D/g, "") || "§")));
+        (!leadFilters.q || l.name.toLowerCase().includes(leadFilters.q) || (l.email || "").toLowerCase().includes(leadFilters.q) || l.phone.replace(/\D/g, "").includes(leadFilters.q.replace(/\D/g, "") || "§")));
     }
+    /* Filtros preservados em memória: voltar do detalhe reencontra o quadro como foi deixado. */
     function renderBoard() {
       const board = $("#board"); board.replaceChildren();
       const leads = visibleLeads();
+      const anyFilter = Boolean(leadFilters.q || leadFilters.owner || leadFilters.source || leadFilters.interest);
+      $("#lead-clear").hidden = !anyFilter;
+      const empty = anyFilter && leads.length === 0;
+      board.hidden = empty; $("#board-empty").hidden = !empty;
       STAGES.forEach(stage => {
-        const items = leads.filter(l => l.stage === stage.id);
+        const inStage = leads.filter(l => l.stage === stage.id);
+        const items = [...inStage.filter(l => l.interest), ...inStage.filter(l => !l.interest)];
         const col = el("section", "col"); col.style.setProperty("--stage", stage.color); col.dataset.stage = stage.id;
         col.setAttribute("aria-label", `${stage.name}, ${plural(items.length, "lead", "leads")}`);
         const head = el("div", "col-head"); head.append(el("span", "stage-dot"), el("h2", "", stage.name), el("span", "num", String(items.length)));
@@ -1285,6 +1348,13 @@
       renderBoard();
     });
     $("[data-dismiss-error]").addEventListener("click", () => { $("#board-error").hidden = true; });
+    function clearLeadFilters() {
+      Object.assign(leadFilters, { q: "", owner: "", source: "", interest: false });
+      $("#lead-search").value = ""; $("#lead-owner").value = ""; $("#lead-source").value = "";
+      $("#lead-interest-filter").setAttribute("aria-pressed", "false"); renderBoard();
+    }
+    $("#lead-clear").addEventListener("click", clearLeadFilters);
+    $("[data-clear-leads]").addEventListener("click", clearLeadFilters);
 
     /* Alterar etapa: direto, ou com confirmação para convertido/perdido */
     const stageDialog = $("#stage-dialog"), stageSelect = $("#stage-select");
@@ -1328,6 +1398,7 @@
       ];
     }
     function openLead(l) { currentLead = l; renderLead(); showView("lead"); }
+    let historyAll = false, editingNote = null;
     function renderLead() {
       const l = currentLead;
       $("#lead-title").textContent = l.name;
@@ -1335,34 +1406,64 @@
       if (l.stage === "lost") $("#lead-stage-badge .badge").prepend(icon("i-x"));
       $("#lead-interest-badge").replaceChildren(l.interest ? badge("attention", "Novo interesse") : "");
       $("#lead-sub").textContent = `${l.phone} · ${l.source}`;
-      const data = [["WhatsApp", l.phone], ["E-mail", l.email || "Não informado"], ["Origem", l.source], ["Detalhe", l.source === "Indicação" ? "Indicado por Carla N." : "—"], ...(l.stage === "lost" ? [["Motivo da perda", l.lostReason || "Não informado"]] : [])];
-      $("#lead-data").replaceChildren(...data.map(([k, v]) => { const r = el("div", "dl-row"); r.append(el("dt", "", k), el("dd", k === "WhatsApp" ? "num" : "", v)); return r; }));
+      // Pendência de novo interesse: faixa no topo, só enquanto existir.
+      $("#lead-pending").hidden = !l.interest;
+      $("#lead-pending-text").textContent = "Hoje, 08:14 · formulário do catálogo · consentimento registrado";
+      // Dados do lead, com copiar no WhatsApp.
+      const data = [["WhatsApp", l.phone], ["E-mail", l.email || "Não informado"], ["Origem", l.source], ...(l.source === "Indicação" ? [["Quem indicou", "Carla N."]] : []), ...(l.stage === "lost" ? [["Motivo da perda", l.lostReason || "Não informado"]] : [])];
+      $("#lead-data").replaceChildren(...data.map(([k, v]) => {
+        const r = el("div", "dl-row"), dd = el("dd", k === "WhatsApp" ? "copy-row" : "");
+        if (k === "WhatsApp") { const copy = button("btn ghost", "Copiar", (e) => copyFeedback(e.currentTarget, "Copiar"), "i-copy"); copy.setAttribute("aria-label", "Copiar WhatsApp"); dd.append(el("span", "num", v), copy); }
+        else dd.textContent = v;
+        r.append(el("dt", "", k), dd); return r;
+      }));
       const assign = $("#lead-assign");
       assign.replaceChildren(Object.assign(el("option", "", "Sem responsável"), { value: "" }), ...USERS.filter(u => u.active).map(u => Object.assign(el("option", "", u.name), { value: u.name })));
       assign.value = l.owner || "";
-      // Solicitações
-      const reqs = $("#lead-requests"); reqs.replaceChildren();
-      const items = [...(l.interest ? [{ at: "Hoje, 08:14", by: l.name, pending: true }] : []), { at: "01/10/2026 18:05", by: l.name, pending: false }];
-      items.forEach(r => {
-        const li = el("li"); const row = el("div", "request");
-        const text = el("div"); text.append(el("strong", "", r.pending ? "Novo interesse" : "Primeira solicitação"), el("p", "num", `${r.at} · ${r.by} · consentimento registrado`));
-        row.append(text);
-        if (r.pending) row.append(button("btn sm", "Marcar como tratada", () => { l.interest = false; l.history = [{ at: "Agora", text: `<b>${ME}</b> tratou o novo interesse` }, ...historyOf(l)]; renderBoard(); renderLead(); toast("Novo interesse marcado como tratado."); }, "i-check"));
-        else row.append(el("span", "hint", "Tratada"));
-        li.append(row); reqs.append(li);
-      });
-      $("#lead-requests-count").replaceChildren(l.interest ? badge("attention", "1 pendente") : badge("", "Nenhuma pendente", false));
-      // Observações
-      const notes = l.notes || (l.notes = [{ author: l.owner || "Ana Souza", at: "03/10/2026 14:22", text: "Prefere contato à tarde. Interessada no plano Familiar para 3 pessoas." }]);
+      $("[data-assign-me]").hidden = l.owner === ME;
+      // Solicitações já tratadas: recolhidas.
+      const treated = [{ at: "01/10/2026 18:05", by: "Ana Souza", resolvedAt: "02/10/2026 09:12" }];
+      $("#lead-requests-summary").textContent = plural(treated.length, "solicitação tratada", "solicitações tratadas");
+      $("#lead-requests").replaceChildren(...treated.map(r => {
+        const li = el("li"), row = el("div", "request"), text = el("div");
+        text.append(el("strong", "", "Solicitação tratada"), el("p", "num", `Recebida em ${r.at} · tratada por ${r.by} em ${r.resolvedAt}`));
+        row.append(text); li.append(row); return li;
+      }));
+      // Observações: mais recentes primeiro; o autor corrige a própria.
+      const notes = l.notes || (l.notes = [{ id: 1, author: l.owner || "Ana Souza", at: "03/10/2026 14:22", text: "Prefere contato à tarde. Interessada no plano Familiar para 3 pessoas." }]);
       $("#lead-notes").replaceChildren(...notes.map(n => {
         const li = el("li"); const meta = el("div", "note-meta");
         meta.append(el("span", "avatar sm", initials(n.author)), el("strong", "", n.author), el("span", "num", n.at));
-        if (n.author === ME) { const edit = button("btn ghost sm", "Corrigir"); edit.style.marginLeft = "auto"; meta.append(edit); }
-        li.append(meta, el("p", "", n.text)); return li;
+        if (n.author === ME && editingNote !== n) { const edit = button("btn ghost sm", "Corrigir", () => { editingNote = n; renderLead(); }); edit.style.marginLeft = "auto"; meta.append(edit); }
+        li.append(meta);
+        if (editingNote === n) {
+          const box = el("div", "note-edit"), ta = el("textarea"); ta.value = n.text; ta.setAttribute("aria-label", "Corrigir observação");
+          const actions = el("div");
+          actions.append(button("btn sm", "Cancelar", () => { editingNote = null; renderLead(); }), button("btn sm primary", "Salvar correção", () => {
+            n.text = ta.value.trim() || n.text; n.at += " · corrigida agora"; editingNote = null;
+            l.history = [{ at: "Agora", text: `<b>${ME}</b> corrigiu uma observação` }, ...historyOf(l)]; renderLead(); toast("Observação corrigida.");
+          }));
+          box.append(ta, el("p", "hint", "O texto anterior permanece no histórico."), actions); li.append(box);
+          setTimeout(() => ta.focus(), 0);
+        } else li.append(el("p", "", n.text));
+        return li;
       }));
-      // Histórico
-      $("#lead-history").replaceChildren(...historyOf(l).map(h => { const li = el("li"); const p = el("p"); p.innerHTML = h.text; li.append(p, el("time", "num", h.at)); return li; }));
+      // Histórico legível: 5 mais recentes + ver tudo.
+      const all = historyOf(l), shown = historyAll ? all : all.slice(0, 5);
+      $("#lead-history").replaceChildren(...shown.map(h => { const li = el("li"); const p = el("p"); p.innerHTML = h.text; li.append(p, el("time", "num", h.at)); return li; }));
+      $("#lead-history-foot").hidden = all.length <= 5;
+      $("#lead-history-count").textContent = `${shown.length} de ${all.length} eventos`;
+      $("[data-history-all]").textContent = historyAll ? "Mostrar menos" : "Ver histórico completo";
     }
+    $("[data-history-all]").addEventListener("click", () => { historyAll = !historyAll; renderLead(); });
+    $("[data-resolve-interest]").addEventListener("click", (e) => withLoading(e.currentTarget, () => {
+      const l = currentLead; l.interest = false; l.history = [{ at: "Agora", text: `<b>${ME}</b> tratou o novo interesse` }, ...historyOf(l)];
+      renderBoard(); renderLead(); toast("Novo interesse marcado como tratado.");
+    }, 500));
+    $("[data-assign-me]").addEventListener("click", () => {
+      const l = currentLead; l.history = [{ at: "Agora", text: `<b>${ME}</b> assumiu o lead` }, ...historyOf(l)];
+      l.owner = ME; renderBoard(); renderLead(); toast("Lead atribuído a você.");
+    });
     $("#lead-assign").addEventListener("change", e => {
       const l = currentLead, to = e.target.value || null;
       l.history = [{ at: "Agora", text: `<b>${ME}</b> ${to ? "atribuiu a " + to : "removeu o responsável"}` }, ...historyOf(l)];
@@ -1370,12 +1471,16 @@
     });
     $("[data-note-form]").addEventListener("submit", e => {
       e.preventDefault(); const t = $("#note-text"); if (!t.value.trim()) { t.focus(); return; }
-      currentLead.notes.unshift({ author: ME, at: "Agora", text: t.value.trim() });
-      currentLead.history = [{ at: "Agora", text: `<b>${ME}</b> adicionou uma observação` }, ...historyOf(currentLead)];
-      t.value = ""; renderLead(); toast("Observação adicionada.");
+      const submit = $("button[type=submit]", e.target);
+      t.disabled = true;
+      withLoading(submit, () => {
+        currentLead.notes.unshift({ id: Date.now(), author: ME, at: "Agora", text: t.value.trim() });
+        currentLead.history = [{ at: "Agora", text: `<b>${ME}</b> adicionou uma observação` }, ...historyOf(currentLead)];
+        t.disabled = false; t.value = ""; renderLead(); toast("Observação adicionada.");
+      }, 500);
     });
     $("[data-lead-stage]").addEventListener("click", () => openStageDialog(currentLead));
-    $("[data-lead-edit]").addEventListener("click", () => toast("Edição de dados abre os campos inline (fora do escopo do protótipo)."));
+    $("[data-lead-edit]").addEventListener("click", () => openEntityDrawer("lead-edit", currentLead));
     $("[data-lead-anonymize]").addEventListener("click", () => confirmAction({
       title: "Anonimizar este lead?", ok: "Anonimizar",
       body: `${currentLead.name} possui histórico operacional. Nome, WhatsApp e e-mail serão substituídos de forma irreversível; o histórico e a auditoria são preservados.`,
@@ -1398,11 +1503,11 @@
           ["Estado", r => badge(...STATE[r.active])],
         ],
         actions: r => [
-          ...(!r.protected ? [{ label: "Editar", run: () => openEntityDrawer("sources", r) }] : []),
           { label: r.active ? "Desativar" : "Reativar", run: () => toggleActive("sources", r) },
           ...(!r.protected && r.leads === 0 ? ["sep", { label: "Excluir", danger: true, run: () => removeRow("sources", r) }] : []),
         ],
         primary: r => !r.protected ? button("btn sm", "Editar", () => openEntityDrawer("sources", r)) : null,
+        rowClick: r => { if (!r.protected) openEntityDrawer("sources", r); },
         empty: "Nenhuma origem encontrada com esses filtros.",
       },
       partners: {
@@ -1416,13 +1521,13 @@
           ["Estado", r => badge(...STATE[r.state])],
         ],
         actions: r => [
-          { label: "Editar", run: () => showView("partner-form") },
           ...(r.state === "published" ? [{ label: r.featured ? "Remover destaque" : "Destacar", run: () => { r.featured = !r.featured; renderList("partners"); toast("Destaque atualizado."); } }] : []),
           ...(r.state === "inactive" ? [{ label: "Republicar", run: () => { r.state = "published"; renderList("partners"); toast(`${r.name} republicado.`); } }] : []),
           ...(r.state === "published" ? ["sep", { label: "Desativar", danger: true, run: () => confirmAction({ title: `Desativar ${r.name}?`, body: "O parceiro deixa de aparecer no catálogo imediatamente. Dados, unidades e benefícios são preservados e ele pode ser republicado.", ok: "Desativar", onConfirm: () => { r.state = "inactive"; r.featured = false; renderList("partners"); toast(`${r.name} desativado.`); } }) }] : []),
           ...(r.state === "draft" ? ["sep", { label: "Excluir rascunho", danger: true, run: () => removeRow("partners", r) }] : []),
         ],
         primary: () => button("btn sm", "Editar", () => showView("partner-form")),
+        rowClick: () => showView("partner-form"),
         empty: "Nenhum parceiro encontrado com esses filtros.",
       },
       plans: {
@@ -1434,8 +1539,9 @@
           ["Parceiros com benefício", r => el("span", "num", r.partners), "r"],
           ["Estado", r => badge(...STATE[r.active])],
         ],
-        actions: r => [{ label: "Editar", run: () => openEntityDrawer("plans", r) }, "sep", { label: r.active ? "Desativar" : "Reativar", danger: r.active, run: () => toggleActive("plans", r) }],
+        actions: r => [{ label: r.active ? "Desativar" : "Reativar", danger: r.active, run: () => toggleActive("plans", r) }],
         primary: r => button("btn sm", "Editar", () => openEntityDrawer("plans", r)),
+        rowClick: r => openEntityDrawer("plans", r),
         empty: "Nenhum plano encontrado com esses filtros.",
       },
       categories: {
@@ -1446,8 +1552,9 @@
           ["Parceiros", r => el("span", "num", r.partners), "r"],
           ["Estado", r => badge(...STATE[r.active])],
         ],
-        actions: r => [{ label: "Editar", run: () => openEntityDrawer("categories", r) }, "sep", { label: r.active ? "Desativar" : "Reativar", danger: r.active, run: () => toggleActive("categories", r) }],
+        actions: r => [{ label: r.active ? "Desativar" : "Reativar", danger: r.active, run: () => toggleActive("categories", r) }],
         primary: r => button("btn sm", "Editar", () => openEntityDrawer("categories", r)),
+        rowClick: r => openEntityDrawer("categories", r),
         empty: "Nenhuma categoria encontrada com esses filtros.",
       },
       users: {
@@ -1461,7 +1568,7 @@
           ["Permissões", r => el("span", "num", `${GRANTS[r.id].size} de ${PERM_TOTAL}`), "r"],
           ["Estado", r => badge(...STATE[r.active])],
         ],
-        actions: r => [{ label: "Abrir detalhe", run: () => openUser(r) }],
+        actions: () => [],
         primary: r => button("btn sm", "Abrir", () => openUser(r)),
         empty: "Nenhum usuário encontrado com esses filtros.",
       },
@@ -1498,7 +1605,7 @@
       cfg.cols.forEach(([h, , cls]) => { const th = el("th", cls || "", h); th.scope = "col"; tr.append(th); });
       const thA = el("th", "actions"); thA.append(el("span", "sr-only", "Ações")); tr.append(thA);
       thead.append(tr); table.append(thead, el("tbody")); wrap.append(table);
-      const foot = el("div", "card-foot"); foot.append(el("span", "num"), el("span", "", "Ordem alfabética · sem paginação"));
+      const foot = el("div", "card-foot"); foot.append(el("span", "num"));
       host.append(bar, wrap, foot);
     }
     function renderList(key) {
@@ -1509,7 +1616,9 @@
       const body = $("tbody", host); body.replaceChildren();
       if (!rows.length) {
         const tr = el("tr", "empty-row"), td = el("td"); td.colSpan = cfg.cols.length + 1;
-        td.append(el("strong", "", cfg.empty), document.createTextNode("Ajuste a busca ou o filtro de estado."));
+        td.append(el("strong", "", cfg.empty), document.createTextNode("Ajuste a busca ou o filtro de estado."), el("br"));
+        const clear = button("btn sm", "Limpar filtros", () => { st.q = ""; st.state = ""; $(".search-box input", host).value = ""; $$(".seg button", host).forEach(b => b.setAttribute("aria-pressed", b.dataset.v === "")); renderList(key); });
+        clear.style.marginTop = "10px"; td.append(clear);
         tr.append(td); body.append(tr);
       }
       rows.forEach(r => {
@@ -1517,7 +1626,7 @@
         cfg.cols.forEach(([, render, cls]) => { const td = el("td", cls || ""); td.append(render(r)); tr.append(td); });
         const td = el("td", "actions"), box = el("div");
         const p = cfg.primary(r); if (p) box.append(p);
-        box.append(moreButton(`Mais ações para ${r.name}`, () => cfg.actions(r)));
+        if (cfg.actions(r).length) box.append(moreButton(`Mais ações para ${r.name}`, () => cfg.actions(r)));
         td.append(box); tr.append(td);
         if (cfg.rowClick) { tr.classList.add("clickable"); tr.addEventListener("click", e => { if (!e.target.closest("button")) cfg.rowClick(r); }); }
         body.append(tr);
@@ -1561,7 +1670,7 @@
     }
     function openEntityDrawer(key, r) {
       const isNew = !r, body = $("#entity-body"); body.replaceChildren();
-      const titles = { sources: ["Nova origem", "Editar origem"], plans: ["Novo plano", "Editar plano"], categories: ["Nova categoria", "Editar categoria"], lead: ["Novo lead", ""], user: ["Novo usuário", ""] };
+      const titles = { sources: ["Nova origem", "Editar origem"], plans: ["Novo plano", "Editar plano"], categories: ["Nova categoria", "Editar categoria"], lead: ["Novo lead", ""], "lead-edit": ["", "Editar dados"], user: ["Novo usuário", ""] };
       $("#entity-title").textContent = titles[key][isNew ? 0 : 1];
       $("#entity-sub").textContent = isNew ? "" : r.name;
       if (key === "plans") {
@@ -1569,9 +1678,15 @@
       } else if (key === "categories" || key === "sources") {
         body.append(field("e-name", "Nome", r?.name, { hint: "Deve ser único, sem diferenciar maiúsculas e acentos." }), activeSwitch(r ? r.active : true));
       } else if (key === "lead") {
+        // A última origem escolhida é lembrada durante a sessão; na primeira abertura, nenhuma vem selecionada.
+        const sources = DATA.sources.filter(s => s.active && !s.protected).map(s => s.name);
         body.append(field("e-name", "Nome"), field("e-phone", "WhatsApp", "", { hint: "Com DDD. Um WhatsApp só pode pertencer a um lead." }), field("e-mail", "E-mail", "", { optional: true }),
-          field("e-source", "Origem", "Indicação", { options: DATA.sources.filter(s => s.active && !s.protected).map(s => s.name) }), field("e-detail", "Detalhe da origem", "", { optional: true }),
-          field("e-owner", "Responsável", ME, { options: ["Sem responsável", ...USERS.filter(u => u.active).map(u => u.name)] }));
+          field("e-source", "Origem", lastSource, { options: ["", ...sources], hint: lastSource ? "Última origem usada nesta sessão." : undefined }), field("e-detail", "Detalhe da origem", "", { optional: true }),
+          field("e-owner", "Responsável", ME + " (você)", { options: [ME + " (você)", "Sem responsável"] }));
+        $("#e-source option[value='']").textContent = "Selecione";
+      } else if (key === "lead-edit") {
+        body.append(field("e-name", "Nome", r.name), field("e-phone", "WhatsApp", r.phone, { hint: "Com DDD. Um WhatsApp só pode pertencer a um lead." }), field("e-mail", "E-mail", r.email || "", { optional: true }),
+          field("e-source", "Origem", r.source, { options: DATA.sources.filter(s => s.active || s.name === r.source).map(s => s.name), hint: "A origem anterior fica registrada no histórico." }), field("e-detail", "Detalhe da origem", "", { optional: true }));
       } else if (key === "user") {
         body.append(field("e-name", "Nome completo"), field("e-login", "Nome de usuário", "", { mono: true, readonly: true, hint: "Gerado a partir do nome; recebe um sufixo numérico se já existir. Pode ser ajustado no detalhe do usuário." }), field("e-mail", "E-mail", "", { optional: true }),
           Object.assign(el("div", "alert info"), {}));
@@ -1580,14 +1695,36 @@
       drawerSave = () => {
         const name = $("#e-name").value.trim(); if (!name) return toast("Informe o nome.");
         if (key === "lead") {
-          LEADS.push({ id: Date.now(), name, phone: $("#e-phone").value || "(21) 90000-0000", source: $("#e-source").value, owner: $("#e-owner").value === "Sem responsável" ? null : $("#e-owner").value, stage: "new" });
-          renderBoard(); toast("Lead criado em “Novo”."); return;
+          const phone = $("#e-phone").value || "(21) 90000-0000";
+          const existing = LEADS.find(l => l.phone.replace(/\D/g, "") === phone.replace(/\D/g, ""));
+          if (existing) {
+            // WhatsApp já cadastrado: erro no campo, com o lead existente.
+            const f = $("#e-phone").closest(".field"); f.classList.add("field-error"); $("#e-phone").setAttribute("aria-invalid", "true");
+            let hint = $(".hint", f); if (!hint) { hint = el("span", "hint"); f.append(hint); }
+            hint.replaceChildren(icon("i-alert"), document.createTextNode(`Este WhatsApp já pertence a ${existing.name}. `), button("linklike", "Abrir lead existente", () => { drawer.close(); openLead(existing); }));
+            return false;
+          }
+          lastSource = $("#e-source").value;
+          const lead = { id: Date.now(), name, phone, source: lastSource || "Abordagem", owner: $("#e-owner").value === "Sem responsável" ? null : ME, stage: "new" };
+          LEADS.push(lead);
+          renderBoard(); toast("Lead criado em “Novo”.", { label: "Abrir lead", run: () => openLead(lead) }); return;
+        }
+        if (key === "lead-edit") {
+          const from = r.source; Object.assign(r, { name, phone: $("#e-phone").value, email: $("#e-mail").value, source: $("#e-source").value });
+          r.history = [{ at: "Agora", text: `<b>${ME}</b> alterou os dados de contato${from !== r.source ? ` e a origem (de ${from} para ${r.source})` : ""}` }, ...historyOf(r)];
+          renderBoard(); renderLead(); toast("Dados do lead atualizados."); return;
         }
         if (key === "user") {
           const u = { id: "u" + Date.now(), name, login: $("#e-login").value || name.toLowerCase().split(" ").join("."), email: $("#e-mail").value, active: true, activated: false };
           USERS.push(u); GRANTS[u.id] = new Set(); renderList("users"); toast("Usuário criado."); openUser(u); return;
         }
         const active = $("#e-active").checked;
+        // Desativar pelo dialog pede a mesma confirmação da ação do menu.
+        if (!isNew && r.active && !active) {
+          confirmAction({ title: `Desativar ${LISTS[key].noun[0]} “${r.name}”?`, ok: "Desativar", body: "O registro deixa de aparecer nas seleções e no catálogo; as associações são preservadas.",
+            onConfirm: () => { Object.assign(r, { name, active }); renderList(key); toast(`“${name}” agora está inativo.`); } });
+          return;
+        }
         if (isNew) DATA[key].push({ name, slug: key === "plans" ? ($("#e-slug").value || name.toLowerCase().normalize("NFD").replace(/[^\w]+/g, "-")) : undefined, active, leads: 0, partners: 0 });
         else Object.assign(r, { name, active });
         renderList(key); toast(isNew ? `“${name}” cadastrado.` : "Alterações salvas.");
@@ -1595,7 +1732,8 @@
       drawer.returnValue = ""; drawer.showModal();
       setTimeout(() => $("#e-name")?.focus(), 0);
     }
-    drawer.addEventListener("close", () => { if (drawer.returnValue === "confirm" && drawerSave) drawerSave(); });
+    let lastSource = "";
+    drawer.addEventListener("close", () => { if (drawer.returnValue === "confirm" && drawerSave && drawerSave() === false) { drawer.returnValue = ""; drawer.showModal(); } });
     $$("[data-new]").forEach(b => b.addEventListener("click", () => openEntityDrawer(b.dataset.new)));
     $("[data-new-user]").addEventListener("click", () => openEntityDrawer("user"));
 
@@ -1619,14 +1757,54 @@
         pct.addEventListener("input", () => { b.pct = pct.value; syncPublish(); });
         const cp = el("input", "mono"); cp.value = b.coupon; cp.disabled = !b.on; cp.placeholder = "Usa o cupom geral"; cp.setAttribute("aria-label", `Cupom do plano ${p.name}`);
         cp.addEventListener("input", () => { b.coupon = cp.value; });
-        const sw = el("label", "switch"); const si = el("input"); si.type = "checkbox"; si.checked = b.on; si.setAttribute("aria-label", `Oferecer benefício no plano ${p.name}`);
-        si.addEventListener("change", () => { b.on = si.checked; if (b.on && !b.pct) b.pct = 10; renderPartnerForm(); });
-        sw.append(si, Object.assign(el("span", "track"), { ariaHidden: "true" }));
+        // Habilitar fica junto ao nome do plano; ao marcar, o foco vai ao percentual (nenhum valor é sugerido).
+        const lab = el("label", "plan"); const si = el("input"); si.type = "checkbox"; si.checked = b.on;
+        si.addEventListener("change", () => { b.on = si.checked; markPartnerDirty(); renderPartnerForm(); if (b.on) $(`#p-benefits input[aria-label^="Desconto no plano ${p.name}"]`).focus(); });
+        lab.append(si, document.createTextNode(p.name));
         const td = (n) => { const c = el("td"); c.append(n); return c; };
-        const name = el("td"); name.append(el("strong", "", p.name)); name.firstChild.style.fontWeight = 600;
-        tr.append(name, td(pct), td(cp), td(sw)); tb.append(tr);
+        tr.append(td(lab), td(pct), td(cp)); tb.append(tr);
       });
+      renderUnits();
       syncPublish();
+    }
+    /* Unidades: "Editar" na linha; "Remover unidade" dentro da edição; removida pode ser desfeita até salvar. */
+    const pUnits = [
+      { id: 1, name: "Unidade Tijuca", addr: "Rua Conde de Bonfim, 420 · Tijuca, Rio de Janeiro – RJ · CEP 20520-054", meta: "Seg. a sex., 8h às 18h · usa contatos gerais" },
+      { id: 2, name: "Unidade Méier", addr: "Rua Dias da Cruz, 188, sala 302 · Méier, Rio de Janeiro – RJ · CEP 20720-011", meta: "1 contato próprio" },
+    ];
+    let openUnit = null;
+    function renderUnits() {
+      const host = $("#p-units"); host.replaceChildren();
+      if (!pUnits.length) host.append(el("p", "muted", "Nenhuma unidade. O parceiro pode operar sem unidade física."));
+      pUnits.forEach(u => {
+        const wrap = el("div"), row = el("div", "unit" + (u.removed ? " removed" : "")), text = el("div");
+        text.append(el("strong", "", u.name), document.createTextNode(" "));
+        if (!u.removed) { const b = badge("success dot", "Ativa", false); b.style.marginLeft = "4px"; text.append(b); }
+        text.append(el("p", "", u.addr), el("p", "", u.meta));
+        row.append(text);
+        if (u.removed) {
+          const side = el("span"); side.style.cssText = "display:flex;gap:8px;align-items:center";
+          side.append(el("span", "hint", "Removida ao salvar"), button("btn ghost sm", "Desfazer", () => { u.removed = false; renderUnits(); }));
+          row.append(side);
+        } else {
+          const edit = button("btn ghost sm", openUnit === u ? "Recolher" : "Editar", () => { openUnit = openUnit === u ? null : u; renderUnits(); });
+          edit.setAttribute("aria-expanded", openUnit === u); row.append(edit);
+        }
+        wrap.append(row);
+        if (openUnit === u && !u.removed) {
+          const panel = el("div", "unit-edit");
+          panel.append(field(`unit-${u.id}`, "Nome da unidade", u.name), el("p", "hint", "Endereço, horários, instruções e contatos próprios da unidade."));
+          const actions = el("div", "row");
+          actions.append(button("btn danger-quiet sm", "Remover unidade", () => { u.removed = true; openUnit = null; markPartnerDirty(); renderUnits(); }, "i-trash"), button("btn sm", "Recolher", () => { openUnit = null; renderUnits(); }));
+          panel.append(actions); wrap.append(panel);
+        }
+        host.append(wrap);
+      });
+    }
+    $("[data-add-unit]").addEventListener("click", () => { const u = { id: Date.now(), name: "Nova unidade", addr: "Endereço não informado.", meta: "Usa os contatos gerais" }; pUnits.push(u); openUnit = u; markPartnerDirty(); renderUnits(); });
+    function markPartnerDirty() {
+      $("#partner-savebar").hidden = false;
+      const flag = $("#view-partner-form .side-summary .unsaved"); flag.textContent = "Não salvo"; flag.style.color = "";
     }
     function syncPublish() {
       const benefits = Object.values(pBenefits).filter(b => b.on && Number(b.pct) >= 1 && Number(b.pct) <= 100).length;
@@ -1646,13 +1824,18 @@
       $("#p-slug").setAttribute("aria-invalid", !slugOk);
     }
     $("#p-slug").addEventListener("input", syncPublish);
+    $("[data-partner-form]").addEventListener("input", markPartnerDirty);
     $$("[data-section]").forEach(b => b.addEventListener("click", () => {
       $$("[data-section]").forEach(x => x.removeAttribute("aria-current")); b.setAttribute("aria-current", "true");
       document.getElementById(b.dataset.section).scrollIntoView({ behavior: "smooth", block: "start" });
     }));
     $$("[data-save-partner]").forEach(b => b.addEventListener("click", () => {
       if (!/^[a-z0-9-]+$/.test($("#p-slug").value)) { $("#p-slug").focus(); return; }
-      withLoading(b, () => { $(".unsaved").textContent = "Salvo agora"; $(".unsaved").style.color = "var(--success)"; toast("Parceiro salvo como rascunho."); });
+      withLoading(b, () => {
+        const flag = $("#view-partner-form .side-summary .unsaved"); flag.textContent = "Salvo agora"; flag.style.color = "var(--success)";
+        for (let i = pUnits.length - 1; i >= 0; i--) if (pUnits[i].removed) pUnits.splice(i, 1);
+        $("#partner-savebar").hidden = true; renderUnits(); toast("Parceiro salvo como rascunho.");
+      });
     }));
     $("[data-leave-form]").addEventListener("click", () => confirmAction({ title: "Sair sem salvar?", body: "As alterações feitas neste parceiro serão descartadas.", ok: "Descartar alterações", onConfirm: () => showView("partners") }));
 
@@ -1682,6 +1865,12 @@
         const on = g.items.filter(i => draftGrants.has(g.area + ":" + i)).length;
         const h = el("h3"); const legend = el("legend", "sr-only", g.area); area.append(legend);
         h.append(el("span", "", g.area), el("span", "", `${on}/${g.items.length}`)); h.firstChild.style.color = "var(--foreground)"; h.firstChild.style.fontWeight = 600;
+        // Marcar/desmarcar a área inteira, limitado ao que o autor pode conceder.
+        const grantable = g.items.map(i => g.area + ":" + i).filter(k => GRANTS.ana.has(k));
+        if (!self && grantable.length) {
+          const all = grantable.every(k => draftGrants.has(k));
+          h.append(button("btn ghost", all ? "Desmarcar todas" : "Marcar todas", () => { grantable.forEach(k => all ? draftGrants.delete(k) : draftGrants.add(k)); renderUser(); }));
+        }
         area.append(h);
         g.items.forEach(i => {
           const key = g.area + ":" + i, l = el("label", "check"), c = el("input"); c.type = "checkbox";
@@ -1693,10 +1882,16 @@
         });
         grid.append(area);
       });
+      // Barra de salvamento: só com alterações, com o resumo do que muda.
+      const saved = GRANTS[u.id], add = [...draftGrants].filter(k => !saved.has(k)).length, rem = [...saved].filter(k => !draftGrants.has(k)).length;
+      $("#user-savebar").hidden = add + rem === 0;
+      $("#user-savebar-summary").innerHTML = `<b>+${add}</b> ${add === 1 ? "concedida" : "concedidas"} · <b>−${rem}</b> ${rem === 1 ? "revogada" : "revogadas"} · valem imediatamente ao salvar`;
     }
+    const userDirty = () => currentUser && draftGrants && (draftGrants.size !== GRANTS[currentUser.id].size || [...draftGrants].some(k => !GRANTS[currentUser.id].has(k)));
+    $("[data-copy-code]").addEventListener("click", (e) => copyFeedback(e.currentTarget, "Copiar código"));
     $("[data-save-user]").addEventListener("click", e => withLoading(e.currentTarget, () => {
       const u = currentUser; u.name = $("#u-name").value; u.login = $("#u-login").value; u.email = $("#u-mail").value;
-      GRANTS[u.id] = new Set(draftGrants); renderUser(); renderList("users"); toast("Usuário atualizado. Permissões já estão em vigor.");
+      GRANTS[u.id] = new Set(draftGrants); renderUser(); renderList("users"); toast("Permissões salvas. Já estão em vigor.");
     }));
     $("[data-discard-perms]").addEventListener("click", () => { draftGrants = new Set(GRANTS[currentUser.id]); renderUser(); });
     $("[data-issue-code]").addEventListener("click", () => {
@@ -1717,7 +1912,9 @@
       const action = $("#audit-action").value, author = $("#audit-author").value, target = $("#audit-target").value;
       const rows = AUDIT.filter(a => (!action || a.action === action) && (!author || a.author === author) && (!target || a.target === target));
       const body = $("#audit-rows"); body.replaceChildren();
-      if (!rows.length) { const tr = el("tr", "empty-row"), td = el("td"); td.colSpan = 6; td.append(el("strong", "", "Nenhum evento com esses filtros."), document.createTextNode("Amplie o período ou remova filtros.")); tr.append(td); body.append(tr); }
+      const filtered = Boolean(action || author || target);
+      $("[data-clear-audit]").hidden = !filtered;
+      if (!rows.length) { const tr = el("tr", "empty-row"), td = el("td"); td.colSpan = 6; td.append(el("strong", "", "Nenhum evento com esses filtros."), document.createTextNode("Amplie o período ou remova filtros."), el("br")); const c = button("btn sm", "Limpar filtros", clearAudit); c.style.marginTop = "10px"; td.append(c); tr.append(td); body.append(tr); }
       rows.forEach(a => {
         const tr = el("tr", "clickable");
         const who = (n) => { if (n === "—") return el("span", "muted", "—"); const w = el("span", "cell-main"); w.style.gap = "8px"; w.append(el("span", "avatar sm", initials(n)), el("span", "", n)); return w; };
@@ -1743,8 +1940,14 @@
     [...new Set(AUDIT.map(a => a.action))].sort().forEach(a => $("#audit-action").append(Object.assign(el("option", "", a), { value: a })));
     [...new Set(AUDIT.map(a => a.author))].forEach(a => $("#audit-author").append(Object.assign(el("option", "", a), { value: a })));
     [...new Set(AUDIT.map(a => a.target).filter(t => t !== "—"))].forEach(a => $("#audit-target").append(Object.assign(el("option", "", a), { value: a })));
-    $("#audit-action").addEventListener("change", renderAudit); $("#audit-author").addEventListener("change", renderAudit); $("#audit-target").addEventListener("change", renderAudit);
-    $("[data-clear-audit]").addEventListener("click", () => { $("#audit-action").value = ""; $("#audit-author").value = ""; $("#audit-target").value = ""; renderAudit(); });
+    /* Trocar filtro mantém a barra e a tabela anterior esmaecida até a nova página chegar. */
+    function refreshAudit() {
+      $("#audit-progress").hidden = false; $("#audit-rows").classList.add("refreshing"); $("#audit-rows").setAttribute("aria-busy", "true"); $("#audit-range").textContent = "Atualizando…";
+      setTimeout(() => { $("#audit-progress").hidden = true; $("#audit-rows").classList.remove("refreshing"); $("#audit-rows").removeAttribute("aria-busy"); renderAudit(); }, 600);
+    }
+    function clearAudit() { $("#audit-action").value = ""; $("#audit-author").value = ""; $("#audit-target").value = ""; refreshAudit(); }
+    $("#audit-action").addEventListener("change", refreshAudit); $("#audit-author").addEventListener("change", refreshAudit); $("#audit-target").addEventListener("change", refreshAudit);
+    $("[data-clear-audit]").addEventListener("click", clearAudit);
 
     /* ───────── Alterar senha ───────── */
     $("#pw-new").addEventListener("input", e => {
@@ -1771,7 +1974,15 @@
       password: { area: "Conta", title: "Alterar senha", nav: "password" },
       states: { area: "Referência", title: "Estados e componentes" },
     };
-    function showView(id) {
+    let currentView = null;
+    function showView(id, force = false) {
+      // Sair do detalhe do usuário com permissões não salvas pede confirmação.
+      if (!force && currentView === "user" && id !== "user" && userDirty()) {
+        confirmAction({ title: "Sair sem salvar?", body: "As permissões alteradas serão descartadas. A conta continua com as permissões atuais.", ok: "Descartar alterações",
+          onConfirm: () => { draftGrants = new Set(GRANTS[currentUser.id]); renderUser(); showView(id, true); } });
+        return;
+      }
+      currentView = id;
       const route = ROUTES[id];
       if (id === "lead" && !LEADS.includes(currentLead)) currentLead = LEADS[0];
       if (id === "lead") renderLead();
@@ -1799,6 +2010,16 @@
 
     /* ───────── Inicialização ───────── */
     DATA.sources.forEach(s => $("#lead-source").append(Object.assign(el("option", "", s.name), { value: s.name })));
+    // Responsável: as pessoas presentes nos leads carregados (oculto para quem só vê os próprios).
+    const people = el("optgroup"); people.label = "Pessoas";
+    [...new Set(LEADS.map(l => l.owner).filter(o => o && o !== ME))].forEach(o => people.append(Object.assign(el("option", "", o), { value: o })));
+    $("#lead-owner").append(people);
+    // Seção atual do formulário acompanha a rolagem.
+    const sectionSpy = new IntersectionObserver((entries) => {
+      const visible = entries.filter(e => e.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
+      if (visible) $$("[data-section]").forEach(x => x.dataset.section === visible.target.id ? x.setAttribute("aria-current", "true") : x.removeAttribute("aria-current"));
+    }, { rootMargin: "-72px 0px -60% 0px" });
+    $$(".form-sections > section").forEach(sec => sectionSpy.observe(sec));
     Object.keys(LISTS).forEach(k => { buildList(k); renderList(k); });
     renderBoard(); renderPartnerForm(); renderAudit();
     showView(ROUTES[location.hash.slice(1)] ? location.hash.slice(1) : "leads");

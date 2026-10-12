@@ -46,6 +46,8 @@ As aplicações implementam as fontes aprovadas e não redefinem o sistema.
   e [protótipo comparativo](prototypes/catalog/proposals/2026-10-sistema-visual/index.html) — registro da decisão aprovada em 2026-10-11 (direção A).
 - [Auditoria do sistema visual do dashboard](prototypes/dashboard/proposals/2026-10-sistema-visual/README.md)
   e [protótipo comparativo](prototypes/dashboard/proposals/2026-10-sistema-visual/index.html) — registro da decisão aprovada em 2026-10-11 (direção A, que substituiu a direção B aprovada anteriormente no mesmo dia).
+- [Auditoria de UX e fluxos do dashboard](prototypes/dashboard/proposals/2026-10-ux-fluxos/README.md)
+  e [protótipo comparativo](prototypes/dashboard/proposals/2026-10-ux-fluxos/index.html) — aprovada em 2026-10-11 com ajustes (sem filtros na URL; salvar e publicar separados), consolidada no protótipo e em `interface.md`.
 - Definição dos tokens: [`apps/ui-foundations.md`](apps/ui-foundations.md)
 - Materialização atual dos tokens: [`apps/dashboard/src/styles/tailwind.css`](../apps/dashboard/src/styles/tailwind.css)
 

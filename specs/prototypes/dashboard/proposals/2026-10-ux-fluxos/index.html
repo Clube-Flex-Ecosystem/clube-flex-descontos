@@ -1,0 +1,1576 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fluxos do dashboard — atual × proposta</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..110,400..700&display=swap" rel="stylesheet">
+  <style>
+    /* ═════════ CSS do protótipo aprovado (specs/prototypes/dashboard/index.html, linhas 11–559), copiado sem alteração ═════════ */
+    /* ───────── Tokens ───────── */
+    :root {
+      /* Valores espelham specs/apps/ui-foundations.md (Fundamentos do dashboard) e apps/dashboard/src/styles/tailwind.css. */
+      --navy-50: #fafbfd; --navy-100: #eef2f7; --navy-200: #dce2ec; --navy-300: #b4bfd0; --navy-400: #7a879e;
+      --navy-500: #5e6a82; --navy-600: #4a5670; --navy-700: #333f59; --navy-800: #18284a; --navy-900: #04173a;
+      --orange-50: #fff6f0; --orange-200: #ffcfb2; --orange-400: #ff6b1f; --orange-500: #fd5200; --orange-600: #ea4b00; --orange-700: #b83a00;
+
+      --background: var(--navy-50);
+      --surface: #ffffff;
+      --surface-muted: var(--navy-100);
+      --foreground: var(--navy-900);
+      --foreground-soft: var(--navy-700);
+      --muted: var(--navy-600);
+      --placeholder: var(--navy-500);
+      --border: var(--navy-200);
+      --border-strong: var(--navy-300);
+      --control-border: var(--navy-400);
+      --control-border-hover: var(--navy-500);
+
+      --primary: var(--orange-500);
+      --primary-hover: var(--orange-400);
+      --primary-active: var(--orange-600);
+      --primary-foreground: var(--navy-900);
+      --selected: var(--orange-600);
+      --selected-foreground: var(--navy-900);
+      --selected-soft: var(--orange-50);
+      --selected-soft-foreground: var(--orange-700);
+      --selected-border: var(--orange-500);
+      --signal: var(--orange-600);
+      --attention-soft: var(--orange-50);
+      --attention-foreground: var(--orange-700);
+      --identity: var(--orange-50);
+      --identity-foreground: var(--orange-700);
+
+      --success: #157347; --success-soft: #e7f6ee;
+      --warning: #8a5a00; --warning-soft: #fdf3d7;
+      --danger: #b4233a; --danger-hover: #9c1c31; --danger-soft: #fdecee; --danger-foreground: #ffffff;
+      --info: #1f56c4; --info-soft: #e8effc;
+
+      --sidebar: var(--navy-900);
+      --sidebar-hover: var(--navy-800);
+      --sidebar-selected: var(--navy-700);
+      --sidebar-foreground: var(--navy-100);
+      --sidebar-muted: var(--navy-300);
+      --sidebar-selected-foreground: #ffffff;
+      --sidebar-border: var(--navy-800);
+      --sidebar-scrollbar: var(--navy-700);
+      --signal-inverse: var(--orange-400);
+      --focus-inverse: var(--orange-400);
+      --sidebar-count: rgb(253 82 0 / .22);
+      --sidebar-count-foreground: var(--orange-200);
+
+      --inverse: var(--navy-900);
+      --inverse-foreground: var(--navy-50);
+      --focus: var(--orange-600);
+      --overlay: rgb(4 23 58 / .45);
+      --selection: var(--orange-200);
+      --selection-foreground: var(--navy-900);
+      --scrollbar-thumb: var(--navy-400);
+      --scrollbar-thumb-hover: var(--navy-600);
+
+      --radius-badge: 6px;
+      --radius-control: 8px;
+      --radius-tile: 10px;
+      --radius-card: 12px;
+      --radius-overlay: 12px;
+      --shadow-floating: 0 1px 2px rgb(4 23 58 / .06), 0 6px 16px rgb(4 23 58 / .10);
+      --shadow-overlay: 0 2px 6px rgb(4 23 58 / .08), 0 24px 48px rgb(4 23 58 / .18);
+
+      --font-ui: "Archivo", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+      --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      --nav-w: 232px;
+      --header-h: 48px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { font-family: var(--font-ui); font-size: 14px; line-height: 20px; color: var(--foreground); background: var(--background); -webkit-font-smoothing: antialiased; }
+    body { margin: 0; min-width: 320px; background: var(--background); }
+    h1, h2, h3, p, dl, dd, ul, ol { margin: 0; }
+    ul, ol { padding: 0; list-style: none; }
+    button, input, select, textarea { font: inherit; color: inherit; }
+    button, a { touch-action: manipulation; }
+    a { color: var(--foreground); text-decoration: underline; text-decoration-color: var(--primary); text-underline-offset: 3px; }
+    a:hover { text-decoration-thickness: 2px; }
+    :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+    input, textarea { caret-color: var(--focus); }
+    ::placeholder { color: var(--placeholder); opacity: 1; }
+    input:-webkit-autofill { -webkit-box-shadow: 0 0 0 1000px var(--surface-muted) inset; -webkit-text-fill-color: var(--foreground); }
+    ::selection { background: var(--selection); color: var(--selection-foreground); }
+    ::-moz-selection { background: var(--selection); color: var(--selection-foreground); }
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border: 2px solid transparent; background-clip: padding-box; border-radius: 999px; }
+    ::-webkit-scrollbar-thumb:hover { background-color: var(--scrollbar-thumb-hover); }
+    @supports not selector(::-webkit-scrollbar) { * { scrollbar-color: var(--scrollbar-thumb) transparent; scrollbar-width: thin; } }
+    [hidden] { display: none !important; }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    .icon { width: 16px; height: 16px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+    .icon.lg { width: 16px; height: 16px; }
+    .muted { color: var(--muted); }
+    .num { font-variant-numeric: tabular-nums; }
+    .mono { font-family: var(--font-mono); font-size: 13px; }
+
+    .skip-link { position: absolute; left: 8px; top: -48px; z-index: 100; padding: 8px 12px; border-radius: var(--radius-control); background: var(--primary); color: var(--primary-foreground); text-decoration: none; font-weight: 600; }
+    .skip-link:focus { top: 8px; }
+
+    /* ───────── Estrutura ───────── */
+    .shell { min-height: 100vh; display: grid; grid-template-columns: var(--nav-w) minmax(0, 1fr); }
+    body.nav-collapsed { --nav-w: 56px; }
+
+    .sidebar { position: sticky; top: 0; height: 100vh; background: var(--sidebar); border-right: 1px solid var(--sidebar-border); color: var(--sidebar-foreground); display: flex; flex-direction: column; overflow: hidden; }
+    .brand { height: var(--header-h); padding: 0 16px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--sidebar-border); flex: none; }
+    .sidebar :focus-visible, .auth-side :focus-visible { outline-color: var(--focus-inverse); }
+    .sidebar ::-webkit-scrollbar-thumb { background-color: var(--sidebar-scrollbar); }
+    /* Espaço reservado tipográfico até a entrega do logo oficial: versão para fundo escuro na moldura navy. */
+    .brand-mark { flex: none; font-weight: 700; font-size: 17px; font-style: italic; letter-spacing: -.02em; white-space: nowrap; color: var(--sidebar-selected-foreground); }
+    .brand-mark i { font-style: inherit; color: var(--signal-inverse); }
+    .brand-text { line-height: 16px; min-width: 0; color: var(--sidebar-muted); font-size: 12px; white-space: nowrap; }
+
+    .nav { flex: 1; overflow-y: auto; padding: 4px 8px 12px; }
+    .nav-group { padding-top: 12px; }
+    .nav-group h2 { padding: 0 8px 4px; color: var(--sidebar-muted); font-size: 11px; line-height: 16px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
+    .nav-item { position: relative; width: 100%; height: 32px; padding: 0 8px; border: 1px solid transparent; border-radius: var(--radius-control); color: var(--sidebar-foreground); background: transparent; display: flex; align-items: center; gap: 10px; text-align: left; font-size: 13px; line-height: 18px; font-weight: 500; cursor: pointer; white-space: nowrap; }
+    .nav-item .icon { color: var(--sidebar-muted); }
+    .nav-item + .nav-item { margin-top: 1px; }
+    .nav-item:hover { background: var(--sidebar-hover); }
+    .nav-item[aria-current="page"] { background: var(--sidebar-selected); color: var(--sidebar-selected-foreground); font-weight: 600; }
+    .nav-item[aria-current="page"] .icon { color: var(--signal-inverse); }
+    .nav-item[aria-current="page"]::before { content: ""; position: absolute; left: -9px; top: 7px; bottom: 7px; width: 3px; border-radius: 0 2px 2px 0; background: var(--signal-inverse); }
+    .nav-label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+    .nav-count { min-width: 20px; height: 18px; padding: 0 6px; border-radius: 999px; background: var(--sidebar-count); color: var(--sidebar-count-foreground); font-size: 11px; font-weight: 600; display: inline-grid; place-items: center; }
+
+    .sidebar-footer { flex: none; padding: 8px; border-top: 1px solid var(--sidebar-border); display: flex; align-items: center; gap: 6px; }
+    .me { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; padding: 2px 4px; }
+    .me strong { display: block; color: var(--sidebar-selected-foreground); font-weight: 600; font-size: 13px; line-height: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .me small { display: block; color: var(--sidebar-muted); font-size: 12px; line-height: 16px; }
+    .nav-icon-btn { width: 32px; height: 32px; flex: none; border: 0; border-radius: var(--radius-control); background: transparent; color: var(--sidebar-muted); display: grid; place-items: center; cursor: pointer; }
+    .nav-icon-btn:hover { background: var(--sidebar-hover); color: var(--sidebar-selected-foreground); }
+    .nav-icon-btn[aria-current="page"] { background: var(--sidebar-selected); color: var(--sidebar-selected-foreground); }
+    .sidebar .avatar { background: var(--sidebar-selected); color: var(--sidebar-selected-foreground); }
+
+    body.nav-collapsed .brand { padding: 0; justify-content: center; }
+    body.nav-collapsed .brand-mark { font-size: 0; }
+    body.nav-collapsed .brand-mark i { font-size: 17px; }
+    body.nav-collapsed .brand-text,
+    body.nav-collapsed .nav-label,
+    body.nav-collapsed .nav-count,
+    body.nav-collapsed .me div,
+    body.nav-collapsed .sidebar-footer .nav-icon-btn { display: none; }
+    body.nav-collapsed .nav-group h2 { height: 1px; margin: 0 8px 8px; padding: 0; overflow: hidden; color: transparent; background: var(--sidebar-border); }
+    body.nav-collapsed .nav-item { justify-content: center; padding: 0; }
+    body.nav-collapsed .nav-item[data-count]::after { content: ""; position: absolute; top: 6px; right: 8px; width: 6px; height: 6px; border-radius: 50%; background: var(--signal-inverse); }
+    body.nav-collapsed .sidebar-footer { justify-content: center; }
+    body.nav-collapsed .me { flex: none; padding: 0; }
+
+    .main { min-width: 0; display: flex; flex-direction: column; }
+    .topbar { position: sticky; top: 0; z-index: 20; height: var(--header-h); padding: 0 28px 0 8px; border-bottom: 1px solid var(--border); background: var(--surface); display: flex; align-items: center; gap: 8px; }
+    .crumbs { display: flex; align-items: center; gap: 6px; min-width: 0; color: var(--muted); font-size: 13px; line-height: 18px; }
+    .crumbs button { padding: 2px 4px; border: 0; border-radius: var(--radius-badge); background: none; color: var(--muted); cursor: pointer; }
+    .crumbs button:hover { color: var(--foreground); text-decoration: underline; }
+    .crumbs .sep { color: var(--border-strong); }
+    .crumbs strong { color: var(--foreground); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .topbar-end { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+    .divider-v { width: 1px; height: 20px; background: var(--border); }
+    .topbar .menu-btn { display: none; }
+
+    .content { width: 100%; max-width: 1600px; margin: 0 auto; padding: 24px 28px 96px; flex: 1; }
+
+    .page-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
+    .page-head h1 { font-size: 22px; line-height: 28px; font-weight: 650; letter-spacing: -.015em; font-variation-settings: "wdth" 110; }
+    .page-head p { margin-top: 2px; color: var(--muted); font-size: 13px; line-height: 18px; max-width: 70ch; }
+    .page-head .title-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .page-actions { display: flex; gap: 8px; flex-wrap: wrap; flex: none; }
+
+    /* ───────── Controles ───────── */
+    .btn { height: 36px; padding: 0 12px; border: 1px solid var(--border-strong); border-radius: var(--radius-control); background: var(--surface); color: var(--foreground); display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-weight: 600; font-size: 13px; line-height: 18px; white-space: nowrap; cursor: pointer; text-decoration: none; transition: background-color .12s, border-color .12s; }
+    .btn:hover { background: var(--background); border-color: var(--control-border); }
+    .btn:active { background: var(--surface-muted); }
+    .btn.primary { color: var(--primary-foreground); border-color: var(--primary); background: var(--primary); }
+    .btn.primary:hover { background: var(--primary-hover); border-color: var(--primary-hover); }
+    .btn.primary:active { background: var(--primary-active); border-color: var(--primary-active); }
+    .btn.danger { color: var(--danger-foreground); border-color: var(--danger); background: var(--danger); }
+    .btn.danger:hover { background: var(--danger-hover); border-color: var(--danger-hover); }
+    .btn.danger-quiet { color: var(--danger); }
+    .btn.danger-quiet:hover { background: var(--danger-soft); border-color: var(--danger); }
+    .btn.ghost { border-color: transparent; background: transparent; color: var(--foreground-soft); }
+    .btn.ghost:hover { background: var(--surface-muted); color: var(--foreground); }
+    .btn.toggle[aria-pressed="true"] { background: var(--selected); border-color: var(--selected); color: var(--selected-foreground); }
+    .btn[aria-expanded="true"] { background: var(--surface-muted); color: var(--foreground); }
+    .btn.sm { height: 32px; padding: 0 10px; }
+    .btn.icon-only { width: 36px; padding: 0; }
+    .btn.sm.icon-only { width: 32px; }
+    .btn:disabled, .btn[aria-disabled="true"] { color: var(--placeholder); background: var(--surface-muted); border-color: var(--border); cursor: not-allowed; }
+    .btn.loading { position: relative; color: transparent !important; pointer-events: none; }
+    .btn.loading::after { content: ""; position: absolute; width: 14px; height: 14px; border: 2px solid var(--primary-foreground); border-right-color: transparent; border-radius: 50%; animation: spin .7s linear infinite; }
+    .btn.danger.loading::after { border-color: var(--danger-foreground); border-right-color: transparent; }
+    .btn:not(.primary):not(.danger).loading::after { border-color: var(--foreground); border-right-color: transparent; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .int-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--signal); flex: none; }
+
+    .control, .field input, .field select, .field textarea { height: 36px; padding: 0 10px; border: 1px solid var(--control-border); border-radius: var(--radius-control); background: var(--surface); color: var(--foreground); }
+    .control:hover, .field input:hover, .field select:hover, .field textarea:hover { border-color: var(--control-border-hover); }
+    .control:focus, .field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--focus); box-shadow: 0 0 0 1px var(--focus); }
+    select.control, .field select { padding-right: 30px; appearance: none; background: var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%234a5670' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 6 4 4 4-4'/%3E%3C/svg%3E") no-repeat right 8px center; }
+    .toolbar .control { height: 32px; }
+    .search-box { position: relative; display: flex; align-items: center; }
+    .search-box .icon { position: absolute; left: 10px; color: var(--muted); pointer-events: none; }
+    .search-box .control { width: 240px; padding-left: 32px; }
+
+    .seg { display: inline-flex; gap: 2px; padding: 2px; border-radius: var(--radius-control); background: var(--surface-muted); border: 1px solid var(--border); }
+    .seg button { height: 26px; padding: 0 10px; border: 0; border-radius: var(--radius-badge); background: transparent; color: var(--muted); font-weight: 600; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; white-space: nowrap; }
+    .seg button:hover { color: var(--foreground); }
+    .seg button[aria-pressed="true"] { background: var(--surface); color: var(--foreground); box-shadow: 0 0 0 1px var(--border-strong); }
+    .seg .count { color: var(--muted); font-weight: 500; font-variant-numeric: tabular-nums; }
+
+    .switch { position: relative; display: inline-flex; align-items: center; gap: 10px; cursor: pointer; }
+    .switch input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+    .switch .track { width: 32px; height: 18px; border-radius: 999px; background: var(--control-border); position: relative; transition: background-color .15s; flex: none; }
+    .switch .track::after { content: ""; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: var(--surface); transition: transform .15s; }
+    .switch input:checked + .track { background: var(--selected); }
+    .switch input:checked + .track::after { transform: translateX(14px); }
+    .switch input:focus-visible + .track { outline: 2px solid var(--focus); outline-offset: 2px; }
+    .switch input:disabled + .track { background: var(--border); }
+
+    .check { display: flex; align-items: flex-start; gap: 8px; cursor: pointer; }
+    .check input { width: 16px; height: 16px; margin: 2px 0 0; accent-color: var(--selected); flex: none; }
+    .check:has(input:disabled) { color: var(--placeholder); cursor: not-allowed; }
+
+    /* ───────── Badges e avatares ───────── */
+    .badge { display: inline-flex; align-items: center; gap: 6px; height: 20px; padding: 0 8px; border-radius: var(--radius-badge); background: var(--surface-muted); color: var(--foreground-soft); font-size: 12px; line-height: 16px; font-weight: 500; white-space: nowrap; }
+    .badge.dot::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+    .badge.success { background: var(--success-soft); color: var(--success); }
+    .badge.warning { background: var(--warning-soft); color: var(--warning); }
+    .badge.info { background: var(--info-soft); color: var(--info); }
+    .badge.danger { background: var(--danger-soft); color: var(--danger); }
+    .badge.attention { background: var(--attention-soft); color: var(--attention-foreground); }
+    .badge.attention.dot::before { background: var(--signal); }
+    .badge.tag { background: transparent; box-shadow: inset 0 0 0 1px var(--border-strong); color: var(--foreground-soft); }
+    .badge .icon { width: 12px; height: 12px; }
+
+    .avatar { display: inline-grid; place-items: center; flex: none; width: 28px; height: 28px; border-radius: 50%; color: var(--identity-foreground); background: var(--identity); font-size: 11px; font-weight: 600; }
+    .avatar.sm { width: 20px; height: 20px; font-size: 9px; }
+    .avatar.lg { width: 40px; height: 40px; font-size: 14px; }
+    .avatar.none { color: var(--muted); background: transparent; box-shadow: inset 0 0 0 1px var(--border-strong); }
+    /* Iniciais de entidades (parceiros, planos): quadrado neutro com texto de identidade. */
+    .mark { display: inline-grid; place-items: center; flex: none; width: 30px; height: 30px; border-radius: var(--radius-control); background: var(--surface-muted); color: var(--identity-foreground); box-shadow: inset 0 0 0 1px var(--border); font-size: 11px; font-weight: 700; }
+
+    /* ───────── Painéis ───────── */
+    .card { border: 1px solid var(--border); border-radius: var(--radius-card); background: var(--surface); }
+    .card-head { padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .card-head + .card-body, .card-head + .table-wrap, .card-head + .list { border-top: 1px solid var(--border); }
+    .card-head h2 { font-size: 16px; line-height: 22px; font-weight: 600; letter-spacing: -.005em; }
+    .card-head p { color: var(--muted); font-size: 12px; line-height: 16px; margin-top: 1px; }
+    .card-body { padding: 16px; }
+    .card + .card { margin-top: 16px; }
+    .card-foot { padding: 8px 16px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 12px; color: var(--muted); font-size: 12px; line-height: 16px; }
+    /* Páginas de detalhe: cada coluna empilha cartões independentes, um por seção. */
+    .card-stack { display: grid; gap: 16px; align-content: start; }
+    .card-stack > .card + .card { margin-top: 0; }
+
+    .toolbar { padding: 8px 12px 8px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .toolbar-start, .toolbar-end { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; min-width: 0; }
+
+    .dl { display: grid; gap: 0; }
+    .dl-row { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--border); align-items: baseline; }
+    .dl-row:last-child { border-bottom: 0; }
+    .dl dt { color: var(--muted); font-size: 13px; }
+    .dl dd { min-width: 0; overflow-wrap: anywhere; }
+
+    /* ───────── Tabelas ───────── */
+    .table-wrap { overflow-x: auto; }
+    .table { width: 100%; min-width: 720px; border-collapse: separate; border-spacing: 0; }
+    .table th { height: 36px; padding: 0 16px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); color: var(--muted); text-align: left; font-size: 12px; line-height: 16px; font-weight: 500; letter-spacing: .01em; white-space: nowrap; background: var(--surface); }
+    .table td { height: 48px; padding: 4px 16px; border-bottom: 1px solid var(--border); white-space: nowrap; vertical-align: middle; }
+    .table th:first-child, .table td:first-child { padding-left: 16px; }
+    .table th:last-child, .table td:last-child { padding-right: 16px; }
+    .table tbody tr:last-child td { border-bottom: 0; }
+    .table tbody tr:hover td { background: var(--surface-muted); }
+    .table tbody tr.empty-row:hover td { background: var(--surface); }
+    .table tbody tr.clickable { cursor: pointer; }
+    .table .r { text-align: right; }
+    .table .actions { width: 1%; text-align: right; }
+    .table .actions > div { display: inline-flex; gap: 2px; }
+    .table th:first-child, .table td:first-child { position: sticky; left: 0; z-index: 1; }
+    .table td:first-child { background: var(--surface); }
+    .cell-main { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .cell-main strong { display: block; font-weight: 600; }
+    .cell-main small { display: block; color: var(--muted); font-size: 12px; line-height: 16px; }
+    .empty-row td { height: 160px; text-align: center; color: var(--muted); white-space: normal; }
+    .empty-row strong { display: block; color: var(--foreground); font-weight: 600; margin-bottom: 2px; }
+    .pager { display: flex; align-items: center; gap: 6px; }
+
+    /* ───────── Kanban ───────── */
+    .board { display: grid; grid-template-columns: repeat(5, minmax(212px, 1fr)); gap: 12px; overflow-x: auto; padding-bottom: 8px; align-items: start; }
+    .col { min-height: 520px; border-radius: var(--radius-card); background: var(--surface-muted); padding: 6px; display: flex; flex-direction: column; gap: 6px; transition: box-shadow .12s; }
+    .col.drop { box-shadow: inset 0 0 0 2px var(--selected); }
+    .col-head { display: flex; align-items: center; gap: 8px; padding: 6px 6px 4px; }
+    .col-head h2 { font-size: 13px; line-height: 18px; font-weight: 600; }
+    .col-head .stage-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--stage); flex: none; }
+    .col-head .num { margin-left: auto; color: var(--muted); font-size: 12px; font-weight: 500; }
+    .col-empty { margin: 4px 2px; padding: 16px 8px; color: var(--muted); font-size: 12px; text-align: center; }
+    .lead { position: relative; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius-tile); background: var(--surface); cursor: grab; }
+    .lead:hover { border-color: var(--border-strong); }
+    .lead.dragging { opacity: .5; }
+    .lead-top { display: flex; align-items: flex-start; gap: 8px; }
+    .lead-name { flex: 1; min-width: 0; padding: 0; border: 0; background: none; text-align: left; font-weight: 600; cursor: pointer; }
+    .lead-name:hover { text-decoration: underline; text-decoration-color: var(--primary); text-underline-offset: 3px; }
+    .lead-name::after { content: ""; position: absolute; inset: 0; border-radius: var(--radius-tile); }
+    .lead-move { position: relative; z-index: 1; margin: -4px -6px 0 0; }
+    .lead-phone { color: var(--muted); font-size: 13px; line-height: 18px; }
+    .lead-flag { margin-top: 6px; display: inline-flex; align-items: center; gap: 6px; color: var(--attention-foreground); font-size: 12px; line-height: 16px; font-weight: 600; }
+    .lead-flag::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--signal); }
+    .lead-meta { margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 8px; color: var(--muted); font-size: 12px; line-height: 16px; }
+    .lead-owner { display: inline-flex; align-items: center; gap: 6px; flex: none; white-space: nowrap; }
+    .lead-meta > span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .board-error { margin-bottom: 12px; }
+
+    /* ───────── Detalhe ───────── */
+    .detail { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 16px; align-items: start; }
+    .detail aside { display: grid; gap: 16px; }
+    .filterbar { margin-bottom: 12px; border: 1px solid var(--border); border-radius: var(--radius-card); background: var(--surface); }
+    .list > li { padding: 12px 16px; border-bottom: 1px solid var(--border); }
+    .list > li:last-child { border-bottom: 0; }
+    .request { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+    .request strong { font-weight: 600; }
+    .request p { color: var(--muted); font-size: 13px; line-height: 18px; }
+    .note-meta { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 12px; line-height: 16px; margin-bottom: 4px; }
+    .note-meta strong { color: var(--foreground); font-weight: 600; }
+    .composer { padding: 12px 16px; border-top: 1px solid var(--border); display: grid; gap: 8px; }
+    .composer textarea { width: 100%; min-height: 64px; padding: 8px 10px; border: 1px solid var(--control-border); border-radius: var(--radius-control); resize: vertical; }
+    .composer textarea:hover { border-color: var(--control-border-hover); }
+    .composer textarea:focus { outline: none; border-color: var(--focus); box-shadow: 0 0 0 1px var(--focus); }
+    .composer div { display: flex; justify-content: flex-end; }
+    .timeline { padding: 6px 16px 14px; }
+    .timeline li { position: relative; padding: 8px 0 8px 22px; font-size: 13px; line-height: 18px; }
+    .timeline li::before { content: ""; position: absolute; left: 4px; top: 13px; width: 7px; height: 7px; border-radius: 50%; background: var(--surface); box-shadow: 0 0 0 2px var(--border-strong); }
+    .timeline li::after { content: ""; position: absolute; left: 7px; top: 24px; bottom: -8px; width: 1px; background: var(--border); }
+    .timeline li:last-child::after { display: none; }
+    .timeline time { display: block; color: var(--muted); font-size: 12px; line-height: 16px; }
+    .timeline b { font-weight: 600; }
+    /* Zona de ação destrutiva: seção neutra; o vermelho fica só no botão. */
+    .danger-zone .card-head h2 { color: var(--foreground); }
+    .stack { display: grid; gap: 8px; }
+
+    /* ───────── Formulários ───────── */
+    .form-layout { display: grid; grid-template-columns: 200px minmax(0, 720px) 272px; gap: 20px; align-items: start; }
+    .section-nav { position: sticky; top: 72px; display: grid; gap: 1px; }
+    .section-nav h2 { padding: 0 8px 4px; color: var(--muted); font-size: 11px; line-height: 16px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+    .section-link { height: 32px; padding: 0 8px; border: 1px solid transparent; border-radius: var(--radius-control); background: transparent; color: var(--foreground-soft); display: flex; align-items: center; justify-content: space-between; gap: 8px; text-align: left; font-size: 13px; cursor: pointer; }
+    .section-link:hover { background: var(--surface-muted); color: var(--foreground); }
+    .section-link[aria-current="true"] { color: var(--foreground); background: var(--surface); border-color: var(--border); font-weight: 600; }
+    .status-ico { display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; flex: none; }
+    .status-ico .icon { width: 12px; height: 12px; stroke-width: 2.4; }
+    .status-ico.error { color: var(--danger-foreground); background: var(--danger); }
+    .status-ico.done { color: var(--success); background: var(--success-soft); }
+    .status-ico.todo { box-shadow: inset 0 0 0 1.5px var(--border-strong); }
+    .form-sections { display: grid; gap: 16px; }
+    .form-sections .card + .card { margin-top: 0; }
+    .form-sections section { scroll-margin-top: 72px; }
+    .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .field { display: grid; gap: 6px; align-content: start; }
+    .field.full { grid-column: 1 / -1; }
+    .field label, .field .label { font-weight: 500; font-size: 13px; line-height: 18px; }
+    .field label .opt { color: var(--muted); font-weight: 400; }
+    .field input, .field select, .field textarea { width: 100%; }
+    .field textarea { height: auto; min-height: 84px; padding: 8px 10px; resize: vertical; }
+    .field input[readonly] { background: var(--surface-muted); border-color: var(--border); color: var(--foreground); }
+    .field input:disabled, .field select:disabled, .control:disabled { background: var(--surface-muted); border-color: var(--border); color: var(--placeholder); cursor: not-allowed; }
+    .hint { color: var(--muted); font-size: 12px; line-height: 16px; }
+    .field-error input, .field-error select { border-color: var(--danger); }
+    .field-error .hint { color: var(--danger); font-weight: 500; display: flex; align-items: center; gap: 6px; }
+    .prefix { display: flex; }
+    .prefix span { display: inline-flex; align-items: center; padding: 0 10px; border: 1px solid var(--control-border); border-right: 0; border-radius: var(--radius-control) 0 0 var(--radius-control); background: var(--surface-muted); color: var(--muted); font-size: 13px; white-space: nowrap; }
+    .prefix input { border-radius: 0 var(--radius-control) var(--radius-control) 0; min-width: 0; }
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .chip { height: 32px; padding: 0 10px; border: 1px solid var(--border-strong); border-radius: 999px; background: var(--surface); display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; cursor: pointer; }
+    .chip:hover { border-color: var(--control-border); }
+    .chip[aria-pressed="true"] { color: var(--selected-soft-foreground); border-color: var(--selected-border); background: var(--selected-soft); }
+    .chip[aria-pressed="true"]::before { content: "✓"; font-size: 11px; font-weight: 700; }
+    .chip:disabled { color: var(--placeholder); background: var(--surface-muted); border-color: var(--border); border-style: dashed; cursor: not-allowed; }
+    .sub-table { width: 100%; border-collapse: collapse; }
+    .sub-table th { padding: 0 10px 6px 0; color: var(--muted); font-size: 12px; font-weight: 500; text-align: left; }
+    .sub-table td { padding: 6px 10px 6px 0; border-top: 1px solid var(--border); vertical-align: middle; }
+    .sub-table td:last-child, .sub-table th:last-child { padding-right: 0; text-align: right; }
+    .sub-table input { height: 32px; padding: 0 8px; border: 1px solid var(--control-border); border-radius: var(--radius-control); width: 100%; }
+    .sub-table input:focus { outline: none; border-color: var(--focus); box-shadow: 0 0 0 1px var(--focus); }
+    .sub-table input:disabled { background: var(--surface-muted); border-color: var(--border); color: var(--placeholder); }
+    .sub-table .pct { width: 96px; }
+    .unit { padding: 12px; border: 1px solid var(--border); border-radius: var(--radius-card); display: flex; gap: 12px; align-items: flex-start; justify-content: space-between; }
+    .unit + .unit { margin-top: 8px; }
+    .unit strong { font-weight: 600; }
+    .unit p { color: var(--muted); font-size: 13px; line-height: 18px; }
+    .add-row { margin-top: 10px; }
+
+    .side-summary { position: sticky; top: 72px; display: grid; gap: 12px; }
+    .side-summary .card + .card { margin-top: 0; }
+    .side-summary .card-foot .btn { width: 100%; }
+    .req-list li { display: flex; gap: 8px; align-items: flex-start; padding: 4px 0; font-size: 13px; line-height: 18px; }
+    .req-list .ok { color: var(--success); }
+    .req-list .no { color: var(--placeholder); }
+    .unsaved { display: flex; align-items: center; gap: 6px; color: var(--warning); font-size: 12px; font-weight: 600; }
+    .unsaved::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+    .alert { display: flex; gap: 10px; padding: 10px 12px; border-radius: var(--radius-card); font-size: 13px; line-height: 18px; color: var(--foreground); }
+    .alert .icon { margin-top: 1px; }
+    .alert strong { display: block; font-weight: 600; }
+    .alert.danger { background: var(--danger-soft); }
+    .alert.danger > .icon { color: var(--danger); }
+    .alert.warning { background: var(--warning-soft); }
+    .alert.warning > .icon { color: var(--warning); }
+    .alert.info { background: var(--info-soft); }
+    .alert.info > .icon { color: var(--info); }
+    .alert .btn { margin-top: 8px; }
+
+    .perm-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .perm-area { margin: 0; min-width: 0; padding: 12px 16px; border: 0; border-bottom: 1px solid var(--border); }
+    .perm-area:nth-child(odd) { border-right: 1px solid var(--border); }
+    .perm-area h3 { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; line-height: 18px; font-weight: 600; }
+    .perm-area h3 span { color: var(--muted); font-weight: 500; font-variant-numeric: tabular-nums; }
+    .perm-area .check { padding: 3px 0; font-size: 13px; line-height: 18px; }
+
+    .code-box { padding: 12px; border-radius: var(--radius-control); background: var(--surface-muted); text-align: center; }
+    .code-box strong { display: block; font-family: var(--font-mono); font-size: 16px; line-height: 24px; font-weight: 400; letter-spacing: .08em; }
+
+    .diff { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .diff div { padding: 10px; border-radius: var(--radius-control); font-size: 13px; line-height: 18px; color: var(--foreground); }
+    .diff .before { background: var(--surface-muted); }
+    .diff .after { background: var(--success-soft); }
+    .diff span { display: block; margin-bottom: 2px; color: var(--muted); font-size: 11px; line-height: 16px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+
+    /* ───────── Acesso ───────── */
+    .auth { min-height: 100vh; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); background: var(--surface); }
+    .auth-side { padding: 40px; background: var(--sidebar); color: var(--sidebar-foreground); display: flex; flex-direction: column; justify-content: space-between; }
+    .auth-side blockquote { margin: 0; max-width: 40ch; font-size: 26px; line-height: 34px; font-weight: 650; letter-spacing: -.015em; font-variation-settings: "wdth" 110; color: var(--sidebar-selected-foreground); }
+    .auth-side small { color: var(--sidebar-muted); }
+    .auth-main { display: grid; place-items: center; padding: 32px 20px; }
+    .auth-form { width: min(360px, 100%); display: grid; gap: 16px; }
+    .auth-form h1 { font-size: 22px; line-height: 28px; font-weight: 650; letter-spacing: -.015em; font-variation-settings: "wdth" 110; }
+    .auth-form .btn { width: 100%; height: 40px; }
+    .auth-form .field input { height: 40px; }
+    .auth-links { display: flex; justify-content: space-between; font-size: 13px; }
+
+    /* ───────── Estados ───────── */
+    .ref-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .ref-grid .card + .card { margin-top: 0; }
+    .ref-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .ref-row + .ref-row { margin-top: 12px; }
+    .empty { padding: 32px 16px; text-align: center; }
+    .empty .icon { width: 20px; height: 20px; color: var(--placeholder); margin-bottom: 6px; }
+    .empty strong { display: block; font-weight: 600; }
+    .empty p { margin: 2px auto 12px; color: var(--muted); font-size: 13px; line-height: 18px; max-width: 46ch; }
+    .skeleton { height: 10px; border-radius: 4px; background: linear-gradient(90deg, var(--surface-muted) 25%, var(--background) 37%, var(--surface-muted) 63%); background-size: 400% 100%; animation: shine 1.4s ease infinite; }
+    .skeleton-row { display: grid; grid-template-columns: 1fr 90px 70px; gap: 12px; align-items: center; height: 48px; border-bottom: 1px solid var(--border); }
+    .skeleton-row:last-child { border-bottom: 0; }
+    @keyframes shine { 0% { background-position: 100% 0; } 100% { background-position: 0 0; } }
+
+    /* ───────── Dialogs, sheet, menu e toast (mesma família) ───────── */
+    dialog { padding: 0; border: 1px solid var(--border); color: var(--foreground); background: var(--surface); box-shadow: var(--shadow-overlay); }
+    dialog::backdrop { background: var(--overlay); }
+    dialog.modal { width: min(440px, calc(100vw - 32px)); border-radius: var(--radius-overlay); }
+    dialog.drawer { margin: 0 0 0 auto; width: min(420px, 100vw); height: 100vh; max-height: 100vh; border: 0; border-radius: 0; }
+    dialog.drawer[open] { display: flex; flex-direction: column; animation: slide .2s ease-out; }
+    dialog.drawer > form { display: flex; flex-direction: column; height: 100%; }
+    @keyframes slide { from { transform: translateX(24px); opacity: 0; } }
+    .dlg-head { padding: 14px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+    .dlg-head h2 { font-size: 16px; line-height: 22px; font-weight: 600; letter-spacing: -.005em; }
+    .dlg-head p { color: var(--muted); font-size: 13px; line-height: 18px; margin-top: 2px; }
+    .dlg-body { padding: 20px; display: grid; gap: 16px; align-content: start; }
+    .drawer .dlg-body { flex: 1; overflow-y: auto; }
+    .dlg-actions { padding: 12px 20px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; }
+    .modal .dlg-head { border-bottom: 0; padding-bottom: 0; }
+    .modal .dlg-body { padding-top: 8px; }
+    .modal .dlg-actions { border-top: 0; padding-top: 0; padding-bottom: 20px; }
+    .dlg-title { display: flex; align-items: flex-start; gap: 12px; }
+    .dlg-ico { width: 32px; height: 32px; flex: none; border-radius: 50%; display: grid; place-items: center; background: var(--danger-soft); color: var(--danger); }
+    #confirm-dialog .dlg-body { padding-left: 64px; }
+
+    .menu { position: fixed; z-index: 60; min-width: 196px; padding: 4px; border: 1px solid var(--border); border-radius: var(--radius-tile); background: var(--surface); box-shadow: var(--shadow-floating); }
+    .menu[hidden] { display: none; }
+    .menu button { width: 100%; height: 32px; padding: 0 8px; border: 0; border-radius: var(--radius-badge); background: none; display: flex; align-items: center; gap: 8px; text-align: left; font-size: 13px; cursor: pointer; }
+    .menu button:hover, .menu button:focus-visible { background: var(--surface-muted); outline: none; }
+    .menu button.danger { color: var(--danger); }
+    .menu button.danger:hover, .menu button.danger:focus-visible { background: var(--danger-soft); }
+    .menu hr { margin: 4px 0; border: 0; border-top: 1px solid var(--border); }
+
+    .toasts { position: fixed; z-index: 80; right: 16px; bottom: 64px; display: grid; gap: 8px; pointer-events: none; }
+    .toast { min-width: 280px; padding: 10px 12px; border: 1px solid var(--inverse); border-radius: var(--radius-tile); background: var(--inverse); color: var(--inverse-foreground); display: flex; align-items: center; gap: 8px; font-size: 13px; line-height: 18px; font-weight: 500; box-shadow: var(--shadow-floating); animation: rise .2s ease-out; }
+    .toast .icon { color: var(--signal-inverse); }
+    @keyframes rise { from { transform: translateY(8px); opacity: 0; } }
+
+    .proto { position: fixed; z-index: 70; right: 16px; bottom: 16px; padding: 4px 4px 4px 12px; border: 1px solid var(--border-strong); border-radius: 999px; background: var(--surface); box-shadow: var(--shadow-floating); display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: var(--muted); }
+    .proto select { height: 28px; border-radius: 999px; font-size: 12px; }
+
+    .view { display: none; }
+    .view.active { display: block; }
+    #view-login.active { display: grid; }
+    .overlay { display: none; }
+    body.auth-mode .shell { display: none; }
+    body:not(.auth-mode) #view-login { display: none; }
+
+    /* ───────── Responsivo ───────── */
+    @media (max-width: 1240px) {
+      .form-layout { grid-template-columns: 184px minmax(0, 1fr); }
+      .side-summary { grid-column: 2; position: static; grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 1080px) {
+      .detail { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 900px) {
+      .shell { display: block; }
+      body.nav-collapsed { --nav-w: 232px; }
+      .sidebar { position: fixed; z-index: 40; left: 0; top: 0; width: min(84vw, 280px); transform: translateX(-102%); transition: transform .2s ease; }
+      body.menu-open .sidebar { transform: none; box-shadow: var(--shadow-overlay); }
+      body.menu-open .overlay { display: block; position: fixed; z-index: 35; inset: 0; background: var(--overlay); }
+      .topbar .menu-btn { display: inline-flex; }
+      .topbar .collapse-btn { display: none; }
+      .topbar { padding: 0 16px 0 8px; }
+      .content { padding: 16px 16px 96px; }
+      .form-layout { display: block; }
+      .section-nav { position: sticky; top: var(--header-h); z-index: 5; display: flex; gap: 4px; overflow-x: auto; margin: -4px -16px 12px; padding: 8px 16px; background: var(--background); border-bottom: 1px solid var(--border); }
+      .section-nav h2 { display: none; }
+      .section-link { flex: none; }
+      .side-summary { margin-top: 16px; grid-template-columns: 1fr; }
+      .auth { grid-template-columns: 1fr; }
+      .auth-side { display: none; }
+    }
+    @media (max-width: 680px) {
+      .page-head { flex-direction: column; align-items: stretch; }
+      .page-actions .btn { flex: 1; }
+      .toolbar { align-items: stretch; }
+      .toolbar-start, .toolbar-end { width: 100%; }
+      .toolbar .seg { overflow-x: auto; max-width: 100%; }
+      .search-box, .search-box .control { width: 100%; }
+      .toolbar select.control { flex: 1; }
+      .field-grid, .ref-grid, .perm-grid, .diff { grid-template-columns: 1fr; }
+      .perm-area:nth-child(odd) { border-right: 0; }
+      .dl-row { grid-template-columns: 1fr; gap: 2px; }
+      .proto { left: 8px; right: 8px; bottom: 8px; justify-content: space-between; }
+      .proto select { flex: 1; min-height: 32px; }
+      .proto-extra { display: none; }
+    }
+    @media (pointer: coarse) {
+      .btn, .control, .field input, .field select, .seg button, .section-link, .nav-item, .menu button, .chip { min-height: 44px; }
+      .btn.sm.icon-only, .btn.icon-only { min-width: 44px; }
+      .lead-move { margin: -8px -8px 0 0; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+    }
+
+    /* ═════════ Moldura da comparação (somente tokens aprovados; não faz parte da interface proposta) ═════════ */
+    .pbar { position: sticky; top: 0; z-index: 90; padding: 10px 16px; border-bottom: 1px solid var(--border); background: var(--surface); display: grid; gap: 10px; }
+    .pbar-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+    .pbar h1 { font-size: 15px; line-height: 20px; font-weight: 650; letter-spacing: -.01em; margin-right: auto; }
+    .pbar h1 small { display: block; color: var(--muted); font-size: 12px; font-weight: 500; letter-spacing: 0; }
+    .pbar .seg button kbd { font: inherit; font-size: 11px; color: var(--placeholder); }
+    .flow-tabs { display: flex; flex-wrap: wrap; gap: 4px; }
+    .flow-tabs button { height: 32px; padding: 0 10px; border: 1px solid var(--border); border-radius: var(--radius-control); background: var(--surface); color: var(--foreground-soft); font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap; }
+    .flow-tabs button:hover { border-color: var(--control-border); color: var(--foreground); }
+    .flow-tabs button[aria-pressed="true"] { border-color: var(--selected-border); background: var(--selected-soft); color: var(--selected-soft-foreground); font-weight: 600; }
+    .state-tabs { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+    .state-tabs > span { color: var(--muted); font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; margin-right: 2px; }
+
+    .notes { margin: 16px 16px 0; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .note-col { padding: 12px 14px; border: 1px solid var(--border); border-radius: var(--radius-card); background: var(--surface); }
+    .note-col h2 { font-size: 12px; line-height: 16px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; }
+    .note-col h2 span { text-transform: none; letter-spacing: 0; font-weight: 500; }
+    .note-col ul { margin-top: 6px; display: grid; gap: 3px; }
+    .note-col li { font-size: 13px; line-height: 18px; display: flex; gap: 8px; }
+    .note-col li b { flex: none; min-width: 30px; font-family: var(--font-mono); font-size: 12px; font-weight: 400; color: var(--muted); }
+    .note-col.cur { border-left: 3px solid var(--danger); }
+    .note-col.pro { border-left: 3px solid var(--success); }
+
+    .stage-wrap { padding: 16px 16px 120px; display: grid; gap: 16px; }
+    .stage-wrap.compare { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
+    .frame { position: relative; border: 1px solid var(--border-strong); border-radius: var(--radius-card); background: var(--background); overflow: clip; }
+    .frame-label { position: absolute; z-index: 30; top: 10px; right: 12px; height: 22px; padding: 0 8px; border-radius: var(--radius-badge); font-size: 11px; line-height: 22px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+    .frame[data-v="current"] .frame-label { background: var(--danger-soft); color: var(--danger); }
+    .frame[data-v="proposed"] .frame-label { background: var(--success-soft); color: var(--success); }
+    .frame .shell { min-height: 680px; }
+    .frame .sidebar { position: relative; height: auto; min-height: 680px; }
+    .frame .topbar { position: relative; padding-right: 120px; }
+    .frame .content { max-width: none; padding: 20px 20px 40px; }
+    .frame .toasts { position: absolute; bottom: 16px; right: 16px; }
+    .frame .menu { position: absolute; }
+    .stage-wrap.compare .frame .shell { grid-template-columns: minmax(0, 1fr); }
+    .stage-wrap.compare .frame .sidebar { display: none; }
+    .stage-wrap.compare .detail, .stage-wrap.compare .form-layout { grid-template-columns: minmax(0, 1fr); }
+    .stage-wrap.compare .section-nav { display: none; }
+    .stage-wrap.compare .side-summary { position: static; grid-column: auto; }
+    .stage-wrap.compare .perm-grid { grid-template-columns: minmax(0, 1fr); }
+    .stage-wrap.compare .perm-area:nth-child(odd) { border-right: 0; }
+
+    /* Anotação do protótipo: explica o comportamento; não é componente da interface. */
+    .anno { margin-bottom: 12px; padding: 6px 10px; border: 1px dashed var(--info); border-radius: var(--radius-control); background: var(--info-soft); color: var(--info); display: flex; gap: 8px; align-items: flex-start; font-size: 12px; line-height: 16px; font-weight: 500; }
+    .anno::before { content: "Anotação"; flex: none; font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; padding-top: 1px; }
+    .anno.bad { border-color: var(--danger); background: var(--danger-soft); color: var(--danger); }
+    .anno.bad::before { content: "Atrito"; }
+    .anno.good { border-color: var(--success); background: var(--success-soft); color: var(--success); }
+    .anno.good::before { content: "Ganho"; }
+
+    .urlbar { max-width: 46ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 2px 8px; border-radius: var(--radius-badge); background: var(--surface-muted); color: var(--muted); font-family: var(--font-mono); font-size: 12px; line-height: 18px; }
+    .urlbar b { color: var(--foreground); font-weight: 400; }
+
+    /* Overlays dentro de cada moldura, para permitir a comparação lado a lado. */
+    .f-overlay { position: absolute; inset: 0; z-index: 50; background: var(--overlay); }
+    .f-drawer { position: absolute; z-index: 51; top: 0; right: 0; bottom: 0; width: min(400px, 94%); background: var(--surface); box-shadow: var(--shadow-overlay); display: flex; flex-direction: column; animation: slide .2s ease-out; }
+    .f-drawer .dlg-body { flex: 1; overflow-y: auto; }
+    .f-modal { position: absolute; z-index: 51; top: 96px; left: 50%; transform: translateX(-50%); width: min(440px, 94%); border: 1px solid var(--border); border-radius: var(--radius-overlay); background: var(--surface); box-shadow: var(--shadow-overlay); }
+    .f-modal .dlg-head { border-bottom: 0; padding-bottom: 0; }
+    .f-modal .dlg-body { padding-top: 8px; }
+    .f-modal .dlg-actions { border-top: 0; padding-top: 0; padding-bottom: 20px; }
+    .field .check { font-weight: 400; }
+    .field-error .hint a, .field-error .hint button.linklike { color: var(--danger); }
+    .linklike { padding: 0; border: 0; background: none; color: var(--foreground); font: inherit; font-weight: 600; text-decoration: underline; text-decoration-color: var(--primary); text-underline-offset: 3px; cursor: pointer; }
+    .toast .btn { height: 26px; margin-left: 4px; border-color: var(--sidebar-selected); background: transparent; color: var(--inverse-foreground); }
+    .toast .btn:hover { background: var(--sidebar-hover); }
+    .toasts .toast { pointer-events: auto; }
+
+    /* Kanban: cartão inteiro como alvo (proposta) × somente o nome (atual). */
+    .lead-name.cur { position: relative; z-index: 1; }
+    .lead-name.cur::after { display: none; }
+    .lead.whole:hover { border-color: var(--control-border); }
+    .lead.whole:has(.lead-name:focus-visible) { outline: 2px solid var(--focus); outline-offset: 2px; }
+    .lead.whole .lead-name:focus-visible { outline: none; }
+    .board-empty { padding: 40px 16px; }
+
+    /* Detalhe do lead proposto */
+    .pending-bar { margin-bottom: 16px; padding: 10px 12px 10px 14px; border-radius: var(--radius-card); background: var(--attention-soft); display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .pending-bar .int-dot { width: 8px; height: 8px; }
+    .pending-bar div { flex: 1; min-width: 220px; }
+    .pending-bar strong { color: var(--attention-foreground); font-weight: 600; }
+    .pending-bar p { color: var(--foreground-soft); font-size: 13px; line-height: 18px; }
+    .composer.top { border-top: 0; border-bottom: 1px solid var(--border); }
+    .composer .alert { margin-bottom: 0; }
+    .copy-row { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; }
+    .copy-row .num { white-space: nowrap; }
+    .copy-row .btn { height: 24px; padding: 0 8px; font-size: 12px; }
+    details.collapsed > summary { list-style: none; padding: 12px 16px; display: flex; justify-content: space-between; gap: 8px; cursor: pointer; font-weight: 600; }
+    details.collapsed > summary::-webkit-details-marker { display: none; }
+    details.collapsed > summary::after { content: "Mostrar"; color: var(--muted); font-weight: 500; font-size: 13px; }
+    details.collapsed[open] > summary::after { content: "Ocultar"; }
+    details.collapsed[open] > summary { border-bottom: 1px solid var(--border); }
+    .note-edit { display: grid; gap: 8px; margin-top: 6px; }
+    .note-edit textarea { width: 100%; min-height: 56px; padding: 8px 10px; border: 1px solid var(--focus); border-radius: var(--radius-control); box-shadow: 0 0 0 1px var(--focus); resize: vertical; }
+    .note-edit div { display: flex; gap: 8px; justify-content: flex-end; }
+    .raw-code { font-family: var(--font-mono); font-size: 13px; }
+
+    /* Barra de salvamento contextual (proposta W1): composição de botões e tokens existentes. */
+    .savebar { position: sticky; bottom: 0; z-index: 25; margin: 16px -20px -40px; padding: 10px 20px; border-top: 1px solid var(--border); background: var(--surface); box-shadow: var(--shadow-floating); display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .savebar .unsaved { margin-right: 4px; }
+    .savebar .summary { color: var(--muted); font-size: 13px; line-height: 18px; }
+    .savebar .summary b { color: var(--foreground); font-weight: 600; }
+    .savebar .actions { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; }
+    .savebar.warn { background: var(--warning-soft); }
+    .savebar.warn .summary { color: var(--foreground); }
+
+    /* Formulário de parceiro */
+    .sub-table td.chk { width: 1%; padding-right: 8px; }
+    .sub-table td.chk input { width: 16px; height: 16px; accent-color: var(--selected); }
+    .sub-table label.plan { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; cursor: pointer; }
+    .sub-table label.plan input { width: 16px; height: 16px; margin: 0; accent-color: var(--selected); }
+    .unit.removed { border-style: dashed; background: var(--surface-muted); }
+    .unit.removed strong, .unit.removed p { color: var(--placeholder); text-decoration: line-through; }
+    .unit-edit { margin-top: 8px; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius-card); display: grid; gap: 12px; }
+    .unit-edit .row { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+    .compact-sec { padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .compact-sec strong { font-weight: 600; }
+
+    /* Permissões */
+    .perm-area h3 { align-items: center; }
+    .perm-area h3 .btn { height: 24px; padding: 0 8px; font-size: 12px; margin-left: 8px; }
+    .perm-area h3 > span:first-child { flex: 1; }
+    .code-banner { margin-bottom: 16px; padding: 12px 14px; border-radius: var(--radius-card); background: var(--info-soft); display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .code-banner div { flex: 1; min-width: 220px; }
+    .code-banner strong { display: block; font-weight: 600; }
+    .code-banner .mono { font-size: 18px; line-height: 26px; letter-spacing: .08em; }
+    .code-banner p { color: var(--foreground-soft); font-size: 13px; line-height: 18px; }
+
+    /* Auditoria */
+    .table-progress { height: 2px; background: var(--surface-muted); overflow: hidden; }
+    .table-progress::after { content: ""; display: block; width: 40%; height: 100%; background: var(--selected); animation: indeterminate 1s ease-in-out infinite; }
+    @keyframes indeterminate { from { transform: translateX(-100%); } to { transform: translateX(250%); } }
+    tbody.refreshing { opacity: .5; }
+
+    @media (max-width: 1100px) {
+      .stage-wrap.compare { grid-template-columns: minmax(0, 1fr); }
+      .notes { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 900px) {
+      .frame .shell { display: block; }
+      .frame .sidebar { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-leads" viewBox="0 0 24 24"><rect x="3" y="4" width="5" height="16" rx="1.5"/><rect x="10" y="4" width="5" height="11" rx="1.5"/><rect x="17" y="4" width="4" height="7" rx="1.5"/></symbol>
+    <symbol id="i-source" viewBox="0 0 24 24"><path d="M4 7h10a4 4 0 0 1 0 8H8"/><path d="m11 18-3-3 3-3"/><circle cx="19" cy="7" r="1.5"/></symbol>
+    <symbol id="i-partner" viewBox="0 0 24 24"><path d="M4 10v10h16V10"/><path d="M3 10l2-6h14l2 6"/><path d="M9 20v-6h6v6"/></symbol>
+    <symbol id="i-plan" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 13 9 5 9-5"/></symbol>
+    <symbol id="i-category" viewBox="0 0 24 24"><path d="M3 12V4h8l10 10-8 8L3 12Z"/><circle cx="8" cy="9" r="1.2"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.4 3.2-5.5 6.5-5.5s5.9 2.1 6.5 5.5"/><path d="M16 4.8a3.5 3.5 0 0 1 0 6.4"/><path d="M18 14.9c1.8.7 3 2.4 3.5 5.1"/></symbol>
+    <symbol id="i-audit" viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9l-6-6Z"/><path d="M14 3v6h6"/><path d="M8 13h8M8 17h5"/></symbol>
+    <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="m11 12 9-9"/><path d="m17 6 3 3"/></symbol>
+    <symbol id="i-logout" viewBox="0 0 24 24"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 16l-4-4 4-4"/><path d="M6 12h10"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></symbol>
+    <symbol id="i-swap" viewBox="0 0 24 24"><path d="M4 8h14"/><path d="m14 4 4 4-4 4"/><path d="M20 16H6"/><path d="m10 12-4 4 4 4"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5M12 16v.01"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></symbol>
+    <symbol id="i-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+    <symbol id="i-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4Z"/><path d="m13 7 4 4"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3.5 2.6 5.3 5.9.9-4.2 4.1 1 5.8L12 16.8l-5.3 2.8 1-5.8-4.2-4.1 5.9-.9L12 3.5Z"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14.6-4.5L4 8"/><path d="M4 4v4h4"/><path d="M4 13a8 8 0 0 0 14.6 4.5L20 16"/><path d="M20 20v-4h-4"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M10 11v6M14 11v6"/><path d="M6 7l1 13h10l1-13"/><path d="M9 7V4h6v3"/></symbol>
+  </svg>
+
+  <header class="pbar">
+    <div class="pbar-row">
+      <h1>Fluxos do dashboard — atual × proposta<small>Auditoria de UX · 2026-10-11 · em validação · dados ilustrativos · <a href="README.md">documento da auditoria</a></small></h1>
+      <div class="seg" role="group" aria-label="Versão exibida" id="version-seg">
+        <button type="button" data-v="current">Atual <kbd>1</kbd></button>
+        <button type="button" data-v="proposed">Proposta <kbd>2</kbd></button>
+        <button type="button" data-v="compare">Lado a lado <kbd>3</kbd></button>
+      </div>
+    </div>
+    <div class="pbar-row">
+      <div class="flow-tabs" role="group" aria-label="Fluxo" id="flow-tabs"></div>
+    </div>
+    <div class="pbar-row">
+      <div class="state-tabs" role="group" aria-label="Estado" id="state-tabs"></div>
+      <button class="btn ghost sm" type="button" id="reset-flow"><svg class="icon" aria-hidden="true"><use href="#i-refresh"/></svg>Reiniciar fluxo</button>
+    </div>
+  </header>
+
+  <section class="notes" id="notes" aria-label="Diferenças do fluxo"></section>
+  <main class="stage-wrap" id="stage"></main>
+
+  <script>
+/* ═════════ Dados ilustrativos ═════════ */
+const ME = "Ana Souza";
+const STAGES = [
+  { id: "new", name: "Novo", color: "var(--control-border)" },
+  { id: "firstContact", name: "Primeiro contato", color: "var(--control-border)" },
+  { id: "negotiating", name: "Em negociação", color: "var(--control-border)" },
+  { id: "converted", name: "Convertido", color: "var(--success)" },
+  { id: "lost", name: "Perdido", color: "var(--muted)" },
+];
+const stageName = (id) => STAGES.find((s) => s.id === id).name;
+const BASE_LEADS = [
+  { id: 1, name: "Mariana Ribeiro", phone: "(21) 99999-1001", email: "mariana.r@email.com", source: "Catálogo/site", owner: "Ana Souza", stage: "new", interest: true },
+  { id: 2, name: "Paulo Mendes", phone: "(21) 98881-0092", source: "Indicação", owner: null, stage: "new" },
+  { id: 3, name: "Fernanda Alves", phone: "(21) 97302-4418", source: "Catálogo/site", owner: null, stage: "new" },
+  { id: 12, name: "Gustavo Reis", phone: "(21) 96120-5530", source: "Campanha", owner: "Rafael Nunes", stage: "new", interest: true },
+  { id: 4, name: "Beatriz Lima", phone: "(21) 97711-3400", source: "Abordagem", owner: "Ana Souza", stage: "firstContact" },
+  { id: 5, name: "Diego Farias", phone: "(21) 98123-4567", email: "diego.farias@email.com", source: "Catálogo/site", owner: "Rafael Nunes", stage: "firstContact", interest: true },
+  { id: 6, name: "Thiago Moura", phone: "(21) 99654-2210", source: "Campanha", owner: "Ana Souza", stage: "firstContact" },
+  { id: 7, name: "Renato Costa", phone: "(21) 96672-8334", source: "Indicação", owner: "Ana Souza", stage: "negotiating" },
+  { id: 8, name: "Luciana Prado", phone: "(21) 99410-7782", source: "Abordagem", owner: "Rafael Nunes", stage: "negotiating", interest: true },
+  { id: 9, name: "Carla Nascimento", phone: "(21) 95552-2201", source: "Catálogo/site", owner: "Ana Souza", stage: "converted" },
+  { id: 10, name: "Sérgio Batista", phone: "(21) 98007-6611", source: "Indicação", owner: "Rafael Nunes", stage: "converted" },
+  { id: 11, name: "João Martins", phone: "(21) 94443-1100", source: "Indicação", owner: "Rafael Nunes", stage: "lost" },
+];
+const SOURCES = ["Catálogo/site", "Indicação", "Abordagem", "Campanha"];
+const PERMISSIONS = [
+  { area: "Leads", items: ["Visualizar próprios", "Visualizar todos", "Criar", "Editar", "Alterar etapa", "Atribuir e redistribuir", "Excluir ou anonimizar"] },
+  { area: "Parceiros", items: ["Visualizar", "Criar", "Editar", "Publicar e desativar", "Excluir registros elegíveis"] },
+  { area: "Origens", items: ["Visualizar", "Administrar"] },
+  { area: "Planos", items: ["Visualizar", "Administrar"] },
+  { area: "Categorias", items: ["Visualizar", "Administrar"] },
+  { area: "Usuários", items: ["Visualizar", "Criar e editar", "Ativar e desativar", "Redefinir acesso"] },
+  { area: "Permissões", items: ["Visualizar", "Administrar"] },
+  { area: "Auditoria", items: ["Visualizar histórico administrativo"] },
+];
+const PERM_TOTAL = PERMISSIONS.reduce((n, g) => n + g.items.length, 0);
+const RAFAEL_GRANTS = ["Leads:Visualizar próprios", "Leads:Criar", "Leads:Editar", "Leads:Alterar etapa", "Parceiros:Visualizar", "Origens:Visualizar"];
+const AUDIT = [
+  { at: "10/10/2026 09:42", action: "Permissão concedida", author: "Ana Souza", target: "Rafael Nunes", object: "Leads: Alterar etapa" },
+  { at: "10/10/2026 09:41", action: "Permissão revogada", author: "Ana Souza", target: "Rafael Nunes", object: "Leads: Visualizar todos" },
+  { at: "09/10/2026 17:15", action: "Código de ativação emitido", author: "Ana Souza", target: "Juliana Torres", object: "Conta juliana.torres" },
+  { at: "09/10/2026 17:12", action: "Usuário criado", author: "Ana Souza", target: "Juliana Torres", object: "Conta juliana.torres" },
+  { at: "07/10/2026 15:28", action: "Conta desativada", author: "Ana Souza", target: "Marcos Lima", object: "Conta marcos.lima" },
+  { at: "07/10/2026 10:02", action: "Dados do usuário alterados", author: "Ana Souza", target: "Rafael Nunes", object: "E-mail" },
+  { at: "03/10/2026 08:55", action: "Código de recuperação emitido", author: "Ana Souza", target: "Rafael Nunes", object: "Conta rafael.nunes" },
+  { at: "01/10/2026 09:10", action: "Conta ativada", author: "Rafael Nunes", target: "Rafael Nunes", object: "Conta rafael.nunes" },
+];
+
+/* ═════════ Utilitários ═════════ */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+const ic = (id, cls = "icon") => `<svg class="${cls}" aria-hidden="true"><use href="#${id}"/></svg>`;
+const initials = (n) => n.split(/\s+/).slice(0, 2).map((w) => w[0]).join("").toUpperCase();
+const first = (n) => n.split(" ")[0];
+const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+const badge = (kind, text, dot = true) => `<span class="badge ${kind}${dot ? " dot" : ""}">${esc(text)}</span>`;
+const anno = (kind, text) => `<div class="anno ${kind}" role="note">${text}</div>`;
+const clone = (v) => JSON.parse(JSON.stringify(v));
+const later = (f, fn, ms = 700) => setTimeout(() => { fn(); renderFrame(f); }, ms);
+const toast = (f, msg, action) => {
+  f.st.toasts = [...(f.st.toasts || []), { id: Date.now() + Math.random(), msg, action }];
+  const id = f.st.toasts.at(-1).id;
+  setTimeout(() => { f.st.toasts = f.st.toasts.filter((t) => t.id !== id); renderFrame(f); }, 3600);
+};
+const toastsHtml = (f) => `<div class="toasts" aria-live="polite">${(f.st.toasts || []).map((t) =>
+  `<div class="toast">${ic("i-check")}<span style="flex:1">${esc(t.msg)}</span>${t.action ? `<button class="btn sm" type="button" data-a="${t.action[1]}">${esc(t.action[0])}</button>` : ""}</div>`).join("")}</div>`;
+const field = ({ id, label, value = "", opt, hint, error, mono, type = "text", attrs = "", textarea }) => `
+  <div class="field${error ? " field-error" : ""}">
+    <label for="${id}">${esc(label)}${opt ? ' <span class="opt">(opcional)</span>' : ""}</label>
+    ${textarea ? `<textarea id="${id}" ${attrs}>${esc(value)}</textarea>` : `<input id="${id}" type="${type}" value="${esc(value)}" class="${mono ? "mono" : ""}" ${error ? 'aria-invalid="true"' : ""} ${attrs}>`}
+    ${error ? `<span class="hint">${ic("i-alert")}<span>${error}</span></span>` : hint ? `<span class="hint">${hint}</span>` : ""}
+  </div>`;
+
+/* ═════════ Shell de cada moldura ═════════ */
+const NAV = [
+  ["Comercial", [["leads", "Leads", "i-leads"], ["sources", "Origens", "i-source"]]],
+  ["Catálogo", [["partners", "Parceiros", "i-partner"], ["plans", "Planos", "i-plan"], ["categories", "Categorias", "i-category"]]],
+  ["Administração", [["users", "Usuários", "i-users"], ["audit", "Auditoria", "i-audit"]]],
+];
+function shell(f, { nav, crumbs, url, body, count }) {
+  const groups = NAV.map(([label, items]) => `<div class="nav-group"><h2>${label}</h2>${items.map(([id, name, icon]) =>
+    `<button class="nav-item" type="button" ${id === nav ? 'aria-current="page"' : ""} tabindex="-1"><svg class="icon lg" aria-hidden="true"><use href="#${icon}"/></svg><span class="nav-label">${name}</span>${id === "leads" && count ? `<span class="nav-count num" aria-label="${count} com novo interesse">${count}</span>` : ""}</button>`).join("")}</div>`).join("");
+  const conta = f.v === "current"
+    ? `<div class="nav-group"><h2>Conta</h2><button class="nav-item" type="button" tabindex="-1"><svg class="icon lg" aria-hidden="true"><use href="#i-key"/></svg><span class="nav-label">Alterar senha</span></button></div>`
+    : "";
+  const footer = f.v === "current"
+    ? `<div class="me"><span class="avatar" aria-hidden="true">AS</span><div><strong>Ana Souza</strong><small>ana.souza</small></div></div><button class="nav-icon-btn" type="button" tabindex="-1" aria-label="Sair">${ic("i-logout", "icon lg")}</button>`
+    : `<div class="me"><span class="avatar" aria-hidden="true">AS</span><div><strong>Ana Souza</strong><small>ana.souza</small></div></div><button class="nav-icon-btn" type="button" tabindex="-1" aria-label="Alterar senha">${ic("i-key", "icon lg")}</button><button class="nav-icon-btn" type="button" tabindex="-1" aria-label="Sair">${ic("i-logout", "icon lg")}</button>`;
+  const crumbHtml = crumbs.map((c, i) => i === crumbs.length - 1
+    ? `<strong aria-current="page">${esc(c[0])}</strong>`
+    : c[1] ? `<button type="button" data-a="${c[1]}">${esc(c[0])}</button><span class="sep">/</span>` : `<span>${esc(c[0])}</span><span class="sep">/</span>`).join("");
+  return `<div class="shell">
+    <aside class="sidebar" aria-label="Navegação principal (ilustrativa)"><div class="brand"><span class="brand-mark" role="img" aria-label="Clube Flex">Clube <i>+Flex</i></span><span class="brand-text">Painel interno</span></div><nav class="nav">${groups}${conta}</nav><div class="sidebar-footer">${footer}</div></aside>
+    <div class="main"><header class="topbar"><nav class="crumbs" aria-label="Você está em">${crumbHtml}</nav><div class="topbar-end"><span class="urlbar" title="Endereço da página">${url}</span></div></header>
+    <div class="content">${body}</div></div></div>`;
+}
+
+/* ═════════ Fluxo 1 — Leads: triagem e retorno ═════════ */
+const leadsFlow = {
+  title: "Leads — triagem e retorno",
+  states: [["default", "Padrão"], ["filtered", "Filtrado"], ["empty", "Vazio por filtro"], ["error", "Erro ao mover"]],
+  cost: ["5 cliques + refiltro · 2 contextos · 1 rolagem por lead", "4 cliques · 2 contextos · 0 refiltro · 0 rolagem por lead"],
+  notes: {
+    current: [["L1", "Abrir um lead e voltar descarta filtro, busca e responsável."], ["L2", "A página volta ao topo no retorno."], ["L3", "Só o nome do cartão abre o detalhe; o restante é área de arraste."], ["L12", "Responsável: só “Todos”, “Meus” e “Sem responsável”."], ["C2", "Vazio por filtro: cinco colunas vazias, sem como limpar."], ["L14", "Erro de movimentação não pode ser dispensado."]],
+    proposed: [["L1", "Filtros na URL: o retorno pela trilha ou pelo navegador restaura o quadro."], ["L2", "Rolagem restaurada no retorno."], ["L3", "Cartão inteiro abre o detalhe; arrastar continua igual."], ["L13", "Leads com novo interesse no topo de cada coluna."], ["L12", "Responsável lista as pessoas presentes nos leads carregados."], ["C2", "Vazio por filtro explica e oferece “Limpar filtros”."], ["L19", "Contador de novo interesse na navegação (previsto no protótipo aprovado)."], ["L14", "“Entendi” dispensa o erro."]],
+  },
+  init(state) {
+    const st = { leads: clone(BASE_LEADS), view: "board", q: "", owner: "", source: "", interest: false, error: false, lost: false, restored: false };
+    if (state === "filtered") st.interest = true;
+    if (state === "empty") { st.q = "Zé Ninguém"; st.interest = true; }
+    if (state === "error") st.error = true;
+    return st;
+  },
+  filtered(st) {
+    const q = st.q.trim().toLowerCase();
+    return st.leads.filter((l) =>
+      (!st.owner || (st.owner === "me" ? l.owner === ME : st.owner === "none" ? !l.owner : l.owner === st.owner)) &&
+      (!st.source || l.source === st.source) && (!st.interest || l.interest) &&
+      (!q || l.name.toLowerCase().includes(q) || (q.replace(/\D/g, "") && l.phone.replace(/\D/g, "").includes(q.replace(/\D/g, ""))) || (l.email || "").includes(q)));
+  },
+  url(f) {
+    if (f.v === "current") return "/leads";
+    const p = [];
+    if (f.st.q) p.push(`busca=${encodeURIComponent(f.st.q)}`);
+    if (f.st.owner) p.push(`responsavel=${f.st.owner === "me" ? "eu" : f.st.owner === "none" ? "nenhum" : first(f.st.owner).toLowerCase()}`);
+    if (f.st.source) p.push(`origem=${encodeURIComponent(f.st.source.toLowerCase())}`);
+    if (f.st.interest) p.push("interesse=1");
+    return `/leads${p.length ? "<b>?" + esc(p.join("&")) + "</b>" : ""}`;
+  },
+  render(f) {
+    const st = f.st, P = f.v === "proposed";
+    const pending = st.leads.filter((l) => l.interest).length;
+    if (st.view === "detail") return this.renderDetail(f, pending);
+    const visible = this.filtered(st);
+    const anyFilter = st.q || st.owner || st.source || st.interest;
+    const owners = [...new Set(st.leads.map((l) => l.owner).filter((o) => o && o !== ME))];
+    const head = `<div class="page-head"><div><h1>Leads</h1><p>Pipeline comercial dos contatos que você pode visualizar.</p></div><div class="page-actions"><button class="btn primary" type="button">${ic("i-plus")}Novo lead</button></div></div>`;
+    let notesHtml = "";
+    if (st.lost) notesHtml += anno("bad", "Você voltou do detalhe: filtro “Novo interesse”, busca e responsável foram descartados e a página voltou ao topo. Para o próximo lead, é preciso refazer o filtro.");
+    if (st.restored) notesHtml += anno("good", "Retorno do detalhe: filtros restaurados a partir da URL e rolagem na mesma posição. O lead tratado já saiu do filtro “Novo interesse”.");
+    const bar = `<div class="filterbar"><div class="toolbar"><div class="toolbar-start">
+      <div class="search-box">${ic("i-search")}<input class="control" type="search" data-in="q" value="${esc(st.q)}" placeholder="${P ? "Nome, WhatsApp ou e-mail" : "Nome ou WhatsApp"}" aria-label="Filtrar leads"></div>
+      <select class="control" data-in="owner" aria-label="Responsável">
+        <option value="">Todos os responsáveis</option><option value="me" ${st.owner === "me" ? "selected" : ""}>Meus leads</option><option value="none" ${st.owner === "none" ? "selected" : ""}>Sem responsável</option>
+        ${P ? `<optgroup label="Pessoas">${owners.map((o) => `<option value="${esc(o)}" ${st.owner === o ? "selected" : ""}>${esc(o)}</option>`).join("")}</optgroup>` : ""}
+      </select>
+      <select class="control" data-in="source" aria-label="Origem"><option value="">Todas as origens</option>${SOURCES.map((s) => `<option ${st.source === s ? "selected" : ""}>${s}</option>`).join("")}</select>
+    </div><div class="toolbar-end">
+      <button class="btn sm toggle" type="button" data-a="interest" aria-pressed="${st.interest}"><span class="int-dot" aria-hidden="true"></span>Novo interesse<span class="num">${pending}</span></button>
+      ${P && anyFilter ? `<button class="btn ghost sm" type="button" data-a="clear">Limpar filtros</button>` : ""}
+      <span class="divider-v" aria-hidden="true"></span><span class="muted num" aria-live="polite">${plural(visible.length, "lead", "leads")}</span>
+    </div></div></div>`;
+    const err = st.error ? `<div class="alert danger board-error" role="alert">${ic("i-alert")}<div><strong>Não foi possível mover o lead.</strong>O card voltou para a etapa confirmada. Não foi possível conectar ao servidor. Verifique sua conexão e tente novamente.${P ? ` <br><button class="btn sm" type="button" data-a="dismiss">Entendi</button>` : ""}</div></div>` : "";
+    let board;
+    if (P && !visible.length && anyFilter) {
+      board = `<div class="card"><div class="empty board-empty">${ic("i-search")}<strong>Nenhum lead com estes filtros</strong><p>${st.interest ? "Não há novo interesse pendente que corresponda à busca." : "Ajuste a busca ou remova filtros."}</p><button class="btn sm" type="button" data-a="clear">Limpar filtros</button></div></div>`;
+    } else {
+      board = `<div class="board">${STAGES.map((stage) => {
+        let items = visible.filter((l) => l.stage === stage.id);
+        if (P) items = [...items.filter((l) => l.interest), ...items.filter((l) => !l.interest)];
+        return `<section class="col" style="--stage:${stage.color}" aria-label="${stage.name}, ${plural(items.length, "lead", "leads")}">
+          <div class="col-head"><span class="stage-dot"></span><h2>${stage.name}</h2><span class="num">${items.length}</span></div>
+          ${items.map((l) => this.card(l, P)).join("") || '<p class="col-empty">Nenhum lead nesta etapa</p>'}
+        </section>`;
+      }).join("")}</div>`;
+    }
+    const body = `${notesHtml}${head}${bar}${err}${board}`;
+    return shell(f, { nav: "leads", crumbs: [["Comercial"], ["Leads"]], url: this.url(f), body, count: P ? pending : 0 });
+  },
+  card(l, P) {
+    const owner = l.owner ? `<span class="avatar sm">${initials(l.owner)}</span><span>${first(l.owner)}</span>` : `<span class="avatar sm none">–</span><span>Sem responsável</span>`;
+    return `<article class="lead${P ? " whole" : ""}" ${P ? "" : 'title="Arraste para mudar de etapa"'}>
+      <div class="lead-top"><button class="lead-name${P ? "" : " cur"}" type="button" data-a="open" data-id="${l.id}">${esc(l.name)}</button></div>
+      <div class="lead-phone num">${l.phone}</div>
+      ${l.interest ? '<div class="lead-flag">Novo interesse pendente</div>' : ""}
+      <div class="lead-meta"><span>${esc(l.source)}</span><span class="lead-owner">${owner}</span></div>
+    </article>`;
+  },
+  renderDetail(f, pending) {
+    const l = f.st.leads.find((x) => x.id === f.st.openId), P = f.v === "proposed";
+    const body = `<div class="page-head"><div><div class="title-row"><h1>${esc(l.name)}</h1>${badge("", stageName(l.stage))}${l.interest ? badge("attention", "Novo interesse") : ""}</div><p class="num">${l.phone} · ${esc(l.source)}</p></div></div>
+      ${anno("", "Detalhe resumido para demonstrar o retorno ao quadro. A composição completa está no fluxo “Leads — detalhe”.")}
+      ${l.interest ? `<div class="card"><div class="card-head"><div><h2>Novo interesse</h2><p>Hoje, 08:14 · formulário do catálogo · consentimento registrado</p></div><button class="btn sm" type="button" data-a="resolve">${ic("i-check")}Marcar como tratada</button></div></div>` : `<div class="card"><div class="card-body muted">Nenhuma pendência. Use a trilha “Leads” para voltar ao quadro.</div></div>`}`;
+    return shell(f, { nav: "leads", crumbs: [["Comercial"], ["Leads", "back"], [l.name]], url: P ? `/leads/${l.id}` : `/leads/${l.id}`, body, count: P ? pending : 0 });
+  },
+  act(f, a, el) {
+    const st = f.st;
+    if (a === "interest") st.interest = !st.interest;
+    if (a === "clear") Object.assign(st, { q: "", owner: "", source: "", interest: false });
+    if (a === "dismiss") st.error = false;
+    if (a === "open") { st.saved = { q: st.q, owner: st.owner, source: st.source, interest: st.interest, y: scrollY }; st.openId = Number(el.dataset.id); st.view = "detail"; st.lost = st.restored = false; f.scrollTop = true; }
+    if (a === "resolve") { st.leads.find((x) => x.id === st.openId).interest = false; toast(f, "Novo interesse marcado como tratado."); }
+    if (a === "back") {
+      st.view = "board";
+      if (f.v === "current") { Object.assign(st, { q: "", owner: "", source: "", interest: false }); st.lost = true; f.scrollTop = true; }
+      else { Object.assign(st, { q: st.saved.q, owner: st.saved.owner, source: st.saved.source, interest: st.saved.interest }); st.restored = true; f.restoreY = st.saved.y; }
+    }
+  },
+  input(f, name, value) { f.st[name] = value; f.st.lost = f.st.restored = false; },
+};
+
+/* ═════════ Fluxo 2 — Leads: detalhe ═════════ */
+const RAW_HISTORY = [
+  { type: "contact-request.received", at: "Hoje, 08:14", actor: null, text: "Nova solicitação pelo formulário do catálogo" },
+  { type: "lead.observation-created", at: "03/10/2026 14:22", actor: "Ana Souza", text: "<b>Ana Souza</b> registrou uma observação" },
+  { type: "contact-request.resolved", at: "02/10/2026 09:12", actor: "Ana Souza", text: "<b>Ana Souza</b> tratou a solicitação de contato" },
+  { type: "lead.assignee-changed", at: "02/10/2026 09:10", actor: "Rafael Nunes", text: "<b>Rafael Nunes</b> atribuiu a Ana Souza" },
+  { type: "lead.stage-changed", at: "02/10/2026 09:05", actor: "Rafael Nunes", text: "<b>Rafael Nunes</b> moveu de “Primeiro contato” para “Novo”" },
+  { type: "lead.created", at: "01/10/2026 18:05", actor: null, text: "Lead criado pelo formulário do catálogo" },
+];
+const leadDetailFlow = {
+  title: "Leads — detalhe",
+  states: [["default", "Com novo interesse"], ["saving", "Salvando observação"], ["conflict", "Conflito de versão"], ["lost", "Lead perdido"]],
+  cost: ["Perder lead: 2 cliques, sem confirmação · observar: rolagem até o fim", "Perder lead: 3–4 cliques com confirmação e motivo · observar: no primeiro viewport"],
+  notes: {
+    current: [["L4", "Etapa no `<select>`: “Perdido” e “Convertido” aplicados na hora, sem confirmação nem motivo."], ["L9", "Solicitações sempre no topo; compositor depois de todas as observações."], ["L7", "Histórico com códigos internos."], ["L8", "Solicitação tratada rotulada “Primeira solicitação”."], ["L10", "Erro genérico no topo, sem “Carregar versão atual”."], ["L11", "Botões sem estado de processamento."], ["K1/K2", "Sem editar dados/origem e sem corrigir observação."]],
+    proposed: [["L4", "“Alterar etapa” com a mesma confirmação e motivo do Kanban (decisão D1)."], ["C1", "Novo interesse em faixa no topo, só quando pendente, com a ação ao lado."], ["C1", "Compositor no topo; observações mais recentes primeiro; “Corrigir” nas próprias."], ["L7", "Histórico legível, 5 últimos eventos + ver tudo."], ["L5/L15", "Motivo da perda exibido; “Copiar” no WhatsApp."], ["L10/L11", "Erro e conflito junto ao compositor; botões com processamento."], ["K1", "“Editar dados” em dialog lateral (origem anterior vai ao histórico)."], ["L16", "“Atribuir a mim” quando o lead não é seu."]],
+  },
+  init(state) {
+    const st = {
+      lead: { name: "Mariana Ribeiro", phone: "(21) 99999-1001", email: "mariana.r@email.com", source: "Catálogo/site", detail: "—", owner: "Rafael Nunes", stage: "firstContact", interest: true, lossReason: "" },
+      notes: [
+        { id: 1, author: "Rafael Nunes", at: "01/10/2026 18:40", text: "Primeiro contato sem resposta. Tentar novamente amanhã." },
+        { id: 2, author: "Ana Souza", at: "03/10/2026 14:22", text: "Prefere contato à tarde. Interessada no plano Familiar para 3 pessoas." },
+      ],
+      history: clone(RAW_HISTORY), noteText: "", saving: false, conflict: false, dialog: null, sheet: false, copied: false, editing: null, allHistory: false, changed: null,
+    };
+    if (state === "saving") { st.noteText = "Ligou de volta às 15h. Pediu proposta por WhatsApp."; st.saving = true; }
+    if (state === "conflict") { st.noteText = "Enviada a proposta do plano Familiar."; st.conflict = true; }
+    if (state === "lost") { Object.assign(st.lead, { stage: "lost", interest: false, lossReason: "Optou por outro serviço." }); st.history.shift(); }
+    return st;
+  },
+  render(f) {
+    return f.v === "proposed" ? this.proposed(f) : this.current(f);
+  },
+  stageBadge(l) { return l.stage === "lost" ? `<span class="badge">${ic("i-x")}Perdido</span>` : badge(l.stage === "converted" ? "success" : "", stageName(l.stage)); },
+  current(f) {
+    const st = f.st, l = st.lead;
+    const requests = [
+      ...(l.interest ? [`<li><div class="request"><div><strong>Novo interesse</strong><p class="num">Hoje, 08:14 · consentimento registrado</p></div><button class="btn sm" type="button" data-a="resolve">${ic("i-check")}Marcar como tratada</button></div></li>`] : []),
+      `<li><div class="request"><div><strong>Primeira solicitação</strong><p class="num">02/10/2026 09:12 · consentimento registrado</p></div></div></li>`,
+      `<li><div class="request"><div><strong>Primeira solicitação</strong><p class="num">01/10/2026 18:05 · consentimento registrado</p></div></div></li>`,
+    ].join("");
+    const notes = st.notes.map((n) => `<li><p>${esc(n.text)}</p><p class="hint" style="margin-top:4px">${esc(n.author)} · ${n.at}</p></li>`).join("");
+    const history = st.history.map((h) => `<li><p class="raw-code">${esc(h.type.replaceAll(".", " · "))}</p><time class="num">${h.at}${h.actor ? " · " + h.actor : ""}</time></li>`).join("");
+    const errs = (st.conflict ? `<div class="alert danger" role="alert" style="margin-bottom:12px">${ic("i-alert")}<div><strong>Não foi possível salvar a alteração.</strong>Outra pessoa alterou este registro. Suas mudanças não foram salvas; carregue a versão atual para continuar.</div></div>` : "")
+      + (st.changed ? anno("bad", st.changed) : "")
+      + (st.saving ? anno("bad", "“Adicionar observação” não indica processamento e continua clicável: um segundo clique envia a observação de novo.") : "");
+    const body = `<div class="page-head"><div><div class="title-row"><h1>${esc(l.name)}</h1>${this.stageBadge(l)}${l.interest ? badge("attention", "Novo interesse") : ""}</div><p class="num">${l.phone} · ${esc(l.source)}</p></div>
+      <div class="page-actions"><select class="control" data-in="stage" aria-label="Etapa">${STAGES.map((s) => `<option value="${s.id}" ${s.id === l.stage ? "selected" : ""}>${s.name}</option>`).join("")}</select></div></div>
+      ${errs}
+      <div class="detail"><div class="card-stack">
+        <div class="card"><div class="card-head"><div><h2>Solicitações de contato</h2><p>Envios do formulário público para este WhatsApp.</p></div></div><ul class="list">${requests}</ul></div>
+        <div class="card"><div class="card-head"><div><h2>Observações</h2><p>Somente o autor pode corrigir a própria observação.</p></div></div><ul class="list">${notes}</ul>
+          <form class="composer" data-form="note"><label class="sr-only" for="note-${f.v}">Nova observação</label><textarea id="note-${f.v}" data-in="noteText" placeholder="Registrar uma observação sobre o atendimento…">${esc(st.noteText)}</textarea><div><button class="btn sm" type="submit">Adicionar observação</button></div></form></div>
+        <div class="card"><div class="card-head"><div><h2>Histórico</h2><p>Registro imutável das alterações relevantes.</p></div></div><ol class="timeline">${history}</ol></div>
+      </div><aside class="card-stack">
+        <div class="card"><div class="card-head"><h2>Dados do lead</h2></div><div class="card-body" style="padding-top:4px;padding-bottom:4px"><dl class="dl">
+          <div class="dl-row"><dt>WhatsApp</dt><dd class="num">${l.phone}</dd></div><div class="dl-row"><dt>E-mail</dt><dd>${esc(l.email)}</dd></div><div class="dl-row"><dt>Origem</dt><dd>${esc(l.source)}</dd></div></dl></div></div>
+        <div class="card"><div class="card-head"><h2>Responsável</h2></div><div class="card-body stack"><p>${esc(l.owner || "Sem responsável")}</p>
+          ${l.owner === ME ? `<button class="btn sm" type="button" data-a="return" style="justify-self:start">Devolver lead</button>` : ""}
+          <select class="control" data-in="owner" aria-label="Responsável"><option value="">Sem responsável</option>${["Ana Souza", "Rafael Nunes"].map((u) => `<option ${u === l.owner ? "selected" : ""}>${u}</option>`).join("")}</select><p class="hint">A troca é registrada no histórico do lead.</p></div></div>
+        <div class="card danger-zone"><div class="card-head"><div><h2>Privacidade</h2><p>Para revogações de consentimento validadas.</p></div></div><div class="card-body stack"><p class="hint">Leads com histórico são anonimizados; leads sem histórico podem ser excluídos. A operação gera registro de auditoria.</p><button class="btn danger-quiet" type="button" style="justify-self:start">${ic("i-trash")}Excluir ou anonimizar</button></div></div>
+      </aside></div>`;
+    return shell(f, { nav: "leads", crumbs: [["Comercial"], ["Leads", "noop"], [l.name]], url: "/leads/mariana-ribeiro", body }) + toastsHtml(f);
+  },
+  proposed(f) {
+    const st = f.st, l = st.lead;
+    const pendingBar = l.interest ? `<div class="pending-bar" role="status"><span class="int-dot" aria-hidden="true"></span><div><strong>Novo interesse pendente</strong><p class="num">Hoje, 08:14 · formulário do catálogo · consentimento registrado</p></div><button class="btn sm${st.resolving ? " loading" : ""}" type="button" data-a="resolve">${ic("i-check")}Marcar como tratada</button></div>` : "";
+    const notes = [...st.notes].reverse().map((n) => `<li><div class="note-meta"><span class="avatar sm">${initials(n.author)}</span><strong>${esc(n.author)}</strong><span class="num">${n.at}</span>${n.author === ME && st.editing !== n.id ? `<button class="btn ghost sm" type="button" data-a="edit-note" data-id="${n.id}" style="margin-left:auto">Corrigir</button>` : ""}</div>
+      ${st.editing === n.id ? `<div class="note-edit"><label class="sr-only" for="edit-${n.id}">Corrigir observação</label><textarea id="edit-${n.id}" data-in="editText">${esc(st.editText)}</textarea><p class="hint">O texto anterior permanece no histórico.</p><div><button class="btn sm" type="button" data-a="cancel-edit">Cancelar</button><button class="btn sm primary" type="button" data-a="save-edit">Salvar correção</button></div></div>` : `<p>${esc(n.text)}</p>`}</li>`).join("");
+    const shown = st.allHistory ? st.history : st.history.slice(0, 5);
+    const history = shown.map((h) => `<li><p>${h.text}</p><time class="num">${h.at}</time></li>`).join("");
+    const errs = st.conflict ? `<div class="alert warning" role="alert">${ic("i-alert")}<div><strong>Outra pessoa alterou este lead.</strong>Sua observação não foi salva e continua no campo. Carregue a versão atual e envie de novo.<br><button class="btn sm" type="button" data-a="reload">${ic("i-refresh")}Carregar versão atual</button></div></div>` : "";
+    const body = `<div class="page-head"><div><div class="title-row"><h1>${esc(l.name)}</h1>${this.stageBadge(l)}${l.interest ? badge("attention", "Novo interesse") : ""}</div><p class="num">${l.phone} · ${esc(l.source)}</p></div>
+      <div class="page-actions"><button class="btn" type="button" data-a="sheet">${ic("i-edit")}Editar dados</button><button class="btn primary" type="button" data-a="stage">${ic("i-swap")}Alterar etapa</button></div></div>
+      ${pendingBar}
+      <div class="detail"><div class="card-stack">
+        <div class="card"><div class="card-head"><div><h2>Observações</h2><p>Mais recentes primeiro. Somente o autor pode corrigir a própria observação.</p></div></div>
+          <form class="composer top" data-form="note"><label class="sr-only" for="note-${f.v}">Nova observação</label><textarea id="note-${f.v}" data-in="noteText" placeholder="Registrar uma observação sobre o atendimento…" ${st.saving ? "disabled" : ""}>${esc(st.noteText)}</textarea>${errs}<div><button class="btn sm${st.saving ? " loading" : ""}" type="submit" ${st.saving ? 'aria-busy="true"' : ""}>Adicionar observação</button></div></form>
+          <ul class="list">${notes}</ul></div>
+        <div class="card"><div class="card-head"><div><h2>Histórico</h2><p>Registro imutável das alterações relevantes.</p></div></div><ol class="timeline">${history}</ol>
+          ${st.history.length > 5 ? `<div class="card-foot"><span class="num">${st.allHistory ? st.history.length : 5} de ${st.history.length} eventos</span><button class="btn ghost sm" type="button" data-a="all-history">${st.allHistory ? "Mostrar menos" : "Ver histórico completo"}</button></div>` : ""}</div>
+        <details class="card collapsed"><summary>2 solicitações tratadas</summary><ul class="list">
+          <li><div class="request"><div><strong>Solicitação tratada</strong><p class="num">Recebida em 01/10/2026 18:05 · tratada por Ana Souza em 02/10/2026 09:12</p></div></div></li>
+          <li><div class="request"><div><strong>Solicitação tratada</strong><p class="num">Recebida em 25/09/2026 11:40 · tratada por Rafael Nunes em 25/09/2026 16:02</p></div></div></li></ul></details>
+      </div><aside class="card-stack">
+        <div class="card"><div class="card-head"><h2>Dados do lead</h2></div><div class="card-body" style="padding-top:4px;padding-bottom:4px"><dl class="dl">
+          <div class="dl-row"><dt>WhatsApp</dt><dd class="copy-row"><span class="num">${l.phone}</span><button class="btn ghost" type="button" data-a="copy" aria-label="Copiar WhatsApp">${st.copied ? ic("i-check") + "Copiado" : ic("i-copy") + "Copiar"}</button></dd></div>
+          <div class="dl-row"><dt>E-mail</dt><dd>${esc(l.email || "Não informado")}</dd></div><div class="dl-row"><dt>Origem</dt><dd>${esc(l.source)}</dd></div>
+          ${l.stage === "lost" ? `<div class="dl-row"><dt>Motivo da perda</dt><dd>${esc(l.lossReason || "Não informado")}</dd></div>` : ""}</dl></div></div>
+        <div class="card"><div class="card-head"><h2>Responsável</h2>${l.owner !== ME ? `<button class="btn sm" type="button" data-a="mine">Atribuir a mim</button>` : ""}</div><div class="card-body stack">
+          <select class="control" data-in="owner" aria-label="Responsável"><option value="">Sem responsável</option>${["Ana Souza", "Rafael Nunes"].map((u) => `<option ${u === l.owner ? "selected" : ""}>${u}</option>`).join("")}</select><p class="hint">A troca é registrada no histórico do lead.</p></div></div>
+        <div class="card danger-zone"><div class="card-head"><div><h2>Privacidade</h2><p>Para revogações de consentimento validadas.</p></div></div><div class="card-body stack"><p class="hint">Leads com histórico são anonimizados; leads sem histórico podem ser excluídos. A operação gera registro de auditoria.</p><button class="btn danger-quiet" type="button" style="justify-self:start">${ic("i-trash")}Excluir ou anonimizar</button></div></div>
+      </aside></div>`;
+    return shell(f, { nav: "leads", crumbs: [["Comercial"], ["Leads", "noop"], [l.name]], url: "/leads/mariana-ribeiro", body }) + this.overlays(f) + toastsHtml(f);
+  },
+  overlays(f) {
+    const st = f.st, l = st.lead;
+    if (st.dialog) {
+      const t = st.dialog.target, sensitive = t === "lost" || t === "converted";
+      return `<div class="f-overlay" data-a="close"></div><div class="f-modal" role="dialog" aria-modal="true" aria-labelledby="stage-t-${f.v}">
+        <div class="dlg-head"><div><h2 id="stage-t-${f.v}">Alterar etapa</h2><p>${esc(l.name)} está em “${stageName(l.stage)}”.</p></div><button class="btn ghost sm icon-only" type="button" data-a="close" aria-label="Fechar">${ic("i-x")}</button></div>
+        <div class="dlg-body"><div class="field"><label for="stage-${f.v}">Nova etapa</label><select id="stage-${f.v}" data-in="target">${STAGES.filter((s) => s.id !== l.stage).map((s) => `<option value="${s.id}" ${s.id === t ? "selected" : ""}>${s.name}</option>`).join("")}</select></div>
+          ${t === "lost" ? `<div class="field"><label for="reason-${f.v}">Motivo da perda <span class="opt">(opcional)</span></label><textarea id="reason-${f.v}" data-in="reason" style="min-height:72px">${esc(st.dialog.reason || "")}</textarea></div>` : ""}
+          ${sensitive ? `<div class="alert info">${ic("i-alert")}<div>${t === "converted" ? "O lead será marcado como convertido. Ele pode ser reaberto depois." : "O lead será marcado como perdido. Ele pode ser reaberto depois."}</div></div>` : ""}</div>
+        <div class="dlg-actions"><button class="btn" type="button" data-a="close">Cancelar</button><button class="btn primary${st.dialog.busy ? " loading" : ""}" type="button" data-a="apply-stage">${t === "converted" ? "Confirmar conversão" : t === "lost" ? "Confirmar perda" : "Alterar etapa"}</button></div></div>`;
+    }
+    if (st.sheet) {
+      return `<div class="f-overlay" data-a="close"></div><div class="f-drawer" role="dialog" aria-modal="true" aria-labelledby="sheet-t-${f.v}">
+        <div class="dlg-head"><div><h2 id="sheet-t-${f.v}">Editar dados</h2><p>${esc(l.name)}</p></div><button class="btn ghost sm icon-only" type="button" data-a="close" aria-label="Fechar">${ic("i-x")}</button></div>
+        <div class="dlg-body">${field({ id: "e-name-" + f.v, label: "Nome", value: l.name })}${field({ id: "e-phone-" + f.v, label: "WhatsApp", value: l.phone, hint: "Com DDD. Um WhatsApp só pode pertencer a um lead." })}${field({ id: "e-mail-" + f.v, label: "E-mail", value: l.email, opt: true, type: "email" })}
+          <div class="field"><label for="e-src-${f.v}">Origem</label><select id="e-src-${f.v}">${SOURCES.map((s) => `<option ${s === l.source ? "selected" : ""}>${s}</option>`).join("")}</select><span class="hint">A origem anterior fica registrada no histórico.</span></div>
+          ${field({ id: "e-det-" + f.v, label: "Detalhe da origem", opt: true, textarea: true })}</div>
+        <div class="dlg-actions"><button class="btn" type="button" data-a="close">Cancelar</button><button class="btn primary${st.sheetBusy ? " loading" : ""}" type="button" data-a="save-sheet">Salvar</button></div></div>`;
+    }
+    return "";
+  },
+  act(f, a, el) {
+    const st = f.st, l = st.lead, P = f.v === "proposed";
+    const event = (text) => st.history.unshift({ type: "x", at: "Agora", text });
+    if (a === "resolve") {
+      if (!P) { l.interest = false; return; }
+      st.resolving = true; later(f, () => { st.resolving = false; l.interest = false; event(`<b>${ME}</b> tratou o novo interesse`); toast(f, "Novo interesse marcado como tratado."); }, 500);
+    }
+    if (a === "note") {
+      if (!st.noteText.trim()) return;
+      if (!P) { st.notes.push({ id: Date.now(), author: ME, at: "Agora", text: st.noteText.trim() }); st.noteText = ""; st.history.unshift({ type: "lead.observation-created", at: "Agora", actor: ME }); return; }
+      st.saving = true; st.conflict = false;
+      later(f, () => { st.saving = false; st.notes.push({ id: Date.now(), author: ME, at: "Agora", text: st.noteText.trim() }); st.noteText = ""; event(`<b>${ME}</b> registrou uma observação`); });
+    }
+    if (a === "reload") { st.conflict = false; toast(f, "Versão atual carregada. Sua observação foi mantida no campo."); }
+    if (a === "stage") st.dialog = { target: STAGES.find((s) => s.id !== l.stage).id, reason: "" };
+    if (a === "close") { st.dialog = null; st.sheet = false; }
+    if (a === "apply-stage") {
+      st.dialog.busy = true;
+      later(f, () => { const from = l.stage, t = st.dialog.target; l.stage = t; if (t === "lost") l.lossReason = st.dialog.reason || ""; event(`<b>${ME}</b> moveu de “${stageName(from)}” para “${stageName(t)}”`); st.dialog = null; toast(f, `${first(l.name)} movida para “${stageName(t)}”.`); }, 600);
+    }
+    if (a === "sheet") st.sheet = true;
+    if (a === "save-sheet") { st.sheetBusy = true; later(f, () => { st.sheetBusy = false; st.sheet = false; event(`<b>${ME}</b> alterou os dados de contato`); toast(f, "Dados do lead atualizados."); }, 600); }
+    if (a === "copy") { st.copied = true; setTimeout(() => { st.copied = false; renderFrame(f); }, 2000); }
+    if (a === "mine") { l.owner = ME; event(`<b>${ME}</b> assumiu o lead`); toast(f, "Lead atribuído a você."); }
+    if (a === "return") { l.owner = null; }
+    if (a === "edit-note") { st.editing = Number(el.dataset.id); st.editText = st.notes.find((n) => n.id === st.editing).text; }
+    if (a === "cancel-edit") st.editing = null;
+    if (a === "save-edit") { const n = st.notes.find((x) => x.id === st.editing); n.text = st.editText; n.at += " · corrigida agora"; st.editing = null; event(`<b>${ME}</b> corrigiu uma observação`); toast(f, "Observação corrigida."); }
+    if (a === "all-history") st.allHistory = !st.allHistory;
+  },
+  input(f, name, value) {
+    const st = f.st, l = st.lead;
+    if (name === "stage") {
+      const from = l.stage; l.stage = value; st.history.unshift({ type: "lead.stage-changed", at: "Agora", actor: ME });
+      st.changed = value === "lost" || value === "converted"
+        ? `Etapa alterada de “${stageName(from)}” para “${stageName(value)}” imediatamente: sem confirmação e sem campo para o motivo. No Windows, as setas do teclado sobre o seletor fechado já disparam essa mudança.`
+        : `Etapa alterada de “${stageName(from)}” para “${stageName(value)}” sem retorno visual além do badge.`;
+      return;
+    }
+    if (name === "owner") { l.owner = value || null; if (f.v === "proposed") toast(f, "Responsável atualizado."); return; }
+    if (name === "target") { st.dialog.target = value; return; }
+    if (name === "reason") { st.dialog.reason = value; return "keep"; }
+    st[name] = value; return "keep";
+  },
+};
+
+/* ═════════ Fluxo 3 — Leads: novo lead ═════════ */
+const newLeadFlow = {
+  title: "Leads — novo lead",
+  states: [["default", "Padrão"], ["saving", "Salvando"], ["duplicate", "WhatsApp duplicado"], ["success", "Sucesso"]],
+  cost: ["Duplicado: 6–9 cliques e beco sem saída", "Duplicado: 1 clique até o lead existente"],
+  notes: {
+    current: [["L6", "WhatsApp já cadastrado vira “Não foi possível concluir a operação. Tente novamente.”, embora a API informe qual lead usa o número."], ["§13", "Campos sem erro por campo, sem foco inicial e sem dica de formato."], ["§17", "Depois de criar, o caminho para registrar o primeiro contato é procurar o cartão."]],
+    proposed: [["L6", "Erro no campo WhatsApp com link para o lead existente (nome obtido dos leads já carregados)."], ["W5", "Origem lembrada durante a sessão do navegador, nunca na primeira abertura."], ["W5", "Foco em Nome, dica “Com DDD”, controles iguais aos demais dialogs."], ["§17", "Toast de sucesso com “Abrir lead”."]],
+  },
+  init(state) {
+    const st = { open: state !== "success", name: "", phone: "", email: "", source: "", detail: "", unassigned: false, saving: false, dup: false, opened: false };
+    if (state !== "default") Object.assign(st, { name: "Mariana R. Souza", phone: "(21) 99999-1001", source: "Abordagem" });
+    if (state === "saving") st.saving = true;
+    if (state === "duplicate") st.dup = true;
+    return st;
+  },
+  render(f) {
+    const st = f.st, P = f.v === "proposed";
+    const board = `<div class="page-head"><div><h1>Leads</h1><p>Pipeline comercial dos contatos que você pode visualizar.</p></div><div class="page-actions"><button class="btn primary" type="button" data-a="new">${ic("i-plus")}Novo lead</button></div></div>
+      ${st.opened ? anno(P ? "good" : "bad", P ? "“Abrir lead” levou direto ao lead criado." : "") : ""}
+      <div class="board">${STAGES.map((s) => `<section class="col" style="--stage:${s.color};min-height:360px"><div class="col-head"><span class="stage-dot"></span><h2>${s.name}</h2><span class="num">${s.id === "new" ? (st.created ? 4 : 3) : 2}</span></div>
+        ${s.id === "new" && st.created ? leadsFlow.card({ id: 99, name: st.name || "Mariana R. Souza", phone: st.phone || "(21) 98765-4321", source: st.source || "Abordagem", owner: ME, stage: "new" }, P) : ""}
+        ${BASE_LEADS.filter((l) => l.stage === s.id).slice(0, s.id === "new" ? 3 : 2).map((l) => leadsFlow.card(l, P)).join("")}</section>`).join("")}</div>`;
+    let drawer = "";
+    if (st.open) {
+      const body = P ? `
+        ${field({ id: "n-name-" + f.v, label: "Nome", value: st.name, attrs: 'data-in="name" autofocus' })}
+        <div class="field${st.dup ? " field-error" : ""}"><label for="n-phone-${f.v}">WhatsApp</label><input id="n-phone-${f.v}" class="num" inputmode="tel" data-in="phone" value="${esc(st.phone)}" ${st.dup ? 'aria-invalid="true" aria-describedby="n-phone-e"' : ""}>
+          ${st.dup ? `<span class="hint" id="n-phone-e">${ic("i-alert")}<span>Este WhatsApp já pertence a Mariana Ribeiro. <button class="linklike" type="button" data-a="open-existing">Abrir lead existente</button></span></span>` : `<span class="hint">Com DDD. Um WhatsApp só pode pertencer a um lead.</span>`}</div>
+        ${field({ id: "n-mail-" + f.v, label: "E-mail", value: st.email, opt: true, type: "email", attrs: 'data-in="email"' })}
+        <div class="field"><label for="n-src-${f.v}">Origem</label><select id="n-src-${f.v}" data-in="source"><option value="">Selecione</option>${SOURCES.filter((s) => s !== "Catálogo/site").map((s) => `<option ${s === st.source ? "selected" : ""}>${s}</option>`).join("")}</select>${st.source ? '<span class="hint">Última origem usada nesta sessão.</span>' : ""}</div>
+        ${st.source ? field({ id: "n-det-" + f.v, label: st.source === "Indicação" ? "Quem indicou" : "Detalhe da origem", opt: st.source !== "Indicação", textarea: true, value: st.detail, attrs: 'data-in="detail" style="min-height:64px"' }) : ""}
+        <label class="check"><input type="checkbox" data-in="unassigned" ${st.unassigned ? "checked" : ""}><span>Deixar sem responsável <span class="hint" style="display:block">Por padrão, o lead fica com você.</span></span></label>`
+        : `
+        ${st.dup ? `<div class="alert danger" role="alert">${ic("i-alert")}<div><strong>Não foi possível criar o lead.</strong>Não foi possível concluir a operação. Tente novamente.</div></div>${anno("bad", "A API devolveu DUPLICATE_RESOURCE com o identificador do lead existente; a interface descartou essa informação. Tentar de novo produz o mesmo erro.")}` : ""}
+        <div class="field"><label for="n-name-${f.v}">Nome</label><input id="n-name-${f.v}" data-in="name" value="${esc(st.name)}"></div>
+        <div class="field"><label for="n-phone-${f.v}">WhatsApp</label><input id="n-phone-${f.v}" data-in="phone" value="${esc(st.phone)}"></div>
+        <div class="field"><label for="n-mail-${f.v}">E-mail (opcional)</label><input id="n-mail-${f.v}" type="email" data-in="email" value="${esc(st.email)}"></div>
+        <div class="field"><label for="n-src-${f.v}">Origem</label><select id="n-src-${f.v}" data-in="source"><option value="">Selecione</option>${SOURCES.filter((s) => s !== "Catálogo/site").map((s) => `<option ${s === st.source ? "selected" : ""}>${s}</option>`).join("")}</select></div>
+        <div class="field"><label for="n-det-${f.v}">Detalhe da origem</label><textarea id="n-det-${f.v}" data-in="detail" style="min-height:64px">${esc(st.detail)}</textarea></div>
+        <label class="check"><input type="checkbox" data-in="unassigned" ${st.unassigned ? "checked" : ""}><span>Deixar sem responsável</span></label>`;
+      drawer = `<div class="f-overlay" data-a="close"></div><div class="f-drawer" role="dialog" aria-modal="true" aria-labelledby="nl-${f.v}">
+        <div class="dlg-head"><div><h2 id="nl-${f.v}">Novo lead</h2><p>O lead será criado na etapa Novo.</p></div><button class="btn ghost sm icon-only" type="button" data-a="close" aria-label="Fechar">${ic("i-x")}</button></div>
+        <div class="dlg-body">${body}</div>
+        <div class="dlg-actions"><button class="btn" type="button" data-a="close">Cancelar</button><button class="btn primary${st.saving ? " loading" : ""}" type="button" data-a="create" ${st.saving ? 'aria-busy="true"' : ""}>Criar lead</button></div></div>`;
+    }
+    return shell(f, { nav: "leads", crumbs: [["Comercial"], ["Leads"]], url: "/leads", body: board }) + drawer + toastsHtml(f);
+  },
+  act(f, a) {
+    const st = f.st, P = f.v === "proposed";
+    if (a === "new") { st.open = true; st.dup = false; st.name = ""; st.phone = ""; st.detail = ""; if (!P) st.source = ""; st.opened = false; }
+    if (a === "close") st.open = false;
+    if (a === "create") {
+      st.saving = true;
+      later(f, () => {
+        st.saving = false;
+        if (st.phone.replace(/\D/g, "").endsWith("999991001")) { st.dup = true; return; }
+        st.open = false; st.created = true;
+        toast(f, "Lead criado em “Novo”.", P ? ["Abrir lead", "open-created"] : null);
+      });
+    }
+    if (a === "open-existing" || a === "open-created") { st.open = false; st.opened = true; st.toasts = []; toast(f, a === "open-existing" ? "Abrindo Mariana Ribeiro… (detalhe no fluxo “Leads — detalhe”)" : "Abrindo o lead criado… (detalhe no fluxo “Leads — detalhe”)"); }
+  },
+  input(f, name, value, el) { f.st[name] = el.type === "checkbox" ? el.checked : value; if (name === "phone") f.st.dup = false; return name === "source" ? undefined : "keep"; },
+};
+
+/* ═════════ Fluxo 4 — Parceiros: formulário ═════════ */
+const PLANS = ["Empresarial", "Familiar", "Individual"];
+const partnerFlow = {
+  title: "Parceiros — formulário",
+  states: [["clean", "Sem alterações"], ["dirty", "Com alterações"], ["saving", "Salvando"], ["published", "Publicado"], ["partial", "Salvo, não publicado"]],
+  cost: ["Benefícios (3 planos): 9 cliques + 6 travessias · publicar: salvar, rolar, publicar", "Benefícios: 3 cliques · publicar: 1 clique na barra"],
+  notes: {
+    current: [["P4", "O interruptor do benefício está na última coluna; % e cupom ficam bloqueados até ligá-lo."], ["P2", "“Salvar” só no cabeçalho, fora da tela depois de rolar."], ["P3", "“Publicar” exige salvar antes; abaixo de 1280px fica no fim da página."], ["P6", "“Remover” unidade ao lado de “Editar”, mesmo peso, sem desfazer."], ["P9", "“Cancelar” sem alterações é, na prática, “Voltar”."]],
+    proposed: [["P4", "Caixa de seleção com o nome do plano na primeira coluna; marcar leva o foco ao %."], ["W1", "Barra fixa só com alterações: resumo, Descartar, Salvar."], ["W2", "“Salvar e publicar” quando o parceiro não está publicado e as pendências locais foram atendidas."], ["W2", "Falha parcial explícita: salvo, mas não publicado, com o motivo da API."], ["P6", "“Remover” dentro da edição da unidade; removida mostra “Desfazer” até salvar."], ["§11", "“Adicionar unidade” no cabeçalho da seção, como no protótipo aprovado."]],
+  },
+  init(state) {
+    const st = {
+      status: "draft", dirty: false, saving: false, partial: false, savedOnce: true,
+      benefits: { Empresarial: { on: false, pct: "", coupon: "" }, Familiar: { on: true, pct: "20", coupon: "" }, Individual: { on: false, pct: "", coupon: "" } },
+      units: [{ id: 1, name: "Unidade Tijuca", addr: "Rua Conde de Bonfim, 420 · Tijuca, Rio de Janeiro – RJ", removed: false }, { id: 2, name: "Unidade Méier", addr: "Rua Dias da Cruz, 188, sala 302 · Méier, Rio de Janeiro – RJ", removed: false }],
+      openUnit: null,
+    };
+    if (state === "dirty" || state === "saving" || state === "partial") { st.dirty = true; st.benefits.Individual = { on: true, pct: "15", coupon: "" }; }
+    if (state === "saving") st.saving = "save";
+    if (state === "published") st.status = "published";
+    if (state === "partial") { st.dirty = false; st.partial = true; }
+    return st;
+  },
+  reqs(st) {
+    const benefits = Object.values(st.benefits).some((b) => b.on && Number(b.pct) >= 1 && Number(b.pct) <= 100);
+    return [["Descrição informada", true], ["Instruções de uso informadas", true], ["Ao menos uma categoria ativa", true], ["Ao menos um telefone ou WhatsApp", true], ["Benefício para ao menos um plano ativo", benefits], ["Alterações salvas", !st.dirty]];
+  },
+  render(f) {
+    const st = f.st, P = f.v === "proposed";
+    const reqs = this.reqs(st), localOk = reqs.slice(0, 5).every((r) => r[1]);
+    const stateBadge = st.status === "published" ? badge("success", "Publicado") : badge("info", "Rascunho");
+    const head = `<div class="page-head"><div><div class="title-row"><h1>Clínica Vida Plena</h1>${stateBadge}</div><p>${st.status === "published" ? "Publicado: alterações válidas aparecem imediatamente no catálogo." : "Criado como rascunho; só aparece no catálogo depois de publicado."}</p></div>
+      ${P ? "" : `<div class="page-actions"><button class="btn" type="button">Cancelar</button><button class="btn primary${st.saving === "save" ? " loading" : ""}" type="button" data-a="save">Salvar</button></div>`}</div>`;
+    const rows = PLANS.map((p) => {
+      const b = st.benefits[p];
+      if (P) return `<tr><td><label class="plan"><input type="checkbox" data-in="on" data-plan="${p}" ${b.on ? "checked" : ""}>${p}</label></td>
+        <td><input class="pct num" type="number" min="1" max="100" placeholder="%" value="${esc(b.pct)}" data-in="pct" data-plan="${p}" id="pct-${f.v}-${p}" ${b.on ? "" : "disabled"} aria-label="Desconto no plano ${p}, em %"></td>
+        <td><input class="mono" placeholder="Usa o cupom geral" value="${esc(b.coupon)}" data-in="coupon" data-plan="${p}" ${b.on ? "" : "disabled"} aria-label="Cupom do plano ${p}"></td></tr>`;
+      return `<tr><td><strong style="font-weight:600">${p}</strong></td>
+        <td><input class="pct num" type="number" placeholder="%" value="${esc(b.pct)}" data-in="pct" data-plan="${p}" ${b.on ? "" : 'readonly data-a="locked"'} aria-label="Desconto no plano ${p}, em %" style="${b.on ? "" : "background:var(--surface-muted);border-color:var(--border);color:var(--placeholder)"}"></td>
+        <td><input class="mono" placeholder="Usa o cupom geral" value="${esc(b.coupon)}" data-in="coupon" data-plan="${p}" ${b.on ? "" : 'readonly data-a="locked"'} aria-label="Cupom do plano ${p}" style="${b.on ? "" : "background:var(--surface-muted);border-color:var(--border);color:var(--placeholder)"}"></td>
+        <td><label class="switch"><input type="checkbox" data-in="on" data-plan="${p}" ${b.on ? "checked" : ""} aria-label="Oferecer benefício no plano ${p}"><span class="track" aria-hidden="true"></span></label></td></tr>`;
+    }).join("");
+    const benefitsSec = `<section class="card" id="sec-benefits-${f.v}"><div class="card-head"><div><h2>Benefícios e cupons</h2><p>Um benefício por plano. O cupom do plano prevalece sobre o cupom geral.</p></div></div>
+      <div class="card-body stack" style="gap:16px"><div class="field" style="max-width:320px"><label for="cg-${f.v}">Cupom geral <span class="opt">(opcional)</span></label><input id="cg-${f.v}" class="mono" value="FLEXVIDA" data-in="dirty"></div>
+      ${!P && f.st.lockedClick ? anno("bad", "O campo está bloqueado até ligar o interruptor no fim da linha.") : ""}
+      <table class="sub-table"><thead><tr><th scope="col">Plano</th><th scope="col">Desconto</th><th scope="col">Cupom do plano <span style="color:var(--muted)">(opcional)</span></th>${P ? "" : '<th scope="col"><span class="sr-only">Oferece</span></th>'}</tr></thead><tbody>${rows}</tbody></table></div></section>`;
+    const units = st.units.map((u) => {
+      if (P && u.removed) return `<div class="unit removed"><div><strong>${u.name}</strong><p>${u.addr}</p></div><span style="display:flex;gap:8px;align-items:center"><span class="hint">Removida ao salvar</span><button class="btn ghost sm" type="button" data-a="undo" data-id="${u.id}">Desfazer</button></span></div>`;
+      const editPanel = P && st.openUnit === u.id ? `<div class="unit-edit">${field({ id: `un-${f.v}-${u.id}`, label: "Nome da unidade", value: u.name, attrs: 'data-in="dirty"' })}<p class="hint">Endereço, horários e contatos da unidade (inalterados nesta proposta).</p>
+        <div class="row"><button class="btn danger-quiet sm" type="button" data-a="remove" data-id="${u.id}">${ic("i-trash")}Remover unidade</button><button class="btn sm" type="button" data-a="collapse">Recolher</button></div></div>` : "";
+      return `<div><div class="unit"><div><strong>${u.name}</strong> ${badge("success", "Ativa")}<p>${u.addr}</p><p>Usa os contatos gerais</p></div>
+        <span style="display:flex;gap:4px">${P ? `<button class="btn ghost sm" type="button" data-a="edit-unit" data-id="${u.id}" aria-expanded="${st.openUnit === u.id}">Editar</button>` : `<button class="btn ghost sm" type="button">Editar</button><button class="btn ghost sm" type="button" data-a="remove" data-id="${u.id}">Remover</button>`}</span></div>${editPanel}</div>`;
+    }).join("");
+    const unitsSec = `<section class="card"><div class="card-head"><div><h2>Unidades</h2><p>Opcional. Unidades sem contato próprio exibem os contatos gerais.</p></div>${P ? `<button class="btn sm" type="button" data-a="add-unit">${ic("i-plus")}Adicionar unidade</button>` : ""}</div>
+      <div class="card-body" style="display:grid;gap:8px">${units}${P ? "" : `<div><button class="btn sm" type="button" data-a="add-unit">Adicionar unidade</button></div>`}</div></section>`;
+    const compact = (t) => `<section class="card compact-sec"><strong>${t}</strong><span class="status-ico done">${ic("i-check")}<span class="sr-only">Completa</span></span></section>`;
+    const canPublishNow = st.status !== "published" && localOk && !st.dirty;
+    const aside = `<aside class="side-summary" aria-label="Resumo do cadastro"><div class="card"><div class="card-head"><h2>Situação</h2><span class="unsaved" style="${st.dirty ? "" : "color:var(--success)"}">${st.dirty ? "Não salvo" : "Salvo"}</span></div>
+      <div class="card-body" style="padding-top:2px;padding-bottom:2px"><dl class="dl"><div class="dl-row"><dt>Estado</dt><dd>${stateBadge}</dd></div><div class="dl-row"><dt>Unidades</dt><dd class="num">${st.units.filter((u) => !u.removed).length}</dd></div><div class="dl-row"><dt>Benefícios</dt><dd class="num">${plural(Object.values(st.benefits).filter((b) => b.on).length, "plano", "planos")}</dd></div></dl></div>
+      ${st.status !== "published" ? `<div class="card-foot" style="display:grid;gap:8px;color:inherit"><button class="btn${st.saving === "publish" ? " loading" : ""}" type="button" data-a="publish" ${canPublishNow ? "" : "disabled"}>Publicar</button></div>` : ""}</div>
+      ${st.status !== "published" ? `<div class="card"><div class="card-head"><h2>Para publicar</h2></div><div class="card-body" style="padding-top:8px"><ul class="req-list">${reqs.map(([t, ok]) => `<li>${ic(ok ? "i-check" : "i-x", "icon " + (ok ? "ok" : "no"))}<span class="${ok ? "" : "muted"}">${t}</span></li>`).join("")}</ul></div></div>` : ""}</aside>`;
+    const nav = `<nav class="section-nav" aria-label="Seções do formulário"><h2>Seções</h2>${["Dados principais", "Categorias e contatos", "Unidades", "Benefícios e cupons", "Publicação"].map((s, i) => `<button class="section-link" type="button" ${i === 3 ? 'aria-current="true"' : ""}>${s}<span class="status-ico done">${ic("i-check")}</span></button>`).join("")}</nav>`;
+    let bar = "";
+    if (P && st.partial) {
+      bar = `<div class="savebar warn" role="alert">${ic("i-alert")}<span class="summary"><b>Alterações salvas, mas o parceiro não foi publicado.</b> A API informou: o plano “Familiar” está inativo e não conta como benefício válido.</span><div class="actions"><button class="btn sm" type="button" data-a="dismiss-partial">Revisar benefícios</button></div></div>`;
+    } else if (P && st.dirty) {
+      const pub = st.status !== "published" && localOk;
+      bar = `<div class="savebar" role="region" aria-label="Alterações não salvas"><span class="unsaved">Alterações não salvas</span><span class="summary">Benefícios e cupons</span>
+        <div class="actions"><button class="btn ghost" type="button" data-a="discard">Descartar</button>${pub ? `<button class="btn${st.saving === "both" ? " loading" : ""}" type="button" data-a="save-publish">Salvar e publicar</button>` : ""}<button class="btn primary${st.saving === "save" ? " loading" : ""}" type="button" data-a="save">Salvar</button></div></div>`;
+    }
+    const body = `${head}<div class="form-layout">${nav}<div class="form-sections">${compact("Dados principais")}${compact("Categorias e contatos")}${unitsSec}${benefitsSec}${compact("Publicação")}</div>${aside}</div>${bar}`;
+    return shell(f, { nav: "partners", crumbs: [["Catálogo"], ["Parceiros", "noop"], ["Clínica Vida Plena"]], url: "/parceiros/clinica-vida-plena", body }) + toastsHtml(f);
+  },
+  act(f, a, el) {
+    const st = f.st;
+    const id = Number(el?.dataset.id);
+    if (a === "save") { st.saving = "save"; later(f, () => { st.saving = false; st.dirty = false; toast(f, "Alterações salvas."); }); }
+    if (a === "save-publish") { st.saving = "both"; later(f, () => { st.saving = false; st.dirty = false; st.status = "published"; toast(f, "Alterações salvas e parceiro publicado."); }, 900); }
+    if (a === "publish") { st.saving = "publish"; later(f, () => { st.saving = false; st.status = "published"; toast(f, "Parceiro publicado."); }); }
+    if (a === "discard") { Object.assign(st, partnerFlow.init("clean")); }
+    if (a === "dismiss-partial") { st.partial = false; }
+    if (a === "remove") { if (f.v === "proposed") st.units.find((u) => u.id === id).removed = true; else st.units = st.units.filter((u) => u.id !== id); st.dirty = true; st.openUnit = null; }
+    if (a === "undo") { st.units.find((u) => u.id === id).removed = false; }
+    if (a === "edit-unit") st.openUnit = st.openUnit === id ? null : id;
+    if (a === "collapse") st.openUnit = null;
+    if (a === "locked") st.lockedClick = true;
+    if (a === "add-unit") { st.units.push({ id: Date.now(), name: "Nova unidade", addr: "Endereço não informado.", removed: false }); st.dirty = true; }
+  },
+  input(f, name, value, el) {
+    const st = f.st, p = el.dataset.plan, was = st.dirty;
+    st.dirty = true;
+    if (name === "on") { st.benefits[p].on = el.checked; st.lockedClick = false; if (el.checked && f.v === "proposed") f.focusSel = `#pct-proposed-${p}`; return; }
+    if (name === "pct" || name === "coupon") st.benefits[p][name] = value;
+    return was ? "keep" : undefined;
+  },
+};
+
+/* ═════════ Fluxo 5 — Usuários: detalhe e permissões ═════════ */
+const userFlow = {
+  title: "Usuários — permissões",
+  states: [["clean", "Sem alterações"], ["dirty", "Com alterações"], ["code", "Código emitido"], ["leave", "Saída com alterações"]],
+  cost: ["Área inteira: 1 clique por permissão · salvar no topo · saída descarta sem aviso", "Área inteira: 1 clique · salvar na barra · saída pede confirmação"],
+  notes: {
+    current: [["U3", "Sair com permissões alteradas descarta tudo sem aviso."], ["U4", "“Salvar alterações” no topo; “Descartar” sempre habilitado."], ["U2", "Código de uso único sem “Copiar”; abaixo de 1024px fica após a grade."], ["U5", "Conceder uma área inteira exige marcar cada caixa."]],
+    proposed: [["U3", "Sair com alterações pede confirmação (mesmo padrão do parceiro)."], ["W1/U4", "Barra com o resumo “+N concedidas · −N revogadas”, Descartar e Salvar."], ["U2", "Código em faixa no topo, largura total, com “Copiar código”."], ["U5", "“Marcar todas” por área, limitado ao que o autor pode conceder."]],
+  },
+  init(state) {
+    const st = { saved: new Set(RAFAEL_GRANTS), grants: new Set(RAFAEL_GRANTS), code: null, copied: false, leaving: false, left: false, saving: false };
+    if (state === "dirty" || state === "leave") { ["Leads:Atribuir e redistribuir", "Leads:Visualizar todos", "Origens:Administrar"].forEach((g) => st.grants.add(g)); st.grants.delete("Leads:Criar"); }
+    if (state === "code") st.code = "7K4M-92QD-R8WX-3HNB";
+    if (state === "leave") st.leaving = true;
+    return st;
+  },
+  diff(st) {
+    const add = [...st.grants].filter((g) => !st.saved.has(g)).length, rem = [...st.saved].filter((g) => !st.grants.has(g)).length;
+    return { add, rem, dirty: add + rem > 0 };
+  },
+  render(f) {
+    const st = f.st, P = f.v === "proposed", d = this.diff(st);
+    if (st.left) {
+      const msg = st.left === "lost" ? anno("bad", "As permissões marcadas não foram salvas e nenhum aviso foi exibido. A conta continua com as permissões anteriores — sem que você saiba.")
+        : st.left === "discarded" ? anno("good", "Você descartou as alterações de forma explícita, depois de ver quantas eram.") : "";
+      const body = `${msg}
+        <div class="page-head"><div><h1>Usuários</h1><p>Contas internas e suas permissões individuais.</p></div></div><div class="card"><div class="card-body"><button class="btn sm" type="button" data-a="reopen">Abrir Rafael Nunes de novo</button></div></div>`;
+      return shell(f, { nav: "users", crumbs: [["Administração"], ["Usuários"]], url: "/usuarios", body });
+    }
+    const grid = PERMISSIONS.map((g) => {
+      const on = g.items.filter((i) => st.grants.has(g.area + ":" + i)).length, all = on === g.items.length;
+      return `<fieldset class="perm-area"><legend class="sr-only">${g.area}</legend><h3><span style="color:var(--foreground);font-weight:600">${g.area}</span><span>${on}/${g.items.length}</span>${P ? `<button class="btn ghost" type="button" data-a="area" data-area="${g.area}">${all ? "Desmarcar todas" : "Marcar todas"}</button>` : ""}</h3>
+        ${g.items.map((i) => `<label class="check"><input type="checkbox" data-in="perm" data-key="${g.area}:${i}" ${st.grants.has(g.area + ":" + i) ? "checked" : ""}><span>${i}</span></label>`).join("")}</fieldset>`;
+    }).join("");
+    const codeCur = st.code ? `<div class="code-box"><span class="hint">Código de ativação · válido por 30 min</span><strong>${st.code}</strong><span class="hint">Entregue à pessoa por um canal seguro. Ele não será exibido de novo.</span></div>` : "";
+    const codePro = st.code ? `<div class="code-banner" role="status"><div><strong>Código de recuperação emitido · válido por 30 min</strong><span class="mono">${st.code}</span><p>Entregue a Rafael por um canal seguro. Ele não será exibido de novo.</p></div><button class="btn" type="button" data-a="copy">${st.copied ? ic("i-check") + "Copiado" : ic("i-copy") + "Copiar código"}</button></div>` : "";
+    const head = `<div class="page-head"><div style="display:flex;gap:14px;align-items:center"><span class="avatar lg" aria-hidden="true">RN</span><div><div class="title-row"><h1>Rafael Nunes</h1>${badge("success", "Ativo")}</div><p class="mono">rafael.nunes</p></div></div>
+      ${P ? "" : `<div class="page-actions"><button class="btn" type="button" data-a="discard">Descartar</button><button class="btn primary${st.saving ? " loading" : ""}" type="button" data-a="save" ${d.dirty ? "" : "disabled"}>Salvar alterações</button></div>`}</div>`;
+    const body = `${head}${P ? codePro : ""}<div class="detail"><div class="card-stack">
+      <div class="card"><div class="card-head"><div><h2>Dados da conta</h2></div></div><div class="card-body field-grid">${field({ id: "u-n-" + f.v, label: "Nome completo", value: "Rafael Nunes" })}${field({ id: "u-l-" + f.v, label: "Nome de usuário", value: "rafael.nunes", mono: true })}<div class="full" style="grid-column:1/-1">${field({ id: "u-m-" + f.v, label: "E-mail", value: "rafael@flexclube.org", opt: true })}</div></div></div>
+      <div class="card"><div class="card-head"><div><h2>Permissões</h2><p>Concedidas individualmente. Alterações valem imediatamente, inclusive em sessões abertas.</p></div><span class="badge tag num">${st.grants.size} de ${PERM_TOTAL}</span></div><div class="perm-grid">${grid}</div></div>
+      </div><aside class="card-stack">
+      <div class="card"><div class="card-head"><h2>Acesso</h2></div><div class="card-body stack" style="gap:12px"><dl class="dl"><div class="dl-row"><dt>Situação</dt><dd>Conta ativada</dd></div><div class="dl-row"><dt>Estado</dt><dd>${badge("success", "Ativo")}</dd></div></dl>
+        ${P ? "" : codeCur}<button class="btn" type="button" data-a="issue">${ic("i-key")}Emitir código de recuperação</button><p class="hint">Emitir um novo código invalida o anterior da mesma finalidade.</p></div></div>
+      <div class="card danger-zone"><div class="card-head"><div><h2>Desativar conta</h2><p>A pessoa perde o acesso imediatamente; históricos e leads são preservados.</p></div></div><div class="card-body"><button class="btn danger-quiet" type="button">Desativar conta</button></div></div>
+      </aside></div>
+      ${P && d.dirty ? `<div class="savebar" role="region" aria-label="Alterações não salvas"><span class="unsaved">Alterações não salvas</span><span class="summary"><b>+${d.add}</b> ${d.add === 1 ? "concedida" : "concedidas"} · <b>−${d.rem}</b> ${d.rem === 1 ? "revogada" : "revogadas"} · valem imediatamente ao salvar</span><div class="actions"><button class="btn ghost" type="button" data-a="discard">Descartar</button><button class="btn primary${st.saving ? " loading" : ""}" type="button" data-a="save">Salvar alterações</button></div></div>` : ""}`;
+    const modal = P && st.leaving ? `<div class="f-overlay" data-a="stay"></div><div class="f-modal" role="dialog" aria-modal="true" aria-labelledby="lv-${f.v}"><div class="dlg-head"><div class="dlg-title"><span class="dlg-ico" aria-hidden="true">${ic("i-alert")}</span><h2 id="lv-${f.v}" style="padding-top:6px">Sair sem salvar?</h2></div></div>
+      <div class="dlg-body" style="padding-left:64px"><p class="muted">${d.add + d.rem} ${d.add + d.rem === 1 ? "alteração de permissão será descartada" : "alterações de permissão serão descartadas"}. A conta continua com as permissões atuais.</p></div><div class="dlg-actions"><button class="btn" type="button" data-a="stay">Continuar editando</button><button class="btn danger" type="button" data-a="leave-ok">Descartar alterações</button></div></div>` : "";
+    return shell(f, { nav: "users", crumbs: [["Administração"], ["Usuários", "leave"], ["Rafael Nunes"]], url: "/usuarios/rafael-nunes", body }) + modal + toastsHtml(f);
+  },
+  act(f, a, el) {
+    const st = f.st, d = this.diff(st);
+    if (a === "save") { st.saving = true; later(f, () => { st.saving = false; st.saved = new Set(st.grants); toast(f, "Permissões salvas. Já estão em vigor."); }); }
+    if (a === "discard") st.grants = new Set(st.saved);
+    if (a === "area") {
+      const g = PERMISSIONS.find((x) => x.area === el.dataset.area), keys = g.items.map((i) => g.area + ":" + i), all = keys.every((k) => st.grants.has(k));
+      keys.forEach((k) => (all ? st.grants.delete(k) : st.grants.add(k)));
+    }
+    if (a === "issue") { st.code = "Q2VD-8M4K-7TXR-H3NB"; st.copied = false; if (f.v === "proposed") f.scrollTop = true; }
+    if (a === "copy") { st.copied = true; setTimeout(() => { st.copied = false; renderFrame(f); }, 2000); }
+    if (a === "leave") { if (f.v === "proposed" && d.dirty) st.leaving = true; else st.left = d.dirty ? "lost" : "clean"; }
+    if (a === "stay") st.leaving = false;
+    if (a === "leave-ok") { st.leaving = false; st.left = "discarded"; st.grants = new Set(st.saved); }
+    if (a === "reopen") { Object.assign(st, userFlow.init("clean")); }
+  },
+  input(f, name, value, el) { if (name === "perm") { el.checked ? f.st.grants.add(el.dataset.key) : f.st.grants.delete(el.dataset.key); } },
+};
+
+/* ═════════ Fluxo 6 — Listagens: padrão de linha e Origens ═════════ */
+const SRC_ROWS = [
+  { name: "Abordagem", leads: 2, active: true }, { name: "Campanha", leads: 1, active: true }, { name: "Catálogo/site", leads: 4, active: true, protected: true },
+  { name: "Feira de saúde", leads: 0, active: false }, { name: "Indicação", leads: 4, active: true },
+];
+const PLAN_ROWS = [{ name: "Empresarial", slug: "empresarial", active: true }, { name: "Familiar", slug: "familiar", active: true }, { name: "Individual", slug: "individual", active: true }, { name: "Sênior", slug: "senior", active: false }];
+const listsFlow = {
+  title: "Listagens — Origens e ações de linha",
+  states: [["default", "Padrão"], ["empty", "Vazio por filtro"], ["error", "Erro ao salvar"]],
+  cost: ["Origens: busca sem efeito · erro de salvamento invisível · “Editar” duplicado no menu", "Busca e abas funcionando · erro no campo · menu só com o que não está visível"],
+  notes: {
+    current: [["S1", "Busca de Origens ligada a uma função vazia; abas são um grupo vazio."], ["S2", "Erro de salvamento aparece na página, atrás do dialog aberto."], ["S3", "Dialog sem processamento: duplo envio possível."], ["C1", "Planos: “Editar” no botão e de novo no menu."], ["C2", "Vazio por filtro sem “Limpar filtros”."], ["W3", "Linha não abre o registro (em Usuários abre)."]],
+    proposed: [["S1", "Abas Todas/Ativas/Inativas e busca locais, como nas demais listas."], ["S2/S3", "Erro no campo, dentro do dialog; botão com processamento."], ["W3", "Linha inteira abre a edição; botão visível = ação mais frequente; menu só com estado e destrutivas."], ["K3", "“Excluir” para origem nunca utilizada (API existente)."], ["C2", "Vazio por filtro com “Limpar filtros”."], ["G2", "Sem o rodapé técnico “Ordem alfabética · sem paginação”."]],
+  },
+  init(state) {
+    const st = { sq: "", stab: "", pq: "", menu: null, drawer: null, err: false, saving: false, typed: false };
+    if (state === "empty") { st.pq = "premium"; st.sq = "whatsapp"; }
+    if (state === "error") { st.drawer = { title: "Nova origem", name: "indicação" }; st.err = true; }
+    return st;
+  },
+  render(f) {
+    const st = f.st, P = f.v === "proposed";
+    const sAll = SRC_ROWS;
+    const sRows = P ? sAll.filter((r) => (!st.stab || String(r.active) === st.stab) && (!st.sq || r.name.toLowerCase().includes(st.sq.toLowerCase()))) : sAll;
+    const pRows = PLAN_ROWS.filter((r) => (!st.ptab || String(r.active) === st.ptab) && (!st.pq || r.name.toLowerCase().includes(st.pq.toLowerCase())));
+    const seg = (key, tabs, all, stateOf) => `<div class="seg" role="group" aria-label="Filtrar por estado">${tabs.map(([v, l]) => `<button type="button" data-a="tab" data-key="${key}" data-v="${v}" aria-pressed="${(st[key] || "") === v}"><span>${l}</span><span class="count">${all.filter((r) => !v || stateOf(r) === v).length}</span></button>`).join("")}</div>`;
+    const emptyRow = (cols, msg, key) => `<tr class="empty-row"><td colspan="${cols}"><strong>${msg}</strong>Ajuste a busca ou o filtro de estado.${P ? `<br><button class="btn sm" type="button" data-a="clear" data-key="${key}" style="margin-top:10px">Limpar filtros</button>` : ""}</td></tr>`;
+    const srcActions = (r) => {
+      if (r.protected) return "";
+      if (!P) return `<button class="btn sm" type="button" data-a="edit" data-name="${r.name}">Editar</button><button class="btn ghost sm" type="button">${r.active ? "Desativar" : "Reativar"}</button>`;
+      return `<button class="btn sm" type="button" data-a="edit" data-name="${r.name}">Editar</button><button class="btn ghost sm icon-only" type="button" data-a="menu" data-menu="src:${r.name}" aria-label="Mais ações para ${r.name}" aria-haspopup="menu">${ic("i-more")}</button>`;
+    };
+    const srcCard = `<div class="card"><div class="toolbar"><div class="toolbar-start">${P ? seg("stab", [["", "Todas"], ["true", "Ativas"], ["false", "Inativas"]], sAll, (r) => String(r.active)) : '<div class="seg" role="group" aria-label="Filtrar por estado" style="min-width:12px;min-height:32px"></div>'}</div>
+      <div class="toolbar-end"><div class="search-box">${ic("i-search")}<input class="control" type="search" placeholder="Filtrar origens" aria-label="Filtrar origens" data-in="sq" value="${esc(st.sq)}"></div></div></div>
+      ${!P && (st.typed || st.sq) ? anno("bad", "A busca não filtra: o campo está ligado a uma função vazia. As abas de estado também não existem (grupo vazio à esquerda).") : ""}
+      <div class="table-wrap"><table class="table"><thead><tr><th scope="col">Origem</th><th scope="col" class="r">Leads</th><th scope="col">Estado</th><th scope="col" class="actions"><span class="sr-only">Ações</span></th></tr></thead><tbody>
+      ${sRows.length ? sRows.map((r) => `<tr class="${P && !r.protected ? "clickable" : ""}" ${P && !r.protected ? `data-row="edit" data-name="${r.name}"` : ""}><td><div class="cell-main"><div><strong>${r.name}${r.protected ? ` <span class="badge tag" style="margin-left:6px">${ic("i-lock")}Protegida</span>` : ""}</strong>${r.protected ? "<small>Automática, usada pelo catálogo</small>" : ""}</div></div></td><td class="r num">${r.leads}</td><td>${r.active ? badge("success", "Ativa") : badge("", "Inativa")}</td><td class="actions"><div>${srcActions(r)}</div></td></tr>`).join("") : emptyRow(4, "Nenhuma origem encontrada com esses filtros.", "src")}
+      </tbody></table></div><div class="card-foot"><span class="num">${sRows.length === sAll.length ? plural(sAll.length, "origem", "origens") : `${sRows.length} de ${sAll.length} origens`}</span>${P ? "" : "<span>Ordem alfabética · sem paginação</span>"}</div></div>`;
+    const planCard = `<div class="page-head" style="margin-top:28px"><div><h1>Planos</h1><p>Mesmo padrão de linha aplicado a Planos, Categorias, Parceiros e Usuários.</p></div></div>
+      <div class="card"><div class="toolbar"><div class="toolbar-start">${seg("ptab", [["", "Todos"], ["true", "Ativos"], ["false", "Inativos"]], PLAN_ROWS, (r) => String(r.active))}</div><div class="toolbar-end"><div class="search-box">${ic("i-search")}<input class="control" type="search" placeholder="Filtrar planos" aria-label="Filtrar planos" data-in="pq" value="${esc(st.pq)}"></div></div></div>
+      <div class="table-wrap"><table class="table"><thead><tr><th scope="col">Plano</th><th scope="col">Identificador público</th><th scope="col">Estado</th><th scope="col" class="actions"><span class="sr-only">Ações</span></th></tr></thead><tbody>
+      ${pRows.length ? pRows.map((r) => `<tr class="${P ? "clickable" : ""}" ${P ? `data-row="edit" data-name="${r.name}"` : ""}><td><div class="cell-main"><span class="mark">${initials(r.name)}</span><div><strong>${r.name}</strong></div></div></td><td><span class="mono muted">${r.slug}</span></td><td>${r.active ? badge("success", "Ativo") : badge("", "Inativo")}</td>
+        <td class="actions"><div><button class="btn sm" type="button" data-a="edit" data-name="${r.name}">Editar</button><button class="btn ghost sm icon-only" type="button" data-a="menu" data-menu="plan:${r.name}" aria-label="Mais ações para ${r.name}" aria-haspopup="menu">${ic("i-more")}</button></div></td></tr>`).join("") : emptyRow(4, "Nenhum plano encontrado com esses filtros.", "plan")}
+      </tbody></table></div><div class="card-foot"><span class="num">${pRows.length === PLAN_ROWS.length ? plural(PLAN_ROWS.length, "plano", "planos") : `${pRows.length} de ${PLAN_ROWS.length} planos`}</span>${P ? "" : "<span>Ordem alfabética · sem paginação</span>"}</div></div>`;
+    const pageErr = !P && st.err ? `<div class="alert danger" role="alert" style="margin-bottom:12px">${ic("i-alert")}<div><strong>Não foi possível concluir a operação.</strong>Não foi possível concluir a operação. Tente novamente.</div></div>` : "";
+    const body = `${pageErr}<div class="page-head"><div><h1>Origens</h1><p>Canais de aquisição atribuídos aos leads.</p></div><div class="page-actions"><button class="btn primary" type="button" data-a="new">${ic("i-plus")}Nova origem</button></div></div>${srcCard}${planCard}`;
+    let menu = "";
+    if (st.menu) {
+      const [kind, name] = st.menu.split(":");
+      let items;
+      if (kind === "plan") {
+        const r = PLAN_ROWS.find((x) => x.name === name);
+        items = P ? [{ l: r.active ? "Desativar" : "Reativar", d: r.active }] : [{ l: "Editar" }, "sep", { l: r.active ? "Desativar" : "Reativar", d: r.active }];
+      } else {
+        const r = SRC_ROWS.find((x) => x.name === name);
+        items = [{ l: r.active ? "Desativar" : "Reativar", d: false }, ...(r.leads === 0 ? ["sep", { l: "Excluir", d: true }] : [])];
+      }
+      menu = `<div class="menu" role="menu" style="top:${st.menuY}px;left:${st.menuX}px">${items.map((it) => it === "sep" ? "<hr>" : `<button type="button" role="menuitem" class="${it.d ? "danger" : ""}" data-a="menu-close">${it.l}</button>`).join("")}</div>`;
+      if (!P && kind === "plan") menu += `<div style="position:absolute;top:${st.menuY + 8}px;left:${Math.max(8, st.menuX - 230)}px;width:220px">${anno("bad", "“Editar” repete o botão ao lado.")}</div>`;
+    }
+    let drawer = "";
+    if (st.drawer) {
+      const nameField = P && st.err ? field({ id: "src-n-" + f.v, label: "Nome", value: st.drawer.name, error: "Já existe um registro com este nome.", attrs: 'data-in="dname"' }) : field({ id: "src-n-" + f.v, label: "Nome", value: st.drawer.name, hint: "Deve ser único, sem diferenciar maiúsculas e acentos.", attrs: 'data-in="dname"' });
+      drawer = `<div class="f-overlay" data-a="close"></div><div class="f-drawer" role="dialog" aria-modal="true" aria-labelledby="sd-${f.v}"><div class="dlg-head"><div><h2 id="sd-${f.v}">${st.drawer.title}</h2><p>Canal usado para identificar como o lead chegou.</p></div><button class="btn ghost sm icon-only" type="button" data-a="close" aria-label="Fechar">${ic("i-x")}</button></div>
+        <div class="dlg-body">${!P && st.err ? anno("bad", "O erro foi exibido na página, atrás deste dialog. Aqui nada indica que o salvamento falhou; o botão parece não funcionar.") : ""}${nameField}<label class="check"><input type="checkbox"><span><strong style="font-weight:600">Origem por indicação</strong><span class="hint" style="display:block">Exige informar quem indicou no cadastro do lead.</span></span></label></div>
+        <div class="dlg-actions"><button class="btn" type="button" data-a="close">Cancelar</button><button class="btn primary${P && st.saving ? " loading" : ""}" type="button" data-a="save">Salvar</button></div></div>`;
+    }
+    return shell(f, { nav: "sources", crumbs: [["Comercial"], ["Origens"]], url: P && (st.sq || st.stab) ? `/origens<b>?${st.stab ? "estado=" + (st.stab === "true" ? "ativas" : "inativas") : ""}${st.stab && st.sq ? "&" : ""}${st.sq ? "busca=" + esc(st.sq) : ""}</b>` : "/origens", body }) + menu + drawer + toastsHtml(f);
+  },
+  act(f, a, el) {
+    const st = f.st, P = f.v === "proposed";
+    if (a === "tab") st[el.dataset.key] = el.dataset.v;
+    if (a === "clear") { if (el.dataset.key === "src") { st.sq = ""; st.stab = ""; } else { st.pq = ""; st.ptab = ""; } }
+    if (a === "edit") { st.drawer = { title: el.dataset.name ? "Editar" : "Nova origem", name: el.dataset.name || "" }; st.err = false; st.menu = null; }
+    if (a === "new") { st.drawer = { title: "Nova origem", name: "" }; st.err = false; }
+    if (a === "close") { st.drawer = null; if (!P) st.err = false; }
+    if (a === "save") {
+      const dup = SRC_ROWS.some((r) => r.name.toLowerCase().normalize("NFD").replace(/\p{M}/gu, "") === (st.drawer.name || "").toLowerCase().normalize("NFD").replace(/\p{M}/gu, ""));
+      if (P) { st.saving = true; later(f, () => { st.saving = false; if (dup) st.err = true; else { st.drawer = null; toast(f, "Origem salva."); } }, 500); }
+      else if (dup) st.err = true; else st.drawer = null;
+    }
+    if (a === "menu") {
+      const key = el.dataset.menu; if (st.menu === key) { st.menu = null; return; }
+      const fr = f.el.getBoundingClientRect(), r = el.getBoundingClientRect();
+      st.menu = key; st.menuY = r.bottom - fr.top + 4; st.menuX = Math.max(8, r.right - fr.left - 196);
+    }
+    if (a === "menu-close") st.menu = null;
+  },
+  row(f, el) { this.act(f, "edit", el); },
+  input(f, name, value) {
+    if (name === "sq" && f.v === "current") { f.st.typed = true; f.st.sq = value; return "keep-noop"; }
+    if (name === "dname") { f.st.drawer.name = value; f.st.err = f.v === "current" ? f.st.err : false; return "keep"; }
+    f.st[name] = value;
+  },
+};
+
+/* ═════════ Fluxo 7 — Auditoria ═════════ */
+const auditFlow = {
+  title: "Auditoria — filtros",
+  states: [["default", "Padrão"], ["loading", "Carregando filtro"], ["empty", "Vazio"]],
+  cost: ["3 filtros: 3 trocas de tela pelo esqueleto · foco perdido · filtros perdidos ao sair", "3 filtros: tabela esmaecida no lugar · foco mantido · filtros na URL"],
+  notes: {
+    current: [["A1", "Cada filtro ou página substitui barra, tabela e paginação pelo esqueleto; o foco sai do seletor."], ["A3", "“Limpar filtros” sempre visível."], ["A2", "Filtros perdidos ao navegar."]],
+    proposed: [["A1", "A barra permanece; a tabela anterior fica esmaecida com indicador até a nova página chegar."], ["A3", "“Limpar filtros” só quando algo difere do padrão; também no vazio."], ["A2", "Filtros e página na URL."]],
+  },
+  init(state) {
+    const st = { action: "", author: "", target: "", loading: false, sticky: false };
+    if (state === "loading") { st.action = "Permissão concedida"; st.loading = true; st.sticky = true; }
+    if (state === "empty") { st.action = "Conta desativada"; st.author = "Rafael Nunes"; }
+    return st;
+  },
+  render(f) {
+    const st = f.st, P = f.v === "proposed";
+    const rows = AUDIT.filter((a) => (!st.action || a.action === st.action) && (!st.author || a.author === st.author) && (!st.target || a.target === st.target));
+    const any = st.action || st.author || st.target;
+    const sel = (name, label, values) => `<select class="control" data-in="${name}" aria-label="${label}" id="aud-${name}-${f.v}"><option value="">${label === "Ação" ? "Todas as ações" : label === "Autor" ? "Todos os autores" : "Todos os afetados"}</option>${values.map((v) => `<option ${st[name] === v ? "selected" : ""}>${v}</option>`).join("")}</select>`;
+    const head = `<div class="page-head"><div><h1>Auditoria</h1><p>Registro imutável de operações administrativas sensíveis.</p></div></div>`;
+    if (!P && st.loading) {
+      const sk = `<div class="card" role="status" aria-label="Carregando eventos"><div style="height:48px;border-bottom:1px solid var(--border)"></div><div style="height:36px;border-bottom:1px solid var(--border-strong)"></div><div class="card-body" style="padding-top:4px;padding-bottom:4px">${Array.from({ length: 6 }, () => '<div class="skeleton-row"><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></div>').join("")}</div></div>`;
+      return shell(f, { nav: "audit", crumbs: [["Administração"], ["Auditoria"]], url: "/auditoria", body: head + anno("bad", "A troca de filtro desmontou a barra, a tabela e a paginação. O seletor usado perdeu o foco.") + sk });
+    }
+    const q = [st.action && "acao=" + encodeURIComponent(st.action.toLowerCase()), st.author && "autor=" + first(st.author).toLowerCase(), st.target && "afetado=" + first(st.target).toLowerCase()].filter(Boolean).join("&");
+    const body = `${head}<div class="card"><div class="toolbar"><div class="toolbar-start"><select class="control" aria-label="Período"><option>Últimos 30 dias</option><option>Últimos 7 dias</option><option>Hoje</option><option>Todo o período</option></select>
+      ${sel("action", "Ação", [...new Set(AUDIT.map((a) => a.action))].sort())}${sel("author", "Autor", [...new Set(AUDIT.map((a) => a.author))])}${sel("target", "Usuário afetado", [...new Set(AUDIT.map((a) => a.target))])}</div>
+      <div class="toolbar-end">${!P || any ? `<button class="btn ghost sm" type="button" data-a="clear">Limpar filtros</button>` : ""}</div></div>
+      ${P && st.loading ? '<div class="table-progress" role="progressbar" aria-label="Atualizando eventos"></div>' : ""}
+      <div class="table-wrap"><table class="table"><thead><tr><th scope="col">Data e hora</th><th scope="col">Ação</th><th scope="col">Autor</th><th scope="col">Afetado</th><th scope="col">Objeto</th></tr></thead>
+      <tbody class="${P && st.loading ? "refreshing" : ""}" ${P && st.loading ? 'aria-busy="true"' : ""}>${rows.length ? rows.map((a) => `<tr class="clickable"><td><span class="num muted">${a.at}</span></td><td><strong style="font-weight:600">${a.action}</strong></td><td><span class="cell-main" style="gap:8px"><span class="avatar sm">${initials(a.author)}</span>${a.author}</span></td><td><span class="cell-main" style="gap:8px"><span class="avatar sm">${initials(a.target)}</span>${a.target}</span></td><td><span class="muted">${a.object}</span></td></tr>`).join("")
+        : `<tr class="empty-row"><td colspan="5"><strong>Nenhum evento com esses filtros.</strong>Amplie o período ou remova filtros.${P ? '<br><button class="btn sm" type="button" data-a="clear" style="margin-top:10px">Limpar filtros</button>' : ""}</td></tr>`}</tbody></table></div>
+      <div class="card-foot"><span class="num" aria-live="polite">${P && st.loading ? "Atualizando…" : rows.length ? `1–${rows.length} de ${rows.length} eventos` : "0 eventos"}</span><div class="pager"><button class="btn sm" type="button" disabled aria-label="Página anterior">${ic("i-left")}</button><span class="num">Página 1 de 1</span><button class="btn sm" type="button" disabled aria-label="Próxima página">${ic("i-right")}</button></div></div></div>`;
+    return shell(f, { nav: "audit", crumbs: [["Administração"], ["Auditoria"]], url: P && q ? `/auditoria<b>?${esc(q)}</b>` : "/auditoria", body });
+  },
+  act(f, a) { if (a === "clear") { Object.assign(f.st, { action: "", author: "", target: "" }); this.load(f); } },
+  input(f, name, value) { f.st[name] = value; this.load(f); if (f.v === "current") return "blur"; },
+  load(f) { const st = f.st; st.loading = true; st.sticky = false; setTimeout(() => { if (!st.sticky) { st.loading = false; renderFrame(f); } }, 900); },
+};
+
+/* ═════════ Orquestração ═════════ */
+const FLOWS = { leads: leadsFlow, lead: leadDetailFlow, "new-lead": newLeadFlow, partner: partnerFlow, user: userFlow, lists: listsFlow, audit: auditFlow };
+const view = { flow: "leads", v: "proposed", state: "default" };
+let frames = [];
+
+function parseHash() {
+  const p = new URLSearchParams(location.hash.slice(1));
+  if (FLOWS[p.get("flow")]) view.flow = p.get("flow");
+  if (["current", "proposed", "compare"].includes(p.get("v"))) view.v = p.get("v");
+  const states = FLOWS[view.flow].states.map((s) => s[0]);
+  view.state = states.includes(p.get("state")) ? p.get("state") : states[0];
+}
+function writeHash() { history.replaceState(null, "", `#flow=${view.flow}&v=${view.v}&state=${view.state}`); }
+
+function renderChrome() {
+  const flow = FLOWS[view.flow];
+  $("#flow-tabs").innerHTML = Object.entries(FLOWS).map(([id, fl]) => `<button type="button" data-flow="${id}" aria-pressed="${id === view.flow}">${fl.title}</button>`).join("");
+  $("#state-tabs").innerHTML = `<span>Estado</span>${flow.states.map(([id, l]) => `<button class="btn sm toggle" type="button" data-state="${id}" aria-pressed="${id === view.state}">${l}</button>`).join("")}`;
+  $$("#version-seg button").forEach((b) => b.setAttribute("aria-pressed", b.dataset.v === view.v));
+  const col = (kind, title, items, cost) => `<div class="note-col ${kind}"><h2>${title}<span>${cost}</span></h2><ul>${items.map(([id, t]) => `<li><b>${id}</b><span>${esc(t).replace(/`([^`]+)`/g, "<code>$1</code>")}</span></li>`).join("")}</ul></div>`;
+  $("#notes").innerHTML = col("cur", "Atual — atritos", flow.notes.current, flow.cost[0]) + col("pro", "Proposta — mudanças", flow.notes.proposed, flow.cost[1]);
+}
+
+function renderStage() {
+  const stage = $("#stage"), flow = FLOWS[view.flow];
+  stage.className = "stage-wrap" + (view.v === "compare" ? " compare" : "");
+  const versions = view.v === "compare" ? ["current", "proposed"] : [view.v];
+  stage.innerHTML = versions.map((v) => `<section class="frame" data-v="${v}" aria-label="${v === "current" ? "Versão atual" : "Versão proposta"}"><span class="frame-label">${v === "current" ? "Atual" : "Proposta"}</span><div class="frame-body"></div></section>`).join("");
+  frames = versions.map((v, i) => ({ v, el: $$(".frame", stage)[i], flow, st: flow.init(view.state) }));
+  frames.forEach(renderFrame);
+}
+
+function renderFrame(f) {
+  if (!f.el.isConnected) return;
+  const active = document.activeElement, keep = f.el.contains(active) && active.dataset?.in ? { sel: active.id ? `#${CSS.escape(active.id)}` : `[data-in="${active.dataset.in}"]${active.dataset.plan ? `[data-plan="${active.dataset.plan}"]` : ""}`, s: active.selectionStart, e: active.selectionEnd } : null;
+  $(".frame-body", f.el).innerHTML = f.flow.render(f);
+  const target = f.focusSel ? $(f.focusSel, f.el) : keep && !f.blur ? $(keep.sel, f.el) : null;
+  if (target) { target.focus({ preventScroll: true }); if (!f.focusSel && keep && typeof keep.s === "number" && target.setSelectionRange) { try { target.setSelectionRange(keep.s, keep.e); } catch { /* campos sem seleção */ } } }
+  f.focusSel = null; f.blur = false;
+  if (f.scrollTop) { f.scrollTop = false; const y = f.el.getBoundingClientRect().top + scrollY - 140; if (scrollY > y) scrollTo({ top: y }); }
+  if (typeof f.restoreY === "number") { const y = f.restoreY; f.restoreY = null; requestAnimationFrame(() => scrollTo({ top: y })); }
+}
+
+const frameOf = (el) => frames.find((f) => f.el.contains(el));
+document.addEventListener("click", (e) => {
+  const fl = e.target.closest("[data-flow]"); if (fl) { view.flow = fl.dataset.flow; view.state = FLOWS[view.flow].states[0][0]; return go(); }
+  const sb = e.target.closest("[data-state]"); if (sb) { view.state = sb.dataset.state; return go(); }
+  const vb = e.target.closest("#version-seg [data-v]"); if (vb) { view.v = vb.dataset.v; return go(); }
+  const f = frameOf(e.target); if (!f) return;
+  const act = e.target.closest("[data-a]");
+  if (act && f.el.contains(act)) { e.preventDefault(); if (act.dataset.a !== "noop") f.flow.act(f, act.dataset.a, act); return renderFrame(f); }
+  const row = e.target.closest("[data-row]");
+  if (row && f.flow.row && !e.target.closest("button, a, input, select, textarea")) { f.flow.row(f, row); return renderFrame(f); }
+  if (f.st.menu && !e.target.closest(".menu")) { f.st.menu = null; renderFrame(f); }
+});
+document.addEventListener("submit", (e) => {
+  const f = frameOf(e.target); if (!f) return;
+  e.preventDefault(); f.flow.act(f, e.target.dataset.form, e.target); renderFrame(f);
+});
+const onInput = (e) => {
+  const el = e.target.closest("[data-in]"); const f = el && frameOf(el); if (!f) return;
+  const isText = (el.tagName === "INPUT" && !["checkbox", "radio"].includes(el.type)) || el.tagName === "TEXTAREA";
+  if (e.type === "change" && isText) return;
+  if (e.type === "input" && !isText) return;
+  const r = f.flow.input(f, el.dataset.in, el.value, el);
+  if (r === "keep-noop") return renderFrame(f);
+  if (r === "keep" && isText) return;
+  if (r === "blur") f.blur = true;
+  renderFrame(f);
+};
+document.addEventListener("input", onInput);
+document.addEventListener("change", onInput);
+document.addEventListener("keydown", (e) => {
+  if (e.target.closest?.("input, textarea, select")) return;
+  const map = { 1: "current", 2: "proposed", 3: "compare" };
+  if (map[e.key]) { view.v = map[e.key]; go(); }
+  if (e.key === "Escape") frames.forEach((f) => { if (f.st.dialog || f.st.sheet || f.st.drawer || f.st.menu || f.st.leaving || f.st.open) { f.st.dialog = null; f.st.sheet = false; f.st.drawer = null; f.st.menu = null; f.st.leaving = false; if (f.st.open !== undefined) f.st.open = false; renderFrame(f); } });
+});
+$("#reset-flow").addEventListener("click", () => renderStage());
+function go() { writeHash(); renderChrome(); renderStage(); }
+window.addEventListener("hashchange", () => { parseHash(); renderChrome(); renderStage(); });
+parseHash(); go();
+  </script>
+</body>
+</html>
