@@ -1,9 +1,9 @@
-import type { FieldErrorCode } from '@flex/contracts';
+﻿import type { FieldErrorCode } from '@flex/contracts';
 import { ACCESS_CODE_MAX_FAILED_ATTEMPTS } from '../constants';
 import { checkPassword } from '../domain/password-policy';
 import { hashAccessCode } from '../domain/secrets';
 import { InvalidAccessCodeError, PasswordPolicyError } from '../errors';
-import type { AccessCodePurpose } from '../repositories/access-code.repository.types';
+import type { AccessCodePurpose } from '../repositories/access-code.repository';
 import type { UnitOfWork } from '../repositories/unit-of-work.types';
 import type { Clock, PasswordHasher } from '../services.types';
 

@@ -1,7 +1,7 @@
-import type {
+﻿import type {
   CategoryRecord,
   CategoryRepository,
-} from '../repositories/category.repository.types';
+} from '../repositories/category.repository';
 import type { Clock } from '../../identity/services.types';
 
 export class CreateCategoryUseCase {

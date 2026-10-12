@@ -1,12 +1,12 @@
-import type { Permission } from '@flex/contracts';
+﻿import type { Permission } from '@flex/contracts';
 import {
   SESSION_ACTIVITY_RESOLUTION_MS,
   SESSION_IDLE_TIMEOUT_MS,
 } from '../constants';
 import { deriveCsrfToken, hashSessionToken } from '../domain/secrets';
-import type { PermissionRepository } from '../repositories/permission.repository.types';
-import type { SessionRepository } from '../repositories/session.repository.types';
-import type { UserRepository } from '../repositories/user.repository.types';
+import type { PermissionRepository } from '../repositories/permission.repository';
+import type { SessionRepository } from '../repositories/session.repository';
+import type { UserRepository } from '../repositories/user.repository';
 import type { Clock } from '../services.types';
 
 export interface AuthenticatedContext {

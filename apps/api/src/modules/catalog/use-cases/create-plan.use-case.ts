@@ -1,8 +1,8 @@
-import { slugify, uniqueSlug } from '../domain/slug';
+﻿import { slugify, uniqueSlug } from '../domain/slug';
 import type {
   PlanRecord,
   PlanRepository,
-} from '../repositories/plan.repository.types';
+} from '../repositories/plan.repository';
 import type { Clock } from '../../identity/services.types';
 
 export class CreatePlanUseCase {

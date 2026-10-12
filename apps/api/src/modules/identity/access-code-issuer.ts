@@ -1,9 +1,9 @@
-import { ACCESS_CODE_TTL_MS } from './constants';
+﻿import { ACCESS_CODE_TTL_MS } from './constants';
 import { generateAccessCode, hashAccessCode } from './domain/secrets';
 import type {
   AccessCodePurpose,
   AccessCodeRepository,
-} from './repositories/access-code.repository.types';
+} from './repositories/access-code.repository';
 
 /**
  * Emite um código de uso único e invalida os anteriores da mesma finalidade (RN-023).

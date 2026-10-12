@@ -1,9 +1,9 @@
-import type { Clock } from '../../identity/services.types';
+﻿import type { Clock } from '../../identity/services.types';
 import { failVersionedUpdate } from '../domain/optimistic-concurrency';
 import { assertPublishable } from '../domain/partner-publication';
 import { ResourceNotFoundError, VersionConflictError } from '../errors';
 import type { CatalogUnitOfWork } from '../repositories/catalog-unit-of-work.types';
-import type { PartnerRecord } from '../repositories/partner.repository.types';
+import type { PartnerRecord } from '../repositories/partner.repository';
 
 export class PublishPartnerUseCase {
   constructor(

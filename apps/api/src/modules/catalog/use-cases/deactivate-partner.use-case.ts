@@ -1,10 +1,10 @@
-import type { Clock } from '../../identity/services.types';
+﻿import type { Clock } from '../../identity/services.types';
 import { failVersionedUpdate } from '../domain/optimistic-concurrency';
 import { InvalidResourceStateError, ResourceNotFoundError } from '../errors';
 import type {
   PartnerRecord,
   PartnerRepository,
-} from '../repositories/partner.repository.types';
+} from '../repositories/partner.repository';
 
 export class DeactivatePartnerUseCase {
   constructor(

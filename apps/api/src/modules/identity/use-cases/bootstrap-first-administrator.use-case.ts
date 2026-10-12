@@ -1,9 +1,9 @@
-import { permissions } from '@flex/contracts';
+﻿import { permissions } from '@flex/contracts';
 import { issueAccessCode } from '../access-code-issuer';
 import type { AccessCodeDelivery } from '../access-code-delivery';
 import { generateUsername } from '../domain/username';
 import { BootstrapRefusedError } from '../errors';
-import type { UserAccount } from '../repositories/user.repository.types';
+import type { UserAccount } from '../repositories/user.repository';
 import type { UnitOfWork } from '../repositories/unit-of-work.types';
 import type { Clock } from '../services.types';
 

@@ -1,22 +1,25 @@
 import request from 'supertest';
 import { afterAll, describe, expect, it } from 'vitest';
 import { problemDetailsSchema } from '@flex/contracts';
+import { createApp } from '../src/http/app';
 import { createTestApp } from './support';
 
 describe('verificações de saúde', () => {
-  const { app, pool } = createTestApp();
-  // Porta sem PostgreSQL: simula a indisponibilidade do banco.
-  const unavailable = createTestApp(
-    'postgres://flex:flex@127.0.0.1:1/flex_test',
-  );
+  const { app, pool, logger } = createTestApp();
+  const unavailable = createApp({
+    logger,
+    checkReadiness: async () => {
+      throw new Error('PostgreSQL indisponível');
+    },
+    allowedOrigins: ['http://localhost:5173'],
+  });
 
   afterAll(async () => {
     await pool.end();
-    await unavailable.pool.end();
   });
 
   it('informa que o processo está ativo sem consultar o banco', async () => {
-    const response = await request(unavailable.app).get('/v1/health/live');
+    const response = await request(unavailable).get('/v1/health/live');
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual({ status: 'ok' });
@@ -30,7 +33,7 @@ describe('verificações de saúde', () => {
   });
 
   it('responde 503 padronizado quando o PostgreSQL está inacessível', async () => {
-    const response = await request(unavailable.app).get('/v1/health/ready');
+    const response = await request(unavailable).get('/v1/health/ready');
 
     expect(response.status).toBe(503);
     expect(response.type).toBe('application/problem+json');

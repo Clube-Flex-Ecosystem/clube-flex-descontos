@@ -1,8 +1,8 @@
-import { ResourceNotFoundError } from '../errors';
+﻿import { ResourceNotFoundError } from '../errors';
 import type {
   PartnerRecord,
   PartnerRepository,
-} from '../repositories/partner.repository.types';
+} from '../repositories/partner.repository';
 
 export class GetPartnerUseCase {
   constructor(private readonly partners: PartnerRepository) {}

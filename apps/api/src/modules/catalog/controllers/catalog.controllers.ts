@@ -1,4 +1,4 @@
-import type { Request, RequestHandler, Response } from 'express';
+﻿import type { Request, RequestHandler, Response } from 'express';
 import {
   categoryRequestSchema,
   createPartnerRequestSchema,
@@ -14,6 +14,11 @@ import {
 import { sendProblem } from '../../../http/problem';
 import { fieldError, parseBody } from '../../../http/validation';
 import { readExpectedVersion, sendVersioned } from '../../../http/versioning';
+import { clock } from '../../../infrastructure/services';
+import { DrizzleCatalogUnitOfWork } from '../../../infrastructure/database/drizzle/drizzle-catalog-unit-of-work';
+import { DrizzlePlanRepository } from '../repositories/drizzle-plan.repository';
+import { DrizzleCategoryRepository } from '../repositories/drizzle-category.repository';
+import { DrizzlePartnerRepository } from '../repositories/drizzle-partner.repository';
 import {
   DuplicateResourceError,
   InvalidResourceStateError,
@@ -24,51 +29,56 @@ import {
   VersionConflictError,
   type FieldIssue,
 } from '../errors';
-import type { CategoryRecord } from '../repositories/category.repository.types';
+import type { CategoryRecord } from '../repositories/category.repository';
 import type {
   PartnerRecord,
   StoredContact,
-} from '../repositories/partner.repository.types';
-import type { PlanRecord } from '../repositories/plan.repository.types';
-import type { CreateCategoryUseCase } from '../use-cases/create-category.use-case';
-import type { CreatePartnerUseCase } from '../use-cases/create-partner.use-case';
-import type { CreatePlanUseCase } from '../use-cases/create-plan.use-case';
-import type { DeactivatePartnerUseCase } from '../use-cases/deactivate-partner.use-case';
-import type { DeletePartnerUseCase } from '../use-cases/delete-partner.use-case';
-import type { GetCategoryUseCase } from '../use-cases/get-category.use-case';
-import type { GetPartnerUseCase } from '../use-cases/get-partner.use-case';
-import type { GetPlanUseCase } from '../use-cases/get-plan.use-case';
-import type { ListCategoriesUseCase } from '../use-cases/list-categories.use-case';
-import type { ListPartnersUseCase } from '../use-cases/list-partners.use-case';
-import type { ListPlansUseCase } from '../use-cases/list-plans.use-case';
-import type { MovePartnerToDraftUseCase } from '../use-cases/move-partner-to-draft.use-case';
-import type { PublishPartnerUseCase } from '../use-cases/publish-partner.use-case';
-import type { SetCategoryStatusUseCase } from '../use-cases/set-category-status.use-case';
-import type { SetPlanStatusUseCase } from '../use-cases/set-plan-status.use-case';
-import type { UpdateCategoryUseCase } from '../use-cases/update-category.use-case';
-import type { UpdatePartnerUseCase } from '../use-cases/update-partner.use-case';
-import type { UpdatePlanUseCase } from '../use-cases/update-plan.use-case';
+} from '../repositories/partner.repository';
+import type { PlanRecord } from '../repositories/plan.repository';
+import { CreateCategoryUseCase } from '../use-cases/create-category.use-case';
+import { CreatePartnerUseCase } from '../use-cases/create-partner.use-case';
+import { CreatePlanUseCase } from '../use-cases/create-plan.use-case';
+import { DeactivatePartnerUseCase } from '../use-cases/deactivate-partner.use-case';
+import { DeletePartnerUseCase } from '../use-cases/delete-partner.use-case';
+import { GetCategoryUseCase } from '../use-cases/get-category.use-case';
+import { GetPartnerUseCase } from '../use-cases/get-partner.use-case';
+import { GetPlanUseCase } from '../use-cases/get-plan.use-case';
+import { ListCategoriesUseCase } from '../use-cases/list-categories.use-case';
+import { ListPartnersUseCase } from '../use-cases/list-partners.use-case';
+import { ListPlansUseCase } from '../use-cases/list-plans.use-case';
+import { MovePartnerToDraftUseCase } from '../use-cases/move-partner-to-draft.use-case';
+import { PublishPartnerUseCase } from '../use-cases/publish-partner.use-case';
+import { SetCategoryStatusUseCase } from '../use-cases/set-category-status.use-case';
+import { SetPlanStatusUseCase } from '../use-cases/set-plan-status.use-case';
+import { UpdateCategoryUseCase } from '../use-cases/update-category.use-case';
+import { UpdatePartnerUseCase } from '../use-cases/update-partner.use-case';
+import { UpdatePlanUseCase } from '../use-cases/update-plan.use-case';
 
-export interface CatalogUseCases {
-  listPlans: ListPlansUseCase;
-  getPlan: GetPlanUseCase;
-  createPlan: CreatePlanUseCase;
-  updatePlan: UpdatePlanUseCase;
-  setPlanStatus: SetPlanStatusUseCase;
-  listCategories: ListCategoriesUseCase;
-  getCategory: GetCategoryUseCase;
-  createCategory: CreateCategoryUseCase;
-  updateCategory: UpdateCategoryUseCase;
-  setCategoryStatus: SetCategoryStatusUseCase;
-  listPartners: ListPartnersUseCase;
-  getPartner: GetPartnerUseCase;
-  createPartner: CreatePartnerUseCase;
-  updatePartner: UpdatePartnerUseCase;
-  publishPartner: PublishPartnerUseCase;
-  deactivatePartner: DeactivatePartnerUseCase;
-  movePartnerToDraft: MovePartnerToDraftUseCase;
-  deletePartner: DeletePartnerUseCase;
-}
+const plansRepository = new DrizzlePlanRepository();
+const categoriesRepository = new DrizzleCategoryRepository();
+const partnersRepository = new DrizzlePartnerRepository();
+const unitOfWork = new DrizzleCatalogUnitOfWork();
+
+const useCases = {
+  listPlans: new ListPlansUseCase(plansRepository),
+  getPlan: new GetPlanUseCase(plansRepository),
+  createPlan: new CreatePlanUseCase(plansRepository, clock),
+  updatePlan: new UpdatePlanUseCase(plansRepository, clock),
+  setPlanStatus: new SetPlanStatusUseCase(plansRepository, clock),
+  listCategories: new ListCategoriesUseCase(categoriesRepository),
+  getCategory: new GetCategoryUseCase(categoriesRepository),
+  createCategory: new CreateCategoryUseCase(categoriesRepository, clock),
+  updateCategory: new UpdateCategoryUseCase(categoriesRepository, clock),
+  setCategoryStatus: new SetCategoryStatusUseCase(categoriesRepository, clock),
+  listPartners: new ListPartnersUseCase(partnersRepository),
+  getPartner: new GetPartnerUseCase(partnersRepository),
+  createPartner: new CreatePartnerUseCase(unitOfWork, clock),
+  updatePartner: new UpdatePartnerUseCase(unitOfWork, clock),
+  publishPartner: new PublishPartnerUseCase(unitOfWork, clock),
+  deactivatePartner: new DeactivatePartnerUseCase(partnersRepository, clock),
+  movePartnerToDraft: new MovePartnerToDraftUseCase(partnersRepository, clock),
+  deletePartner: new DeletePartnerUseCase(partnersRepository),
+};
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -194,208 +204,204 @@ function respondToCatalogError(
 }
 
 /** Controllers do catálogo: validam a entrada, executam o caso de uso e montam a resposta. */
-export function createCatalogControllers(useCases: CatalogUseCases) {
-  /** Envolve o handler com a tradução de erros e a validação do `:id` da rota. */
-  const withId =
-    (
-      handler: (id: string, req: Request, res: Response) => Promise<void>,
-    ): RequestHandler =>
-    async (req, res) => {
-      const id = req.params.id;
-      if (typeof id !== 'string' || !UUID.test(id)) {
-        sendProblem(req, res, 'RESOURCE_NOT_FOUND');
-        return;
-      }
-      try {
-        await handler(id, req, res);
-      } catch (error) {
-        if (!respondToCatalogError(error, req, res)) throw error;
-      }
-    };
+// Repository e use cases são criados neste módulo, junto aos controllers.
+/** Envolve o handler com a tradução de erros e a validação do `:id` da rota. */
+const withId =
+  (
+    handler: (id: string, req: Request, res: Response) => Promise<void>,
+  ): RequestHandler =>
+  async (req, res) => {
+    const id = req.params.id;
+    if (typeof id !== 'string' || !UUID.test(id)) {
+      sendProblem(req, res, 'RESOURCE_NOT_FOUND');
+      return;
+    }
+    try {
+      await handler(id, req, res);
+    } catch (error) {
+      if (!respondToCatalogError(error, req, res)) throw error;
+    }
+  };
 
-  const withoutId =
-    (handler: (req: Request, res: Response) => Promise<void>): RequestHandler =>
-    async (req, res) => {
-      try {
-        await handler(req, res);
-      } catch (error) {
-        if (!respondToCatalogError(error, req, res)) throw error;
-      }
-    };
+const withoutId =
+  (handler: (req: Request, res: Response) => Promise<void>): RequestHandler =>
+  async (req, res) => {
+    try {
+      await handler(req, res);
+    } catch (error) {
+      if (!respondToCatalogError(error, req, res)) throw error;
+    }
+  };
 
-  // ───── Planos ─────
+// ───── Planos ─────
 
-  const planStatus = (status: ActiveStatus) =>
-    withId(async (id, req, res) => {
-      const version = readExpectedVersion(req, res);
-      if (version === undefined) return;
-      sendVersioned(
-        res,
-        planBody(await useCases.setPlanStatus.execute({ id, version, status })),
-      );
+const planStatus = (status: ActiveStatus) =>
+  withId(async (id, req, res) => {
+    const version = readExpectedVersion(req, res);
+    if (version === undefined) return;
+    sendVersioned(
+      res,
+      planBody(await useCases.setPlanStatus.execute({ id, version, status })),
+    );
+  });
+
+const plans = {
+  list: withoutId(async (_req, res) => {
+    res.json((await useCases.listPlans.execute()).map(planBody));
+  }),
+  get: withId(async (id, _req, res) => {
+    sendVersioned(res, planBody(await useCases.getPlan.execute({ id })));
+  }),
+  create: withoutId(async (req, res) => {
+    const body = parseBody(createPlanRequestSchema, req.body);
+    if (!body.success) {
+      sendProblem(req, res, 'VALIDATION_ERROR', { errors: body.errors });
+      return;
+    }
+    sendVersioned(
+      res,
+      planBody(await useCases.createPlan.execute(body.data)),
+      201,
+    );
+  }),
+  update: withId(async (id, req, res) => {
+    const version = readExpectedVersion(req, res);
+    if (version === undefined) return;
+    const body = parseBody(updatePlanRequestSchema, req.body);
+    if (!body.success) {
+      sendProblem(req, res, 'VALIDATION_ERROR', { errors: body.errors });
+      return;
+    }
+    sendVersioned(
+      res,
+      planBody(
+        await useCases.updatePlan.execute({
+          id,
+          version,
+          name: body.data.name,
+        }),
+      ),
+    );
+  }),
+  activate: planStatus('active'),
+  deactivate: planStatus('inactive'),
+};
+
+// ───── Categorias ─────
+
+const categoryStatus = (status: ActiveStatus) =>
+  withId(async (id, req, res) => {
+    const version = readExpectedVersion(req, res);
+    if (version === undefined) return;
+    sendVersioned(
+      res,
+      categoryBody(
+        await useCases.setCategoryStatus.execute({ id, version, status }),
+      ),
+    );
+  });
+
+const categories = {
+  list: withoutId(async (_req, res) => {
+    res.json((await useCases.listCategories.execute()).map(categoryBody));
+  }),
+  get: withId(async (id, _req, res) => {
+    sendVersioned(
+      res,
+      categoryBody(await useCases.getCategory.execute({ id })),
+    );
+  }),
+  create: withoutId(async (req, res) => {
+    const body = parseBody(categoryRequestSchema, req.body);
+    if (!body.success) {
+      sendProblem(req, res, 'VALIDATION_ERROR', { errors: body.errors });
+      return;
+    }
+    sendVersioned(
+      res,
+      categoryBody(await useCases.createCategory.execute(body.data)),
+      201,
+    );
+  }),
+  update: withId(async (id, req, res) => {
+    const version = readExpectedVersion(req, res);
+    if (version === undefined) return;
+    const body = parseBody(categoryRequestSchema, req.body);
+    if (!body.success) {
+      sendProblem(req, res, 'VALIDATION_ERROR', { errors: body.errors });
+      return;
+    }
+    sendVersioned(
+      res,
+      categoryBody(
+        await useCases.updateCategory.execute({
+          id,
+          version,
+          name: body.data.name,
+        }),
+      ),
+    );
+  }),
+  activate: categoryStatus('active'),
+  deactivate: categoryStatus('inactive'),
+};
+
+// ───── Parceiros ─────
+
+type PartnerStateUseCase = {
+  execute(input: { id: string; version: number }): Promise<PartnerRecord>;
+};
+const partnerState = (useCase: PartnerStateUseCase) =>
+  withId(async (id, req, res) => {
+    const version = readExpectedVersion(req, res);
+    if (version === undefined) return;
+    sendVersioned(res, partnerBody(await useCase.execute({ id, version })));
+  });
+
+const partners = {
+  list: withoutId(async (_req, res) => {
+    res.json(
+      (await useCases.listPartners.execute()).map((p) => partnerBody(p)),
+    );
+  }),
+  get: withId(async (id, _req, res) => {
+    sendVersioned(res, partnerBody(await useCases.getPartner.execute({ id })));
+  }),
+  create: withoutId(async (req, res) => {
+    const body = parseBody(createPartnerRequestSchema, req.body);
+    if (!body.success) {
+      sendProblem(req, res, 'VALIDATION_ERROR', { errors: body.errors });
+      return;
+    }
+    const { partner, warnings } = await useCases.createPartner.execute(
+      body.data,
+    );
+    sendVersioned(res, partnerBody(partner, warnings), 201);
+  }),
+  update: withId(async (id, req, res) => {
+    const version = readExpectedVersion(req, res);
+    if (version === undefined) return;
+    const body = parseBody(updatePartnerRequestSchema, req.body);
+    if (!body.success) {
+      sendProblem(req, res, 'VALIDATION_ERROR', { errors: body.errors });
+      return;
+    }
+    const { partner, warnings } = await useCases.updatePartner.execute({
+      id,
+      version,
+      data: body.data,
     });
+    sendVersioned(res, partnerBody(partner, warnings));
+  }),
+  publish: partnerState(useCases.publishPartner),
+  deactivate: partnerState(useCases.deactivatePartner),
+  moveToDraft: partnerState(useCases.movePartnerToDraft),
+  remove: withId(async (id, req, res) => {
+    const version = readExpectedVersion(req, res);
+    if (version === undefined) return;
+    const removed = await useCases.deletePartner.execute({ id, version });
+    res.json({ ...partnerBody(removed), deleted: true });
+  }),
+};
 
-  const plans = {
-    list: withoutId(async (_req, res) => {
-      res.json((await useCases.listPlans.execute()).map(planBody));
-    }),
-    get: withId(async (id, _req, res) => {
-      sendVersioned(res, planBody(await useCases.getPlan.execute({ id })));
-    }),
-    create: withoutId(async (req, res) => {
-      const body = parseBody(createPlanRequestSchema, req.body);
-      if (!body.success) {
-        sendProblem(req, res, 'VALIDATION_ERROR', { errors: body.errors });
-        return;
-      }
-      sendVersioned(
-        res,
-        planBody(await useCases.createPlan.execute(body.data)),
-        201,
-      );
-    }),
-    update: withId(async (id, req, res) => {
-      const version = readExpectedVersion(req, res);
-      if (version === undefined) return;
-      const body = parseBody(updatePlanRequestSchema, req.body);
-      if (!body.success) {
-        sendProblem(req, res, 'VALIDATION_ERROR', { errors: body.errors });
-        return;
-      }
-      sendVersioned(
-        res,
-        planBody(
-          await useCases.updatePlan.execute({
-            id,
-            version,
-            name: body.data.name,
-          }),
-        ),
-      );
-    }),
-    activate: planStatus('active'),
-    deactivate: planStatus('inactive'),
-  };
-
-  // ───── Categorias ─────
-
-  const categoryStatus = (status: ActiveStatus) =>
-    withId(async (id, req, res) => {
-      const version = readExpectedVersion(req, res);
-      if (version === undefined) return;
-      sendVersioned(
-        res,
-        categoryBody(
-          await useCases.setCategoryStatus.execute({ id, version, status }),
-        ),
-      );
-    });
-
-  const categories = {
-    list: withoutId(async (_req, res) => {
-      res.json((await useCases.listCategories.execute()).map(categoryBody));
-    }),
-    get: withId(async (id, _req, res) => {
-      sendVersioned(
-        res,
-        categoryBody(await useCases.getCategory.execute({ id })),
-      );
-    }),
-    create: withoutId(async (req, res) => {
-      const body = parseBody(categoryRequestSchema, req.body);
-      if (!body.success) {
-        sendProblem(req, res, 'VALIDATION_ERROR', { errors: body.errors });
-        return;
-      }
-      sendVersioned(
-        res,
-        categoryBody(await useCases.createCategory.execute(body.data)),
-        201,
-      );
-    }),
-    update: withId(async (id, req, res) => {
-      const version = readExpectedVersion(req, res);
-      if (version === undefined) return;
-      const body = parseBody(categoryRequestSchema, req.body);
-      if (!body.success) {
-        sendProblem(req, res, 'VALIDATION_ERROR', { errors: body.errors });
-        return;
-      }
-      sendVersioned(
-        res,
-        categoryBody(
-          await useCases.updateCategory.execute({
-            id,
-            version,
-            name: body.data.name,
-          }),
-        ),
-      );
-    }),
-    activate: categoryStatus('active'),
-    deactivate: categoryStatus('inactive'),
-  };
-
-  // ───── Parceiros ─────
-
-  type PartnerStateUseCase = {
-    execute(input: { id: string; version: number }): Promise<PartnerRecord>;
-  };
-  const partnerState = (useCase: PartnerStateUseCase) =>
-    withId(async (id, req, res) => {
-      const version = readExpectedVersion(req, res);
-      if (version === undefined) return;
-      sendVersioned(res, partnerBody(await useCase.execute({ id, version })));
-    });
-
-  const partners = {
-    list: withoutId(async (_req, res) => {
-      res.json(
-        (await useCases.listPartners.execute()).map((p) => partnerBody(p)),
-      );
-    }),
-    get: withId(async (id, _req, res) => {
-      sendVersioned(
-        res,
-        partnerBody(await useCases.getPartner.execute({ id })),
-      );
-    }),
-    create: withoutId(async (req, res) => {
-      const body = parseBody(createPartnerRequestSchema, req.body);
-      if (!body.success) {
-        sendProblem(req, res, 'VALIDATION_ERROR', { errors: body.errors });
-        return;
-      }
-      const { partner, warnings } = await useCases.createPartner.execute(
-        body.data,
-      );
-      sendVersioned(res, partnerBody(partner, warnings), 201);
-    }),
-    update: withId(async (id, req, res) => {
-      const version = readExpectedVersion(req, res);
-      if (version === undefined) return;
-      const body = parseBody(updatePartnerRequestSchema, req.body);
-      if (!body.success) {
-        sendProblem(req, res, 'VALIDATION_ERROR', { errors: body.errors });
-        return;
-      }
-      const { partner, warnings } = await useCases.updatePartner.execute({
-        id,
-        version,
-        data: body.data,
-      });
-      sendVersioned(res, partnerBody(partner, warnings));
-    }),
-    publish: partnerState(useCases.publishPartner),
-    deactivate: partnerState(useCases.deactivatePartner),
-    moveToDraft: partnerState(useCases.movePartnerToDraft),
-    remove: withId(async (id, req, res) => {
-      const version = readExpectedVersion(req, res);
-      if (version === undefined) return;
-      const removed = await useCases.deletePartner.execute({ id, version });
-      res.json({ ...partnerBody(removed), deleted: true });
-    }),
-  };
-
-  return { plans, categories, partners };
-}
+export const catalogControllers = { plans, categories, partners };

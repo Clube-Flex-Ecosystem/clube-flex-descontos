@@ -1,4 +1,4 @@
-import type { PartnerWarning } from '@flex/contracts';
+﻿import type { PartnerWarning } from '@flex/contracts';
 import type { Clock } from '../../identity/services.types';
 import { resolveReferences } from '../domain/partner-references';
 import { slugify, uniqueSlug } from '../domain/slug';
@@ -6,7 +6,7 @@ import type { CatalogUnitOfWork } from '../repositories/catalog-unit-of-work.typ
 import type {
   PartnerData,
   PartnerRecord,
-} from '../repositories/partner.repository.types';
+} from '../repositories/partner.repository';
 
 export interface PartnerResult {
   partner: PartnerRecord;

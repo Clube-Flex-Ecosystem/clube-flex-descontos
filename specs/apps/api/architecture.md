@@ -28,18 +28,35 @@ A API será um monólito modular. Os módulos internos acompanharão as responsa
 
 `rota → controller → use case → interface de repository → implementação Drizzle`
 
+Na composição aprovada em 2026-10-12, `[modulo].route.ts` registra os
+controllers e middlewares. O controller instancia os repositories Drizzle sem
+passar a instância do banco e cria os use cases que chama. O repository importa
+o cliente compartilhado da infraestrutura e implementa o contrato do módulo.
+Cada use case mantém arquivo próprio em `use-cases/`. A composição central de
+todos os use cases é dispensada; Unit of Work permanece quando o use case
+coordena vários repositories em uma única transação. Transações encapsuladas
+por um repository permanecem nele. Ver [ADR-0006](../../adr/0006-arquitetura-interna-da-api.md).
+
 - A rota associa o endpoint ao controller e aos middlewares aplicáveis.
 - O controller recebe a requisição, valida seus dados com o esquema de contrato, chama o use case e traduz o resultado para HTTP.
 - O use case contém a coordenação e as regras da operação. Não acessa o banco diretamente e não conhece Express, Drizzle ou detalhes HTTP.
 - O use case depende de interfaces de repository específicas às necessidades do módulo.
-- Implementações Drizzle ficam na infraestrutura e satisfazem essas interfaces.
+- Implementações Drizzle ficam junto aos contratos do módulo e satisfazem essas interfaces; o cliente e o esquema do banco permanecem na infraestrutura compartilhada.
 - Regras e erros de aplicação não utilizam tipos HTTP.
 - Controllers constroem manualmente o objeto de resposta e nunca retornam diretamente o resultado do use case.
 
-### Organização inicial
+### Organização dos módulos
 
 ```text
 apps/api/src/
+  infrastructure/
+    database/
+      drizzle/
+        client.ts
+        schema.ts
+    email/
+    logger/
+    security/
   modules/
     catalog/
       controllers/
@@ -48,19 +65,12 @@ apps/api/src/
         publish-partner.use-case.ts
       repositories/
         partner.repository.ts
-        partner.repository.types.ts
-      schemas/
+        drizzle-partner.repository.ts
+      public-catalog.controller.ts
+      public-catalog.route.ts
     leads/
     identity/
     audit/
-  infrastructure/
-    database/
-      drizzle/
-        repositories/
-    logger/
-      logger.ts
-      http-logger.ts
-    email/
   http/
     middlewares/
       authentication.middleware.ts
@@ -70,7 +80,8 @@ apps/api/src/
       not-found.middleware.ts
       global-error-handler.middleware.ts
     routes/
-  shared/
+      admin-catalog.route.ts
+      auth.route.ts
 ```
 
 A estrutura pode ser reduzida em módulos pequenos; diretórios vazios ou abstrações sem consumidor não devem ser criados.
@@ -111,7 +122,7 @@ Ordem conceitual:
 - Tipos de repository são próprios do módulo e não expõem linhas ou tipos inferidos do Drizzle.
 - Implementações concretas seguem nomes como `DrizzleLeadRepository`.
 - Dependências são recebidas pelo construtor e as implementações concretas são conectadas manualmente em um ponto de composição, sem biblioteca de DI.
-- Operações atômicas entre vários repositories utilizam um contrato de Unit of Work implementado com transações Drizzle.
+- Casos de uso que coordenam operações atômicas entre vários repositories utilizam um contrato de Unit of Work implementado com transações Drizzle.
 - Novas abstrações exigem uma necessidade real, evitando complexidade apenas para seguir um padrão.
 
 ### Controllers
@@ -123,8 +134,7 @@ Ordem conceitual:
 
 ### Estratégia de testes prevista
 
-- Testes unitários exercitam use cases com implementações controladas dos contratos de repository e Unit of Work.
-- Testes de integração da API exercitam a aplicação por HTTP, incluindo controllers, use cases, repositories Drizzle, migrações e PostgreSQL real em ambiente descartável.
+- Testes de integração da API exercitam a aplicação por HTTP, incluindo controllers, use cases, repositories Drizzle, migrações e PostgreSQL real em ambiente descartável. A API mantém somente essa suíte automatizada.
 - Localmente, o PostgreSQL de testes é iniciado por Docker Compose.
 - No GitHub Actions, cada execução utiliza uma instância isolada de PostgreSQL.
 - Todas as migrações são aplicadas antes da suíte.

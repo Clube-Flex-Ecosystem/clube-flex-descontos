@@ -1,8 +1,8 @@
-import { failVersionedUpdate } from '../domain/optimistic-concurrency';
+﻿import { failVersionedUpdate } from '../domain/optimistic-concurrency';
 import type {
   PlanRecord,
   PlanRepository,
-} from '../repositories/plan.repository.types';
+} from '../repositories/plan.repository';
 import type { Clock } from '../../identity/services.types';
 
 export class UpdatePlanUseCase {

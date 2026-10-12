@@ -1,9 +1,18 @@
 import { parseArgs } from 'node:util';
 import { z } from 'zod';
 import { loadEnv } from './config/env';
-import { createLogger } from './infrastructure/logger/logger';
 import { BootstrapRefusedError } from './modules/identity/errors';
-import { createRuntime } from './runtime';
+import {
+  createPool,
+  setDatabase,
+} from './infrastructure/database/drizzle/client';
+import { DrizzleUnitOfWork } from './infrastructure/database/drizzle/drizzle-unit-of-work';
+import {
+  ResendEmailSender,
+  UnavailableEmailSender,
+} from './infrastructure/email/resend-email-sender';
+import { AccessCodeDelivery } from './modules/identity/access-code-delivery';
+import { BootstrapFirstAdministratorUseCase } from './modules/identity/use-cases/bootstrap-first-administrator.use-case';
 
 // Comando de terminal local ou console do container; nunca exposto por HTTP.
 const inputSchema = z.object({
@@ -30,11 +39,20 @@ async function main(): Promise<number> {
   if (!input.success) usage();
 
   const env = loadEnv();
-  const logger = createLogger(env);
-  const { pool, root } = createRuntime(env, logger);
+  const pool = createPool(env.DATABASE_URL);
+  setDatabase(pool);
+  const emailSender =
+    env.RESEND_API_KEY && env.EMAIL_FROM
+      ? new ResendEmailSender(env.RESEND_API_KEY, env.EMAIL_FROM)
+      : new UnavailableEmailSender();
+  const bootstrap = new BootstrapFirstAdministratorUseCase(
+    new DrizzleUnitOfWork(),
+    new AccessCodeDelivery(emailSender, env.DASHBOARD_ORIGIN),
+    { now: () => new Date() },
+  );
 
   try {
-    const result = await root.identity.bootstrapFirstAdministrator.execute({
+    const result = await bootstrap.execute({
       fullName: input.data.name,
       ...(input.data.email ? { email: input.data.email } : {}),
     });

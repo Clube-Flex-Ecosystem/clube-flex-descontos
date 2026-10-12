@@ -1,8 +1,8 @@
-import { ResourceNotFoundError } from '../errors';
+﻿import { ResourceNotFoundError } from '../errors';
 import type {
   PlanRecord,
   PlanRepository,
-} from '../repositories/plan.repository.types';
+} from '../repositories/plan.repository';
 
 export class GetPlanUseCase {
   constructor(private readonly plans: PlanRepository) {}

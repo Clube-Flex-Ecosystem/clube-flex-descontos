@@ -1,7 +1,7 @@
-import type { UserView } from '../admin-user.types';
+﻿import type { UserView } from '../admin-user.types';
 import { UserNotFoundError } from '../errors';
-import type { PermissionRepository } from '../repositories/permission.repository.types';
-import type { UserRepository } from '../repositories/user.repository.types';
+import type { PermissionRepository } from '../repositories/permission.repository';
+import type { UserRepository } from '../repositories/user.repository';
 
 export class GetUserUseCase {
   constructor(

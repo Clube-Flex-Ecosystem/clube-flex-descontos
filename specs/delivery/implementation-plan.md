@@ -389,6 +389,19 @@ verificações de interação no protótipo.
   `RN-030` (por exemplo, "abordagem" e "Abordagem" coexistem) — fora do escopo
   desta revisão, que não altera a API.
 
+## Refatoração da arquitetura interna da API — 2026-10-12
+
+Executada na branch `refactor/api`, conforme a revisão do
+[ADR-0006](../adr/0006-arquitetura-interna-da-api.md): composição dos use cases
+nos controllers, repositories Drizzle sem banco no construtor, contratos e
+implementações próximos por módulo, rotas em arquivos `*.route.ts` e retirada
+do composition root. A operação comercial e o contato público passaram a
+separar casos de uso e persistência, preservando os contratos e transações.
+
+A API mantém somente testes de integração HTTP. A suíte anterior à mudança
+passou com 170 testes em 15 arquivos; a suíte HTTP após a refatoração passou
+com 116 testes em 9 arquivos. Typecheck, lint e build da API também passaram.
+
 ## Fora deste plano
 
 - base de assinantes e validação do plano contratado;

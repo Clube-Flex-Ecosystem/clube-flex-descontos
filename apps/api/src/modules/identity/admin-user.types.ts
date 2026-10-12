@@ -1,5 +1,5 @@
-import type { Permission } from '@flex/contracts';
-import type { UserAccount } from './repositories/user.repository.types';
+﻿import type { Permission } from '@flex/contracts';
+import type { UserAccount } from './repositories/user.repository';
 
 /** Quem executa uma operação administrativa; `username` alimenta a auditoria. */
 export interface AdminActor {

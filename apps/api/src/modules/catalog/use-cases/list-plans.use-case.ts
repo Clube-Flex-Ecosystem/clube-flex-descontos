@@ -1,7 +1,7 @@
-import type {
+﻿import type {
   PlanRecord,
   PlanRepository,
-} from '../repositories/plan.repository.types';
+} from '../repositories/plan.repository';
 
 export class ListPlansUseCase {
   constructor(private readonly plans: PlanRepository) {}

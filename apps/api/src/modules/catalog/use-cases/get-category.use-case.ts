@@ -1,8 +1,8 @@
-import { ResourceNotFoundError } from '../errors';
+﻿import { ResourceNotFoundError } from '../errors';
 import type {
   CategoryRecord,
   CategoryRepository,
-} from '../repositories/category.repository.types';
+} from '../repositories/category.repository';
 
 export class GetCategoryUseCase {
   constructor(private readonly categories: CategoryRepository) {}

@@ -1,8 +1,8 @@
-import type {
+﻿import type {
   AuditFilter,
   AuditRepository,
   StoredAuditEvent,
-} from '../repositories/audit.repository.types';
+} from '../repositories/audit.repository';
 
 export class AuditEventNotFoundError extends Error {
   constructor() {

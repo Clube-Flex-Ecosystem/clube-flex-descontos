@@ -1,10 +1,10 @@
-import type { ActiveStatus } from '@flex/contracts';
+﻿import type { ActiveStatus } from '@flex/contracts';
 import { ReferenceValidationError, type FieldIssue } from '../errors';
 import type { CatalogRepositories } from '../repositories/catalog-unit-of-work.types';
 import type {
   PartnerData,
   PartnerRecord,
-} from '../repositories/partner.repository.types';
+} from '../repositories/partner.repository';
 
 export interface ResolvedReferences {
   categories: { id: string; status: ActiveStatus }[];

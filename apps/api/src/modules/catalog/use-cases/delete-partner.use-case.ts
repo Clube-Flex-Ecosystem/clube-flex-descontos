@@ -1,4 +1,4 @@
-import {
+﻿import {
   ProtectedResourceError,
   ResourceNotFoundError,
   VersionConflictError,
@@ -6,7 +6,7 @@ import {
 import type {
   PartnerRecord,
   PartnerRepository,
-} from '../repositories/partner.repository.types';
+} from '../repositories/partner.repository';
 
 export class DeletePartnerUseCase {
   constructor(private readonly partners: PartnerRepository) {}

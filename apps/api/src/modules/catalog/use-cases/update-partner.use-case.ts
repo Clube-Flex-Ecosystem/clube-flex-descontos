@@ -1,10 +1,10 @@
-import type { Clock } from '../../identity/services.types';
+﻿import type { Clock } from '../../identity/services.types';
 import { failVersionedUpdate } from '../domain/optimistic-concurrency';
 import { assertPublishable } from '../domain/partner-publication';
 import { resolveReferences } from '../domain/partner-references';
 import { ResourceNotFoundError, VersionConflictError } from '../errors';
 import type { CatalogUnitOfWork } from '../repositories/catalog-unit-of-work.types';
-import type { PartnerData } from '../repositories/partner.repository.types';
+import type { PartnerData } from '../repositories/partner.repository';
 import type { PartnerResult } from './create-partner.use-case';
 
 export class UpdatePartnerUseCase {

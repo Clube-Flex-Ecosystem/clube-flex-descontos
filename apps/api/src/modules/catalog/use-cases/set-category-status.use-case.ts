@@ -1,10 +1,10 @@
-import type { ActiveStatus } from '@flex/contracts';
+﻿import type { ActiveStatus } from '@flex/contracts';
 import { failVersionedUpdate } from '../domain/optimistic-concurrency';
 import { ResourceNotFoundError } from '../errors';
 import type {
   CategoryRecord,
   CategoryRepository,
-} from '../repositories/category.repository.types';
+} from '../repositories/category.repository';
 import type { Clock } from '../../identity/services.types';
 
 export class SetCategoryStatusUseCase {

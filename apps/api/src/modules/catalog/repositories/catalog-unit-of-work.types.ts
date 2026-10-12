@@ -1,6 +1,6 @@
-import type { CategoryRepository } from './category.repository.types';
-import type { PartnerRepository } from './partner.repository.types';
-import type { PlanRepository } from './plan.repository.types';
+﻿import type { CategoryRepository } from './category.repository';
+import type { PartnerRepository } from './partner.repository';
+import type { PlanRepository } from './plan.repository';
 
 export interface CatalogRepositories {
   plans: PlanRepository;

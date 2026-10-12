@@ -1,4 +1,4 @@
-import type { AccessCodePurpose } from './repositories/access-code.repository.types';
+﻿import type { AccessCodePurpose } from './repositories/access-code.repository';
 import type { EmailSender } from './services.types';
 
 export type AccessCodeDeliveryResult =

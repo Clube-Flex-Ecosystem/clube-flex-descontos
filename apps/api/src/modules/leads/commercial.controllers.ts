@@ -16,9 +16,58 @@ import {
   CommercialConflictError,
   CommercialForbiddenError,
   CommercialNotFoundError,
-  CommercialService,
   CommercialValidationError,
-} from './commercial.service';
+} from './commercial.errors';
+import { clock } from '../../infrastructure/services';
+import { DrizzleCommercialRepository } from './repositories/drizzle-commercial.repository';
+import { ListCommercialLeadsUseCase } from './use-cases/list-commercial-leads.use-case';
+import { GetCommercialLeadUseCase } from './use-cases/get-commercial-lead.use-case';
+import { CreateCommercialLeadUseCase } from './use-cases/create-commercial-lead.use-case';
+import { UpdateCommercialLeadUseCase } from './use-cases/update-commercial-lead.use-case';
+import { ChangeLeadStageUseCase } from './use-cases/change-lead-stage.use-case';
+import { AssignLeadUseCase } from './use-cases/assign-lead.use-case';
+import { AddLeadObservationUseCase } from './use-cases/add-lead-observation.use-case';
+import { EditLeadObservationUseCase } from './use-cases/edit-lead-observation.use-case';
+import { ResolveLeadRequestUseCase } from './use-cases/resolve-lead-request.use-case';
+import { RemoveCommercialLeadUseCase } from './use-cases/remove-commercial-lead.use-case';
+import { GetLeadHistoryUseCase } from './use-cases/get-lead-history.use-case';
+import { ListActiveAssigneesUseCase } from './use-cases/list-active-assignees.use-case';
+import { DrizzleLeadSourceRepository } from './repositories/drizzle-lead-source.repository';
+import { ListLeadSourcesUseCase } from './use-cases/list-lead-sources.use-case';
+import { GetLeadSourceUseCase } from './use-cases/get-lead-source.use-case';
+import { CreateLeadSourceUseCase } from './use-cases/create-lead-source.use-case';
+import { UpdateLeadSourceUseCase } from './use-cases/update-lead-source.use-case';
+import { SetLeadSourceActiveUseCase } from './use-cases/set-lead-source-active.use-case';
+import { DeleteLeadSourceUseCase } from './use-cases/delete-lead-source.use-case';
+
+const sourceRepository = new DrizzleLeadSourceRepository();
+const listSources = new ListLeadSourcesUseCase(sourceRepository);
+const getSource = new GetLeadSourceUseCase(sourceRepository);
+const createSource = new CreateLeadSourceUseCase(sourceRepository);
+const updateSource = new UpdateLeadSourceUseCase(sourceRepository);
+const setSourceActive = new SetLeadSourceActiveUseCase(sourceRepository);
+const deleteSource = new DeleteLeadSourceUseCase(sourceRepository);
+const leadRepository = new DrizzleCommercialRepository();
+const listLeads = new ListCommercialLeadsUseCase(leadRepository);
+const getLead = new GetCommercialLeadUseCase(leadRepository);
+const createLead = new CreateCommercialLeadUseCase(
+  leadRepository,
+  sourceRepository,
+  clock,
+);
+const updateLead = new UpdateCommercialLeadUseCase(
+  leadRepository,
+  sourceRepository,
+  clock,
+);
+const changeStage = new ChangeLeadStageUseCase(leadRepository, clock);
+const assignLead = new AssignLeadUseCase(leadRepository, clock);
+const addObservation = new AddLeadObservationUseCase(leadRepository, clock);
+const editObservation = new EditLeadObservationUseCase(leadRepository, clock);
+const resolveRequest = new ResolveLeadRequestUseCase(leadRepository, clock);
+const removeLead = new RemoveCommercialLeadUseCase(leadRepository, clock);
+const getHistory = new GetLeadHistoryUseCase(leadRepository);
+const listAssignees = new ListActiveAssigneesUseCase(leadRepository);
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 function actor(req: Request) {
@@ -78,25 +127,25 @@ const parsed = <T>(
   return p.data as T;
 };
 
-export function createCommercialControllers(service: CommercialService) {
-  const leads = {
+export const commercialControllers = {
+  leads: {
     list: wrap(async (req, res) => {
-      res.json(await service.list(actor(req)));
+      res.json(await listLeads.execute(actor(req)));
     }),
     get: wrap(async (req, res) => {
       const i = id(req, res);
-      if (i) sendVersioned(res, await service.detail(actor(req), i));
+      if (i) sendVersioned(res, await getLead.execute(actor(req), i));
     }),
     create: wrap(async (req, res) => {
       const b = parsed(createLeadRequestSchema, req, res);
-      if (b) sendVersioned(res, await service.create(actor(req), b), 201);
+      if (b) sendVersioned(res, await createLead.execute(actor(req), b), 201);
     }),
     update: wrap(async (req, res) => {
       const i = id(req, res),
         v = version(req, res),
         b = parsed(updateLeadRequestSchema, req, res);
       if (i && v !== undefined && b)
-        sendVersioned(res, await service.update(actor(req), i, v, b));
+        sendVersioned(res, await updateLead.execute(actor(req), i, v, b));
     }),
     stage: wrap(async (req, res) => {
       const i = id(req, res),
@@ -105,7 +154,7 @@ export function createCommercialControllers(service: CommercialService) {
       if (i && v !== undefined && b)
         sendVersioned(
           res,
-          await service.stage(actor(req), i, v, b.stage, b.lossReason),
+          await changeStage.execute(actor(req), i, v, b.stage, b.lossReason),
         );
     }),
     assign: wrap(async (req, res) => {
@@ -115,7 +164,7 @@ export function createCommercialControllers(service: CommercialService) {
       if (i && v !== undefined && b)
         sendVersioned(
           res,
-          await service.assign(actor(req), i, v, b.assigneeId),
+          await assignLead.execute(actor(req), i, v, b.assigneeId),
         );
     }),
     observe: wrap(async (req, res) => {
@@ -125,7 +174,7 @@ export function createCommercialControllers(service: CommercialService) {
       if (i && v !== undefined && b)
         sendVersioned(
           res,
-          await service.addObservation(actor(req), i, v, b.text),
+          await addObservation.execute(actor(req), i, v, b.text),
           201,
         );
     }),
@@ -143,7 +192,7 @@ export function createCommercialControllers(service: CommercialService) {
       )
         sendVersioned(
           res,
-          await service.editObservation(actor(req), i, oid, v, b.text),
+          await editObservation.execute(actor(req), i, oid, v, b.text),
         );
     }),
     resolve: wrap(async (req, res) => {
@@ -151,37 +200,34 @@ export function createCommercialControllers(service: CommercialService) {
         rid = req.params.requestId,
         v = version(req, res);
       if (i && typeof rid === 'string' && UUID.test(rid) && v !== undefined)
-        sendVersioned(res, await service.resolve(actor(req), i, rid, v));
+        sendVersioned(res, await resolveRequest.execute(actor(req), i, rid, v));
     }),
     remove: wrap(async (req, res) => {
       const i = id(req, res),
         v = version(req, res);
       if (i && v !== undefined)
-        sendVersioned(res, await service.remove(actor(req), i, v));
+        sendVersioned(res, await removeLead.execute(actor(req), i, v));
     }),
     history: wrap(async (req, res) => {
       const i = id(req, res);
-      if (i) res.json(await service.history(actor(req), i));
+      if (i) res.json(await getHistory.execute(actor(req), i));
     }),
     assignees: wrap(async (_req, res) => {
-      res.json(await service.activeUsers());
+      res.json(await listAssignees.execute());
     }),
-  };
-  const sources = {
+  },
+  sources: {
     list: wrap(async (_req, res) => {
-      res.json(await service.listSources());
+      res.json(await listSources.execute());
     }),
     create: wrap(async (req, res) => {
       const b = parsed(leadSourceRequestSchema, req, res);
-      if (b) sendVersioned(res, await service.createSource(b), 201);
+      if (b) sendVersioned(res, await createSource.execute(b), 201);
     }),
     get: wrap(async (req, res) => {
       const i = id(req, res);
       if (i) {
-        const all = await service.listSources();
-        const s = all.find((x) => x.id === i);
-        if (!s) throw new CommercialNotFoundError();
-        sendVersioned(res, s);
+        sendVersioned(res, await getSource.execute(i));
       }
     }),
     update: wrap(async (req, res) => {
@@ -189,25 +235,24 @@ export function createCommercialControllers(service: CommercialService) {
         v = version(req, res),
         b = parsed(leadSourceRequestSchema, req, res);
       if (i && v !== undefined && b)
-        sendVersioned(res, await service.updateSource(i, v, b));
+        sendVersioned(res, await updateSource.execute(i, v, b));
     }),
     activate: wrap(async (req, res) => {
       const i = id(req, res),
         v = version(req, res);
       if (i && v !== undefined)
-        sendVersioned(res, await service.setSourceActive(i, v, true));
+        sendVersioned(res, await setSourceActive.execute(i, v, true));
     }),
     deactivate: wrap(async (req, res) => {
       const i = id(req, res),
         v = version(req, res);
       if (i && v !== undefined)
-        sendVersioned(res, await service.setSourceActive(i, v, false));
+        sendVersioned(res, await setSourceActive.execute(i, v, false));
     }),
     remove: wrap(async (req, res) => {
       const i = id(req, res),
         v = version(req, res);
-      if (i && v !== undefined) res.json(await service.deleteSource(i, v));
+      if (i && v !== undefined) res.json(await deleteSource.execute(i, v));
     }),
-  };
-  return { leads, sources };
-}
+  },
+};

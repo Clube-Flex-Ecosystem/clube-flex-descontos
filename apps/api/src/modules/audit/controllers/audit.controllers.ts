@@ -1,4 +1,4 @@
-import type { Request, RequestHandler } from 'express';
+﻿import type { Request, RequestHandler } from 'express';
 import {
   auditQuerySchema,
   type AuditEvent,
@@ -6,11 +6,14 @@ import {
 } from '@flex/contracts';
 import { sendProblem } from '../../../http/problem';
 import { parseBody } from '../../../http/validation';
-import type { StoredAuditEvent } from '../repositories/audit.repository.types';
+import { DrizzleAuditRepository } from '../repositories/drizzle-audit.repository';
+import type { StoredAuditEvent } from '../repositories/audit.repository';
 import {
   AuditEventNotFoundError,
-  type QueryAuditEventsUseCase,
+  QueryAuditEventsUseCase,
 } from '../use-cases/query-audit-events.use-case';
+
+const useCase = new QueryAuditEventsUseCase(new DrizzleAuditRepository());
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -34,48 +37,47 @@ function toRepresentation(event: StoredAuditEvent): AuditEvent {
   };
 }
 
-export function createAuditControllers(useCase: QueryAuditEventsUseCase) {
-  const list: RequestHandler = async (req: Request, res) => {
-    const query = parseBody(auditQuerySchema, req.query);
-    if (!query.success) {
-      sendProblem(req, res, 'VALIDATION_ERROR', { errors: query.errors });
-      return;
-    }
-    const { page, pageSize, occurredFrom, occurredTo, ...rest } = query.data;
-    const result = await useCase.list({
-      page,
-      pageSize,
-      filter: {
-        ...rest,
-        ...(occurredFrom ? { occurredFrom: new Date(occurredFrom) } : {}),
-        ...(occurredTo ? { occurredTo: new Date(occurredTo) } : {}),
-      },
-    });
-    const body: AuditEventPage = {
-      items: result.items.map(toRepresentation),
-      page,
-      pageSize,
-      total: result.total,
-    };
-    res.json(body);
+// Consulta da auditoria composta diretamente no controller.
+const list: RequestHandler = async (req: Request, res) => {
+  const query = parseBody(auditQuerySchema, req.query);
+  if (!query.success) {
+    sendProblem(req, res, 'VALIDATION_ERROR', { errors: query.errors });
+    return;
+  }
+  const { page, pageSize, occurredFrom, occurredTo, ...rest } = query.data;
+  const result = await useCase.list({
+    page,
+    pageSize,
+    filter: {
+      ...rest,
+      ...(occurredFrom ? { occurredFrom: new Date(occurredFrom) } : {}),
+      ...(occurredTo ? { occurredTo: new Date(occurredTo) } : {}),
+    },
+  });
+  const body: AuditEventPage = {
+    items: result.items.map(toRepresentation),
+    page,
+    pageSize,
+    total: result.total,
   };
+  res.json(body);
+};
 
-  const get: RequestHandler = async (req, res) => {
-    const id = req.params.id;
-    if (typeof id !== 'string' || !UUID.test(id)) {
+const get: RequestHandler = async (req, res) => {
+  const id = req.params.id;
+  if (typeof id !== 'string' || !UUID.test(id)) {
+    sendProblem(req, res, 'RESOURCE_NOT_FOUND');
+    return;
+  }
+  try {
+    res.json(toRepresentation(await useCase.get(id)));
+  } catch (error) {
+    if (error instanceof AuditEventNotFoundError) {
       sendProblem(req, res, 'RESOURCE_NOT_FOUND');
       return;
     }
-    try {
-      res.json(toRepresentation(await useCase.get(id)));
-    } catch (error) {
-      if (error instanceof AuditEventNotFoundError) {
-        sendProblem(req, res, 'RESOURCE_NOT_FOUND');
-        return;
-      }
-      throw error;
-    }
-  };
+    throw error;
+  }
+};
 
-  return { list, get };
-}
+export const auditControllers = { list, get };

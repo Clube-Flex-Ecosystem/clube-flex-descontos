@@ -1,5 +1,5 @@
-import { hashSessionToken } from '../domain/secrets';
-import type { SessionRepository } from '../repositories/session.repository.types';
+﻿import { hashSessionToken } from '../domain/secrets';
+import type { SessionRepository } from '../repositories/session.repository';
 import type { Clock } from '../services.types';
 
 export class LogoutUseCase {

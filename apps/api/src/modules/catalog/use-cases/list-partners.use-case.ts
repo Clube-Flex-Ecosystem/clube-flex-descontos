@@ -1,7 +1,7 @@
-import type {
+﻿import type {
   PartnerRecord,
   PartnerRepository,
-} from '../repositories/partner.repository.types';
+} from '../repositories/partner.repository';
 
 export class ListPartnersUseCase {
   constructor(private readonly partners: PartnerRepository) {}

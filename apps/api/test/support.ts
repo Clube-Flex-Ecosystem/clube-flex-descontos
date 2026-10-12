@@ -1,17 +1,21 @@
-import { Writable } from 'node:stream';
+﻿import { Writable } from 'node:stream';
 import pg from 'pg';
 import request from 'supertest';
 import type { Permission } from '@flex/contracts';
-import { createCompositionRoot } from '../src/composition-root';
 import { createApp } from '../src/http/app';
 import { createAuthRateLimiters } from '../src/http/middlewares/rate-limit.middleware';
-import { createDatabase } from '../src/infrastructure/database/drizzle/client';
+import { setDatabase } from '../src/infrastructure/database/drizzle/client';
 import { createRepositories } from '../src/infrastructure/database/drizzle/drizzle-unit-of-work';
+import { DrizzleUnitOfWork } from '../src/infrastructure/database/drizzle/drizzle-unit-of-work';
 import { createDatabaseReadinessCheck } from '../src/infrastructure/database/readiness';
 import { createLogger } from '../src/infrastructure/logger/logger';
 import { Argon2PasswordHasher } from '../src/infrastructure/security/argon2-password-hasher';
+import { setServices } from '../src/infrastructure/services';
 import { issueAccessCode } from '../src/modules/identity/access-code-issuer';
-import type { AccessCodePurpose } from '../src/modules/identity/repositories/access-code.repository.types';
+import { AccessCodeDelivery } from '../src/modules/identity/access-code-delivery';
+import { BootstrapFirstAdministratorUseCase } from '../src/modules/identity/use-cases/bootstrap-first-administrator.use-case';
+import { ResolveSessionUseCase } from '../src/modules/identity/use-cases/resolve-session.use-case';
+import type { AccessCodePurpose } from '../src/modules/identity/repositories/access-code.repository';
 import type {
   Clock,
   EmailMessage,
@@ -65,9 +69,9 @@ export class FakeEmailSender implements EmailSender {
   }
 }
 
-export function createTestApp(databaseUrl = testDatabaseUrl) {
+export function createTestApp() {
   const pool = new pg.Pool({
-    connectionString: databaseUrl,
+    connectionString: testDatabaseUrl,
     connectionTimeoutMillis: 1000,
   });
   const logs = createLogCapture();
@@ -83,21 +87,27 @@ export function createTestApp(databaseUrl = testDatabaseUrl) {
     passes: 1,
     parallelism: 1,
   });
-  const root = createCompositionRoot({
-    pool,
-    hasher,
-    emailSender,
-    clock,
-    logger,
-    dashboardOrigin: DASHBOARD_ORIGIN,
-  });
+  setDatabase(pool);
+  setServices({ hasher, emailSender, clock, logger });
+  const { users, sessions, permissions } = createRepositories();
+  const root = {
+    identity: {
+      bootstrapFirstAdministrator: new BootstrapFirstAdministratorUseCase(
+        new DrizzleUnitOfWork(),
+        new AccessCodeDelivery(emailSender, DASHBOARD_ORIGIN),
+        clock,
+      ),
+      resolveSession: new ResolveSessionUseCase(
+        sessions,
+        users,
+        permissions,
+        clock,
+      ),
+    },
+  };
   const app = createApp({
     logger,
     checkReadiness: createDatabaseReadinessCheck(pool),
-    identity: root.identity,
-    audit: root.audit,
-    catalog: root.catalog,
-    leads: root.leads,
     allowedOrigins: [DASHBOARD_ORIGIN],
     limiters: createAuthRateLimiters(),
   });
@@ -191,6 +201,6 @@ export async function seedAccessCode(
   userId: string,
   purpose: AccessCodePurpose,
 ): Promise<string> {
-  const { accessCodes } = createRepositories(createDatabase(context.pool));
+  const { accessCodes } = createRepositories();
   return issueAccessCode(accessCodes, userId, purpose, context.clock.now());
 }

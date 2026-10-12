@@ -1,8 +1,8 @@
-import { SESSION_ABSOLUTE_LIFETIME_MS } from '../constants';
+﻿import { SESSION_ABSOLUTE_LIFETIME_MS } from '../constants';
 import { generateSessionToken, hashSessionToken } from '../domain/secrets';
 import { InvalidCredentialsError } from '../errors';
-import type { SessionRepository } from '../repositories/session.repository.types';
-import type { UserRepository } from '../repositories/user.repository.types';
+import type { SessionRepository } from '../repositories/session.repository';
+import type { UserRepository } from '../repositories/user.repository';
 import type { Clock, PasswordHasher } from '../services.types';
 
 export interface AuthenticationResult {

@@ -1,9 +1,9 @@
-import type { AccessCodeDelivery } from '../access-code-delivery';
+﻿import type { AccessCodeDelivery } from '../access-code-delivery';
 import { issueAccessCode } from '../access-code-issuer';
 import type { AdminActor, UserWithAccessCode } from '../admin-user.types';
 import { ACCESS_CODE_TTL_MS } from '../constants';
 import { InvalidUserStateError, UserNotFoundError } from '../errors';
-import type { AccessCodePurpose } from '../repositories/access-code.repository.types';
+import type { AccessCodePurpose } from '../repositories/access-code.repository';
 import type { UnitOfWork } from '../repositories/unit-of-work.types';
 import type { Clock } from '../services.types';
 

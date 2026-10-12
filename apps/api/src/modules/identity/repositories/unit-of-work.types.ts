@@ -1,8 +1,8 @@
-import type { AuditRepository } from '../../audit/repositories/audit.repository.types';
-import type { AccessCodeRepository } from './access-code.repository.types';
-import type { PermissionRepository } from './permission.repository.types';
-import type { SessionRepository } from './session.repository.types';
-import type { UserRepository } from './user.repository.types';
+﻿import type { AuditRepository } from '../../audit/repositories/audit.repository';
+import type { AccessCodeRepository } from './access-code.repository';
+import type { PermissionRepository } from './permission.repository';
+import type { SessionRepository } from './session.repository';
+import type { UserRepository } from './user.repository';
 
 export interface TransactionalRepositories {
   users: UserRepository;

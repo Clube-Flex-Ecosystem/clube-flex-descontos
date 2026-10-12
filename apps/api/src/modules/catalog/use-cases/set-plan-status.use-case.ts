@@ -1,10 +1,10 @@
-import type { ActiveStatus } from '@flex/contracts';
+﻿import type { ActiveStatus } from '@flex/contracts';
 import { failVersionedUpdate } from '../domain/optimistic-concurrency';
 import { ResourceNotFoundError } from '../errors';
 import type {
   PlanRecord,
   PlanRepository,
-} from '../repositories/plan.repository.types';
+} from '../repositories/plan.repository';
 import type { Clock } from '../../identity/services.types';
 
 export class SetPlanStatusUseCase {
