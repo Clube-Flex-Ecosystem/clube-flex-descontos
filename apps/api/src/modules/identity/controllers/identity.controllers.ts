@@ -1,6 +1,5 @@
 ﻿import type { Request, RequestHandler } from 'express';
 import {
-  CSRF_HEADER,
   changePasswordRequestSchema,
   loginRequestSchema,
   recoveryRequestSchema,
@@ -9,11 +8,7 @@ import {
   type SessionResponse,
 } from '@flex/contracts';
 import { sendProblem } from '../../../http/problem';
-import {
-  clearSessionCookie,
-  readSessionToken,
-  setSessionCookie,
-} from '../../../http/session-cookie';
+import { clearAuthCookie, setAuthCookie } from '../../../http/session-cookie';
 import { fieldError, parseBody } from '../../../http/validation';
 import {
   applicationLogger,
@@ -23,8 +18,7 @@ import {
 } from '../../../infrastructure/services';
 import { DrizzleUnitOfWork } from '../../../infrastructure/database/drizzle/drizzle-unit-of-work';
 import { DrizzleUserRepository } from '../repositories/drizzle-user.repository';
-import { DrizzleSessionRepository } from '../repositories/drizzle-session.repository';
-import { DrizzlePermissionRepository } from '../repositories/drizzle-permission.repository';
+import { issueAuthToken } from '../../../infrastructure/security/jwt';
 import { AccessCodeDelivery } from '../access-code-delivery';
 import {
   InvalidAccessCodeError,
@@ -35,37 +29,18 @@ import {
 import type { AccessCodePurpose } from '../repositories/access-code.repository';
 import { AuthenticateUserUseCase } from '../use-cases/authenticate-user.use-case';
 import { ChangePasswordUseCase } from '../use-cases/change-password.use-case';
-import { LogoutUseCase } from '../use-cases/logout.use-case';
 import { RequestRecoveryUseCase } from '../use-cases/request-recovery.use-case';
-import { ResolveSessionUseCase } from '../use-cases/resolve-session.use-case';
 import { SetPasswordWithAccessCodeUseCase } from '../use-cases/set-password-with-access-code.use-case';
 
 const usersRepository = new DrizzleUserRepository();
-const sessionsRepository = new DrizzleSessionRepository();
-const permissionsRepository = new DrizzlePermissionRepository();
 const unitOfWork = new DrizzleUnitOfWork();
 const delivery = new AccessCodeDelivery(
   emailSender,
   (process.env.DASHBOARD_ORIGIN ?? 'http://localhost:5173').replace(/\/+$/, ''),
 );
 
-export const resolveSessionUseCase = new ResolveSessionUseCase(
-  sessionsRepository,
-  usersRepository,
-  permissionsRepository,
-  clock,
-);
-export const resolveSession = (input: { sessionToken: string }) =>
-  resolveSessionUseCase.execute(input);
-
 const useCases = {
-  authenticateUser: new AuthenticateUserUseCase(
-    usersRepository,
-    sessionsRepository,
-    hasher,
-    clock,
-  ),
-  logout: new LogoutUseCase(sessionsRepository, clock),
+  authenticateUser: new AuthenticateUserUseCase(usersRepository, hasher),
   setPasswordWithAccessCode: new SetPasswordWithAccessCodeUseCase(
     unitOfWork,
     hasher,
@@ -92,14 +67,9 @@ const login: RequestHandler = async (req, res) => {
     return;
   }
   try {
-    const { sessionToken, expiresAt } = await useCases.authenticateUser.execute(
-      {
-        username: body.data.username,
-        password: body.data.password,
-        previousSessionToken: readSessionToken(req),
-      },
-    );
-    setSessionCookie(res, sessionToken, expiresAt);
+    const identity = await useCases.authenticateUser.execute(body.data);
+    const { token, expiresAt } = await issueAuthToken(identity, clock.now());
+    setAuthCookie(res, token, expiresAt);
     res.status(204).end();
   } catch (error) {
     if (error instanceof InvalidCredentialsError) {
@@ -111,9 +81,7 @@ const login: RequestHandler = async (req, res) => {
 };
 
 const logout: RequestHandler = async (req, res) => {
-  const sessionToken = readSessionToken(req);
-  if (sessionToken) await useCases.logout.execute({ sessionToken });
-  clearSessionCookie(res);
+  clearAuthCookie(res);
   res.status(204).end();
 };
 
@@ -128,8 +96,6 @@ const session: RequestHandler = (req, res) => {
     },
     permissions: auth.permissions,
   };
-  // O token CSRF acompanha a consulta da sessão; o corpo preserva o contrato aprovado.
-  res.setHeader(CSRF_HEADER, auth.csrfToken);
   res.json(body);
 };
 
@@ -184,12 +150,16 @@ const changePassword: RequestHandler = async (req, res) => {
     return;
   }
   try {
-    await useCases.changePassword.execute({
+    const user = await useCases.changePassword.execute({
       userId: auth.user.id,
-      sessionId: auth.sessionId,
       currentPassword: body.data.currentPassword,
       newPassword: body.data.newPassword,
     });
+    const { token, expiresAt } = await issueAuthToken(
+      { userId: user.id, authVersion: user.authVersion },
+      clock.now(),
+    );
+    setAuthCookie(res, token, expiresAt);
     res.status(204).end();
   } catch (error) {
     if (error instanceof InvalidCurrentPasswordError) {

@@ -31,6 +31,7 @@ export const users = pgTable(
     passwordChangeRequired: boolean('password_change_required')
       .notNull()
       .default(false),
+    authVersion: integer('auth_version').notNull().default(1),
     version: integer('version').notNull().default(1),
     createdAt: timestamp('created_at', { withTimezone: true })
       .notNull()
@@ -61,26 +62,6 @@ export const userPermissions = pgTable(
     grantedBy: uuid('granted_by').references(() => users.id),
   },
   (table) => [primaryKey({ columns: [table.userId, table.permission] })],
-);
-
-export const sessions = pgTable(
-  'sessions',
-  {
-    id: uuid('id').primaryKey().defaultRandom(),
-    userId: uuid('user_id')
-      .notNull()
-      .references(() => users.id),
-    // Somente o hash do identificador opaco é persistido (ADR-0004).
-    tokenHash: text('token_hash').notNull().unique(),
-    createdAt: timestamp('created_at', { withTimezone: true }).notNull(),
-    lastActivityAt: timestamp('last_activity_at', {
-      withTimezone: true,
-    }).notNull(),
-    // Limite absoluto de duração.
-    expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
-    revokedAt: timestamp('revoked_at', { withTimezone: true }),
-  },
-  (table) => [index('sessions_user_id_idx').on(table.userId)],
 );
 
 export const accessCodes = pgTable(

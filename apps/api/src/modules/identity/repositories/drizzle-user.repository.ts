@@ -27,6 +27,7 @@ function toAccount(row: UserRow): UserAccount {
     username: row.username,
     status: row.status,
     passwordChangeRequired: row.passwordChangeRequired,
+    authVersion: row.authVersion,
     version: row.version,
     ...(row.email ? { email: row.email } : {}),
     ...(row.passwordHash ? { passwordHash: row.passwordHash } : {}),
@@ -108,11 +109,19 @@ export class DrizzleUserRepository implements UserRepository {
     userId: string,
     passwordHash: string,
     now: Date,
-  ): Promise<void> {
-    await this.db
+  ): Promise<UserAccount> {
+    const [row] = await this.db
       .update(users)
-      .set({ passwordHash, passwordChangeRequired: false, updatedAt: now })
-      .where(eq(users.id, userId));
+      .set({
+        passwordHash,
+        passwordChangeRequired: false,
+        authVersion: sql`${users.authVersion} + 1`,
+        updatedAt: now,
+      })
+      .where(eq(users.id, userId))
+      .returning();
+    if (!row) throw new Error('Usuário não encontrado ao definir senha');
+    return toAccount(row);
   }
 
   async updateProfile(
@@ -149,7 +158,12 @@ export class DrizzleUserRepository implements UserRepository {
   ): Promise<UserAccount | null> {
     const [row] = await this.db
       .update(users)
-      .set({ status, version: expectedVersion + 1, updatedAt: now })
+      .set({
+        status,
+        version: expectedVersion + 1,
+        authVersion: sql`${users.authVersion} + 1`,
+        updatedAt: now,
+      })
       .where(and(eq(users.id, userId), eq(users.version, expectedVersion)))
       .returning();
     return row ? toAccount(row) : null;

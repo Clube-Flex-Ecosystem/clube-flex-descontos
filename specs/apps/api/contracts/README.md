@@ -298,15 +298,14 @@ Cookie de sessão:
 
 - Nome `__Host-session`; `HttpOnly`, `Secure`, `SameSite=Strict`, `Path=/`, sem `Domain`.
 - Validade do cookie igual ao limite absoluto de 24 horas; a expiração por inatividade de 8 horas é aplicada pelo servidor.
-- Cada login emite um novo identificador e encerra a sessão anterior enviada pelo mesmo navegador.
+- Cada login emite um JWT novo, válido por 8 horas. Não há refresh token nem sessão persistida no servidor.
 
-CSRF e origem:
+Cookie e origem:
 
-- `GET /v1/auth/session` devolve o token CSRF da sessão no cabeçalho `X-CSRF-Token`; o corpo permanece conforme o contrato acima.
-- Toda operação mutável autenticada envia esse mesmo valor em `X-CSRF-Token`; a ausência ou divergência retorna `403 CSRF_VALIDATION_FAILED`.
-- Logout sem sessão válida permanece idempotente e não exige token.
-- Operações mutáveis em `/v1/auth` recusam `Origin` (ou `Referer`) fora da origem do dashboard com `403 CSRF_VALIDATION_FAILED`.
-- O CORS libera apenas a origem do dashboard, com credenciais, e expõe `X-CSRF-Token`, `X-Request-Id`, `Retry-After` e `ETag`.
+- Logout permanece idempotente e apaga o cookie mesmo sem autenticação válida.
+- Operações mutáveis recusam `Origin` ou `Referer` declarado fora da origem do dashboard com `403 CSRF_VALIDATION_FAILED`.
+- O CORS libera apenas a origem do dashboard, com credenciais, e expõe `X-Request-Id`, `Retry-After` e `ETag`.
+- Alterar ou recuperar a senha e desativar a conta invalidam JWTs anteriores por meio da versão de autenticação da conta.
 
 Erros de campo (`422 VALIDATION_ERROR`, `errors[].code`):
 
@@ -414,7 +413,7 @@ Definido em `packages/contracts` e concedido por identificador estável:
 
 ### Detalhes materializados na implementação (Incremento 3)
 
-- **Permissões por rota:** listar e consultar exigem `plans.view`, `categories.view` ou `partners.view`; criar, `plans.manage`, `categories.manage` ou `partners.create`; `PUT`, `partners.update`; publicar, desativar e voltar a rascunho, `partners.publish`; `DELETE`, `partners.delete`. Mutações exigem token CSRF e `If-Match`.
+- **Permissões por rota:** listar e consultar exigem `plans.view`, `categories.view` ou `partners.view`; criar, `plans.manage`, `categories.manage` ou `partners.create`; `PUT`, `partners.update`; publicar, desativar e voltar a rascunho, `partners.publish`; `DELETE`, `partners.delete`. Mutações com controle de concorrência exigem `If-Match`.
 - **Planos:** `POST` recebe `name` e `slug` opcional (gerado do nome, com sufixo numérico em colisões); `PATCH` recebe somente `name`. O `slug` é imutável.
 - **Parceiro:** `POST` aceita `slug` e `featured` opcionais; `PUT` exige a representação completa, inclusive `slug` e `featured`. Texto opcional em branco equivale a ausente. Contatos e unidades já persistidos carregam `id`; um `id` que não pertença ao parceiro resulta em `422`.
 - **Estados:** publicar aceita rascunho ou desativado (publicado devolve a representação atual); desativar exige publicado; `move-to-draft` exige desativado (transição inválida: `409 INVALID_RESOURCE_STATE`). `PUT` em parceiro publicado reaplica as condições de publicação (`422 PUBLICATION_REQUIREMENTS_NOT_MET`).
@@ -456,7 +455,7 @@ Definido em `packages/contracts` e concedido por identificador estável:
 | `GET` | `/v1/admin/users/{id}` | Consultar usuário interno |
 | `PATCH` | `/v1/admin/users/{id}` | Editar nome completo, nome de usuário ou e-mail |
 | `POST` | `/v1/admin/users/{id}/activate` | Reativar a conta |
-| `POST` | `/v1/admin/users/{id}/deactivate` | Desativar a conta e revogar suas sessões |
+| `POST` | `/v1/admin/users/{id}/deactivate` | Desativar a conta e invalidar seus JWTs anteriores |
 | `POST` | `/v1/admin/users/{id}/access-codes` | Emitir código de ativação ou recuperação |
 | `GET` | `/v1/admin/permissions` | Listar o catálogo fixo de permissões implementadas |
 | `PUT` | `/v1/admin/users/{id}/permissions` | Substituir atomicamente as permissões concedidas |
@@ -487,12 +486,12 @@ Representação administrativa:
 - A emissão administrativa de código recebe `purpose` igual a `activation` ou `recovery`, invalida os códigos anteriores da mesma finalidade e retorna o usuário completo com a informação transitória de entrega.
 - A substituição de permissões recebe a lista completa desejada, calcula concessões e revogações atomicamente e retorna o usuário completo.
 - Permissões são definidas pela aplicação e não podem ser criadas ou renomeadas pelo dashboard.
-- Desativar a conta revoga todas as suas sessões antes de retornar a representação atualizada.
+- Desativar a conta incrementa sua versão de autenticação e invalida todos os JWTs anteriores antes de retornar a representação atualizada.
 - Autoalteração de permissões, concessão de capacidade ausente no autor ou operação que deixe o sistema sem administrador elegível retorna `409 Conflict`.
 
 ### Detalhes materializados na implementação (Incremento 7)
 
-- **Permissões por rota:** listar e consultar usuários exigem `users.view`; `POST` e `PATCH`, `users.manage`; `activate` e `deactivate`, `users.set-status`; `access-codes`, `users.reset-access`; `GET /permissions`, `permissions.view`; `PUT .../permissions`, `permissions.manage`. Mutações exigem token CSRF.
+- **Permissões por rota:** listar e consultar usuários exigem `users.view`; `POST` e `PATCH`, `users.manage`; `activate` e `deactivate`, `users.set-status`; `access-codes`, `users.reset-access`; `GET /permissions`, `permissions.view`; `PUT .../permissions`, `permissions.manage`.
 - **Versão da conta:** o usuário possui `version` e `ETag`. `PATCH`, `activate`, `deactivate` e `PUT .../permissions` exigem `If-Match`; a emissão de código (criação de um código) não exige e não altera a versão.
 - **Edição:** `PATCH` recebe `fullName`, `username` e `email` completos; `email` em branco o remove. O nome de usuário é normalizado em minúsculas e aceita letras, dígitos, ponto, hífen e sublinhado (3–80). Duplicidade retorna `422 VALIDATION_ERROR` com `DUPLICATE_USERNAME` em `username`. Sem mudança efetiva, não há nova versão nem evento.
 - **Emissão de código:** `201` com o usuário completo e, quando a entrega é manual, `accessCode` uma única vez; `accessCodeExpiresAt` informa a validade. `activation` só vale para conta ainda não ativada e `recovery` só para conta ativada; conta inativa ou finalidade incompatível retorna `409 INVALID_RESOURCE_STATE`.

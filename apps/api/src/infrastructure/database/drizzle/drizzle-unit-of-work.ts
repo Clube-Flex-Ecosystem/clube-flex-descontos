@@ -6,7 +6,6 @@ import { db, type DatabaseExecutor } from './client';
 import { DrizzleAccessCodeRepository } from '../../../modules/identity/repositories/drizzle-access-code.repository';
 import { DrizzleAuditRepository } from '../../../modules/audit/repositories/drizzle-audit.repository';
 import { DrizzlePermissionRepository } from '../../../modules/identity/repositories/drizzle-permission.repository';
-import { DrizzleSessionRepository } from '../../../modules/identity/repositories/drizzle-session.repository';
 import { DrizzleUserRepository } from '../../../modules/identity/repositories/drizzle-user.repository';
 
 export function createRepositories(
@@ -19,9 +18,6 @@ export function createRepositories(
     permissions: transaction
       ? new DrizzlePermissionRepository().withTransaction(transaction)
       : new DrizzlePermissionRepository(),
-    sessions: transaction
-      ? new DrizzleSessionRepository().withTransaction(transaction)
-      : new DrizzleSessionRepository(),
     accessCodes: transaction
       ? new DrizzleAccessCodeRepository().withTransaction(transaction)
       : new DrizzleAccessCodeRepository(),

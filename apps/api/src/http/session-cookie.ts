@@ -14,7 +14,7 @@ const cookieOptions = {
   path: '/',
 } as const;
 
-export function readSessionToken(req: Request): string | undefined {
+export function readAuthToken(req: Request): string | undefined {
   const header = req.headers.cookie;
   if (!header) return undefined;
   for (const part of header.split(';')) {
@@ -28,7 +28,7 @@ export function readSessionToken(req: Request): string | undefined {
   return undefined;
 }
 
-export function setSessionCookie(
+export function setAuthCookie(
   res: Response,
   token: string,
   expiresAt: Date,
@@ -36,6 +36,6 @@ export function setSessionCookie(
   res.cookie(SESSION_COOKIE, token, { ...cookieOptions, expires: expiresAt });
 }
 
-export function clearSessionCookie(res: Response): void {
+export function clearAuthCookie(res: Response): void {
   res.clearCookie(SESSION_COOKIE, cookieOptions);
 }

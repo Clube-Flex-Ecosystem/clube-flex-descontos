@@ -314,7 +314,7 @@ Um usuário autorizado deve poder administrar os usuários internos que acessam 
 - `CA-RF-015-09` — Uma conta com e-mail cadastrado pode solicitar recuperação de acesso por e-mail.
 - `CA-RF-015-10` — Um usuário com permissão administrativa pode redefinir o acesso de uma conta sem e-mail.
 - `CA-RF-015-11` — Após uma redefinição administrativa, o usuário deve trocar a senha no próximo login.
-- `CA-RF-015-12` — Ao desativar uma conta, todas as suas sessões ativas devem ser encerradas.
+- `CA-RF-015-12` — Ao desativar uma conta, todos os JWTs emitidos anteriormente para ela devem ser invalidados.
 - `CA-RF-015-13` — O nome de usuário de uma conta desativada não pode ser reutilizado.
 - `CA-RF-015-14` — Um usuário não pode desativar a própria conta.
 - `CA-RF-015-15` — O último usuário ativo capaz de administrar usuários e permissões não pode ser desativado.
@@ -324,7 +324,7 @@ Um usuário autorizado deve poder administrar os usuários internos que acessam 
 - `CA-RF-015-19` — O usuário autenticado pode alterar sua própria senha.
 - `CA-RF-015-20` — O administrador não define nem precisa conhecer a senha do usuário.
 - `CA-RF-015-21` — Emitir um novo código de ativação ou recuperação invalida todos os códigos anteriores da mesma finalidade.
-- `CA-RF-015-22` — Alterar ou recuperar a senha encerra as demais sessões ativas da conta.
+- `CA-RF-015-22` — Alterar ou recuperar a senha invalida todos os JWTs emitidos anteriormente para a conta.
 - `CA-RF-015-23` — Nome completo é obrigatório e e-mail é opcional.
 - `CA-RF-015-24` — Uma conta nova é criada ativa, mas não pode acessar o sistema antes de concluir a ativação e definir sua senha.
 - `CA-RF-015-25` — Quando houver e-mail, o código de ativação é enviado automaticamente; sem e-mail, é exibido uma única vez ao administrador para entrega fora do sistema.
@@ -383,7 +383,7 @@ A interface e a resposta pública do envio de interesse não devem revelar se um
 
 Todas as operações do dashboard devem exigir autenticação e a permissão correspondente, exceto quando forem explicitamente definidas como públicas.
 
-> O mecanismo aprovado utiliza sessões opacas persistidas no servidor e cookie seguro, conforme a arquitetura da API e o ADR-0004.
+> O mecanismo aprovado utiliza JWT assinado em cookie seguro, sem refresh token ou sessão persistida, conforme a arquitetura da API e o ADR-0004.
 
 ### RNF-003 — Rastreabilidade de leads
 

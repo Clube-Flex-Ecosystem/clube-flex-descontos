@@ -182,16 +182,6 @@ describe('administração de planos e categorias', () => {
       expect(create.status).toBe(403);
       expect(create.body.code).toBe('PERMISSION_DENIED');
     });
-
-    it('exige o token CSRF nas operações mutáveis', async () => {
-      const response = await request(context.app)
-        .post('/v1/admin/plans')
-        .set('cookie', session.cookie)
-        .send({ name: 'Multi' });
-
-      expect(response.status).toBe(403);
-      expect(response.body.code).toBe('CSRF_VALIDATION_FAILED');
-    });
   });
 
   describe('categorias', () => {

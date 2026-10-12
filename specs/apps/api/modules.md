@@ -25,10 +25,10 @@ Ser a fonte central de regras, dados, autorização e contratos utilizados pelo 
 - registro do consentimento;
 - resposta pública neutra.
 
-### Identidade e sessão
+### Identidade e autenticação
 
 - ativação de contas;
-- autenticação e encerramento de sessões;
+- autenticação por JWT e encerramento local pelo cookie;
 - recuperação e alteração de senha;
 - emissão, validação e invalidação de códigos de acesso.
 

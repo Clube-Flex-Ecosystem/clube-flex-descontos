@@ -1,4 +1,4 @@
-import { createHash, createHmac, randomBytes } from 'node:crypto';
+import { createHash, randomBytes } from 'node:crypto';
 
 // Alfabeto Crockford: sem I, L, O e U, para reduzir erros de digitação.
 const CODE_ALPHABET = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
@@ -29,20 +29,4 @@ export function normalizeAccessCode(input: string): string {
 
 export function hashAccessCode(input: string): string {
   return sha256Hex(`access-code:${normalizeAccessCode(input)}`);
-}
-
-export function generateSessionToken(): string {
-  return randomBytes(32).toString('base64url');
-}
-
-export function hashSessionToken(token: string): string {
-  return sha256Hex(`session:${token}`);
-}
-
-/**
- * O token CSRF é derivado do identificador da sessão, ao qual só o navegador do usuário
- * e o servidor têm acesso, e por isso fica vinculado a ela sem novo armazenamento.
- */
-export function deriveCsrfToken(sessionToken: string): string {
-  return createHmac('sha256', sessionToken).update('csrf').digest('base64url');
 }

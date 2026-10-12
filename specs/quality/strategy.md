@@ -48,7 +48,7 @@ Devem possuir testes automatizados:
 - autenticação e encerramento de sessão;
 - efeito imediato de alterações de permissões;
 - escopo de visualização e edição de leads;
-- proteção CSRF;
+- rejeição de mutações autenticadas provenientes de origem declarada não autorizada;
 - resposta neutra contra enumeração de contatos e contas;
 - expiração, tentativas, uso único e invalidação de códigos;
 - fallback manual seguro quando o envio administrativo de código falhar;
@@ -75,7 +75,7 @@ Devem possuir testes automatizados:
 - testes de integração das rotas da API;
 - testes E2E críticos;
 - build de catálogo, dashboard e API;
-- aplicação e validação das migrations em banco vazio;
+- aplicação das migrations no preparo do banco usado pelos testes de integração;
 - coerência ou geração do OpenAPI a partir dos esquemas aprovados.
 
 Falhas obrigatórias impedem merge protegido e deploy automático.

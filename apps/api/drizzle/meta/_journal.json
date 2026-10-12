@@ -50,6 +50,13 @@
       "when": 1791685000000,
       "tag": "0006_administration_and_privacy",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1791763200000,
+      "tag": "0007_stateless_authentication",
+      "breakpoints": true
     }
   ]
 }

@@ -12,6 +12,7 @@ const envSchema = z
       .default('development'),
     PORT: z.coerce.number().int().min(1).max(65535).default(3000),
     DATABASE_URL: z.string().min(1),
+    AUTH_SECRET: optionalText,
     LOG_LEVEL: z
       .enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent'])
       .optional(),
@@ -36,6 +37,13 @@ const envSchema = z
         message: 'Obrigatória em produção',
       });
     }
+    if (env.NODE_ENV === 'production' && !env.AUTH_SECRET) {
+      context.addIssue({
+        code: 'custom',
+        path: ['AUTH_SECRET'],
+        message: 'Obrigatória em produção',
+      });
+    }
     if (env.RESEND_API_KEY && !env.EMAIL_FROM) {
       context.addIssue({
         code: 'custom',
@@ -54,6 +62,8 @@ const envSchema = z
       /\/+$/,
       '',
     ),
+    AUTH_SECRET:
+      env.AUTH_SECRET ?? 'desenvolvimento-local-chave-jwt-clube-flex',
   }));
 
 export type Env = z.infer<typeof envSchema>;

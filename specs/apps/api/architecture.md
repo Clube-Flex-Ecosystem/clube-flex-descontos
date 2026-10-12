@@ -12,7 +12,7 @@
 - Resend como provedor de e-mails transacionais.
 - Drizzle para acesso ao PostgreSQL e migrações.
 - OpenAPI como descrição dos contratos HTTP.
-- Sessões opacas armazenadas no servidor e transportadas por cookie seguro.
+- JWT assinado, stateless e transportado por cookie seguro.
 - Envio direto de e-mails transacionais, sem fila ou worker nesta entrega.
 - Versão LTS do Node fixada e atualizada de forma controlada.
 - Zod como fonte dos esquemas de validação e geração compatível com OpenAPI.
@@ -75,8 +75,6 @@ apps/api/src/
     middlewares/
       authentication.middleware.ts
       require-permissions.middleware.ts
-      csrf.middleware.ts
-      rate-limit.middleware.ts
       not-found.middleware.ts
       global-error-handler.middleware.ts
     routes/
@@ -89,16 +87,16 @@ A estrutura pode ser reduzida em módulos pequenos; diretórios vazios ou abstra
 ### Fronteira HTTP e middlewares
 
 - Middlewares dependentes do Express ficam em `http/middlewares`; não contêm regras de negócio nem acessam Drizzle diretamente.
-- A resolução da sessão é feita por um use case próprio, que consulta a situação atual do usuário e suas permissões por contratos de repository.
-- As permissões são carregadas a cada requisição autenticada para que alterações tenham efeito imediato nas sessões abertas.
+- O middleware valida o JWT e consulta a situação atual do usuário e suas permissões pelos repositories do módulo.
+- As permissões são carregadas a cada requisição autenticada para que alterações tenham efeito imediato nos tokens já emitidos.
 - O middleware de autorização declara as permissões exigidas pela rota; ocultar elementos no dashboard não substitui a autorização na API.
-- Em operações autenticadas mutáveis, a proteção CSRF ocorre depois da resolução da sessão e antes do controller.
+- Em operações mutáveis, a API rejeita origens declaradas diferentes da origem configurada para o dashboard.
 - Rotas inexistentes são convertidas para o contrato padronizado pelo middleware de `not found`.
 - O tratador global de erros é o último middleware e converte falhas conhecidas para o contrato HTTP sem expor detalhes internos.
 
 Ordem conceitual:
 
-`request id/log HTTP → proteções HTTP e parsing → rate limit → rotas públicas ou resolução da sessão → autenticação → CSRF quando aplicável → autorização → controller → not found → tratador global de erros`
+`request id/log HTTP → proteções HTTP e parsing → CORS e validação de origem → rate limit quando aplicável → autenticação → autorização → controller → not found → tratador global de erros`
 
 ### Logs
 
@@ -147,7 +145,7 @@ Ordem conceitual:
 ## Encaminhamentos de implementação
 
 - Materializar esquemas Zod e OpenAPI conforme os contratos aprovados.
-- Definir a mecânica interna de limpeza de sessões e códigos expirados sem alterar seus prazos ou contratos.
+- Manter a limpeza de códigos expirados sem criar infraestrutura periódica enquanto o volume não a exigir.
 - Métricas, alertas e agregador externo de logs permanecem fora da primeira entrega.
 
 ## Referências oficiais
@@ -177,20 +175,19 @@ Ordem conceitual:
 - Sem regras obrigatórias de composição e sem expiração periódica.
 - Senhas comuns ou conhecidas como comprometidas devem ser recusadas.
 
-### Sessões
+### Autenticação
 
-- Sessões opacas persistidas no PostgreSQL.
-- Somente o hash do identificador é persistido.
-- Cookie host-only da API com prefixo `__Host-`, `Secure`, `HttpOnly` e `SameSite` adequado.
-- Identificador renovado após autenticação.
-- Expiração após 8 horas de inatividade ou 24 horas de duração absoluta.
-- Revogação imediata nos eventos especificados.
+- JWT assinado com validade de 8 horas e sem refresh token.
+- Cookie host-only da API com prefixo `__Host-`, `Secure`, `HttpOnly` e `SameSite=Strict`.
+- Cada login emite um token novo.
+- Alterar ou recuperar a senha e desativar a conta incrementam `authVersion`, invalidando tokens anteriores.
+- Não há tabela ou serviço de sessões.
 
-### CORS e CSRF
+### CORS e origem
 
 - Origens permitidas são declaradas explicitamente; `*` não é permitido com credenciais.
 - Operações mutáveis nunca utilizam `GET`.
-- Operações autenticadas exigem token CSRF vinculado à sessão e validação de origem.
+- Operações mutáveis validam `Origin` ou `Referer` quando declarado; a política `SameSite=Strict` impede o envio normal do cookie em contexto entre sites.
 - Endpoints públicos do catálogo não recebem o cookie administrativo.
 
 ### Códigos de acesso

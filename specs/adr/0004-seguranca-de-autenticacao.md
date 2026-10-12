@@ -2,6 +2,7 @@
 
 **Estado:** Aceito  
 **Decisão:** 2026-10-10
+**Revisão:** 2026-10-12
 
 ## Contexto
 
@@ -12,10 +13,11 @@ O dashboard administra dados pessoais e permissões granulares. A autenticação
 - Armazenar senhas com Argon2id.
 - Exigir de 15 a 128 caracteres, sem regras artificiais de composição ou expiração periódica.
 - Recusar senhas comuns ou comprometidas.
-- Utilizar sessões opacas persistidas no PostgreSQL, guardando somente o hash do identificador.
-- Expirar sessões após 8 horas de inatividade ou 24 horas absolutas.
-- Transportar a sessão em cookie host-only `__Host-`, `Secure`, `HttpOnly` e com política `SameSite` adequada.
-- Proteger operações autenticadas com token CSRF vinculado à sessão, validação de origem e CORS explícito.
+- Utilizar JWT assinado, com validade de 8 horas, sem refresh token e sem persistência de sessão.
+- Transportar o JWT em cookie host-only `__Host-`, `Secure`, `HttpOnly` e `SameSite=Strict`.
+- Manter uma versão de autenticação na conta. Alterar ou recuperar a senha e desativar a conta incrementam essa versão e invalidam os JWTs anteriores.
+- Consultar a situação da conta e as permissões em toda requisição autenticada, preservando o efeito imediato dessas alterações.
+- Proteger operações mutáveis pela política `SameSite=Strict`, CORS explícito e rejeição de `Origin` ou `Referer` declarado fora da origem do dashboard.
 - Limitar tentativas de autenticação, códigos e formulário público.
 - Permitir uso transitório do IP para rate limiting, sem persistência como dado do lead ou consentimento.
 - Tornar códigos de ativação e recuperação únicos, válidos por 30 minutos e limitados a cinco tentativas.
@@ -24,13 +26,14 @@ O dashboard administra dados pessoais e permissões granulares. A autenticação
 
 ### Positivas
 
-- Contas e sessões podem ser revogadas de forma centralizada.
+- Tokens anteriores podem ser invalidados por conta sem uma tabela de sessões.
 - Reduz riscos de força bruta, fixação de sessão e CSRF.
 - O sistema não amplia desnecessariamente os dados pessoais armazenados.
 
 ### Negativas
 
-- A API precisa manter sessões e proteções CSRF corretamente.
+- Logout apaga o cookie do navegador, mas um token copiado permanece válido até expirar ou até a versão de autenticação da conta mudar.
+- A proteção por origem pressupõe que o dashboard e a API permaneçam em origens explicitamente configuradas.
 - Senhas de 15 caracteres exigem comunicação clara e bom suporte a gerenciadores de senha.
 - Rate limiting precisa considerar o proxy do Coolify sem confiar em cabeçalhos arbitrários.
 

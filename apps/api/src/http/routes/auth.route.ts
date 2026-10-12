@@ -1,103 +1,47 @@
-import { Router, type RequestHandler } from 'express';
-import {
-  identityControllers,
-  resolveSession,
-} from '../../modules/identity/controllers/identity.controllers';
-import { createAuthenticationMiddleware } from '../middlewares/authentication.middleware';
-import { csrfProtection } from '../middlewares/csrf.middleware';
-import {
-  rateLimit,
-  type AuthRateLimiters,
-} from '../middlewares/rate-limit.middleware';
+import { Router } from 'express';
+import rateLimit from 'express-rate-limit';
+import { identityControllers } from '../../modules/identity/controllers/identity.controllers';
+import { authenticate } from '../middlewares/authentication.middleware';
+import { sendProblem } from '../problem';
 
-export interface AuthRouterDependencies {
-  limiters: AuthRateLimiters;
-  originGuard: RequestHandler;
-}
+const authRouter = Router();
 
-const noStore: RequestHandler = (_req, res, next) => {
-  res.setHeader('cache-control', 'no-store');
-  next();
-};
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 10,
+  skipSuccessfulRequests: true,
+  standardHeaders: 'draft-8',
+  legacyHeaders: false,
+  handler: (req, res) => sendProblem(req, res, 'RATE_LIMIT_EXCEEDED'),
+});
 
-function normalizedUsername(body: unknown): string | undefined {
-  const username = (body as { username?: unknown } | undefined)?.username;
-  return typeof username === 'string' && username.trim()
-    ? username.trim().toLowerCase()
-    : undefined;
-}
+const accessCodeLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 20,
+  skipSuccessfulRequests: true,
+  standardHeaders: 'draft-8',
+  legacyHeaders: false,
+  handler: (req, res) => sendProblem(req, res, 'RATE_LIMIT_EXCEEDED'),
+});
 
-export function createAuthRouter({
-  limiters,
-  originGuard,
-}: AuthRouterDependencies): Router {
-  const router = Router();
+const recoveryRequestLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 5,
+  standardHeaders: 'draft-8',
+  legacyHeaders: false,
+  handler: (req, res) => sendProblem(req, res, 'RATE_LIMIT_EXCEEDED'),
+});
 
-  const controllers = identityControllers;
+authRouter.post('/login', loginLimiter, identityControllers.login);
+authRouter.post('/activate', accessCodeLimiter, identityControllers.activate);
+authRouter.post('/recover', accessCodeLimiter, identityControllers.recover);
+authRouter.post(
+  '/recovery-requests',
+  recoveryRequestLimiter,
+  identityControllers.requestRecovery,
+);
+authRouter.get('/session', authenticate, identityControllers.session);
+authRouter.put('/password', authenticate, identityControllers.changePassword);
+authRouter.post('/logout', identityControllers.logout);
 
-  const authenticate = createAuthenticationMiddleware(resolveSession, {
-    required: true,
-  });
-
-  const authenticateOptionally = createAuthenticationMiddleware(
-    resolveSession,
-    { required: false },
-  );
-
-  router.use(noStore, originGuard);
-
-  router.post(
-    '/login',
-    rateLimit({
-      limiter: limiters.loginByIp,
-      key: (req) => `ip:${req.ip ?? 'desconhecido'}`,
-      count: 'failures',
-    }),
-    rateLimit({
-      limiter: limiters.loginByUser,
-      key: (req) => normalizedUsername(req.body),
-      count: 'failures',
-      resetOnSuccess: true,
-    }),
-    controllers.login,
-  );
-
-  const codeLimit = rateLimit({
-    limiter: limiters.codeByIp,
-    key: (req) => `ip:${req.ip ?? 'desconhecido'}`,
-    count: 'failures',
-  });
-  router.post('/activate', codeLimit, controllers.activate);
-  router.post('/recover', codeLimit, controllers.recover);
-
-  router.post(
-    '/recovery-requests',
-    rateLimit({
-      limiter: limiters.recoveryByIp,
-      key: (req) => `ip:${req.ip ?? 'desconhecido'}`,
-      count: 'always',
-    }),
-    rateLimit({
-      limiter: limiters.recoveryByUser,
-      key: (req) => normalizedUsername(req.body),
-      count: 'always',
-    }),
-    controllers.requestRecovery,
-  );
-
-  router.get('/session', authenticate, controllers.session);
-  router.put(
-    '/password',
-    authenticate,
-    csrfProtection,
-    controllers.changePassword,
-  );
-  router.post(
-    '/logout',
-    authenticateOptionally,
-    csrfProtection,
-    controllers.logout,
-  );
-
-  return router;
-}
+export { authRouter };

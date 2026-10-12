@@ -31,7 +31,7 @@ export class SetPasswordWithAccessCodeUseCase {
       : await this.hasher.hash(input.newPassword);
 
     const rejection = await this.unitOfWork.run(
-      async ({ users, accessCodes, sessions }) => {
+      async ({ users, accessCodes }) => {
         const code = await accessCodes.findByCodeHash(
           hashAccessCode(input.code),
         );
@@ -62,7 +62,6 @@ export class SetPasswordWithAccessCodeUseCase {
           throw new InvalidAccessCodeError();
         }
         await users.setPasswordHash(user.id, passwordHash, now);
-        await sessions.revokeAllForUser(user.id, now);
         return null;
       },
     );

@@ -1,49 +1,58 @@
+import type { Permission } from '@flex/contracts';
 import type { RequestHandler } from 'express';
-import type { AuthenticatedContext } from '../../modules/identity/use-cases/resolve-session.use-case';
+import { verifyAuthToken } from '../../infrastructure/security/jwt';
+import { clock } from '../../infrastructure/services';
+import { DrizzlePermissionRepository } from '../../modules/identity/repositories/drizzle-permission.repository';
+import { DrizzleUserRepository } from '../../modules/identity/repositories/drizzle-user.repository';
 import { sendProblem } from '../problem';
-import { clearSessionCookie, readSessionToken } from '../session-cookie';
+import { clearAuthCookie, readAuthToken } from '../session-cookie';
+
+export interface AuthenticatedContext {
+  user: {
+    id: string;
+    fullName: string;
+    username: string;
+    email?: string;
+  };
+  permissions: Permission[];
+}
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Express {
     interface Request {
-      /** Presente somente depois de uma sessão válida ser resolvida. */
       auth?: AuthenticatedContext;
     }
   }
 }
 
-export type SessionResolver = (input: {
-  sessionToken: string;
-}) => Promise<AuthenticatedContext | null>;
+const users = new DrizzleUserRepository();
+const permissions = new DrizzlePermissionRepository();
 
-/**
- * Resolve a sessão do cookie. Com `required`, a ausência de sessão válida responde 401;
- * sem ele, a requisição prossegue anônima (usado por operações idempotentes como logout).
- */
-export function createAuthenticationMiddleware(
-  resolveSession: SessionResolver,
-  { required }: { required: boolean },
-): RequestHandler {
-  return async (req, res, next) => {
-    const sessionToken = readSessionToken(req);
-    const context = sessionToken
-      ? await resolveSession({ sessionToken })
-      : null;
+export const authenticate: RequestHandler = async (req, res, next) => {
+  const raw = readAuthToken(req);
+  const token = raw ? await verifyAuthToken(raw, clock.now()) : null;
+  const user = token ? await users.findById(token.userId) : null;
+  if (
+    !token ||
+    !user ||
+    user.status !== 'active' ||
+    user.authVersion !== token.authVersion
+  ) {
+    if (raw) clearAuthCookie(res);
+    sendProblem(req, res, 'AUTHENTICATION_REQUIRED');
+    return;
+  }
 
-    if (context) {
-      req.auth = context;
-      // Associa o usuário aos logs da requisição; somente o UUID interno.
-      req.log = req.log.child({ userId: context.user.id });
-      next();
-      return;
-    }
-
-    if (sessionToken) clearSessionCookie(res);
-    if (required) {
-      sendProblem(req, res, 'AUTHENTICATION_REQUIRED');
-      return;
-    }
-    next();
+  req.auth = {
+    user: {
+      id: user.id,
+      fullName: user.fullName,
+      username: user.username,
+      ...(user.email ? { email: user.email } : {}),
+    },
+    permissions: await permissions.listForUser(user.id),
   };
-}
+  req.log = req.log.child({ userId: user.id });
+  next();
+};

@@ -11,7 +11,9 @@ describe('verificações de saúde', () => {
     checkReadiness: async () => {
       throw new Error('PostgreSQL indisponível');
     },
-    allowedOrigins: ['http://localhost:5173'],
+    dashboardOrigin: 'http://localhost:5173',
+    catalogOrigin: 'http://localhost:4321',
+    authSecret: 'segredo-de-testes-do-clube-flex-com-tamanho-suficiente',
   });
 
   afterAll(async () => {

@@ -3,7 +3,6 @@ import pg from 'pg';
 import request from 'supertest';
 import type { Permission } from '@flex/contracts';
 import { createApp } from '../src/http/app';
-import { createAuthRateLimiters } from '../src/http/middlewares/rate-limit.middleware';
 import { setDatabase } from '../src/infrastructure/database/drizzle/client';
 import { createRepositories } from '../src/infrastructure/database/drizzle/drizzle-unit-of-work';
 import { DrizzleUnitOfWork } from '../src/infrastructure/database/drizzle/drizzle-unit-of-work';
@@ -14,7 +13,6 @@ import { setServices } from '../src/infrastructure/services';
 import { issueAccessCode } from '../src/modules/identity/access-code-issuer';
 import { AccessCodeDelivery } from '../src/modules/identity/access-code-delivery';
 import { BootstrapFirstAdministratorUseCase } from '../src/modules/identity/use-cases/bootstrap-first-administrator.use-case';
-import { ResolveSessionUseCase } from '../src/modules/identity/use-cases/resolve-session.use-case';
 import type { AccessCodePurpose } from '../src/modules/identity/repositories/access-code.repository';
 import type {
   Clock,
@@ -89,7 +87,6 @@ export function createTestApp() {
   });
   setDatabase(pool);
   setServices({ hasher, emailSender, clock, logger });
-  const { users, sessions, permissions } = createRepositories();
   const root = {
     identity: {
       bootstrapFirstAdministrator: new BootstrapFirstAdministratorUseCase(
@@ -97,19 +94,14 @@ export function createTestApp() {
         new AccessCodeDelivery(emailSender, DASHBOARD_ORIGIN),
         clock,
       ),
-      resolveSession: new ResolveSessionUseCase(
-        sessions,
-        users,
-        permissions,
-        clock,
-      ),
     },
   };
   const app = createApp({
     logger,
     checkReadiness: createDatabaseReadinessCheck(pool),
-    allowedOrigins: [DASHBOARD_ORIGIN],
-    limiters: createAuthRateLimiters(),
+    dashboardOrigin: DASHBOARD_ORIGIN,
+    catalogOrigin: 'http://localhost:4321',
+    authSecret: 'segredo-de-testes-do-clube-flex-com-tamanho-suficiente',
   });
   return { app, pool, logs, logger, root, clock, emailSender, hasher };
 }
@@ -118,7 +110,7 @@ export type TestContext = ReturnType<typeof createTestApp>;
 
 export async function resetDatabase(pool: pg.Pool): Promise<void> {
   await pool.query(
-    'TRUNCATE lead_observations, lead_history, lead_consents, lead_contact_requests, leads, lead_sources, audit_events, access_codes, sessions, user_permissions, users, partners, categories, plans CASCADE',
+    'TRUNCATE lead_observations, lead_history, lead_consents, lead_contact_requests, leads, lead_sources, audit_events, access_codes, user_permissions, users, partners, categories, plans CASCADE',
   );
 }
 
@@ -189,10 +181,7 @@ export async function signIn(
   const cookie = (login.headers['set-cookie'] as unknown as string[])[0]!.split(
     ';',
   )[0]!;
-  const session = await request(context.app)
-    .get('/v1/auth/session')
-    .set('cookie', cookie);
-  return { cookie, csrf: session.headers['x-csrf-token'] as string };
+  return { cookie, csrf: 'não-utilizado' };
 }
 
 /** Emite um código pelas mesmas regras usadas pelos casos de uso. */

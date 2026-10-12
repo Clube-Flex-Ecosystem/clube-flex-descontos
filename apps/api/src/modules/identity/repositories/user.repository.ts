@@ -8,6 +8,8 @@ export interface UserAccount {
   passwordHash?: string;
   /** Verdadeiro após a redefinição administrativa, até o usuário definir a nova senha. */
   passwordChangeRequired: boolean;
+  /** Invalida JWTs emitidos antes de uma mudança de credencial ou estado. */
+  authVersion: number;
   version: number;
 }
 
@@ -38,7 +40,7 @@ export interface UserRepository {
     userId: string,
     passwordHash: string,
     now: Date,
-  ): Promise<void>;
+  ): Promise<UserAccount>;
   /** Retorna `null` quando a versão persistida já não é a informada. */
   updateProfile(
     userId: string,

@@ -34,7 +34,9 @@ setServices({
 const app = createApp({
   logger,
   checkReadiness: createDatabaseReadinessCheck(pool),
-  allowedOrigins: [env.DASHBOARD_ORIGIN, env.CATALOG_ORIGIN],
+  dashboardOrigin: env.DASHBOARD_ORIGIN,
+  catalogOrigin: env.CATALOG_ORIGIN,
+  authSecret: env.AUTH_SECRET,
   trustProxyHops: env.TRUST_PROXY_HOPS,
 });
 

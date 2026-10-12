@@ -1,18 +1,17 @@
 import { Router } from 'express';
-import {
-  ProgressiveLimiter,
-  rateLimit,
-} from '../../http/middlewares/rate-limit.middleware';
+import { rateLimit } from 'express-rate-limit';
+import { sendProblem } from '../../http/problem';
 import {
   getContactConsentController,
   submitPublicContactController,
 } from './public-contact.controller';
 
-const limiter = new ProgressiveLimiter({
-  freeAttempts: 5,
-  baseLockMs: 60_000,
-  maxLockMs: 15 * 60_000,
-  decayMs: 60 * 60_000,
+const limiter = rateLimit({
+  windowMs: 60 * 60_000,
+  limit: 10,
+  standardHeaders: 'draft-8',
+  legacyHeaders: false,
+  handler: (req, res) => sendProblem(req, res, 'RATE_LIMIT_EXCEEDED'),
 });
 
 export const publicContactRouter = Router();
@@ -23,6 +22,6 @@ publicContactRouter.use((_req, res, next) => {
 publicContactRouter.get('/contact-consent', getContactConsentController);
 publicContactRouter.post(
   '/contact-requests',
-  rateLimit({ limiter, key: (req) => req.ip, count: 'always' }),
+  limiter,
   submitPublicContactController,
 );
