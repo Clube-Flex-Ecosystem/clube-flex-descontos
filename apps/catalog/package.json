@@ -5,7 +5,6 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "start": "node dist/server/entry.mjs",
     "typecheck": "astro check"
   },
   "dependencies": {
