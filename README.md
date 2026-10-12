@@ -42,11 +42,20 @@ Com e-mail, o código de ativação é enviado automaticamente. Sem e-mail (ou s
 
 | Variável                                                   | Aplicação | Descrição                                                                                                   |
 | ---------------------------------------------------------- | --------- | ----------------------------------------------------------------------------------------------------------- |
-| `DASHBOARD_ORIGIN`                                         | API       | Origem do dashboard (CORS, CSRF e links de e-mail). Obrigatória em produção; padrão `http://localhost:5173` |
-| `TRUST_PROXY_HOPS`                                         | API       | Proxies confiáveis à frente da API (Coolify). `0` ignora `X-Forwarded-For`                                  |
-| `RESEND_API_KEY`, `EMAIL_FROM`                             | API       | E-mails transacionais; sem chave, a entrega é manual                                                        |
-| `ARGON2_MEMORY_KIB`, `ARGON2_PASSES`, `ARGON2_PARALLELISM` | API       | Custo do Argon2id (padrão: mínimo da OWASP), a calibrar na VPS                                              |
-| `VITE_API_URL`                                             | Dashboard | Endereço da API; padrão `http://localhost:3000`. Em Docker, é um `--build-arg`                              |
+| `NODE_ENV`, `PORT`, `DATABASE_URL` | API | Ambiente, porta HTTP e conexão com o PostgreSQL (`3000` e `postgres://flex:flex@localhost:5434/flex` por padrão para desenvolvimento) |
+| `AUTH_SECRET` | API | Segredo para assinar JWTs; obrigatório em produção |
+| `LOG_LEVEL` | API | Nível de log (`fatal`, `error`, `warn`, `info`, `debug`, `trace` ou `silent`) |
+| `DASHBOARD_ORIGIN`, `CATALOG_ORIGIN` | API | Origens do dashboard e do catálogo para CORS e links; padrões locais `http://localhost:5173` e `http://localhost:4321` |
+| `TRUST_PROXY_HOPS` | API | Proxies confiáveis à frente da API (Coolify); `0` ignora `X-Forwarded-For` |
+| `RESEND_API_KEY`, `EMAIL_FROM` | API | E-mails transacionais; sem chave, a entrega é manual |
+| `BCRYPT_ROUNDS` | API | Custo do bcrypt; padrão `12` |
+| `SEED_SUPPORT_PASSWORD` | API (seed) | Senha usada somente pelo comando de seed do usuário de suporte |
+| `TEST_DATABASE_URL` | API (testes) | Conexão com o PostgreSQL descartável dos testes; padrão `postgres://flex:flex@localhost:5433/flex_test` |
+| `API_URL` | Catálogo | Endereço da API central usado pelo SSR e pelas ilhas; padrão `http://localhost:3000` |
+| `VITE_API_URL` | Dashboard | Endereço da API embutido no bundle; padrão `http://localhost:3000` e, em Docker, informado como `--build-arg` |
+
+Cada app possui um modelo copiável em `apps/<app>/.env.example`. Os arquivos
+`.env` locais são ignorados pelo Git.
 
 O cookie de sessão usa o prefixo `__Host-`, que exige `Secure`; navegadores aceitam esse cookie em `http://localhost`, mas não em outros hosts sem HTTPS.
 

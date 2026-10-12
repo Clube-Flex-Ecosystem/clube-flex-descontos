@@ -7,6 +7,8 @@ const password = process.env.SEED_SUPPORT_PASSWORD;
 if (!password)
     throw new Error('Defina SEED_SUPPORT_PASSWORD para executar o seed.');
 
+const CATALOG_SOURCE_NAME = 'catálogo/site';
+
 const env = loadEnv();
 const pool = createPool(env.DATABASE_URL);
 
@@ -36,9 +38,20 @@ try {
             [userId, permission],
         );
     }
+    await pool.query(
+        `INSERT INTO lead_sources
+            (name, kind, active, protected, requires_referral)
+         VALUES ($1, 'automatic', true, true, false)
+         ON CONFLICT (name) DO UPDATE SET
+            kind = 'automatic',
+            active = true,
+            protected = true,
+            requires_referral = false`,
+        [CATALOG_SOURCE_NAME],
+    );
     await pool.query('COMMIT');
     process.stdout.write(
-        'Seed concluído: usuário suporte atualizado com todas as permissões.\n',
+        'Seed concluído: usuário suporte e origem catálogo/site atualizados.\n',
     );
 } catch (error) {
     await pool.query('ROLLBACK');
