@@ -5,57 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1791663146294,
-      "tag": "0000_baseline",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1791669492189,
-      "tag": "0001_identity_and_access",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1791673642555,
-      "tag": "0002_catalog_administration",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1791677176486,
-      "tag": "0003_tan_katie_power",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1791590400000,
-      "tag": "0004_commercial_operation",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1791681000000,
-      "tag": "0005_reconcile_commercial_operation",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1791685000000,
-      "tag": "0006_administration_and_privacy",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "7",
-      "when": 1791763200000,
-      "tag": "0007_stateless_authentication",
+      "when": 1791817054926,
+      "tag": "0000_medical_frog_thor",
       "breakpoints": true
     }
   ]
