@@ -1,7 +1,7 @@
 import {
-  createFileRoute,
-  redirect,
-  type ErrorComponentProps,
+    createFileRoute,
+    redirect,
+    type ErrorComponentProps,
 } from '@tanstack/react-router';
 import { useQueryErrorResetBoundary } from '@tanstack/react-query';
 import axios from 'axios';
@@ -14,55 +14,58 @@ import { Icon } from '../../../shared/ui/icon';
 import { requireAnyPermission } from '../../../shared/utils/route-guards';
 
 export const Route = createFileRoute('/_authenticated/leads/$leadId')({
-  beforeLoad: ({ context }) =>
-    requireAnyPermission(context.session, ['leads.view-own', 'leads.view-all']),
-  loader: async ({ params, context }) => {
-    try {
-      return {
-        lead: await context.queryClient.ensureQueryData(
-          leadQueryOptions(params.leadId),
-        ),
-      };
-    } catch (error) {
-      if (axios.isAxiosError(error) && error.response?.status === 404) {
-        throw redirect({ to: '/leads' });
-      }
-      throw error;
-    }
-  },
-  head: ({ loaderData }) => ({
-    meta: [{ title: `${loaderData?.lead.name ?? 'Lead'} — Clube Flex` }],
-  }),
-  component: LeadRoute,
-  errorComponent: LeadError,
+    beforeLoad: ({ context }) =>
+        requireAnyPermission(context.session, [
+            'leads.view-own',
+            'leads.view-all',
+        ]),
+    loader: async ({ params, context }) => {
+        try {
+            return {
+                lead: await context.queryClient.ensureQueryData(
+                    leadQueryOptions(params.leadId),
+                ),
+            };
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response?.status === 404) {
+                throw redirect({ to: '/leads' });
+            }
+            throw error;
+        }
+    },
+    head: ({ loaderData }) => ({
+        meta: [{ title: `${loaderData?.lead.name ?? 'Lead'} — Clube Flex` }],
+    }),
+    component: LeadRoute,
+    errorComponent: LeadError,
 });
 
 function LeadRoute() {
-  const { lead } = Route.useLoaderData();
-  return <LeadDetailPage key={lead.id} lead={lead} />;
+    const { lead } = Route.useLoaderData();
+    return <LeadDetailPage key={lead.id} lead={lead} />;
 }
 
 function LeadError({ error, reset }: ErrorComponentProps) {
-  const queryErrorReset = useQueryErrorResetBoundary();
+    const queryErrorReset = useQueryErrorResetBoundary();
 
-  return (
-    <Alert
-      tone="danger"
-      title="Não foi possível carregar o lead."
-      action={
-        <Button
-          compact
-          onClick={() => {
-            queryErrorReset.reset();
-            reset();
-          }}
+    return (
+        <Alert
+            tone="danger"
+            title="Não foi possível carregar o lead."
+            action={
+                <Button
+                    compact
+                    onClick={() => {
+                        queryErrorReset.reset();
+                        reset();
+                    }}
+                >
+                    <Icon name="refresh" />
+                    Tentar novamente
+                </Button>
+            }
         >
-          <Icon name="refresh" />
-          Tentar novamente
-        </Button>
-      }
-    >
-      {describeError(error)}
-    </Alert>
-  );
+            {describeError(error)}
+        </Alert>
+    );
 }

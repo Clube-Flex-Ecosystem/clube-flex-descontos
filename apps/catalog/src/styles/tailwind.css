@@ -2,251 +2,254 @@
 
 /* Tokens: specs/apps/ui-foundations.md › Fundamentos do catálogo. */
 @theme static {
-  /* Foundation — não usar diretamente em componentes. */
-  --color-navy-50: #fafbfd;
-  --color-navy-100: #eef2f7;
-  --color-navy-200: #dce2ec;
-  --color-navy-300: #b4bfd0;
-  --color-navy-400: #7a879e;
-  --color-navy-500: #5e6a82;
-  --color-navy-600: #4a5670;
-  --color-navy-700: #333f59;
-  --color-navy-800: #18284a;
-  --color-navy-900: #04173a;
-  --color-orange-50: #fff6f0;
-  --color-orange-100: #ffe9db;
-  --color-orange-200: #ffcfb2;
-  --color-orange-400: #ff6b1f;
-  --color-orange-500: #fd5200;
-  --color-orange-600: #ea4b00;
-  --color-orange-700: #b83a00;
+    /* Foundation — não usar diretamente em componentes. */
+    --color-navy-50: #fafbfd;
+    --color-navy-100: #eef2f7;
+    --color-navy-200: #dce2ec;
+    --color-navy-300: #b4bfd0;
+    --color-navy-400: #7a879e;
+    --color-navy-500: #5e6a82;
+    --color-navy-600: #4a5670;
+    --color-navy-700: #333f59;
+    --color-navy-800: #18284a;
+    --color-navy-900: #04173a;
+    --color-orange-50: #fff6f0;
+    --color-orange-100: #ffe9db;
+    --color-orange-200: #ffcfb2;
+    --color-orange-400: #ff6b1f;
+    --color-orange-500: #fd5200;
+    --color-orange-600: #ea4b00;
+    --color-orange-700: #b83a00;
 
-  /* Papéis semânticos */
-  --color-background: var(--color-navy-50);
-  --color-surface: #fff;
-  --color-surface-muted: var(--color-navy-100);
-  --color-sidebar: var(--color-navy-900);
-  --color-sidebar-raised: var(--color-navy-800);
-  --color-sidebar-foreground: var(--color-navy-100);
-  --color-sidebar-muted: var(--color-navy-300);
-  --color-foreground: var(--color-navy-900);
-  --color-foreground-soft: var(--color-navy-700);
-  --color-muted-foreground: var(--color-navy-600);
-  --color-placeholder: var(--color-navy-500);
-  --color-border: var(--color-navy-200);
-  --color-border-strong: var(--color-navy-300);
-  --color-control-border: var(--color-navy-400);
-  --color-primary: var(--color-orange-500);
-  --color-primary-hover: var(--color-orange-400);
-  --color-primary-active: var(--color-orange-600);
-  --color-primary-foreground: var(--color-navy-900);
-  --color-accent-foreground: var(--color-orange-700);
-  --color-accent-strong: var(--color-orange-600);
-  --color-accent-soft: var(--color-orange-100);
-  --color-accent-subtle: var(--color-orange-50);
-  --color-brand-signal: var(--color-orange-500);
-  --color-focus: var(--color-orange-600);
-  --color-focus-on-dark: var(--color-orange-400);
-  --color-selection: var(--color-orange-200);
-  --color-selection-foreground: var(--color-navy-900);
-  --color-scrollbar-track: var(--color-background);
-  --color-scrollbar-thumb: var(--color-navy-400);
-  --color-scrollbar-thumb-hover: var(--color-navy-600);
-  --color-overlay: rgb(4 23 58 / 0.5);
-  --color-success: #157347;
-  --color-success-soft: #e7f6ee;
-  --color-warning: #8a5a00;
-  --color-warning-soft: #fdf3d7;
-  --color-danger: #b4233a;
-  --color-danger-soft: #fdecee;
-  --color-info: #1f56c4;
-  --color-info-soft: #e8effc;
+    /* Papéis semânticos */
+    --color-background: var(--color-navy-50);
+    --color-surface: #fff;
+    --color-surface-muted: var(--color-navy-100);
+    --color-sidebar: var(--color-navy-900);
+    --color-sidebar-raised: var(--color-navy-800);
+    --color-sidebar-foreground: var(--color-navy-100);
+    --color-sidebar-muted: var(--color-navy-300);
+    --color-foreground: var(--color-navy-900);
+    --color-foreground-soft: var(--color-navy-700);
+    --color-muted-foreground: var(--color-navy-600);
+    --color-placeholder: var(--color-navy-500);
+    --color-border: var(--color-navy-200);
+    --color-border-strong: var(--color-navy-300);
+    --color-control-border: var(--color-navy-400);
+    --color-primary: var(--color-orange-500);
+    --color-primary-hover: var(--color-orange-400);
+    --color-primary-active: var(--color-orange-600);
+    --color-primary-foreground: var(--color-navy-900);
+    --color-accent-foreground: var(--color-orange-700);
+    --color-accent-strong: var(--color-orange-600);
+    --color-accent-soft: var(--color-orange-100);
+    --color-accent-subtle: var(--color-orange-50);
+    --color-brand-signal: var(--color-orange-500);
+    --color-focus: var(--color-orange-600);
+    --color-focus-on-dark: var(--color-orange-400);
+    --color-selection: var(--color-orange-200);
+    --color-selection-foreground: var(--color-navy-900);
+    --color-scrollbar-track: var(--color-background);
+    --color-scrollbar-thumb: var(--color-navy-400);
+    --color-scrollbar-thumb-hover: var(--color-navy-600);
+    --color-overlay: rgb(4 23 58 / 0.5);
+    --color-success: #157347;
+    --color-success-soft: #e7f6ee;
+    --color-warning: #8a5a00;
+    --color-warning-soft: #fdf3d7;
+    --color-danger: #b4233a;
+    --color-danger-soft: #fdecee;
+    --color-info: #1f56c4;
+    --color-info-soft: #e8effc;
 
-  --font-sans:
-    'Archivo', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-display: var(--font-sans);
-  --font-weight-semibold: 650;
-  --font-weight-bold: 750;
+    --font-sans:
+        'Archivo', ui-sans-serif, system-ui, -apple-system, 'Segoe UI',
+        sans-serif;
+    --font-display: var(--font-sans);
+    --font-weight-semibold: 650;
+    --font-weight-bold: 750;
 
-  /* Escala tipográfica: specs/apps/ui-foundations.md › Tipografia (catálogo). */
-  --text-hero: clamp(40px, 4.4vw, 64px);
-  --text-hero--line-height: 0.98;
-  --text-hero--letter-spacing: -0.035em;
-  --text-hero--font-weight: 800;
-  --text-display: clamp(32px, 4.8vw, 52px);
-  --text-display--line-height: 1.04;
-  --text-display--letter-spacing: -0.03em;
-  --text-display--font-weight: 750;
-  --text-title: clamp(34px, 5vw, 56px);
-  --text-title--line-height: 1.02;
-  --text-title--letter-spacing: -0.03em;
-  --text-title--font-weight: 800;
-  --text-heading: 22px;
-  --text-heading--line-height: 1.2;
-  --text-heading--letter-spacing: -0.012em;
-  --text-heading--font-weight: 650;
-  --text-subheading: 19px;
-  --text-subheading--line-height: 1.25;
-  --text-subheading--letter-spacing: -0.012em;
-  --text-subheading--font-weight: 650;
-  --text-body-lg: 19px;
-  --text-body-lg--line-height: 1.55;
-  --text-control: 16px;
-  --text-control--line-height: 1.25;
-  --text-control-sm: 15px;
-  --text-control-sm--line-height: 1.25;
-  --text-nav: 15px;
-  --text-nav--line-height: 1.2;
-  --text-caption: 13px;
-  --text-caption--line-height: 1.35;
-  --text-eyebrow: 13px;
-  --text-eyebrow--line-height: 1.2;
-  --text-eyebrow--letter-spacing: 0.1em;
-  --text-eyebrow--font-weight: 750;
-  --text-number: 40px;
-  --text-number--line-height: 1;
-  --text-number--letter-spacing: -0.03em;
-  --text-number--font-weight: 800;
-  --text-number-sm: 26px;
-  --text-number-sm--line-height: 1;
-  --text-number-sm--letter-spacing: -0.02em;
-  --text-number-sm--font-weight: 800;
-  --text-number-step: 56px;
-  --text-number-step--line-height: 1;
-  --text-number-step--letter-spacing: -0.03em;
-  --text-number-step--font-weight: 800;
-  --text-number-lg: 72px;
-  --text-number-lg--line-height: 1;
-  --text-number-lg--letter-spacing: -0.03em;
-  --text-number-lg--font-weight: 800;
+    /* Escala tipográfica: specs/apps/ui-foundations.md › Tipografia (catálogo). */
+    --text-hero: clamp(40px, 4.4vw, 64px);
+    --text-hero--line-height: 0.98;
+    --text-hero--letter-spacing: -0.035em;
+    --text-hero--font-weight: 800;
+    --text-display: clamp(32px, 4.8vw, 52px);
+    --text-display--line-height: 1.04;
+    --text-display--letter-spacing: -0.03em;
+    --text-display--font-weight: 750;
+    --text-title: clamp(34px, 5vw, 56px);
+    --text-title--line-height: 1.02;
+    --text-title--letter-spacing: -0.03em;
+    --text-title--font-weight: 800;
+    --text-heading: 22px;
+    --text-heading--line-height: 1.2;
+    --text-heading--letter-spacing: -0.012em;
+    --text-heading--font-weight: 650;
+    --text-subheading: 19px;
+    --text-subheading--line-height: 1.25;
+    --text-subheading--letter-spacing: -0.012em;
+    --text-subheading--font-weight: 650;
+    --text-body-lg: 19px;
+    --text-body-lg--line-height: 1.55;
+    --text-control: 16px;
+    --text-control--line-height: 1.25;
+    --text-control-sm: 15px;
+    --text-control-sm--line-height: 1.25;
+    --text-nav: 15px;
+    --text-nav--line-height: 1.2;
+    --text-caption: 13px;
+    --text-caption--line-height: 1.35;
+    --text-eyebrow: 13px;
+    --text-eyebrow--line-height: 1.2;
+    --text-eyebrow--letter-spacing: 0.1em;
+    --text-eyebrow--font-weight: 750;
+    --text-number: 40px;
+    --text-number--line-height: 1;
+    --text-number--letter-spacing: -0.03em;
+    --text-number--font-weight: 800;
+    --text-number-sm: 26px;
+    --text-number-sm--line-height: 1;
+    --text-number-sm--letter-spacing: -0.02em;
+    --text-number-sm--font-weight: 800;
+    --text-number-step: 56px;
+    --text-number-step--line-height: 1;
+    --text-number-step--letter-spacing: -0.03em;
+    --text-number-step--font-weight: 800;
+    --text-number-lg: 72px;
+    --text-number-lg--line-height: 1;
+    --text-number-lg--letter-spacing: -0.03em;
+    --text-number-lg--font-weight: 800;
 
-  --radius-control: 12px;
-  --radius-card: 16px;
-  --radius-panel: 24px;
-  --radius-signature: 14px;
+    --radius-control: 12px;
+    --radius-card: 16px;
+    --radius-panel: 24px;
+    --radius-signature: 14px;
 
-  --shadow-soft: 0 1px 2px rgb(4 23 58 / 0.06);
-  --shadow-card:
-    0 1px 2px rgb(4 23 58 / 0.05), 0 12px 28px -10px rgb(4 23 58 / 0.18);
-  --shadow-float:
-    0 2px 4px rgb(4 23 58 / 0.06), 0 24px 48px -12px rgb(4 23 58 / 0.28);
-  --shadow-signature:
-    0 1px 1px rgb(4 23 58 / 0.25), 0 14px 28px -8px rgb(4 23 58 / 0.4),
-    0 44px 80px -24px rgb(4 23 58 / 0.5);
-  --shadow-brand:
-    inset 0 1px 0 rgb(255 255 255 / 0.35), inset 0 -2px 0 rgb(160 50 0 / 0.35),
-    0 6px 16px -6px rgb(253 82 0 / 0.55);
-  --shadow-brand-pressed: inset 0 2px 4px rgb(120 35 0 / 0.35);
+    --shadow-soft: 0 1px 2px rgb(4 23 58 / 0.06);
+    --shadow-card:
+        0 1px 2px rgb(4 23 58 / 0.05), 0 12px 28px -10px rgb(4 23 58 / 0.18);
+    --shadow-float:
+        0 2px 4px rgb(4 23 58 / 0.06), 0 24px 48px -12px rgb(4 23 58 / 0.28);
+    --shadow-signature:
+        0 1px 1px rgb(4 23 58 / 0.25), 0 14px 28px -8px rgb(4 23 58 / 0.4),
+        0 44px 80px -24px rgb(4 23 58 / 0.5);
+    --shadow-brand:
+        inset 0 1px 0 rgb(255 255 255 / 0.35),
+        inset 0 -2px 0 rgb(160 50 0 / 0.35),
+        0 6px 16px -6px rgb(253 82 0 / 0.55);
+    --shadow-brand-pressed: inset 0 2px 4px rgb(120 35 0 / 0.35);
 
-  --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
+    --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
 @layer base {
-  :root {
-    color-scheme: light;
-  }
-  html {
-    scroll-behavior: smooth;
-    scroll-padding-top: 80px;
-  }
-  body {
-    min-width: 320px;
-    background: var(--color-background);
-    color: var(--color-foreground);
-    font-family: var(--font-sans);
-    line-height: 1.55;
-    -webkit-font-smoothing: antialiased;
-  }
-  a {
-    color: inherit;
-  }
-  :focus-visible {
-    outline: 3px solid var(--color-focus);
-    outline-offset: 2px;
-  }
-  [data-surface='dark'] :focus-visible {
-    outline-color: var(--color-focus-on-dark);
-  }
-  ul,
-  ol {
-    list-style: none;
-    padding: 0;
-  }
-  input,
-  textarea {
-    caret-color: var(--color-focus);
-  }
-  ::placeholder {
-    color: var(--color-placeholder);
-    opacity: 1;
-  }
-  input:autofill {
-    box-shadow: 0 0 0 100px var(--color-accent-subtle) inset;
-    -webkit-text-fill-color: var(--color-foreground);
-  }
+    :root {
+        color-scheme: light;
+    }
+    html {
+        scroll-behavior: smooth;
+        scroll-padding-top: 80px;
+    }
+    body {
+        min-width: 320px;
+        background: var(--color-background);
+        color: var(--color-foreground);
+        font-family: var(--font-sans);
+        line-height: 1.55;
+        -webkit-font-smoothing: antialiased;
+    }
+    a {
+        color: inherit;
+    }
+    :focus-visible {
+        outline: 3px solid var(--color-focus);
+        outline-offset: 2px;
+    }
+    [data-surface='dark'] :focus-visible {
+        outline-color: var(--color-focus-on-dark);
+    }
+    ul,
+    ol {
+        list-style: none;
+        padding: 0;
+    }
+    input,
+    textarea {
+        caret-color: var(--color-focus);
+    }
+    ::placeholder {
+        color: var(--color-placeholder);
+        opacity: 1;
+    }
+    input:autofill {
+        box-shadow: 0 0 0 100px var(--color-accent-subtle) inset;
+        -webkit-text-fill-color: var(--color-foreground);
+    }
 }
 
 /* Estados globais do browser */
 ::selection {
-  background: var(--color-selection);
-  color: var(--color-selection-foreground);
+    background: var(--color-selection);
+    color: var(--color-selection-foreground);
 }
 
 ::-webkit-scrollbar {
-  width: 12px;
-  height: 12px;
+    width: 12px;
+    height: 12px;
 }
 ::-webkit-scrollbar-track,
 ::-webkit-scrollbar-corner {
-  background: var(--color-scrollbar-track);
+    background: var(--color-scrollbar-track);
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--color-scrollbar-thumb);
-  border: 3px solid var(--color-scrollbar-track);
-  border-radius: 999px;
+    background: var(--color-scrollbar-thumb);
+    border: 3px solid var(--color-scrollbar-track);
+    border-radius: 999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-scrollbar-thumb-hover);
+    background: var(--color-scrollbar-thumb-hover);
 }
 /* scrollbar-color desativa os pseudo-elementos WebKit no Chromium; usado só onde eles não existem. */
 @supports not selector(::-webkit-scrollbar) {
-  html {
-    scrollbar-color: var(--color-scrollbar-thumb) var(--color-scrollbar-track);
-  }
+    html {
+        scrollbar-color: var(--color-scrollbar-thumb)
+            var(--color-scrollbar-track);
+    }
 }
 
 @keyframes card-float {
-  50% {
-    transform: translateY(-8px);
-  }
+    50% {
+        transform: translateY(-8px);
+    }
 }
 @keyframes marquee {
-  to {
-    transform: translateX(-50%);
-  }
+    to {
+        transform: translateX(-50%);
+    }
 }
 @keyframes shimmer {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
 }
 @keyframes pop {
-  from {
-    opacity: 0;
-    transform: translateY(8px) scale(0.98);
-  }
+    from {
+        opacity: 0;
+        transform: translateY(8px) scale(0.98);
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    scroll-behavior: auto !important;
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
 }

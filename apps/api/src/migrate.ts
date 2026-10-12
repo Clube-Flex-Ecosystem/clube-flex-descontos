@@ -12,11 +12,11 @@ const logger = createLogger(env);
 const pool = createPool(env.DATABASE_URL);
 
 try {
-  await runMigrations(pool, migrationsFolder);
-  logger.info('Migrações aplicadas');
+    await runMigrations(pool, migrationsFolder);
+    logger.info('Migrações aplicadas');
 } catch (error) {
-  logger.error({ err: error }, 'Falha ao aplicar migrações');
-  process.exitCode = 1;
+    logger.error({ err: error }, 'Falha ao aplicar migrações');
+    process.exitCode = 1;
 } finally {
-  await pool.end();
+    await pool.end();
 }

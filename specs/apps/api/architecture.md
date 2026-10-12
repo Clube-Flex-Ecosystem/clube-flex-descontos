@@ -12,7 +12,7 @@
 - Resend como provedor de e-mails transacionais.
 - Drizzle para acesso ao PostgreSQL e migrações.
 - OpenAPI como descrição dos contratos HTTP.
-- Sessões opacas armazenadas no servidor e transportadas por cookie seguro.
+- JWT assinado, stateless e transportado por cookie seguro.
 - Envio direto de e-mails transacionais, sem fila ou worker nesta entrega.
 - Versão LTS do Node fixada e atualizada de forma controlada.
 - Zod como fonte dos esquemas de validação e geração compatível com OpenAPI.
@@ -28,18 +28,35 @@ A API será um monólito modular. Os módulos internos acompanharão as responsa
 
 `rota → controller → use case → interface de repository → implementação Drizzle`
 
+Na composição aprovada em 2026-10-12, `[modulo].route.ts` registra os
+controllers e middlewares. O controller instancia os repositories Drizzle sem
+passar a instância do banco e cria os use cases que chama. O repository importa
+o cliente compartilhado da infraestrutura e implementa o contrato do módulo.
+Cada use case mantém arquivo próprio em `use-cases/`. A composição central de
+todos os use cases é dispensada; Unit of Work permanece quando o use case
+coordena vários repositories em uma única transação. Transações encapsuladas
+por um repository permanecem nele. Ver [ADR-0006](../../adr/0006-arquitetura-interna-da-api.md).
+
 - A rota associa o endpoint ao controller e aos middlewares aplicáveis.
 - O controller recebe a requisição, valida seus dados com o esquema de contrato, chama o use case e traduz o resultado para HTTP.
 - O use case contém a coordenação e as regras da operação. Não acessa o banco diretamente e não conhece Express, Drizzle ou detalhes HTTP.
 - O use case depende de interfaces de repository específicas às necessidades do módulo.
-- Implementações Drizzle ficam na infraestrutura e satisfazem essas interfaces.
+- Implementações Drizzle ficam junto aos contratos do módulo e satisfazem essas interfaces; o cliente e o esquema do banco permanecem na infraestrutura compartilhada.
 - Regras e erros de aplicação não utilizam tipos HTTP.
 - Controllers constroem manualmente o objeto de resposta e nunca retornam diretamente o resultado do use case.
 
-### Organização inicial
+### Organização dos módulos
 
 ```text
 apps/api/src/
+  infrastructure/
+    database/
+      drizzle/
+        client.ts
+        schema.ts
+    email/
+    logger/
+    security/
   modules/
     catalog/
       controllers/
@@ -48,29 +65,21 @@ apps/api/src/
         publish-partner.use-case.ts
       repositories/
         partner.repository.ts
-        partner.repository.types.ts
-      schemas/
+        drizzle-partner.repository.ts
+      public-catalog.controller.ts
+      public-catalog.route.ts
     leads/
     identity/
     audit/
-  infrastructure/
-    database/
-      drizzle/
-        repositories/
-    logger/
-      logger.ts
-      http-logger.ts
-    email/
   http/
     middlewares/
       authentication.middleware.ts
       require-permissions.middleware.ts
-      csrf.middleware.ts
-      rate-limit.middleware.ts
       not-found.middleware.ts
       global-error-handler.middleware.ts
     routes/
-  shared/
+      admin-catalog.route.ts
+      auth.route.ts
 ```
 
 A estrutura pode ser reduzida em módulos pequenos; diretórios vazios ou abstrações sem consumidor não devem ser criados.
@@ -78,16 +87,15 @@ A estrutura pode ser reduzida em módulos pequenos; diretórios vazios ou abstra
 ### Fronteira HTTP e middlewares
 
 - Middlewares dependentes do Express ficam em `http/middlewares`; não contêm regras de negócio nem acessam Drizzle diretamente.
-- A resolução da sessão é feita por um use case próprio, que consulta a situação atual do usuário e suas permissões por contratos de repository.
-- As permissões são carregadas a cada requisição autenticada para que alterações tenham efeito imediato nas sessões abertas.
+- O middleware valida o JWT e consulta a situação atual do usuário e suas permissões pelos repositories do módulo.
+- As permissões são carregadas a cada requisição autenticada para que alterações tenham efeito imediato nos tokens já emitidos.
 - O middleware de autorização declara as permissões exigidas pela rota; ocultar elementos no dashboard não substitui a autorização na API.
-- Em operações autenticadas mutáveis, a proteção CSRF ocorre depois da resolução da sessão e antes do controller.
 - Rotas inexistentes são convertidas para o contrato padronizado pelo middleware de `not found`.
 - O tratador global de erros é o último middleware e converte falhas conhecidas para o contrato HTTP sem expor detalhes internos.
 
 Ordem conceitual:
 
-`request id/log HTTP → proteções HTTP e parsing → rate limit → rotas públicas ou resolução da sessão → autenticação → CSRF quando aplicável → autorização → controller → not found → tratador global de erros`
+`request id/log HTTP → proteções HTTP e parsing → CORS e validação de origem → rate limit quando aplicável → autenticação → autorização → controller → not found → tratador global de erros`
 
 ### Logs
 
@@ -111,20 +119,21 @@ Ordem conceitual:
 - Tipos de repository são próprios do módulo e não expõem linhas ou tipos inferidos do Drizzle.
 - Implementações concretas seguem nomes como `DrizzleLeadRepository`.
 - Dependências são recebidas pelo construtor e as implementações concretas são conectadas manualmente em um ponto de composição, sem biblioteca de DI.
-- Operações atômicas entre vários repositories utilizam um contrato de Unit of Work implementado com transações Drizzle.
+- Casos de uso que coordenam operações atômicas entre vários repositories utilizam um contrato de Unit of Work implementado com transações Drizzle.
 - Novas abstrações exigem uma necessidade real, evitando complexidade apenas para seguir um padrão.
 
 ### Controllers
 
 - Cada módulo pode manter seus controllers em um único arquivo.
+- Cada controller é exportado individualmente com nome descritivo, como `listPlansController`; rotas o importam diretamente.
 - Cada controller valida a entrada, executa um use case e mapeia explicitamente o resultado para o contrato HTTP.
+- Controllers não usam wrappers neutros ou objetos agrupadores de handlers.
 - Objetos de domínio, retornos de repository e resultados internos do use case não são serializados diretamente.
 - Erros de aplicação são independentes de HTTP e convertidos pelo controller ou tratador HTTP central.
 
 ### Estratégia de testes prevista
 
-- Testes unitários exercitam use cases com implementações controladas dos contratos de repository e Unit of Work.
-- Testes de integração da API exercitam a aplicação por HTTP, incluindo controllers, use cases, repositories Drizzle, migrações e PostgreSQL real em ambiente descartável.
+- Testes de integração da API exercitam a aplicação por HTTP, incluindo controllers, use cases, repositories Drizzle, migrações e PostgreSQL real em ambiente descartável. A API mantém somente essa suíte automatizada.
 - Localmente, o PostgreSQL de testes é iniciado por Docker Compose.
 - No GitHub Actions, cada execução utiliza uma instância isolada de PostgreSQL.
 - Todas as migrações são aplicadas antes da suíte.
@@ -137,7 +146,7 @@ Ordem conceitual:
 ## Encaminhamentos de implementação
 
 - Materializar esquemas Zod e OpenAPI conforme os contratos aprovados.
-- Definir a mecânica interna de limpeza de sessões e códigos expirados sem alterar seus prazos ou contratos.
+- Manter a limpeza de códigos expirados sem criar infraestrutura periódica enquanto o volume não a exigir.
 - Métricas, alertas e agregador externo de logs permanecem fora da primeira entrega.
 
 ## Referências oficiais
@@ -161,26 +170,25 @@ Ordem conceitual:
 
 ### Senhas
 
-- Hash com Argon2id e parâmetros mínimos recomendados pela OWASP, calibrados na VPS.
+- Hash de senhas com bcrypt e custo configurável, usando 12 rounds por padrão.
 - Comprimento entre 15 e 128 caracteres.
 - Unicode, espaços e colagem permitidos.
 - Sem regras obrigatórias de composição e sem expiração periódica.
 - Senhas comuns ou conhecidas como comprometidas devem ser recusadas.
 
-### Sessões
+### Autenticação
 
-- Sessões opacas persistidas no PostgreSQL.
-- Somente o hash do identificador é persistido.
-- Cookie host-only da API com prefixo `__Host-`, `Secure`, `HttpOnly` e `SameSite` adequado.
-- Identificador renovado após autenticação.
-- Expiração após 8 horas de inatividade ou 24 horas de duração absoluta.
-- Revogação imediata nos eventos especificados.
+- JWT assinado com validade de 8 horas e sem refresh token.
+- Cookie host-only da API com prefixo `__Host-`, `Secure`, `HttpOnly` e `SameSite=Strict`.
+- Cada login emite um token novo.
+- Alterar ou recuperar a senha e desativar a conta incrementam `authVersion`, invalidando tokens anteriores.
+- Não há tabela ou serviço de sessões.
 
-### CORS e CSRF
+### CORS e origem
 
 - Origens permitidas são declaradas explicitamente; `*` não é permitido com credenciais.
 - Operações mutáveis nunca utilizam `GET`.
-- Operações autenticadas exigem token CSRF vinculado à sessão e validação de origem.
+- O CORS aceita somente as origens configuradas para o dashboard e o catálogo; a política `SameSite=Strict` impede o envio normal do cookie em contexto entre sites.
 - Endpoints públicos do catálogo não recebem o cookie administrativo.
 
 ### Códigos de acesso

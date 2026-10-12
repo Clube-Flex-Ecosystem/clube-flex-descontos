@@ -10,30 +10,30 @@ import { plansKey } from '../queries/plans.query';
  * substituído; a tela oferece a reconciliação explícita com o servidor.
  */
 function useWritePlan() {
-  const queryClient = useQueryClient();
-  return (plan: Plan) =>
-    queryClient.setQueryData<Plan[]>(plansKey, (current) =>
-      upsertById(current, plan),
-    );
+    const queryClient = useQueryClient();
+    return (plan: Plan) =>
+        queryClient.setQueryData<Plan[]>(plansKey, (current) =>
+            upsertById(current, plan),
+        );
 }
 
 export function useCreatePlan() {
-  const write = useWritePlan();
-  return useMutation({ mutationFn: createPlan, onSuccess: write });
+    const write = useWritePlan();
+    return useMutation({ mutationFn: createPlan, onSuccess: write });
 }
 
 export function useUpdatePlan() {
-  const write = useWritePlan();
-  return useMutation({
-    mutationFn: updatePlan,
-    onSuccess: write,
-  });
+    const write = useWritePlan();
+    return useMutation({
+        mutationFn: updatePlan,
+        onSuccess: write,
+    });
 }
 
 export function useSetPlanStatus() {
-  const write = useWritePlan();
-  return useMutation({
-    mutationFn: setPlanStatus,
-    onSuccess: write,
-  });
+    const write = useWritePlan();
+    return useMutation({
+        mutationFn: setPlanStatus,
+        onSuccess: write,
+    });
 }

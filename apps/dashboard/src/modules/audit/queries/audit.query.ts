@@ -5,8 +5,8 @@ export const auditKey = ['audit'] as const;
 
 /** Uma página da auditoria; a página anterior permanece visível durante a troca. */
 export const auditQueryOptions = (filters: AuditFilters) =>
-  queryOptions({
-    queryKey: [...auditKey, filters],
-    queryFn: () => listAuditEvents(filters),
-    placeholderData: keepPreviousData,
-  });
+    queryOptions({
+        queryKey: [...auditKey, filters],
+        queryFn: () => listAuditEvents(filters),
+        placeholderData: keepPreviousData,
+    });

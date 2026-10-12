@@ -8,31 +8,34 @@ import { LeadsList } from '../components/leads-list';
 
 /** Cabeçalho e composição da página de pipeline. */
 export function LeadsPage() {
-  const canCreate = useCan('leads.create');
-  const [creating, setCreating] = useState(false);
+    const canCreate = useCan('leads.create');
+    const [creating, setCreating] = useState(false);
 
-  return (
-    <>
-      <PageHeader
-        title="Leads"
-        description="Pipeline comercial dos contatos que você pode visualizar."
-        actions={
-          canCreate ? (
-            <Button variant="primary" onClick={() => setCreating(true)}>
-              <Icon name="plus" />
-              Novo lead
-            </Button>
-          ) : null
-        }
-      />
+    return (
+        <>
+            <PageHeader
+                title="Leads"
+                description="Pipeline comercial dos contatos que você pode visualizar."
+                actions={
+                    canCreate ? (
+                        <Button
+                            variant="primary"
+                            onClick={() => setCreating(true)}
+                        >
+                            <Icon name="plus" />
+                            Novo lead
+                        </Button>
+                    ) : null
+                }
+            />
 
-      <Suspense fallback={<ListSkeleton label="Carregando leads" />}>
-        <LeadsList />
-      </Suspense>
+            <Suspense fallback={<ListSkeleton label="Carregando leads" />}>
+                <LeadsList />
+            </Suspense>
 
-      {creating ? (
-        <LeadCreateDrawer onClose={() => setCreating(false)} />
-      ) : null}
-    </>
-  );
+            {creating ? (
+                <LeadCreateDrawer onClose={() => setCreating(false)} />
+            ) : null}
+        </>
+    );
 }

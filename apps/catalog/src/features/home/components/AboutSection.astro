@@ -2,52 +2,56 @@
 import { BadgeCheck, CalendarDays, Check, Heart } from '@lucide/astro';
 
 const values = [
-  {
-    icon: BadgeCheck,
-    title: 'Parceiros selecionados',
-    text: 'Clínicas, escolas e espaços de lazer escolhidos com cuidado para atender você e sua família.',
-  },
-  {
-    icon: Heart,
-    title: 'Benefícios de verdade',
-    text: 'Descontos claros, de acordo com o seu plano, para usar no dia a dia.',
-  },
-  {
-    icon: Check,
-    title: 'Sem complicação',
-    text: 'Escolha o parceiro, siga as instruções de uso e aproveite.',
-  },
-  {
-    icon: CalendarDays,
-    title: 'Atualizações mensais',
-    text: 'Novos parceiros e condições entram no catálogo com frequência.',
-  },
+    {
+        icon: BadgeCheck,
+        title: 'Parceiros selecionados',
+        text: 'Clínicas, escolas e espaços de lazer escolhidos com cuidado para atender você e sua família.',
+    },
+    {
+        icon: Heart,
+        title: 'Benefícios de verdade',
+        text: 'Descontos claros, de acordo com o seu plano, para usar no dia a dia.',
+    },
+    {
+        icon: Check,
+        title: 'Sem complicação',
+        text: 'Escolha o parceiro, siga as instruções de uso e aproveite.',
+    },
+    {
+        icon: CalendarDays,
+        title: 'Atualizações mensais',
+        text: 'Novos parceiros e condições entram no catálogo com frequência.',
+    },
 ];
 ---
 
 <section class="py-18" id="sobre" aria-labelledby="about-title">
-  <div class="mx-auto w-full max-w-300 px-4 md:px-8">
-    <div class="max-w-170">
-      <p class="text-eyebrow font-stretch-115% uppercase text-accent-foreground">
-        Clube Flex
-      </p>
-      <h2
-        class="mt-2.5 font-display text-display font-stretch-110%"
-        id="about-title"
-      >
-        Mais que descontos. Uma rotina mais generosa.
-      </h2>
+    <div class="mx-auto w-full max-w-300 px-4 md:px-8">
+        <div class="max-w-170">
+            <p class="text-eyebrow font-stretch-115% uppercase text-accent-foreground">
+                Clube Flex
+            </p>
+            <h2
+                class="mt-2.5 font-display text-display font-stretch-110%"
+                id="about-title"
+            >
+                Mais que descontos. Uma rotina mais generosa.
+            </h2>
+        </div>
+        <ul class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {values.map(({ icon: Icon, title, text }) => (
+                <li class="rounded-card border border-border bg-surface p-6">
+                    <span class="grid h-12 w-12 place-items-center rounded-[14px] bg-surface-muted text-foreground">
+                        <Icon
+                            class="h-5 w-5"
+                            aria-hidden="true"
+                            stroke-width={1.75}
+                        />
+                    </span>
+                    <h3 class="mt-4.5 font-display text-subheading">{title}</h3>
+                    <p class="mt-2 text-foreground-soft">{text}</p>
+                </li>
+            ))}
+        </ul>
     </div>
-    <ul class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      {values.map(({ icon: Icon, title, text }) => (
-        <li class="rounded-card border border-border bg-surface p-6">
-          <span class="grid h-12 w-12 place-items-center rounded-[14px] bg-surface-muted text-foreground">
-            <Icon class="h-5 w-5" aria-hidden="true" stroke-width={1.75} />
-          </span>
-          <h3 class="mt-4.5 font-display text-subheading">{title}</h3>
-          <p class="mt-2 text-foreground-soft">{text}</p>
-        </li>
-      ))}
-    </ul>
-  </div>
 </section>

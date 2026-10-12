@@ -22,9 +22,10 @@ A API precisa permitir diagnóstico por um único mantenedor sem expor credencia
 - Registrar somente campos técnicos expressamente permitidos e aplicar redação defensiva a segredos.
 - Não registrar corpos, query strings, cookies, cabeçalhos de autenticação, IP ou dados pessoais por padrão.
 - Organizar componentes Express em `http/middlewares`.
-- Resolver sessão e permissões atuais por use case e repositories, sem acesso direto ao Drizzle pelos middlewares.
-- Aplicar autenticação, CSRF e autorização antes dos controllers conforme a natureza da rota.
+- Validar o JWT e consultar a conta e as permissões atuais no middleware de autenticação por repositories do módulo.
+- Aplicar validação de origem, autenticação e autorização antes dos controllers conforme a natureza da rota.
 - Centralizar rotas inexistentes e tradução de erros em middlewares finais.
+- Erros esperados estendem `AppError`; controllers deixam sua tradução para o middleware global.
 - Expor erros inesperados de forma genérica e registrar internamente o stack trace com o mesmo `requestId`.
 
 ## Consequências

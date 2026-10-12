@@ -1,26 +1,32 @@
 import type {
-  CatalogRepositories,
-  CatalogUnitOfWork,
+    CatalogRepositories,
+    CatalogUnitOfWork,
 } from '../../../modules/catalog/repositories/catalog-unit-of-work.types';
-import type { Database, DatabaseExecutor } from './client';
-import { DrizzleCategoryRepository } from './repositories/drizzle-category.repository';
-import { DrizzlePartnerRepository } from './repositories/drizzle-partner.repository';
-import { DrizzlePlanRepository } from './repositories/drizzle-plan.repository';
+import { db, type DatabaseExecutor } from './client';
+import { DrizzleCategoryRepository } from '../../../modules/catalog/repositories/drizzle-category.repository';
+import { DrizzlePartnerRepository } from '../../../modules/catalog/repositories/drizzle-partner.repository';
+import { DrizzlePlanRepository } from '../../../modules/catalog/repositories/drizzle-plan.repository';
 
 export function createCatalogRepositories(
-  executor: DatabaseExecutor,
+    transaction?: DatabaseExecutor,
 ): CatalogRepositories {
-  return {
-    plans: new DrizzlePlanRepository(executor),
-    categories: new DrizzleCategoryRepository(executor),
-    partners: new DrizzlePartnerRepository(executor),
-  };
+    return {
+        plans: transaction
+            ? new DrizzlePlanRepository().withTransaction(transaction)
+            : new DrizzlePlanRepository(),
+        categories: transaction
+            ? new DrizzleCategoryRepository().withTransaction(transaction)
+            : new DrizzleCategoryRepository(),
+        partners: transaction
+            ? new DrizzlePartnerRepository().withTransaction(transaction)
+            : new DrizzlePartnerRepository(),
+    };
 }
 
 export class DrizzleCatalogUnitOfWork implements CatalogUnitOfWork {
-  constructor(private readonly db: Database) {}
-
-  run<T>(work: (repositories: CatalogRepositories) => Promise<T>): Promise<T> {
-    return this.db.transaction((tx) => work(createCatalogRepositories(tx)));
-  }
+    run<T>(
+        work: (repositories: CatalogRepositories) => Promise<T>,
+    ): Promise<T> {
+        return db.transaction((tx) => work(createCatalogRepositories(tx)));
+    }
 }

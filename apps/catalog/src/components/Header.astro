@@ -3,100 +3,104 @@ import { Menu } from '@lucide/astro';
 import { button } from './ui/button';
 
 const navLink =
-  'inline-flex min-h-11 items-center rounded-control px-3.5 text-nav font-medium text-foreground no-underline hover:bg-surface-muted';
+    'inline-flex min-h-11 items-center rounded-control px-3.5 text-nav font-medium text-foreground no-underline hover:bg-surface-muted';
 const mobileLink =
-  'flex min-h-12 items-center border-b border-border font-medium text-foreground no-underline';
+    'flex min-h-12 items-center border-b border-border font-medium text-foreground no-underline';
 ---
 
 <a
-  class="absolute left-2 -top-15 z-100 rounded-control bg-foreground px-4 py-3 font-semibold text-surface focus:top-2"
-  href="#main"
+    class="absolute left-2 -top-15 z-100 rounded-control bg-foreground px-4 py-3 font-semibold text-surface focus:top-2"
+    href="#main"
 >
-  Ir para o conteúdo
+    Ir para o conteúdo
 </a>
 <header
-  class="sticky top-0 z-40 border-b border-transparent bg-background/88 backdrop-blur-[10px] backdrop-saturate-[1.4] transition-colors duration-200"
-  id="site-header"
+    class="sticky top-0 z-40 border-b border-transparent bg-background/88 backdrop-blur-[10px] backdrop-saturate-[1.4] transition-colors duration-200"
+    id="site-header"
 >
-  <div class="mx-auto flex h-17 w-full max-w-300 items-center gap-4 px-4 md:px-8">
-    <a
-      class="inline-flex min-h-11 items-center gap-0.5 font-display text-2xl font-bold font-stretch-110% tracking-[-0.02em] text-foreground no-underline"
-      href="/"
-      aria-label="Parceiros+ — página inicial"
-    >
-      Parceiros<span class="text-brand-signal">+</span>
-      <span
-        class="ml-2 rounded-xs border border-dashed border-border-strong px-1.25 py-px font-sans text-[10px] font-semibold font-stretch-100% uppercase tracking-[0.06em] text-muted-foreground"
-        aria-hidden="true"
-      >
-        logo provisória
-      </span>
-    </a>
+    <div class="mx-auto flex h-17 w-full max-w-300 items-center gap-4 px-4 md:px-8">
+        <a
+            class="inline-flex min-h-11 items-center gap-0.5 font-display text-2xl font-bold font-stretch-110% tracking-[-0.02em] text-foreground no-underline"
+            href="/"
+            aria-label="Parceiros+ — página inicial"
+        >
+            Parceiros<span class="text-brand-signal">+</span>
+            <span
+                class="ml-2 rounded-xs border border-dashed border-border-strong px-1.25 py-px font-sans text-[10px] font-semibold font-stretch-100% uppercase tracking-[0.06em] text-muted-foreground"
+                aria-hidden="true"
+            >
+                logo provisória
+            </span>
+        </a>
+        <nav
+            class="ml-auto hidden gap-0.5 min-[900px]:flex"
+            aria-label="Navegação principal"
+        >
+            <a class={navLink} href="/#sobre">
+                Sobre
+            </a>
+            <a class={navLink} href="/#parceiros">
+                Parceiros
+            </a>
+            <a class={navLink} href="/#como-funciona">
+                Como funciona
+            </a>
+        </nav>
+        <button
+            class={`${button('primary', 'sm')} ml-auto min-[900px]:ml-2 max-[420px]:hidden`}
+            type="button"
+            data-open-assistant="flex"
+        >
+            Vem ser Flex
+        </button>
+        <button
+            class="ml-1 inline-grid h-11 w-11 place-items-center rounded-control border-0 bg-transparent text-foreground hover:bg-surface-muted min-[900px]:hidden max-[420px]:ml-auto"
+            type="button"
+            aria-expanded="false"
+            aria-controls="mobile-nav"
+            aria-label="Abrir menu"
+        >
+            <Menu
+                class="h-5 w-5 shrink-0"
+                aria-hidden="true"
+                stroke-width={1.75}
+            />
+        </button>
+    </div>
     <nav
-      class="ml-auto hidden gap-0.5 min-[900px]:flex"
-      aria-label="Navegação principal"
+        class="border-t border-border bg-background px-4 pb-4 pt-2 md:px-8 min-[900px]:hidden"
+        id="mobile-nav"
+        aria-label="Navegação principal"
+        hidden
     >
-      <a class={navLink} href="/#sobre">
-        Sobre
-      </a>
-      <a class={navLink} href="/#parceiros">
-        Parceiros
-      </a>
-      <a class={navLink} href="/#como-funciona">
-        Como funciona
-      </a>
+        <a class={mobileLink} href="/#sobre">
+            Sobre
+        </a>
+        <a class={mobileLink} href="/#parceiros">
+            Parceiros
+        </a>
+        <a class={mobileLink} href="/#como-funciona">
+            Como funciona
+        </a>
     </nav>
-    <button
-      class={`${button('primary', 'sm')} ml-auto min-[900px]:ml-2 max-[420px]:hidden`}
-      type="button"
-      data-open-assistant="flex"
-    >
-      Vem ser Flex
-    </button>
-    <button
-      class="ml-1 inline-grid h-11 w-11 place-items-center rounded-control border-0 bg-transparent text-foreground hover:bg-surface-muted min-[900px]:hidden max-[420px]:ml-auto"
-      type="button"
-      aria-expanded="false"
-      aria-controls="mobile-nav"
-      aria-label="Abrir menu"
-    >
-      <Menu class="h-5 w-5 shrink-0" aria-hidden="true" stroke-width={1.75} />
-    </button>
-  </div>
-  <nav
-    class="border-t border-border bg-background px-4 pb-4 pt-2 md:px-8 min-[900px]:hidden"
-    id="mobile-nav"
-    aria-label="Navegação principal"
-    hidden
-  >
-    <a class={mobileLink} href="/#sobre">
-      Sobre
-    </a>
-    <a class={mobileLink} href="/#parceiros">
-      Parceiros
-    </a>
-    <a class={mobileLink} href="/#como-funciona">
-      Como funciona
-    </a>
-  </nav>
 </header>
 <script>
-  const button = document.querySelector<HTMLButtonElement>(
-    '[aria-controls="mobile-nav"]',
-  );
-  const menu = document.querySelector<HTMLElement>('#mobile-nav');
-  button?.addEventListener('click', () => {
-    const open = button.getAttribute('aria-expanded') === 'true';
-    button.setAttribute('aria-expanded', String(!open));
-    button.setAttribute('aria-label', open ? 'Abrir menu' : 'Fechar menu');
-    if (menu) menu.hidden = open;
-  });
-  addEventListener(
-    'scroll',
-    () =>
-      document
-        .querySelector('#site-header')
-        ?.classList.toggle('border-border', scrollY > 8),
-    { passive: true },
-  );
+    const button = document.querySelector<HTMLButtonElement>(
+        '[aria-controls="mobile-nav"]',
+    );
+    const menu = document.querySelector<HTMLElement>('#mobile-nav');
+    button?.addEventListener('click', () => {
+        const open = button.getAttribute('aria-expanded') === 'true';
+        button.setAttribute('aria-expanded', String(!open));
+        button.setAttribute('aria-label', open ? 'Abrir menu' : 'Fechar menu');
+        if (menu) menu.hidden = open;
+    });
+    addEventListener(
+        'scroll',
+        () =>
+            document
+                .querySelector('#site-header')
+                ?.classList.toggle('border-border', scrollY > 8),
+        { passive: true },
+    );
 </script>

@@ -1,114 +1,77 @@
-import express, { type Express } from 'express';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import express, { type Express, type RequestHandler } from 'express';
 import helmet from 'helmet';
 import type { Logger } from 'pino';
-import type { CatalogUseCases } from '../modules/catalog/controllers/catalog.controllers';
-import type { IdentityUseCases } from '../modules/identity/controllers/identity.controllers';
-import type { ResolveSessionUseCase } from '../modules/identity/use-cases/resolve-session.use-case';
+import { configureJwt } from '../infrastructure/security/jwt';
 import { createHttpLogger } from '../infrastructure/logger/http-logger';
-import { createCorsMiddleware } from './middlewares/cors.middleware';
-import { createOriginMiddleware } from './middlewares/csrf.middleware';
+import { publicCatalogRouter } from '../modules/catalog/public-catalog.route';
+import { publicContactRouter } from '../modules/leads/public-contact.route';
+import { authenticate } from './middlewares/authentication.middleware';
 import { globalErrorHandler } from './middlewares/global-error-handler.middleware';
 import { notFoundMiddleware } from './middlewares/not-found.middleware';
-import {
-  createAuthRateLimiters,
-  type AuthRateLimiters,
-} from './middlewares/rate-limit.middleware';
-import { createAdminCatalogRouter } from './routes/admin-catalog.routes';
-import { createAuthRouter } from './routes/auth.routes';
-import { createPublicCatalogRouter } from './routes/public-catalog.routes';
-import { createPublicContactRouter } from './routes/public-contact.routes';
-import { createAdminGovernanceRouter } from './routes/admin-governance.routes';
-import type { AdminUserUseCases } from '../modules/identity/controllers/admin-users.controllers';
-import type { QueryAuditEventsUseCase } from '../modules/audit/use-cases/query-audit-events.use-case';
-import { createAdminCommercialRouter } from './routes/admin-commercial.routes';
-import type { PublicContactService } from '../modules/leads/public-contact.service';
-import type { CommercialService } from '../modules/leads/commercial.service';
-import type { PublicCatalogService } from '../modules/catalog/use-cases/public-catalog.service';
-import {
-  createHealthRouter,
-  type ReadinessCheck,
-} from './routes/health.routes';
+import { adminCatalogRouter } from './routes/admin-catalog.route';
+import { adminCommercialRouter } from './routes/admin-commercial.route';
+import { adminGovernanceRouter } from './routes/admin-governance.route';
+import { authRouter } from './routes/auth.route';
+import { createHealthRouter, type ReadinessCheck } from './routes/health.route';
 
 export interface AppDependencies {
-  logger: Logger;
-  checkReadiness: ReadinessCheck;
-  identity: IdentityUseCases & {
-    resolveSession: ResolveSessionUseCase;
-    admin: AdminUserUseCases;
-  };
-  audit: { query: QueryAuditEventsUseCase };
-  catalog: CatalogUseCases & { public: PublicCatalogService };
-  leads: { public: PublicContactService; commercial: CommercialService };
-  /** Origens com permissão para CORS com credenciais e para operações mutáveis. */
-  allowedOrigins: readonly string[];
-  /** Proxies confiáveis à frente da API; `0` ignora `X-Forwarded-For`. */
-  trustProxyHops?: number;
-  limiters?: AuthRateLimiters;
+    logger: Logger;
+    checkReadiness: ReadinessCheck;
+    dashboardOrigin: string;
+    catalogOrigin: string;
+    authSecret: string;
+    trustProxyHops?: number;
 }
 
+const noStore: RequestHandler = (_req, res, next) => {
+    res.setHeader('cache-control', 'no-store');
+    next();
+};
+
 export function createApp({
-  logger,
-  checkReadiness,
-  identity,
-  audit,
-  catalog,
-  leads,
-  allowedOrigins,
-  trustProxyHops = 0,
-  limiters = createAuthRateLimiters(),
+    logger,
+    checkReadiness,
+    dashboardOrigin,
+    catalogOrigin,
+    authSecret,
+    trustProxyHops = 0,
 }: AppDependencies): Express {
-  const app = express();
-  app.disable('x-powered-by');
-  if (trustProxyHops > 0) app.set('trust proxy', trustProxyHops);
+    configureJwt(authSecret);
+    const app = express();
+    app.disable('x-powered-by');
+    if (trustProxyHops > 0) app.set('trust proxy', trustProxyHops);
 
-  app.use(createHttpLogger(logger));
-  app.use(helmet());
-  app.use(createCorsMiddleware(allowedOrigins));
-  app.use(express.json({ limit: '100kb' }));
+    app.use(createHttpLogger(logger));
+    app.use(helmet());
+    app.use(
+        cors({
+            origin: [dashboardOrigin, catalogOrigin],
+            credentials: true,
+            exposedHeaders: ['x-request-id', 'retry-after', 'etag'],
+            allowedHeaders: ['content-type', 'if-match'],
+            methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+            maxAge: 600,
+        }),
+    );
+    app.use(express.json({ limit: '100kb' }));
+    app.use(cookieParser());
 
-  app.use('/v1/health', createHealthRouter(checkReadiness));
-  app.use('/v1/public', createPublicCatalogRouter(catalog.public));
-  app.use('/v1/public', createPublicContactRouter(leads.public));
+    app.use('/v1/health', createHealthRouter(checkReadiness));
+    app.use('/v1/public', publicCatalogRouter, publicContactRouter);
 
-  app.use(
-    '/v1/auth',
-    createAuthRouter({
-      useCases: identity,
-      resolveSession: (input) => identity.resolveSession.execute(input),
-      limiters,
-      originGuard: createOriginMiddleware(allowedOrigins),
-    }),
-  );
+    app.use('/v1/auth', noStore, authRouter);
+    app.use(
+        '/v1/admin',
+        noStore,
+        authenticate,
+        adminCatalogRouter,
+        adminCommercialRouter,
+        adminGovernanceRouter,
+    );
 
-  app.use(
-    '/v1/admin',
-    createAdminCatalogRouter({
-      useCases: catalog,
-      resolveSession: (input) => identity.resolveSession.execute(input),
-      originGuard: createOriginMiddleware(allowedOrigins),
-    }),
-  );
-  app.use(
-    '/v1/admin',
-    createAdminCommercialRouter({
-      service: leads.commercial,
-      resolveSession: (input) => identity.resolveSession.execute(input),
-      originGuard: createOriginMiddleware(allowedOrigins),
-    }),
-  );
-
-  app.use(
-    '/v1/admin',
-    createAdminGovernanceRouter({
-      users: identity.admin,
-      audit: audit.query,
-      resolveSession: (input) => identity.resolveSession.execute(input),
-      originGuard: createOriginMiddleware(allowedOrigins),
-    }),
-  );
-
-  app.use(notFoundMiddleware);
-  app.use(globalErrorHandler);
-
-  return app;
+    app.use(notFoundMiddleware);
+    app.use(globalErrorHandler);
+    return app;
 }

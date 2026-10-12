@@ -8,8 +8,8 @@ export const sessionKey = ['session'] as const;
  * o que permite às rotas decidir o redirecionamento sem tratar erro.
  */
 export const sessionQueryOptions = queryOptions({
-  queryKey: sessionKey,
-  queryFn: fetchSession,
-  staleTime: 30_000,
-  retry: false,
+    queryKey: sessionKey,
+    queryFn: fetchSession,
+    staleTime: 30_000,
+    retry: false,
 });

@@ -61,39 +61,35 @@ Permitir o primeiro acesso seguro e estabelecer a autorização usada pelos incr
 ### Entregas
 
 - usuários, credenciais, sessões, códigos e permissões;
-- comando de bootstrap do primeiro administrador;
+- seed idempotente do usuário de suporte;
 - login, logout, ativação, recuperação e alteração de senha;
-- middlewares de sessão, autenticação, CSRF e permissões;
+- middlewares de autenticação, permissões e erros;
 - catálogo fixo de permissões;
 - shell autenticado e telas de acesso do dashboard;
 - testes de integração de autenticação, sessão e autorização.
 
-### Bootstrap inicial
+### Seed inicial
 
-- executado somente por terminal local ou console do container;
-- recebe nome completo e e-mail opcional;
-- cria o primeiro usuário ativo com todas as permissões existentes;
-- emite código de ativação pelas mesmas regras das demais contas;
-- nunca recebe nem define a senha;
-- recusa execução quando já existir qualquer usuário;
-- registra auditoria com ator técnico `system/bootstrap`.
+- executado por terminal local ou console do container;
+- cria ou atualiza o usuário `suporte` de forma idempotente;
+- concede todas as permissões existentes;
+- recebe a senha exclusivamente por `SEED_SUPPORT_PASSWORD`.
 
 ### Critério de saída
 
-O primeiro administrador consegue ativar a conta, autenticar-se e acessar somente operações permitidas. Sessão, CSRF e revogação estão cobertos por integração.
+O usuário de suporte consegue autenticar-se e acessar somente operações permitidas. JWT, cookie e revogação por `authVersion` estão cobertos por integração.
 
 ### Registro de execução
 
 Executado em 2026-10-10. Decisões tomadas durante a execução, dentro do escopo aprovado e detalhadas nos [contratos](../apps/api/contracts/README.md):
 
-- **Argon2id sem dependência nova:** usa `crypto.argon2` do Node 24. O hash guarda seus parâmetros (PHC), de modo que uma recalibração na VPS não invalida senhas existentes. Os parâmetros vêm do ambiente, com o mínimo da OWASP como padrão.
+- **bcrypt:** senhas usam bcrypt com custo configurável e 12 rounds por padrão.
 - **Senhas comuns:** a recusa usa uma lista curta embutida e a detecção de padrões repetidos. A verificação contra bases de vazamentos exige serviço externo e não foi implementada.
 - **E-mail:** a API chama diretamente a API HTTP do Resend por `fetch`, sem SDK. Sem `RESEND_API_KEY`, toda entrega cai no fluxo manual previsto (código exibido uma única vez).
-- **Token CSRF:** derivado da sessão (HMAC do identificador, sem novo armazenamento) e entregue no cabeçalho `X-CSRF-Token` da consulta da sessão, preservando o corpo contratado.
 - **Limitação de tentativas:** limitador progressivo em memória, adequado a uma única instância da API.
 - **Estilos do dashboard:** Tailwind CSS 4 materializa em `apps/dashboard/src/styles/tailwind.css` os tokens definidos nos fundamentos de interface (paleta laranja/navy e tipografia dos fundamentos do dashboard, hoje `Archivo`, substituindo a paleta verde proposta). Os protótipos foram realinhados aos tokens e passam a ser a fonte de construção da UI.
 - **Metadata de rota:** o título do documento é declarado no `head` de cada rota (`HeadContent` na raiz), sem `useEffect`.
-- **Auditoria:** a tabela de eventos nasce aqui para registrar o bootstrap (`user.created`, `user.permissions.updated`, `user.access-code.issued`); imutabilidade reforçada no banco, consulta e filtros ficam para o incremento 7.
+- **Auditoria:** a tabela de eventos nasce aqui para registrar alterações administrativas (`user.created`, `user.permissions.updated`, `user.access-code.issued`); imutabilidade reforçada no banco, consulta e filtros ficam para o incremento 7.
 - **Catálogo de permissões:** identificadores definidos em `packages/contracts` (ver contratos).
 - **Navegação do dashboard:** somente o grupo Conta existe; os demais grupos entram com seus módulos.
 
@@ -388,6 +384,19 @@ verificações de interação no protótipo.
 - API: a criação e a edição de origem não aplicam a unicidade normalizada de
   `RN-030` (por exemplo, "abordagem" e "Abordagem" coexistem) — fora do escopo
   desta revisão, que não altera a API.
+
+## Refatoração da arquitetura interna da API — 2026-10-12
+
+Executada na branch `refactor/api`, conforme a revisão do
+[ADR-0006](../adr/0006-arquitetura-interna-da-api.md): composição dos use cases
+nos controllers, repositories Drizzle sem banco no construtor, contratos e
+implementações próximos por módulo, rotas em arquivos `*.route.ts` e retirada
+do composition root. A operação comercial e o contato público passaram a
+separar casos de uso e persistência, preservando os contratos e transações.
+
+A API mantém somente testes de integração HTTP. A suíte anterior à mudança
+passou com 170 testes em 15 arquivos; a suíte HTTP após a refatoração passou
+com 116 testes em 9 arquivos. Typecheck, lint e build da API também passaram.
 
 ## Fora deste plano
 

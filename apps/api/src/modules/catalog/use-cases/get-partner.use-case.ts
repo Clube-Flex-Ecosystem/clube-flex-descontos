@@ -1,15 +1,15 @@
-import { ResourceNotFoundError } from '../errors';
+﻿import { ResourceNotFoundError } from '../errors';
 import type {
-  PartnerRecord,
-  PartnerRepository,
-} from '../repositories/partner.repository.types';
+    PartnerRecord,
+    PartnerRepository,
+} from '../repositories/partner.repository';
 
 export class GetPartnerUseCase {
-  constructor(private readonly partners: PartnerRepository) {}
+    constructor(private readonly partners: PartnerRepository) {}
 
-  async execute(input: { id: string }): Promise<PartnerRecord> {
-    const partner = await this.partners.findById(input.id);
-    if (!partner) throw new ResourceNotFoundError();
-    return partner;
-  }
+    async execute(input: { id: string }): Promise<PartnerRecord> {
+        const partner = await this.partners.findById(input.id);
+        if (!partner) throw new ResourceNotFoundError();
+        return partner;
+    }
 }

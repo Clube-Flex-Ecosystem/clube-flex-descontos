@@ -4,82 +4,89 @@ import { button } from '../../../components/ui/button';
 import FlexCard from './FlexCard.astro';
 
 const benefits = [
-  {
-    icon: Heart,
-    label: 'Saúde',
-    value: 'até 40%',
-    position: 'left-0 top-[10%]',
-  },
-  {
-    icon: BookOpen,
-    label: 'Educação',
-    value: 'até 30%',
-    position: 'right-0 bottom-[6%]',
-  },
+    {
+        icon: Heart,
+        label: 'Saúde',
+        value: 'até 40%',
+        position: 'left-0 top-[10%]',
+    },
+    {
+        icon: BookOpen,
+        label: 'Educação',
+        value: 'até 30%',
+        position: 'right-0 bottom-[6%]',
+    },
 ];
 ---
 
 <section
-  class="relative overflow-hidden pt-10 pb-14 min-[900px]:pt-16 min-[900px]:pb-22"
-  aria-labelledby="hero-title"
+    class="relative overflow-hidden pt-10 pb-14 min-[900px]:pt-16 min-[900px]:pb-22"
+    aria-labelledby="hero-title"
 >
-  <div class="mx-auto grid w-full max-w-300 items-center gap-10 px-4 md:px-8 min-[900px]:grid-cols-[1.3fr_.7fr] min-[900px]:gap-12">
-    <div>
-      <span class="inline-flex items-center gap-2.5 rounded-full border border-border bg-surface px-3.5 py-1.5 text-sm font-medium">
-        <i class="h-2 w-2 rounded-full bg-brand-signal" aria-hidden="true"></i>
-        Desde 2010 cuidando da sua família
-      </span>
-      <h1
-        class="mt-5 font-display text-hero font-stretch-112% text-balance"
-        id="hero-title"
-      >
-        Saúde e Qualidade de Vida que você e sua família merecem.
-      </h1>
-      <p class="mt-5 max-w-[34em] text-body-lg text-foreground-soft">
-        Saúde, Educação, lazer e muito mais. Vantagens reais para você e seu
-        bolso. Descontos que merecem ser contados.
-      </p>
-      <div class="mt-7 flex flex-wrap gap-3">
-        <button
-          class={`${button('primary')} flex-[1_1_200px] min-[560px]:flex-none`}
-          type="button"
-          data-open-assistant="flex"
-        >
-          Vem ser Flex
-        </button>
-        <a
-          class={`${button('secondary')} flex-[1_1_200px] min-[560px]:flex-none`}
-          href="#parceiros"
-        >
-          Explorar parceiros
-          <ChevronDown class="h-4 w-4" aria-hidden="true" stroke-width={1.75} />
-        </a>
-      </div>
-    </div>
-    <div
-      class="relative mx-auto aspect-square w-full max-w-115"
-      aria-hidden="true"
-    >
-      <div class="absolute inset-[4%_0_8%_6%] rounded-panel border border-border bg-surface-muted"></div>
-      <div class="absolute top-0 right-[4%] aspect-square w-[30%] rounded-full bg-brand-signal"></div>
-      <FlexCard class="absolute top-[26%] left-[14%] w-[72%] rotate-[-7deg] animate-[card-float_8s_ease-in-out_infinite] motion-reduce:animate-none" />
-      {benefits.map(({ icon: Icon, label, value, position }) => (
-        <div
-          class={`absolute ${position} flex items-center gap-3 rounded-card border border-border bg-surface px-4 py-3 shadow-card`}
-        >
-          <span class="grid h-10 w-10 place-items-center rounded-xl bg-surface-muted text-foreground">
-            <Icon class="h-5 w-5" stroke-width={1.75} />
-          </span>
-          <div>
-            <small class="block text-caption text-muted-foreground">
-              {label}
-            </small>
-            <strong class="block font-display text-number-sm font-stretch-108% tabular-nums text-accent-strong max-[380px]:text-xl">
-              {value}
-            </strong>
-          </div>
+    <div class="mx-auto grid w-full max-w-300 items-center gap-10 px-4 md:px-8 min-[900px]:grid-cols-[1.3fr_.7fr] min-[900px]:gap-12">
+        <div>
+            <span class="inline-flex items-center gap-2.5 rounded-full border border-border bg-surface px-3.5 py-1.5 text-sm font-medium">
+                <i
+                    class="h-2 w-2 rounded-full bg-brand-signal"
+                    aria-hidden="true"
+                ></i>
+                Desde 2010 cuidando da sua família
+            </span>
+            <h1
+                class="mt-5 font-display text-hero font-stretch-112% text-balance"
+                id="hero-title"
+            >
+                Saúde e Qualidade de Vida que você e sua família merecem.
+            </h1>
+            <p class="mt-5 max-w-[34em] text-body-lg text-foreground-soft">
+                Saúde, Educação, lazer e muito mais. Vantagens reais para você e
+                seu bolso. Descontos que merecem ser contados.
+            </p>
+            <div class="mt-7 flex flex-wrap gap-3">
+                <button
+                    class={`${button('primary')} flex-[1_1_200px] min-[560px]:flex-none`}
+                    type="button"
+                    data-open-assistant="flex"
+                >
+                    Vem ser Flex
+                </button>
+                <a
+                    class={`${button('secondary')} flex-[1_1_200px] min-[560px]:flex-none`}
+                    href="#parceiros"
+                >
+                    Explorar parceiros
+                    <ChevronDown
+                        class="h-4 w-4"
+                        aria-hidden="true"
+                        stroke-width={1.75}
+                    />
+                </a>
+            </div>
         </div>
-      ))}
+        <div
+            class="relative mx-auto aspect-square w-full max-w-115"
+            aria-hidden="true"
+        >
+            <div class="absolute inset-[4%_0_8%_6%] rounded-panel border border-border bg-surface-muted"></div>
+            <div class="absolute top-0 right-[4%] aspect-square w-[30%] rounded-full bg-brand-signal"></div>
+            <FlexCard class="absolute top-[26%] left-[14%] w-[72%] rotate-[-7deg] animate-[card-float_8s_ease-in-out_infinite] motion-reduce:animate-none" />
+            {benefits.map(({ icon: Icon, label, value, position }) => (
+                <div
+                    class={`absolute ${position} flex items-center gap-3 rounded-card border border-border bg-surface px-4 py-3 shadow-card`}
+                >
+                    <span class="grid h-10 w-10 place-items-center rounded-xl bg-surface-muted text-foreground">
+                        <Icon class="h-5 w-5" stroke-width={1.75} />
+                    </span>
+                    <div>
+                        <small class="block text-caption text-muted-foreground">
+                            {label}
+                        </small>
+                        <strong class="block font-display text-number-sm font-stretch-108% tabular-nums text-accent-strong max-[380px]:text-xl">
+                            {value}
+                        </strong>
+                    </div>
+                </div>
+            ))}
+        </div>
     </div>
-  </div>
 </section>

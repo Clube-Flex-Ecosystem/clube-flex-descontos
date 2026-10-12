@@ -7,7 +7,7 @@ const root = document.getElementById('root');
 if (!root) throw new Error('Elemento #root não encontrado');
 
 createRoot(root).render(
-  <StrictMode>
-    <Providers />
-  </StrictMode>,
+    <StrictMode>
+        <Providers />
+    </StrictMode>,
 );

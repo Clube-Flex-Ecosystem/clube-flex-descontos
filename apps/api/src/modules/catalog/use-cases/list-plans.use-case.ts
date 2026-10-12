@@ -1,12 +1,12 @@
-import type {
-  PlanRecord,
-  PlanRepository,
-} from '../repositories/plan.repository.types';
+﻿import type {
+    PlanRecord,
+    PlanRepository,
+} from '../repositories/plan.repository';
 
 export class ListPlansUseCase {
-  constructor(private readonly plans: PlanRepository) {}
+    constructor(private readonly plans: PlanRepository) {}
 
-  execute(): Promise<PlanRecord[]> {
-    return this.plans.list();
-  }
+    execute(): Promise<PlanRecord[]> {
+        return this.plans.list();
+    }
 }

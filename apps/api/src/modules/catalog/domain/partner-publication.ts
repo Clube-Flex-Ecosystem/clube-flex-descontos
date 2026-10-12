@@ -6,9 +6,9 @@ import { PublicationRequirementsError } from '../errors';
  * que o dashboard apresenta exatamente as mesmas pendências.
  */
 export function assertPublishable(
-  candidate: PublicationCandidate,
-  activePlanIds: ReadonlySet<string>,
+    candidate: PublicationCandidate,
+    activePlanIds: ReadonlySet<string>,
 ): void {
-  const issues = publicationIssues(candidate, activePlanIds);
-  if (issues.length > 0) throw new PublicationRequirementsError(issues);
+    const issues = publicationIssues(candidate, activePlanIds);
+    if (issues.length > 0) throw new PublicationRequirementsError(issues);
 }

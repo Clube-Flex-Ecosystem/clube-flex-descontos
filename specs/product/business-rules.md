@@ -320,7 +320,7 @@ Uma conta nova deve iniciar sem permissões. Todas as suas capacidades devem ser
 - Um usuário autenticado pode alterar sua própria senha.
 - Administradores não definem nem precisam conhecer as senhas dos usuários.
 - Emitir um novo código de ativação ou recuperação invalida os códigos anteriores da mesma finalidade.
-- Alterar ou recuperar a senha encerra as demais sessões ativas da conta.
+- Alterar ou recuperar a senha invalida os JWTs emitidos anteriormente para a conta.
 
 Prazo, formato, armazenamento e forma segura de entrega dos códigos serão definidos nas etapas de segurança e arquitetura.
 

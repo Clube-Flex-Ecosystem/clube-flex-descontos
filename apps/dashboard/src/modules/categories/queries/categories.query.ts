@@ -5,6 +5,6 @@ export const categoriesKey = ['categories'] as const;
 
 /** Coleção completa de planos (ativos e inativos); a listagem não é paginada. */
 export const categoriesQueryOptions = queryOptions({
-  queryKey: categoriesKey,
-  queryFn: listCategories,
+    queryKey: categoriesKey,
+    queryFn: listCategories,
 });

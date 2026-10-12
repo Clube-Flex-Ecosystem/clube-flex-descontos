@@ -11,14 +11,12 @@
 - Não haverá meta percentual global de cobertura sem relação com risco.
 - Um teste deve ser determinístico, independente da ordem e claro sobre o comportamento protegido.
 
-## Testes unitários seletivos
+## Testes da API
 
 - Vitest é o executor.
-- Testes de integração por HTTP são a principal garantia da API.
-- CRUDs e casos de uso simples não precisam repetir em testes unitários o comportamento já coberto pela integração.
-- Testes unitários são usados quando regras com muitas ramificações ficam mais claras, rápidas ou completas isoladamente.
-- Candidatos prioritários: publicação de parceiro, novo interesse existente, escopo de leads, proteção do último administrador, exclusão ou anonimização, códigos temporais e precedência de cupons.
-- Quando aplicável, usam implementações controladas de repository, Unit of Work, e-mail, relógio e identificadores.
+- A API mantém somente testes de integração por HTTP, exercitando as rotas e a aplicação Express completa.
+- Cenários de regras ramificadas, segurança, transações e contratos são cobertos nessa suíte, sem testes unitários paralelos de use cases ou repositories.
+- Relógio e serviços externos podem ser controlados para reproduzir expiração e falhas; PostgreSQL e repositories Drizzle participam da execução real.
 
 ## Testes de integração da API
 
@@ -50,7 +48,7 @@ Devem possuir testes automatizados:
 - autenticação e encerramento de sessão;
 - efeito imediato de alterações de permissões;
 - escopo de visualização e edição de leads;
-- proteção CSRF;
+- autenticação por cookie `HttpOnly`, `Secure` e `SameSite=Strict`;
 - resposta neutra contra enumeração de contatos e contas;
 - expiração, tentativas, uso único e invalidação de códigos;
 - fallback manual seguro quando o envio administrativo de código falhar;
@@ -74,11 +72,10 @@ Devem possuir testes automatizados:
 - formatação;
 - lint;
 - TypeScript;
-- testes unitários;
-- testes de integração;
+- testes de integração das rotas da API;
 - testes E2E críticos;
 - build de catálogo, dashboard e API;
-- aplicação e validação das migrations em banco vazio;
+- aplicação das migrations no preparo do banco usado pelos testes de integração;
 - coerência ou geração do OpenAPI a partir dos esquemas aprovados.
 
 Falhas obrigatórias impedem merge protegido e deploy automático.
@@ -87,7 +84,7 @@ Falhas obrigatórias impedem merge protegido e deploy automático.
 
 São obrigatoriamente cobertos:
 
-- regras de publicação e visibilidade do catálogo, por integração e unidade quando a ramificação justificar;
+- regras de publicação e visibilidade do catálogo, por integração pelas rotas da API;
 - benefícios e precedência de cupons;
 - duplicidade e histórico de leads;
 - pipeline, atribuição e escopo de acesso;
