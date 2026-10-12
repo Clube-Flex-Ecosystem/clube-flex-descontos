@@ -8,6 +8,7 @@ export default tseslint.config(
     ignores: [
       '**/dist/**',
       '**/.astro/**',
+      '**/.vercel/**',
       '**/node_modules/**',
       '**/*.astro',
       'apps/dashboard/src/routeTree.gen.ts',
