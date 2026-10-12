@@ -1,12 +1,12 @@
 import type { Request, RequestHandler, Response } from 'express';
 import {
-  createUserRequestSchema,
-  issueAccessCodeRequestSchema,
-  permissionAreas,
-  replacePermissionsRequestSchema,
-  updateUserRequestSchema,
-  type AdminUser,
-  type PermissionCatalogEntry,
+    createUserRequestSchema,
+    issueAccessCodeRequestSchema,
+    permissionAreas,
+    replacePermissionsRequestSchema,
+    updateUserRequestSchema,
+    type AdminUser,
+    type PermissionCatalogEntry,
 } from '@flex/contracts';
 import { HttpError } from '../../../errors/app-error';
 import { readExpectedVersion, sendVersioned } from '../../../http/versioning';
@@ -17,9 +17,9 @@ import { DrizzleUserRepository } from '../repositories/drizzle-user.repository';
 import { DrizzlePermissionRepository } from '../repositories/drizzle-permission.repository';
 import { AccessCodeDelivery } from '../access-code-delivery';
 import type {
-  AdminActor,
-  UserView,
-  UserWithAccessCode,
+    AdminActor,
+    UserView,
+    UserWithAccessCode,
 } from '../admin-user.types';
 import { CreateUserUseCase } from '../use-cases/create-user.use-case';
 import { GetUserUseCase } from '../use-cases/get-user.use-case';
@@ -33,170 +33,166 @@ const usersRepository = new DrizzleUserRepository();
 const permissionsRepository = new DrizzlePermissionRepository();
 const unitOfWork = new DrizzleUnitOfWork();
 const delivery = new AccessCodeDelivery(
-  emailSender,
-  (process.env.DASHBOARD_ORIGIN ?? 'http://localhost:5173').replace(/\/+$/, ''),
+    emailSender,
+    (process.env.DASHBOARD_ORIGIN ?? 'http://localhost:5173').replace(
+        /\/+$/,
+        '',
+    ),
 );
 
 const useCases = {
-  listUsers: new ListUsersUseCase(unitOfWork),
-  getUser: new GetUserUseCase(usersRepository, permissionsRepository),
-  createUser: new CreateUserUseCase(unitOfWork, delivery, clock),
-  updateUser: new UpdateUserUseCase(unitOfWork, clock),
-  setUserStatus: new SetUserStatusUseCase(unitOfWork, clock),
-  issueAccessCode: new IssueAccessCodeUseCase(unitOfWork, delivery, clock),
-  replaceUserPermissions: new ReplaceUserPermissionsUseCase(unitOfWork, clock),
+    listUsers: new ListUsersUseCase(unitOfWork),
+    getUser: new GetUserUseCase(usersRepository, permissionsRepository),
+    createUser: new CreateUserUseCase(unitOfWork, delivery, clock),
+    updateUser: new UpdateUserUseCase(unitOfWork, clock),
+    setUserStatus: new SetUserStatusUseCase(unitOfWork, clock),
+    issueAccessCode: new IssueAccessCodeUseCase(unitOfWork, delivery, clock),
+    replaceUserPermissions: new ReplaceUserPermissionsUseCase(
+        unitOfWork,
+        clock,
+    ),
 };
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /** Montagem explícita da representação administrativa (nunca expõe hash ou códigos persistidos). */
 function toAdminUser(
-  view: UserView,
-  issued?: UserWithAccessCode['issued'],
+    view: UserView,
+    issued?: UserWithAccessCode['issued'],
 ): AdminUser {
-  const { account } = view;
-  return {
-    id: account.id,
-    fullName: account.fullName,
-    username: account.username,
-    ...(account.email ? { email: account.email } : {}),
-    status: account.status,
-    accessStatus: !account.passwordHash
-      ? 'pendingActivation'
-      : account.passwordChangeRequired
-        ? 'passwordChangeRequired'
-        : 'active',
-    permissions: view.permissions,
-    version: account.version,
-    deleted: false,
-    ...(issued
-      ? {
-          accessCodeDelivery: issued.delivery,
-          accessCodeExpiresAt: issued.expiresAt.toISOString(),
-          ...(issued.code ? { accessCode: issued.code } : {}),
-          ...(issued.deliveryFailed
-            ? { warnings: ['EMAIL_DELIVERY_FAILED' as const] }
+    const { account } = view;
+    return {
+        id: account.id,
+        fullName: account.fullName,
+        username: account.username,
+        ...(account.email ? { email: account.email } : {}),
+        status: account.status,
+        accessStatus: !account.passwordHash
+            ? 'pendingActivation'
+            : account.passwordChangeRequired
+              ? 'passwordChangeRequired'
+              : 'active',
+        permissions: view.permissions,
+        version: account.version,
+        deleted: false,
+        ...(issued
+            ? {
+                  accessCodeDelivery: issued.delivery,
+                  accessCodeExpiresAt: issued.expiresAt.toISOString(),
+                  ...(issued.code ? { accessCode: issued.code } : {}),
+                  ...(issued.deliveryFailed
+                      ? { warnings: ['EMAIL_DELIVERY_FAILED' as const] }
+                      : {}),
+              }
             : {}),
-        }
-      : {}),
-  };
+    };
 }
 
 // Use cases e adapter Drizzle são ligados junto aos controllers HTTP.
 const actorOf = (req: Request): AdminActor => {
-  // A autenticação obrigatória precede estes controllers.
-  if (!req.auth) throw new Error('Rota autenticada sem sessão resolvida');
-  return { id: req.auth.user.id, username: req.auth.user.username };
+    // A autenticação obrigatória precede estes controllers.
+    if (!req.auth) throw new Error('Rota autenticada sem sessão resolvida');
+    return { id: req.auth.user.id, username: req.auth.user.username };
 };
 
 const idOf = (req: Request, _res: Response): string | undefined => {
-  void _res;
-  const id = req.params.id;
-  if (typeof id === 'string' && UUID.test(id)) return id;
-  throw new HttpError('RESOURCE_NOT_FOUND');
+    void _res;
+    const id = req.params.id;
+    if (typeof id === 'string' && UUID.test(id)) return id;
+    throw new HttpError('RESOURCE_NOT_FOUND');
 };
 
-const guarded = (
-  handler: (req: Request, res: Response) => Promise<void>,
-): RequestHandler => handler;
+export const listUsersController: RequestHandler = async (_req, res) => {
+    const views = await useCases.listUsers.execute();
+    res.json(views.map((view) => toAdminUser(view)));
+};
 
-const list = guarded(async (_req, res) => {
-  const views = await useCases.listUsers.execute();
-  res.json(views.map((view) => toAdminUser(view)));
-});
+export const getUserController: RequestHandler = async (req, res) => {
+    const id = idOf(req, res);
+    if (!id) return;
+    sendVersioned(res, toAdminUser(await useCases.getUser.execute(id)));
+};
 
-const get = guarded(async (req, res) => {
-  const id = idOf(req, res);
-  if (!id) return;
-  sendVersioned(res, toAdminUser(await useCases.getUser.execute(id)));
-});
+export const createUserController: RequestHandler = async (req, res) => {
+    const body = createUserRequestSchema.parse(req.body);
+    const result = await useCases.createUser.execute({
+        actor: actorOf(req),
+        fullName: body.fullName,
+        ...(body.email ? { email: body.email } : {}),
+    });
+    sendVersioned(res, toAdminUser(result, result.issued), 201);
+};
 
-const create = guarded(async (req, res) => {
-  const body = createUserRequestSchema.parse(req.body);
-  const result = await useCases.createUser.execute({
-    actor: actorOf(req),
-    fullName: body.fullName,
-    ...(body.email ? { email: body.email } : {}),
-  });
-  sendVersioned(res, toAdminUser(result, result.issued), 201);
-});
-
-const update = guarded(async (req, res) => {
-  const id = idOf(req, res);
-  if (!id) return;
-  const version = readExpectedVersion(req, res);
-  if (version === undefined) return;
-  const body = updateUserRequestSchema.parse(req.body);
-  const view = await useCases.updateUser.execute({
-    actor: actorOf(req),
-    userId: id,
-    expectedVersion: version,
-    fullName: body.fullName,
-    username: body.username,
-    ...(body.email ? { email: body.email } : {}),
-  });
-  sendVersioned(res, toAdminUser(view));
-});
-
-const setStatus = (status: 'active' | 'inactive') =>
-  guarded(async (req, res) => {
+export const updateUserController: RequestHandler = async (req, res) => {
     const id = idOf(req, res);
     if (!id) return;
     const version = readExpectedVersion(req, res);
     if (version === undefined) return;
-    const view = await useCases.setUserStatus.execute({
-      actor: actorOf(req),
-      userId: id,
-      expectedVersion: version,
-      status,
+    const body = updateUserRequestSchema.parse(req.body);
+    const view = await useCases.updateUser.execute({
+        actor: actorOf(req),
+        userId: id,
+        expectedVersion: version,
+        fullName: body.fullName,
+        username: body.username,
+        ...(body.email ? { email: body.email } : {}),
     });
     sendVersioned(res, toAdminUser(view));
-  });
-
-const issueAccessCode = guarded(async (req, res) => {
-  const id = idOf(req, res);
-  if (!id) return;
-  const body = issueAccessCodeRequestSchema.parse(req.body);
-  const result = await useCases.issueAccessCode.execute({
-    actor: actorOf(req),
-    userId: id,
-    purpose: body.purpose,
-  });
-  // O código aparece somente nesta resposta e não deve ser armazenado em cache.
-  sendVersioned(res, toAdminUser(result, result.issued), 201);
-});
-
-const replacePermissions = guarded(async (req, res) => {
-  const id = idOf(req, res);
-  if (!id) return;
-  const version = readExpectedVersion(req, res);
-  if (version === undefined) return;
-  const body = replacePermissionsRequestSchema.parse(req.body);
-  const view = await useCases.replaceUserPermissions.execute({
-    actor: actorOf(req),
-    userId: id,
-    expectedVersion: version,
-    permissions: body.permissions,
-  });
-  sendVersioned(res, toAdminUser(view));
-});
-
-const permissionCatalog: RequestHandler = (_req, res) => {
-  const entries: PermissionCatalogEntry[] = permissionAreas.flatMap(
-    ({ area, items }) =>
-      items.map((item) => ({ id: item.id, area, label: item.label })),
-  );
-  res.json(entries);
 };
 
-export const adminUserControllers = {
-  list,
-  get,
-  create,
-  update,
-  activate: setStatus('active'),
-  deactivate: setStatus('inactive'),
-  issueAccessCode,
-  replacePermissions,
-  permissionCatalog,
+const setUserStatusController =
+    (status: 'active' | 'inactive') => async (req: Request, res: Response) => {
+        const id = idOf(req, res);
+        if (!id) return;
+        const version = readExpectedVersion(req, res);
+        if (version === undefined) return;
+        const view = await useCases.setUserStatus.execute({
+            actor: actorOf(req),
+            userId: id,
+            expectedVersion: version,
+            status,
+        });
+        sendVersioned(res, toAdminUser(view));
+    };
+
+export const issueAccessCodeController: RequestHandler = async (req, res) => {
+    const id = idOf(req, res);
+    if (!id) return;
+    const body = issueAccessCodeRequestSchema.parse(req.body);
+    const result = await useCases.issueAccessCode.execute({
+        actor: actorOf(req),
+        userId: id,
+        purpose: body.purpose,
+    });
+    // O código aparece somente nesta resposta e não deve ser armazenado em cache.
+    sendVersioned(res, toAdminUser(result, result.issued), 201);
 };
+
+export const replaceUserPermissionsController: RequestHandler = async (
+    req,
+    res,
+) => {
+    const id = idOf(req, res);
+    if (!id) return;
+    const version = readExpectedVersion(req, res);
+    if (version === undefined) return;
+    const body = replacePermissionsRequestSchema.parse(req.body);
+    const view = await useCases.replaceUserPermissions.execute({
+        actor: actorOf(req),
+        userId: id,
+        expectedVersion: version,
+        permissions: body.permissions,
+    });
+    sendVersioned(res, toAdminUser(view));
+};
+
+export const listPermissionCatalogController: RequestHandler = (_req, res) => {
+    const entries: PermissionCatalogEntry[] = permissionAreas.flatMap(
+        ({ area, items }) =>
+            items.map((item) => ({ id: item.id, area, label: item.label })),
+    );
+    res.json(entries);
+};
+
+export const activateUserController = setUserStatusController('active');
+export const deactivateUserController = setUserStatusController('inactive');

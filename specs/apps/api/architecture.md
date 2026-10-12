@@ -90,7 +90,6 @@ A estrutura pode ser reduzida em módulos pequenos; diretórios vazios ou abstra
 - O middleware valida o JWT e consulta a situação atual do usuário e suas permissões pelos repositories do módulo.
 - As permissões são carregadas a cada requisição autenticada para que alterações tenham efeito imediato nos tokens já emitidos.
 - O middleware de autorização declara as permissões exigidas pela rota; ocultar elementos no dashboard não substitui a autorização na API.
-- Em operações mutáveis, a API rejeita origens declaradas diferentes da origem configurada para o dashboard.
 - Rotas inexistentes são convertidas para o contrato padronizado pelo middleware de `not found`.
 - O tratador global de erros é o último middleware e converte falhas conhecidas para o contrato HTTP sem expor detalhes internos.
 
@@ -126,7 +125,9 @@ Ordem conceitual:
 ### Controllers
 
 - Cada módulo pode manter seus controllers em um único arquivo.
+- Cada controller é exportado individualmente com nome descritivo, como `listPlansController`; rotas o importam diretamente.
 - Cada controller valida a entrada, executa um use case e mapeia explicitamente o resultado para o contrato HTTP.
+- Controllers não usam wrappers neutros ou objetos agrupadores de handlers.
 - Objetos de domínio, retornos de repository e resultados internos do use case não são serializados diretamente.
 - Erros de aplicação são independentes de HTTP e convertidos pelo controller ou tratador HTTP central.
 

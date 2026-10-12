@@ -1,11 +1,11 @@
 import type { Request, RequestHandler, Response } from 'express';
 import {
-  assigneeRequestSchema,
-  createLeadRequestSchema,
-  leadSourceRequestSchema,
-  observationRequestSchema,
-  stageTransitionRequestSchema,
-  updateLeadRequestSchema,
+    assigneeRequestSchema,
+    createLeadRequestSchema,
+    leadSourceRequestSchema,
+    observationRequestSchema,
+    stageTransitionRequestSchema,
+    updateLeadRequestSchema,
 } from '@flex/contracts';
 import { HttpError } from '../../errors/app-error';
 import { readExpectedVersion, sendVersioned } from '../../http/versioning';
@@ -42,14 +42,14 @@ const leadRepository = new DrizzleCommercialRepository();
 const listLeads = new ListCommercialLeadsUseCase(leadRepository);
 const getLead = new GetCommercialLeadUseCase(leadRepository);
 const createLead = new CreateCommercialLeadUseCase(
-  leadRepository,
-  sourceRepository,
-  clock,
+    leadRepository,
+    sourceRepository,
+    clock,
 );
 const updateLead = new UpdateCommercialLeadUseCase(
-  leadRepository,
-  sourceRepository,
-  clock,
+    leadRepository,
+    sourceRepository,
+    clock,
 );
 const changeStage = new ChangeLeadStageUseCase(leadRepository, clock);
 const assignLead = new AssignLeadUseCase(leadRepository, clock);
@@ -62,161 +62,194 @@ const listAssignees = new ListActiveAssigneesUseCase(leadRepository);
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 function actor(req: Request) {
-  const a = req.auth!;
-  return {
-    id: a.user.id,
-    fullName: a.user.fullName,
-    username: a.user.username,
-    permissions: a.permissions,
-  };
+    const a = req.auth!;
+    return {
+        id: a.user.id,
+        fullName: a.user.fullName,
+        username: a.user.username,
+        permissions: a.permissions,
+    };
 }
-const wrap = (
-  handler: (req: Request, res: Response) => Promise<void>,
-): RequestHandler => handler;
 const id = (req: Request, _res: Response) => {
-  void _res;
-  const value = req.params.id;
-  if (typeof value !== 'string' || !UUID.test(value)) {
-    throw new HttpError('RESOURCE_NOT_FOUND');
-  }
-  return value;
+    void _res;
+    const value = req.params.id;
+    if (typeof value !== 'string' || !UUID.test(value)) {
+        throw new HttpError('RESOURCE_NOT_FOUND');
+    }
+    return value;
 };
 const version = (req: Request, res: Response) => readExpectedVersion(req, res);
 const parsed = <T>(
-  schema: {
-    parse: (value: unknown) => T;
-  },
-  req: Request,
+    schema: {
+        parse: (value: unknown) => T;
+    },
+    req: Request,
 ): T | undefined => {
-  return schema.parse(req.body);
+    return schema.parse(req.body);
 };
 
-export const commercialControllers = {
-  leads: {
-    list: wrap(async (req, res) => {
-      res.json(await listLeads.execute(actor(req)));
-    }),
-    get: wrap(async (req, res) => {
-      const i = id(req, res);
-      if (i) sendVersioned(res, await getLead.execute(actor(req), i));
-    }),
-    create: wrap(async (req, res) => {
-      const b = parsed(createLeadRequestSchema, req);
-      if (b) sendVersioned(res, await createLead.execute(actor(req), b), 201);
-    }),
-    update: wrap(async (req, res) => {
-      const i = id(req, res),
+export const listCommercialLeadsController: RequestHandler = async (
+    req,
+    res,
+) => {
+    res.json(await listLeads.execute(actor(req)));
+};
+
+export const getCommercialLeadController: RequestHandler = async (req, res) => {
+    const i = id(req, res);
+    if (i) sendVersioned(res, await getLead.execute(actor(req), i));
+};
+
+export const createCommercialLeadController: RequestHandler = async (
+    req,
+    res,
+) => {
+    const b = parsed(createLeadRequestSchema, req);
+    if (b) sendVersioned(res, await createLead.execute(actor(req), b), 201);
+};
+
+export const updateCommercialLeadController: RequestHandler = async (
+    req,
+    res,
+) => {
+    const i = id(req, res),
         v = version(req, res),
         b = parsed(updateLeadRequestSchema, req);
-      if (i && v !== undefined && b)
+    if (i && v !== undefined && b)
         sendVersioned(res, await updateLead.execute(actor(req), i, v, b));
-    }),
-    stage: wrap(async (req, res) => {
-      const i = id(req, res),
+};
+
+export const changeLeadStageController: RequestHandler = async (req, res) => {
+    const i = id(req, res),
         v = version(req, res),
         b = parsed(stageTransitionRequestSchema, req);
-      if (i && v !== undefined && b)
+    if (i && v !== undefined && b)
         sendVersioned(
-          res,
-          await changeStage.execute(actor(req), i, v, b.stage, b.lossReason),
+            res,
+            await changeStage.execute(actor(req), i, v, b.stage, b.lossReason),
         );
-    }),
-    assign: wrap(async (req, res) => {
-      const i = id(req, res),
+};
+
+export const assignLeadController: RequestHandler = async (req, res) => {
+    const i = id(req, res),
         v = version(req, res),
         b = parsed(assigneeRequestSchema, req);
-      if (i && v !== undefined && b)
+    if (i && v !== undefined && b)
         sendVersioned(
-          res,
-          await assignLead.execute(actor(req), i, v, b.assigneeId),
+            res,
+            await assignLead.execute(actor(req), i, v, b.assigneeId),
         );
-    }),
-    observe: wrap(async (req, res) => {
-      const i = id(req, res),
+};
+
+export const addLeadObservationController: RequestHandler = async (
+    req,
+    res,
+) => {
+    const i = id(req, res),
         v = version(req, res),
         b = parsed(observationRequestSchema, req);
-      if (i && v !== undefined && b)
+    if (i && v !== undefined && b)
         sendVersioned(
-          res,
-          await addObservation.execute(actor(req), i, v, b.text),
-          201,
+            res,
+            await addObservation.execute(actor(req), i, v, b.text),
+            201,
         );
-    }),
-    editObservation: wrap(async (req, res) => {
-      const i = id(req, res),
+};
+
+export const editLeadObservationController: RequestHandler = async (
+    req,
+    res,
+) => {
+    const i = id(req, res),
         oid = req.params.observationId,
         v = version(req, res),
         b = parsed(observationRequestSchema, req);
-      if (
-        i &&
-        typeof oid === 'string' &&
-        UUID.test(oid) &&
-        v !== undefined &&
-        b
-      )
+    if (i && typeof oid === 'string' && UUID.test(oid) && v !== undefined && b)
         sendVersioned(
-          res,
-          await editObservation.execute(actor(req), i, oid, v, b.text),
+            res,
+            await editObservation.execute(actor(req), i, oid, v, b.text),
         );
-    }),
-    resolve: wrap(async (req, res) => {
-      const i = id(req, res),
+};
+
+export const resolveLeadRequestController: RequestHandler = async (
+    req,
+    res,
+) => {
+    const i = id(req, res),
         rid = req.params.requestId,
         v = version(req, res);
-      if (i && typeof rid === 'string' && UUID.test(rid) && v !== undefined)
+    if (i && typeof rid === 'string' && UUID.test(rid) && v !== undefined)
         sendVersioned(res, await resolveRequest.execute(actor(req), i, rid, v));
-    }),
-    remove: wrap(async (req, res) => {
-      const i = id(req, res),
+};
+
+export const removeCommercialLeadController: RequestHandler = async (
+    req,
+    res,
+) => {
+    const i = id(req, res),
         v = version(req, res);
-      if (i && v !== undefined)
+    if (i && v !== undefined)
         sendVersioned(res, await removeLead.execute(actor(req), i, v));
-    }),
-    history: wrap(async (req, res) => {
-      const i = id(req, res);
-      if (i) res.json(await getHistory.execute(actor(req), i));
-    }),
-    assignees: wrap(async (_req, res) => {
-      res.json(await listAssignees.execute());
-    }),
-  },
-  sources: {
-    list: wrap(async (_req, res) => {
-      res.json(await listSources.execute());
-    }),
-    create: wrap(async (req, res) => {
-      const b = parsed(leadSourceRequestSchema, req);
-      if (b) sendVersioned(res, await createSource.execute(b), 201);
-    }),
-    get: wrap(async (req, res) => {
-      const i = id(req, res);
-      if (i) {
+};
+
+export const getLeadHistoryController: RequestHandler = async (req, res) => {
+    const i = id(req, res);
+    if (i) res.json(await getHistory.execute(actor(req), i));
+};
+
+export const listLeadAssigneesController: RequestHandler = async (
+    _req,
+    res,
+) => {
+    res.json(await listAssignees.execute());
+};
+
+export const listLeadSourcesController: RequestHandler = async (_req, res) => {
+    res.json(await listSources.execute());
+};
+
+export const createLeadSourceController: RequestHandler = async (req, res) => {
+    const b = parsed(leadSourceRequestSchema, req);
+    if (b) sendVersioned(res, await createSource.execute(b), 201);
+};
+
+export const getLeadSourceController: RequestHandler = async (req, res) => {
+    const i = id(req, res);
+    if (i) {
         sendVersioned(res, await getSource.execute(i));
-      }
-    }),
-    update: wrap(async (req, res) => {
-      const i = id(req, res),
+    }
+};
+
+export const updateLeadSourceController: RequestHandler = async (req, res) => {
+    const i = id(req, res),
         v = version(req, res),
         b = parsed(leadSourceRequestSchema, req);
-      if (i && v !== undefined && b)
+    if (i && v !== undefined && b)
         sendVersioned(res, await updateSource.execute(i, v, b));
-    }),
-    activate: wrap(async (req, res) => {
-      const i = id(req, res),
+};
+
+export const activateLeadSourceController: RequestHandler = async (
+    req,
+    res,
+) => {
+    const i = id(req, res),
         v = version(req, res);
-      if (i && v !== undefined)
+    if (i && v !== undefined)
         sendVersioned(res, await setSourceActive.execute(i, v, true));
-    }),
-    deactivate: wrap(async (req, res) => {
-      const i = id(req, res),
+};
+
+export const deactivateLeadSourceController: RequestHandler = async (
+    req,
+    res,
+) => {
+    const i = id(req, res),
         v = version(req, res);
-      if (i && v !== undefined)
+    if (i && v !== undefined)
         sendVersioned(res, await setSourceActive.execute(i, v, false));
-    }),
-    remove: wrap(async (req, res) => {
-      const i = id(req, res),
+};
+
+export const removeLeadSourceController: RequestHandler = async (req, res) => {
+    const i = id(req, res),
         v = version(req, res);
-      if (i && v !== undefined) res.json(await deleteSource.execute(i, v));
-    }),
-  },
+    if (i && v !== undefined) res.json(await deleteSource.execute(i, v));
 };
