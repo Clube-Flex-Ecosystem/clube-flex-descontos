@@ -12,32 +12,55 @@ import {
 import { Link } from '@tanstack/react-router';
 import type { CSSProperties } from 'react';
 import { useMemo, useState } from 'react';
-import type { LeadStage, LeadSummary } from '@flex/contracts';
+import { formatPhone, type LeadStage, type LeadSummary } from '@flex/contracts';
+import { Button } from '../../../shared/ui/button';
+import { Icon } from '../../../shared/ui/icon';
 import { leadStages, type LeadStageDefinition } from '../lead-stages';
 
 interface LeadBoardProps {
   leads: LeadSummary[];
   canMove: boolean;
   onMove: (lead: LeadSummary, stage: LeadStage) => void;
+  /** Abre o dialog de etapa (botão do cartão). */
+  onRequestStage: (lead: LeadSummary) => void;
 }
 
-export function LeadBoard({ leads, canMove, onMove }: LeadBoardProps) {
+export function LeadBoard({
+  leads,
+  canMove,
+  onMove,
+  onRequestStage,
+}: LeadBoardProps) {
   const [activeLead, setActiveLead] = useState<LeadSummary | null>(null);
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
-    useSensor(KeyboardSensor),
+    // Enter abre o detalhe (link do cartão); Espaço inicia e conclui o arraste.
+    useSensor(KeyboardSensor, {
+      keyboardCodes: {
+        start: ['Space'],
+        cancel: ['Escape'],
+        end: ['Space', 'Enter'],
+      },
+    }),
   );
-  const byStage = useMemo(
-    () =>
-      leads.reduce<Record<LeadStage, LeadSummary[]>>(
-        (groups, lead) => {
-          groups[lead.stage].push(lead);
-          return groups;
-        },
-        { new: [], firstContact: [], negotiating: [], converted: [], lost: [] },
-      ),
-    [leads],
-  );
+  // Dentro de cada coluna, novo interesse pendente aparece primeiro.
+  const byStage = useMemo(() => {
+    const groups: Record<LeadStage, LeadSummary[]> = {
+      new: [],
+      firstContact: [],
+      negotiating: [],
+      converted: [],
+      lost: [],
+    };
+    for (const lead of leads) groups[lead.stage].push(lead);
+    for (const stage of Object.keys(groups) as LeadStage[]) {
+      groups[stage] = [
+        ...groups[stage].filter((lead) => lead.hasPendingInterest),
+        ...groups[stage].filter((lead) => !lead.hasPendingInterest),
+      ];
+    }
+    return groups;
+  }, [leads]);
 
   const handleDragEnd = ({ active, over }: DragEndEvent) => {
     setActiveLead(null);
@@ -57,13 +80,14 @@ export function LeadBoard({ leads, canMove, onMove }: LeadBoardProps) {
       onDragEnd={handleDragEnd}
     >
       <div className="overflow-x-auto pb-2">
-        <div className="grid min-w-[1120px] grid-cols-5 gap-3">
+        <div className="grid min-w-[1120px] grid-cols-5 items-start gap-3">
           {leadStages.map((stage) => (
             <LeadColumn
               key={stage.id}
               stage={stage}
               leads={byStage[stage.id]}
               canMove={canMove}
+              onRequestStage={onRequestStage}
             />
           ))}
         </div>
@@ -79,10 +103,12 @@ function LeadColumn({
   stage,
   leads,
   canMove,
+  onRequestStage,
 }: {
   stage: LeadStageDefinition;
   leads: LeadSummary[];
   canMove: boolean;
+  onRequestStage: (lead: LeadSummary) => void;
 }) {
   const { setNodeRef, isOver } = useDroppable({
     id: stage.id,
@@ -94,7 +120,7 @@ function LeadColumn({
       ref={setNodeRef}
       aria-label={`${stage.name}, ${leads.length} ${leads.length === 1 ? 'lead' : 'leads'}`}
       className={`flex min-h-130 flex-col gap-1.5 rounded-card bg-surface-muted p-1.5 transition-shadow ${
-        isOver ? `ring-2 ${stage.dropClassName}` : ''
+        isOver ? `ring-2 ring-inset ${stage.dropClassName}` : ''
       }`}
     >
       <header className="flex items-center gap-2 px-1.5 pt-1.5 pb-1">
@@ -105,7 +131,12 @@ function LeadColumn({
         </span>
       </header>
       {leads.map((lead) => (
-        <DraggableLeadCard key={lead.id} lead={lead} disabled={!canMove} />
+        <DraggableLeadCard
+          key={lead.id}
+          lead={lead}
+          canMove={canMove}
+          onRequestStage={onRequestStage}
+        />
       ))}
       {!leads.length ? (
         <p className="t-caption m-0.5 px-2 py-4 text-center font-normal text-muted-foreground">
@@ -118,16 +149,21 @@ function LeadColumn({
 
 function DraggableLeadCard({
   lead,
-  disabled,
+  canMove,
+  onRequestStage,
 }: {
   lead: LeadSummary;
-  disabled: boolean;
+  canMove: boolean;
+  onRequestStage: (lead: LeadSummary) => void;
 }) {
-  const { attributes, listeners, setNodeRef, transform, isDragging } =
-    useDraggable({
-      id: lead.id,
-      disabled,
-    });
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    setActivatorNodeRef,
+    transform,
+    isDragging,
+  } = useDraggable({ id: lead.id, disabled: !canMove });
   const style: CSSProperties | undefined = transform
     ? { transform: `translate3d(${transform.x}px, ${transform.y}px, 0)` }
     : undefined;
@@ -140,8 +176,13 @@ function DraggableLeadCard({
     >
       <LeadCard
         lead={lead}
-        dragAttributes={attributes}
-        dragListeners={listeners}
+        // O link do cartão é o único ponto focável e também a alça de arraste.
+        activator={{
+          ref: setActivatorNodeRef,
+          listeners: canMove ? listeners : undefined,
+          describedBy: canMove ? attributes['aria-describedby'] : undefined,
+        }}
+        {...(canMove ? { onRequestStage: () => onRequestStage(lead) } : {})}
       />
     </div>
   );
@@ -158,34 +199,53 @@ function initials(name: string): string {
 function LeadCard({
   lead,
   overlay = false,
-  dragAttributes,
-  dragListeners,
+  activator,
+  onRequestStage,
 }: {
   lead: LeadSummary;
   overlay?: boolean;
-  dragAttributes?: ReturnType<typeof useDraggable>['attributes'];
-  dragListeners?: ReturnType<typeof useDraggable>['listeners'];
+  activator?: {
+    ref: (element: HTMLElement | null) => void;
+    listeners: ReturnType<typeof useDraggable>['listeners'];
+    describedBy: string | undefined;
+  };
+  onRequestStage?: () => void;
 }) {
   const owner = lead.assignee;
   return (
     <article
-      {...dragAttributes}
-      {...dragListeners}
-      className={`relative rounded-tile border border-border bg-surface px-3 py-2.5 hover:border-border-strong ${
+      className={`group/card relative rounded-tile border border-border bg-surface px-3 py-2.5 hover:border-control-border has-[a:focus-visible]:outline-2 has-[a:focus-visible]:outline-offset-2 has-[a:focus-visible]:outline-focus ${
         overlay
           ? 'rotate-1 cursor-grabbing border-border-strong shadow-floating'
-          : 'cursor-grab'
+          : ''
       }`}
     >
-      <Link
-        to="/leads/$leadId"
-        params={{ leadId: lead.id }}
-        className="t-body block min-w-0 pr-4 font-semibold text-foreground no-underline hover:underline"
-      >
-        {lead.name}
-      </Link>
+      <div className="flex items-start gap-2">
+        <Link
+          ref={activator?.ref}
+          {...activator?.listeners}
+          aria-describedby={activator?.describedBy}
+          to="/leads/$leadId"
+          params={{ leadId: lead.id }}
+          className="t-body block min-w-0 flex-1 font-semibold text-foreground no-underline decoration-primary underline-offset-3 outline-hidden after:absolute after:inset-0 after:rounded-tile after:content-[''] hover:underline"
+        >
+          {lead.name}
+        </Link>
+        {onRequestStage ? (
+          <Button
+            variant="quiet"
+            compact
+            className="relative z-1 -mt-1 -mr-1.5 min-h-8 w-8 px-0 md:min-h-8"
+            aria-label={`Alterar etapa de ${lead.name}`}
+            title="Alterar etapa"
+            onClick={onRequestStage}
+          >
+            <Icon name="swap" />
+          </Button>
+        ) : null}
+      </div>
       <p className="t-body-small tnum mt-0.5 text-muted-foreground">
-        {lead.whatsapp}
+        {formatPhone(lead.whatsapp)}
       </p>
       {lead.hasPendingInterest ? (
         <p className="t-caption mt-1.5 inline-flex items-center gap-1.5 font-semibold text-attention-foreground before:size-1.5 before:rounded-full before:bg-signal before:content-['']">

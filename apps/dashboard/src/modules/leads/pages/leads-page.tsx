@@ -1,6 +1,5 @@
 import { Suspense, useState } from 'react';
 import { useCan } from '../../auth';
-import { Alert } from '../../../shared/ui/alert';
 import { Button } from '../../../shared/ui/button';
 import { Icon } from '../../../shared/ui/icon';
 import { ListSkeleton, PageHeader } from '../../../shared/ui/page-parts';

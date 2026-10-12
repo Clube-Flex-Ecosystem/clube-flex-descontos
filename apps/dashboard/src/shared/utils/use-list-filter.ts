@@ -1,5 +1,6 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { normalizeNameKey } from '@flex/contracts';
+import { useListContext } from './list-context';
 
 interface ListFilterOptions<T, V extends string> {
   /** Estado do item usado pelas abas; `''` é a aba que mostra todos. */
@@ -9,15 +10,20 @@ interface ListFilterOptions<T, V extends string> {
 }
 
 /**
- * Filtros locais de uma listagem completa: aba de estado e busca (sem acentos nem caixa).
- * A ordem inicial é alfabética pelo texto principal do item.
+ * Filtros locais de uma listagem completa: aba de estado e busca (sem acentos nem caixa),
+ * preservados em memória pela chave da listagem. A ordem inicial é alfabética pelo
+ * texto principal do item.
  */
 export function useListFilter<T, V extends string>(
+  key: string,
   items: readonly T[],
   { stateOf, textOf }: ListFilterOptions<T, V>,
 ) {
-  const [state, setState] = useState<V | ''>('');
-  const [search, setSearch] = useState('');
+  const [filter, setFilter] = useListContext<{ state: V | ''; search: string }>(
+    key,
+    { state: '', search: '' },
+  );
+  const { state, search } = filter;
 
   const sorted = useMemo(
     () =>
@@ -39,9 +45,12 @@ export function useListFilter<T, V extends string>(
 
   return {
     state,
-    setState,
+    setState: (next: V | '') =>
+      setFilter((current) => ({ ...current, state: next })),
     search,
-    setSearch,
+    setSearch: (next: string) =>
+      setFilter((current) => ({ ...current, search: next })),
+    clear: () => setFilter({ state: '', search: '' }),
     filtered,
     countOf,
     total: sorted.length,

@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { Button } from './button';
 
 export interface Column<T> {
   header: string;
@@ -15,6 +16,8 @@ interface DataTableProps<T> {
   emptyTitle: string;
   /** Torna a linha clicável; os controles internos continuam funcionando por conta própria. */
   onRowClick?: (row: T) => void;
+  /** Vazio por filtro: oferece "Limpar filtros". */
+  onClearFilters?: () => void;
 }
 
 /** Célula com recuo de 16px. */
@@ -31,6 +34,7 @@ export function DataTable<T>({
   actions,
   emptyTitle,
   onRowClick,
+  onClearFilters,
 }: DataTableProps<T>) {
   return (
     <div className="overflow-x-auto">
@@ -70,6 +74,13 @@ export function DataTable<T>({
                   {emptyTitle}
                 </strong>
                 Ajuste a busca ou o filtro de estado.
+                {onClearFilters ? (
+                  <span className="mt-2.5 block">
+                    <Button compact onClick={onClearFilters}>
+                      Limpar filtros
+                    </Button>
+                  </span>
+                ) : null}
               </td>
             </tr>
           ) : null}

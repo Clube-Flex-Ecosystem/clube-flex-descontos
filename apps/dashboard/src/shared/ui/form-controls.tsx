@@ -14,7 +14,7 @@ import { Icon } from './icon';
  * diretamente nas features (selects e textareas ligados ao formulário).
  */
 export const controlClass =
-  'w-full rounded-control border border-control-border bg-surface px-2.5 text-foreground hover:border-control-border-hover focus-visible:border-focus focus-visible:ring-1 focus-visible:ring-focus focus-visible:outline-hidden aria-invalid:border-danger read-only:border-border read-only:bg-surface-muted disabled:cursor-not-allowed disabled:border-border disabled:bg-surface-muted disabled:text-placeholder';
+  'w-full rounded-control border border-control-border bg-surface px-2.5 text-foreground hover:border-control-border-hover focus-visible:border-focus focus-visible:ring-1 focus-visible:ring-focus focus-visible:outline-hidden aria-invalid:border-danger [&:is(input,textarea)]:read-only:border-border [&:is(input,textarea)]:read-only:bg-surface-muted disabled:cursor-not-allowed disabled:border-border disabled:bg-surface-muted disabled:text-placeholder';
 
 /** Formulário no padrão (`36px`), sub-tabelas compactas (`32px`); `44px` no móvel. */
 const sizes = {

@@ -8,6 +8,7 @@ import {
   requestRecovery,
 } from '../api/auth.api';
 import { setCsrfToken } from '../../../shared/http/client';
+import { clearListContexts } from '../../../shared/utils/list-context';
 import { sessionKey, sessionQueryOptions } from '../queries/session.query';
 
 export function useLogin() {
@@ -28,6 +29,7 @@ export function useLogout() {
       // Nenhum dado do usuário anterior permanece em memória.
       setCsrfToken(undefined);
       queryClient.clear();
+      clearListContexts();
       queryClient.setQueryData(sessionKey, null);
     },
   });

@@ -1,7 +1,11 @@
 import type { ActiveStatus, Plan } from '@flex/contracts';
 import { Badge } from '../../../shared/ui/badge';
 import { Button } from '../../../shared/ui/button';
-import { CellMain, DataTable } from '../../../shared/ui/data-table';
+import {
+  CellMain,
+  DataTable,
+  type Column,
+} from '../../../shared/ui/data-table';
 import { EmptyState } from '../../../shared/ui/page-parts';
 import { ListCard } from '../../../shared/ui/list-card';
 import { RowMenu, type RowMenuItem } from '../../../shared/ui/row-menu';
@@ -11,11 +15,14 @@ interface PlansDataProps {
   plans: Plan[];
   total: number;
   canManage: boolean;
+  /** Parceiros com benefício no plano; `null` quando a contagem não está disponível. */
+  partnerCount: ((plan: Plan) => number) | null;
   activeStatus: ActiveStatus | '';
   onStatusChange: (status: ActiveStatus | '') => void;
   statusCount: (status: ActiveStatus | '') => number;
   search: string;
   onSearchChange: (search: string) => void;
+  onClearFilters: () => void;
   onCreate: () => void;
   onEdit: (plan: Plan) => void;
   onDeactivate: (plan: Plan) => void;
@@ -27,11 +34,13 @@ export function PlansData({
   plans,
   total,
   canManage,
+  partnerCount,
   activeStatus,
   onStatusChange,
   statusCount,
   search,
   onSearchChange,
+  onClearFilters,
   onCreate,
   onEdit,
   onDeactivate,
@@ -56,24 +65,54 @@ export function PlansData({
     );
   }
 
+  // O menu reúne só o que não está visível na linha: a mudança de estado.
   const menuItems = (plan: Plan): RowMenuItem[] =>
     canManage
       ? [
-          { label: 'Editar', onSelect: () => onEdit(plan) },
           plan.status === 'active'
             ? {
                 label: 'Desativar',
                 danger: true,
-                separated: true,
                 onSelect: () => onDeactivate(plan),
               }
-            : {
-                label: 'Reativar',
-                separated: true,
-                onSelect: () => onReactivate(plan),
-              },
+            : { label: 'Reativar', onSelect: () => onReactivate(plan) },
         ]
       : [];
+
+  const columns: Column<Plan>[] = [
+    {
+      header: 'Plano',
+      cell: (plan) => (
+        <CellMain title={plan.name} mark={entityInitialsOf(plan.name)} />
+      ),
+    },
+    {
+      header: 'Identificador público',
+      cell: (plan) => (
+        <span className="font-mono text-muted-foreground">{plan.slug}</span>
+      ),
+    },
+    ...(partnerCount
+      ? [
+          {
+            header: 'Parceiros com benefício',
+            align: 'right' as const,
+            cell: (plan: Plan) => partnerCount(plan),
+          },
+        ]
+      : []),
+    {
+      header: 'Estado',
+      cell: (plan) =>
+        plan.status === 'active' ? (
+          <Badge tone="success" dot>
+            Ativo
+          </Badge>
+        ) : (
+          <Badge dot>Inativo</Badge>
+        ),
+    },
+  ];
 
   return (
     <ListCard
@@ -101,48 +140,22 @@ export function PlansData({
         rows={plans}
         rowKey={(plan) => plan.id}
         emptyTitle="Nenhum plano encontrado com esses filtros."
-        columns={[
-          {
-            header: 'Plano',
-            cell: (plan) => (
-              <CellMain title={plan.name} mark={entityInitialsOf(plan.name)} />
-            ),
-          },
-          {
-            header: 'Identificador público',
-            cell: (plan) => (
-              <span className="font-mono text-muted-foreground">
-                {plan.slug}
-              </span>
-            ),
-          },
-          {
-            header: 'Estado',
-            cell: (plan) =>
-              plan.status === 'active' ? (
-                <Badge tone="success" dot>
-                  Ativo
-                </Badge>
-              ) : (
-                <Badge dot>Inativo</Badge>
-              ),
-          },
-        ]}
-        actions={(plan) => (
-          <>
-            {canManage ? (
+        onClearFilters={onClearFilters}
+        {...(canManage ? { onRowClick: onEdit } : {})}
+        columns={columns}
+        actions={(plan) =>
+          canManage ? (
+            <>
               <Button compact onClick={() => onEdit(plan)}>
                 Editar
               </Button>
-            ) : null}
-            {canManage ? (
               <RowMenu
                 label={`Mais ações para ${plan.name}`}
                 items={menuItems(plan)}
               />
-            ) : null}
-          </>
-        )}
+            </>
+          ) : null
+        }
       />
     </ListCard>
   );

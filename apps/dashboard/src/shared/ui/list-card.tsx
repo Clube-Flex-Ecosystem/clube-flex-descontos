@@ -74,7 +74,6 @@ export function ListCard<V extends string>({
       {children}
       <div className="t-caption tnum flex items-center justify-between gap-3 border-t border-border px-4 py-2 font-normal text-muted-foreground">
         <span aria-live="polite">{footer}</span>
-        <span>Ordem alfabética · sem paginação</span>
       </div>
     </section>
   );

@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { describeError } from '../../../shared/http/problem';
 import { Alert } from '../../../shared/ui/alert';
 import { Button } from '../../../shared/ui/button';
@@ -31,11 +31,13 @@ export function SetPasswordForm({
     register,
     handleSubmit,
     setError,
+    control,
     formState: { errors },
   } = useForm<SetPasswordFormValues>({
     resolver: zodResolver(setPasswordFormSchema),
     defaultValues: { code: '', newPassword: '', newPasswordConfirmation: '' },
   });
+  const newPassword = useWatch({ control, name: 'newPassword' });
 
   const submit = handleSubmit(async (values) => {
     setFailure(null);
@@ -64,7 +66,6 @@ export function SetPasswordForm({
         error={fieldMessage(errors.code?.message)}
         {...register('code')}
       />
-      <PasswordCriteria />
       <TextField
         label="Nova senha"
         type="password"
@@ -73,8 +74,9 @@ export function SetPasswordForm({
         error={fieldMessage(errors.newPassword?.message)}
         {...register('newPassword')}
       />
+      <PasswordCriteria value={newPassword} />
       <TextField
-        label="Confirme a nova senha"
+        label="Confirmar nova senha"
         type="password"
         autoComplete="new-password"
         revealable

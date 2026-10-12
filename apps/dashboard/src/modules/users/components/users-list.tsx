@@ -20,7 +20,7 @@ export function UsersList({
   const { data: users } = useSuspenseQuery(usersQueryOptions);
   const session = useSession();
   const navigate = useNavigate();
-  const filter = useListFilter(users, { stateOf, textOf });
+  const filter = useListFilter('users', users, { stateOf, textOf });
 
   const openUser = (user: AdminUser) =>
     void navigate({ to: '/usuarios/$userId', params: { userId: user.id } });
@@ -35,6 +35,7 @@ export function UsersList({
       statusCount={filter.countOf}
       search={filter.search}
       onSearchChange={filter.setSearch}
+      onClearFilters={filter.clear}
       total={filter.total}
       onOpenUser={openUser}
       onCreate={onCreate}

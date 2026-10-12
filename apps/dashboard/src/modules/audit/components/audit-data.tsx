@@ -54,6 +54,10 @@ interface AuditDataProps {
   action: string;
   actorId: string;
   targetId: string;
+  /** Nova página a caminho: a tabela anterior fica esmaecida. */
+  pending: boolean;
+  /** Algum filtro difere do padrão. */
+  filtered: boolean;
   onPeriodChange: (period: AuditPeriod) => void;
   onActionChange: (action: string) => void;
   onActorChange: (actorId: string) => void;
@@ -73,6 +77,8 @@ export function AuditData({
   action,
   actorId,
   targetId,
+  pending,
+  filtered,
   onPeriodChange,
   onActionChange,
   onActorChange,
@@ -147,10 +153,21 @@ export function AuditData({
             </>
           ) : null}
         </div>
-        <Button variant="quiet" compact onClick={onReset}>
-          Limpar filtros
-        </Button>
+        {filtered ? (
+          <Button variant="quiet" compact onClick={onReset}>
+            Limpar filtros
+          </Button>
+        ) : null}
       </div>
+      {pending ? (
+        <div
+          className="h-0.5 overflow-hidden bg-surface-muted"
+          role="progressbar"
+          aria-label="Atualizando eventos"
+        >
+          <div className="h-full w-2/5 animate-[indeterminate_1s_ease-in-out_infinite] bg-selected" />
+        </div>
+      ) : null}
 
       <div className="overflow-x-auto">
         <table className="w-full min-w-180 border-separate border-spacing-0">
@@ -172,7 +189,10 @@ export function AuditData({
               </th>
             </tr>
           </thead>
-          <tbody>
+          <tbody
+            className={pending ? 'opacity-50' : undefined}
+            aria-busy={pending || undefined}
+          >
             {data.items.length === 0 ? (
               <tr>
                 <td
@@ -183,6 +203,13 @@ export function AuditData({
                     Nenhum evento com esses filtros.
                   </strong>
                   Amplie o período ou remova filtros.
+                  {filtered ? (
+                    <span className="mt-2.5 block">
+                      <Button compact onClick={onReset}>
+                        Limpar filtros
+                      </Button>
+                    </span>
+                  ) : null}
                 </td>
               </tr>
             ) : null}
@@ -241,9 +268,11 @@ export function AuditData({
 
       <div className="t-caption tnum flex flex-wrap items-center justify-between gap-3 border-t border-border px-4 py-2 font-normal text-muted-foreground">
         <span aria-live="polite">
-          {data.total === 0
-            ? '0 eventos'
-            : `${firstRow}–${lastRow} de ${data.total} ${data.total === 1 ? 'evento' : 'eventos'}`}
+          {pending
+            ? 'Atualizando…'
+            : data.total === 0
+              ? '0 eventos'
+              : `${firstRow}–${lastRow} de ${data.total} ${data.total === 1 ? 'evento' : 'eventos'}`}
         </span>
         <div className="flex items-center gap-1.5">
           <Button

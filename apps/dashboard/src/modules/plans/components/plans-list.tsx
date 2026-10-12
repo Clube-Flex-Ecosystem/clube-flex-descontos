@@ -1,6 +1,8 @@
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import type { ActiveStatus, Plan } from '@flex/contracts';
+import { useCan } from '../../auth';
+import { partnersQueryOptions } from '../../partners';
 import { useToast } from '../../../shared/feedback/toast';
 import { describeError } from '../../../shared/http/problem';
 import { Alert } from '../../../shared/ui/alert';
@@ -29,7 +31,19 @@ export function PlansList({
   const toast = useToast();
   const [deactivating, setDeactivating] = useState<Plan | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
-  const filter = useListFilter(plans, { stateOf, textOf });
+  const filter = useListFilter('plans', plans, { stateOf, textOf });
+  // Contagem derivada da coleção de parceiros, para quem pode visualizá-los.
+  const canViewPartners = useCan('partners.view');
+  const partners = useQuery({
+    ...partnersQueryOptions,
+    enabled: canViewPartners,
+  });
+  const partnerCount = partners.data
+    ? (plan: Plan) =>
+        partners.data.filter((partner) =>
+          partner.benefits.some((benefit) => benefit.planId === plan.id),
+        ).length
+    : null;
 
   const changeStatus = (plan: Plan, status: ActiveStatus) => {
     setActionError(null);
@@ -67,11 +81,13 @@ export function PlansList({
         plans={filter.filtered}
         total={filter.total}
         canManage={canManage}
+        partnerCount={partnerCount}
         activeStatus={filter.state}
         onStatusChange={filter.setState}
         statusCount={filter.countOf}
         search={filter.search}
         onSearchChange={filter.setSearch}
+        onClearFilters={filter.clear}
         onCreate={onCreate}
         onEdit={onEdit}
         onDeactivate={setDeactivating}

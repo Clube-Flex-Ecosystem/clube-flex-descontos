@@ -3,7 +3,6 @@ import { Button } from '../../../shared/ui/button';
 import { CellMain, DataTable } from '../../../shared/ui/data-table';
 import { EmptyState } from '../../../shared/ui/page-parts';
 import { ListCard } from '../../../shared/ui/list-card';
-import { RowMenu } from '../../../shared/ui/row-menu';
 import { initialsOf } from '../../../shared/utils/initials';
 import { UserAccessBadge, UserStatusBadge } from './user-badges';
 
@@ -16,6 +15,7 @@ interface UsersDataProps {
   statusCount: (status: 'active' | 'inactive' | '') => number;
   search: string;
   onSearchChange: (search: string) => void;
+  onClearFilters: () => void;
   total: number;
   onOpenUser: (user: AdminUser) => void;
   onCreate: () => void;
@@ -31,6 +31,7 @@ export function UsersData({
   statusCount,
   search,
   onSearchChange,
+  onClearFilters,
   total,
   onOpenUser,
   onCreate,
@@ -83,6 +84,7 @@ export function UsersData({
         rowKey={(user) => user.id}
         emptyTitle="Nenhum usuário encontrado com esses filtros."
         onRowClick={onOpenUser}
+        onClearFilters={onClearFilters}
         columns={[
           {
             header: 'Usuário',
@@ -125,17 +127,9 @@ export function UsersData({
           },
         ]}
         actions={(user) => (
-          <>
-            <Button compact onClick={() => onOpenUser(user)}>
-              Abrir
-            </Button>
-            <RowMenu
-              label={`Mais ações para ${user.fullName}`}
-              items={[
-                { label: 'Abrir detalhe', onSelect: () => onOpenUser(user) },
-              ]}
-            />
-          </>
+          <Button compact onClick={() => onOpenUser(user)}>
+            Abrir
+          </Button>
         )}
       />
     </ListCard>

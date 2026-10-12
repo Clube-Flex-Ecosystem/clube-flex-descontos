@@ -21,6 +21,7 @@ interface PartnersDataProps {
   statusCount: (status: PartnerStatus | '') => number;
   search: string;
   onSearchChange: (search: string) => void;
+  onClearFilters: () => void;
   onOpen: (partner: Partner) => void;
   onCreate: () => void;
   onToggleFeatured: (partner: Partner) => void;
@@ -44,6 +45,7 @@ export function PartnersData({
   statusCount,
   search,
   onSearchChange,
+  onClearFilters,
   onOpen,
   onCreate,
   onToggleFeatured,
@@ -70,13 +72,9 @@ export function PartnersData({
     );
   }
 
+  // O menu reúne só o que não está visível na linha: estado e ações destrutivas.
   const menuItems = (partner: Partner): RowMenuItem[] => {
-    const items: RowMenuItem[] = [
-      {
-        label: canUpdate ? 'Editar' : 'Abrir',
-        onSelect: () => onOpen(partner),
-      },
-    ];
+    const items: RowMenuItem[] = [];
     if (canUpdate && partner.status === 'published' && activePlans !== null) {
       items.push({
         label: partner.featured ? 'Remover destaque' : 'Destacar',
@@ -142,6 +140,8 @@ export function PartnersData({
         rows={partners}
         rowKey={(partner) => partner.id}
         emptyTitle="Nenhum parceiro encontrado com esses filtros."
+        onClearFilters={onClearFilters}
+        onRowClick={onOpen}
         columns={[
           {
             header: 'Parceiro',

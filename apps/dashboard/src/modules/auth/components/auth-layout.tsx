@@ -7,32 +7,51 @@ interface AuthLayoutProps {
   children: ReactNode;
 }
 
-/** Layout simples e centralizado das telas sem sessão. */
+/**
+ * Telas sem sessão: painel navy com a marca e a frase institucional, e o formulário
+ * centralizado na coluna clara. Em telas estreitas o painel é ocultado.
+ */
 export function AuthLayout({ title, description, children }: AuthLayoutProps) {
   return (
-    <main className="grid min-h-dvh place-items-center px-4 py-6" id="content">
-      <div className="grid w-full max-w-100 gap-5">
+    <div className="grid min-h-dvh bg-surface md:grid-cols-2">
+      <aside
+        data-surface="inverse"
+        className="hidden flex-col justify-between bg-sidebar p-10 text-sidebar-foreground md:flex"
+      >
         <div className="flex items-center gap-2.5">
-          <BrandMark />
-          <span className="t-caption font-normal text-muted-foreground">
+          <BrandMark tone="inverse" />
+          <span className="t-caption font-normal text-sidebar-muted">
             Painel interno
           </span>
         </div>
-        <section
-          className="grid gap-4 rounded-card border border-border bg-surface p-6"
-          aria-labelledby="auth-title"
-        >
-          <div className="grid gap-1.5">
-            <h1 id="auth-title" className="t-page">
-              {title}
-            </h1>
-            {description ? (
-              <p className="t-body-small muted">{description}</p>
-            ) : null}
+        <blockquote className="t-display m-0 max-w-[40ch] text-sidebar-selected-foreground">
+          Operação comercial e catálogo de parceiros em um só lugar.
+        </blockquote>
+        <small className="t-body-small text-sidebar-muted">
+          Acesso restrito à equipe do Clube Flex.
+        </small>
+      </aside>
+      <main className="grid place-items-center px-5 py-8" id="content">
+        <div className="grid w-full max-w-90 gap-4">
+          <div className="flex items-center gap-2.5 md:hidden">
+            <BrandMark />
+            <span className="t-caption font-normal text-muted-foreground">
+              Painel interno
+            </span>
           </div>
-          {children}
-        </section>
-      </div>
-    </main>
+          <section className="grid gap-4" aria-labelledby="auth-title">
+            <div className="grid gap-1.5">
+              <h1 id="auth-title" className="t-page">
+                {title}
+              </h1>
+              {description ? (
+                <p className="t-body-small muted">{description}</p>
+              ) : null}
+            </div>
+            {children}
+          </section>
+        </div>
+      </main>
+    </div>
   );
 }

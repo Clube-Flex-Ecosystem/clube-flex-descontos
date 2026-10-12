@@ -1,77 +1,70 @@
 import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import type { LeadStage, LeadSummary } from '@flex/contracts';
 import { useCan, useSession } from '../../auth';
-import { Alert } from '../../../shared/ui/alert';
-import { ConfirmDialog } from '../../../shared/ui/dialogs';
-import { controlClass } from '../../../shared/ui/form-controls';
+import { useToast } from '../../../shared/feedback/toast';
 import { describeError } from '../../../shared/http/problem';
+import { useListContext } from '../../../shared/utils/list-context';
+import {
+  defaultLeadFilters,
+  filterLeads,
+  ownersOf,
+  type LeadFilters,
+} from '../lead-filters';
 import { leadStageName } from '../lead-stages';
 import { useMoveLead } from '../mutations/move-lead.mutation';
 import { leadsQueryOptions, sourcesQueryOptions } from '../queries/leads.query';
 import { LeadsData } from './leads-data';
+import { StageDialog } from './stage-dialog';
 
 /** Carrega e coordena os dados, filtros e transições do quadro de leads. */
 export function LeadsList() {
   const { data: leads } = useSuspenseQuery(leadsQueryOptions);
   const { data: sources } = useQuery(sourcesQueryOptions);
   const session = useSession();
+  const userId = session?.user.id;
   const canMove = useCan('leads.change-stage');
+  const canViewAll = useCan('leads.view-all');
   const moveLead = useMoveLead();
-  const [search, setSearch] = useState('');
-  const [owner, setOwner] = useState('');
-  const [source, setSource] = useState('');
-  const [interest, setInterest] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [pendingMove, setPendingMove] = useState<{
-    lead: LeadSummary;
-    stage: LeadStage;
-  } | null>(null);
-  const [lossReason, setLossReason] = useState('');
-
-  const filtered = useMemo(() => {
-    const normalizedQuery = search.replace(/\D/g, '');
-    return leads.filter((lead) => {
-      const matchesSearch =
-        !search ||
-        lead.name.toLocaleLowerCase().includes(search.toLocaleLowerCase()) ||
-        (Boolean(normalizedQuery) &&
-          lead.whatsapp.replace(/\D/g, '').includes(normalizedQuery));
-      const matchesOwner =
-        !owner ||
-        (owner === 'none'
-          ? !lead.assignee
-          : owner === 'me'
-            ? lead.assignee?.id === session?.user.id
-            : lead.assignee?.id === owner);
-      return (
-        matchesSearch &&
-        matchesOwner &&
-        (!source || lead.source.id === source) &&
-        (!interest || lead.hasPendingInterest)
-      );
-    });
-  }, [interest, leads, owner, search, session?.user.id, source]);
-
-  const pendingInterestCount = useMemo(
-    () => leads.filter((lead) => lead.hasPendingInterest).length,
-    [leads],
+  const toast = useToast();
+  const [filters, setFilters] = useListContext<LeadFilters>(
+    'leads',
+    defaultLeadFilters,
   );
+  const [error, setError] = useState<string | null>(null);
+  const [stageRequest, setStageRequest] = useState<{
+    lead: LeadSummary;
+    preset?: LeadStage;
+  } | null>(null);
 
-  const move = (lead: LeadSummary, stage: LeadStage, reason?: string) => {
+  const filtered = filterLeads(leads, filters, userId);
+  const pendingInterestCount = leads.filter(
+    (lead) => lead.hasPendingInterest,
+  ).length;
+
+  const move = (lead: LeadSummary, stage: LeadStage, lossReason?: string) => {
+    setError(null);
     moveLead.mutate(
-      { lead, stage, lossReason: reason },
+      { lead, stage, lossReason },
       {
-        onSuccess: () => setError(null),
-        onError: (cause) => setError(describeError(cause)),
+        onSuccess: () => {
+          setStageRequest(null);
+          toast(
+            `${lead.name.split(' ')[0]} movido para “${leadStageName(stage)}”.`,
+          );
+        },
+        onError: (cause) => {
+          setStageRequest(null);
+          setError(describeError(cause));
+        },
       },
     );
   };
 
-  const requestMove = (lead: LeadSummary, stage: LeadStage) => {
+  // Soltar em "Convertido" ou "Perdido" abre o dialog de etapa já preenchido.
+  const dropOn = (lead: LeadSummary, stage: LeadStage) => {
     if (stage === 'converted' || stage === 'lost') {
-      setLossReason('');
-      setPendingMove({ lead, stage });
+      setStageRequest({ lead, preset: stage });
       return;
     }
     move(lead, stage);
@@ -82,48 +75,31 @@ export function LeadsList() {
       <LeadsData
         leads={filtered}
         sources={sources}
-        search={search}
-        onSearchChange={setSearch}
-        owner={owner}
-        onOwnerChange={setOwner}
-        source={source}
-        onSourceChange={setSource}
-        interest={interest}
-        onInterestChange={() => setInterest((current) => !current)}
+        filters={filters}
+        onFiltersChange={(next) =>
+          setFilters((current) => ({ ...current, ...next }))
+        }
+        onClearFilters={() => setFilters(defaultLeadFilters)}
+        // Quem só vê os próprios leads não precisa filtrar por responsável.
+        owners={canViewAll ? ownersOf(leads, userId) : null}
         pendingInterestCount={pendingInterestCount}
         canMove={canMove && !moveLead.isPending}
         error={error}
-        onMove={requestMove}
+        onDismissError={() => setError(null)}
+        onMove={dropOn}
+        onRequestStage={(lead) => setStageRequest({ lead })}
       />
 
-      {pendingMove ? (
-        <ConfirmDialog
-          title={`Mover para ${leadStageName(pendingMove.stage)}?`}
-          confirmLabel="Mover lead"
-          tone="primary"
-          body={
-            <div className="grid gap-3">
-              <span>
-                {pendingMove.lead.name} será movido para “
-                {leadStageName(pendingMove.stage)}”.
-              </span>
-              {pendingMove.stage === 'lost' ? (
-                <label className="grid gap-1.5">
-                  <span className="t-label">Motivo da perda (opcional)</span>
-                  <textarea
-                    className={`${controlClass} min-h-20 py-2`}
-                    value={lossReason}
-                    onChange={(event) => setLossReason(event.target.value)}
-                  />
-                </label>
-              ) : null}
-            </div>
+      {stageRequest ? (
+        <StageDialog
+          name={stageRequest.lead.name}
+          current={stageRequest.lead.stage}
+          preset={stageRequest.preset}
+          loading={moveLead.isPending}
+          onClose={() => setStageRequest(null)}
+          onConfirm={(stage, lossReason) =>
+            move(stageRequest.lead, stage, lossReason)
           }
-          onCancel={() => setPendingMove(null)}
-          onConfirm={() => {
-            move(pendingMove.lead, pendingMove.stage, lossReason || undefined);
-            setPendingMove(null);
-          }}
         />
       ) : null}
     </>

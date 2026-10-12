@@ -32,6 +32,7 @@ import {
 } from '../../../shared/ui/form-controls';
 import { Icon } from '../../../shared/ui/icon';
 import { PageHeader } from '../../../shared/ui/page-parts';
+import { SaveBar } from '../../../shared/ui/save-bar';
 import { fieldMessage } from '../../../shared/validation/server-errors';
 import {
   useCreatePartner,
@@ -50,7 +51,7 @@ import {
 import type { PartnerCommand } from '../api/partners.api';
 import { BenefitsEditor } from './benefits-editor';
 import { ContactsEditor } from './contacts-editor';
-import { UnitsEditor } from './units-editor';
+import { AddUnitButton, UnitsEditor } from './units-editor';
 import { PartnerStatusBadge } from './partner-status-badge';
 
 interface PartnerFormProps {
@@ -173,7 +174,8 @@ export function PartnerForm({
     register,
     handleSubmit,
     setError,
-    formState: { errors, isDirty, isSubmitted },
+    reset,
+    formState: { errors, isDirty, isSubmitted, dirtyFields },
   } = methods;
   const values = useWatch({ control }) as PartnerFormValues;
 
@@ -355,6 +357,45 @@ export function PartnerForm({
     void queryClient.invalidateQueries({ queryKey: partnersKey, exact: true });
   };
 
+  // A seção atual acompanha a rolagem.
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort(
+            (a, b) => a.boundingClientRect.top - b.boundingClientRect.top,
+          )[0];
+        if (visible) setActiveSection(visible.target.id as SectionId);
+      },
+      { rootMargin: '-72px 0px -60% 0px' },
+    );
+    for (const section of SECTIONS) {
+      const element = document.getElementById(section.id);
+      if (element) observer.observe(element);
+    }
+    return () => observer.disconnect();
+  }, []);
+
+  // Seções com alterações pendentes, para o resumo da barra de salvamento.
+  const dirtySections = SECTIONS.filter(({ id }) =>
+    (
+      ({
+        'sec-main': [
+          'name',
+          'slug',
+          'website',
+          'description',
+          'usageInstructions',
+        ],
+        'sec-cat': ['categoryIds', 'contacts'],
+        'sec-units': ['units'],
+        'sec-benefits': ['benefits', 'generalCoupon'],
+        'sec-publish': ['featured'],
+      }) satisfies Record<SectionId, (keyof PartnerFormValues)[]>
+    )[id].some((key) => key in dirtyFields),
+  ).map((section) => section.label);
+
   const scrollTo = (id: SectionId) => {
     setActiveSection(id);
     document
@@ -377,23 +418,6 @@ export function PartnerForm({
             : partner.status === 'published'
               ? 'Publicado: alterações válidas aparecem imediatamente no catálogo.'
               : 'Desativado: fora do catálogo, com todos os dados preservados.'
-        }
-        actions={
-          <>
-            <Button onClick={() => void navigate({ to: '/parceiros' })}>
-              Cancelar
-            </Button>
-            {canSave ? (
-              <Button
-                type="submit"
-                form="partner-form"
-                variant="primary"
-                loading={create.isPending || replace.isPending}
-              >
-                Salvar
-              </Button>
-            ) : null}
-          </>
         }
       />
 
@@ -597,6 +621,7 @@ export function PartnerForm({
             id="sec-units"
             title="Unidades"
             description="Opcional. Unidades sem contato próprio exibem os contatos gerais."
+            action={<AddUnitButton />}
           >
             <UnitsEditor />
           </Section>
@@ -742,6 +767,24 @@ export function PartnerForm({
           ) : null}
         </aside>
       </div>
+
+      {canSave && pendingChanges ? (
+        <SaveBar
+          form="partner-form"
+          summary={
+            isNew
+              ? 'Cadastro novo · será salvo como rascunho'
+              : dirtySections.join(', ')
+          }
+          loading={create.isPending || replace.isPending}
+          onDiscard={() => {
+            setFailure(null);
+            // No cadastro, descartar é sair (com confirmação); na edição, volta ao salvo.
+            if (isNew) void navigate({ to: '/parceiros' });
+            else reset();
+          }}
+        />
+      ) : null}
 
       {deactivating && partner ? (
         <ConfirmDialog

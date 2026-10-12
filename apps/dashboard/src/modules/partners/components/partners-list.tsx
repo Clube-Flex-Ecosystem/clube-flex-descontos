@@ -9,7 +9,6 @@ import { describeError } from '../../../shared/http/problem';
 import { Alert } from '../../../shared/ui/alert';
 import { Button } from '../../../shared/ui/button';
 import { ConfirmDialog } from '../../../shared/ui/dialogs';
-import { Icon } from '../../../shared/ui/icon';
 import { useListFilter } from '../../../shared/utils/use-list-filter';
 import type { PartnerCommand } from '../api/partners.api';
 import {
@@ -43,7 +42,7 @@ export function PartnersList() {
   const remove = useDeletePartner();
   const [confirmation, setConfirmation] = useState<Confirmation | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
-  const filter = useListFilter(partners, { stateOf, textOf });
+  const filter = useListFilter('partners', partners, { stateOf, textOf });
   const activePlans =
     plans?.filter((plan) => plan.status === 'active').length ?? null;
 
@@ -85,8 +84,7 @@ export function PartnersList() {
     );
   };
 
-  const createPartner = () =>
-    void navigate({ to: '/parceiros/novo' });
+  const createPartner = () => void navigate({ to: '/parceiros/novo' });
 
   return (
     <>
@@ -119,6 +117,7 @@ export function PartnersList() {
         statusCount={filter.countOf}
         search={filter.search}
         onSearchChange={filter.setSearch}
+        onClearFilters={filter.clear}
         onOpen={openPartner}
         onCreate={createPartner}
         onToggleFeatured={toggleFeatured}

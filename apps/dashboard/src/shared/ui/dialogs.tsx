@@ -84,6 +84,65 @@ export function Drawer({
   );
 }
 
+interface ModalDialogProps {
+  title: string;
+  description?: string;
+  submitLabel: string;
+  loading?: boolean;
+  onSubmit: FormEventHandler<HTMLFormElement>;
+  onClose: () => void;
+  children: ReactNode;
+}
+
+/** Dialog central para uma decisão curta com campos (ex.: alterar etapa do lead). */
+export function ModalDialog({
+  title,
+  description,
+  submitLabel,
+  loading = false,
+  onSubmit,
+  onClose,
+  children,
+}: ModalDialogProps) {
+  return (
+    <DialogPrimitive.Root open onOpenChange={(open) => !open && onClose()}>
+      <DialogPrimitive.Portal>
+        <DialogPrimitive.Overlay className="fixed inset-0 z-70 bg-overlay data-[state=open]:animate-[overlay-in_var(--duration-fast)_ease-out]" />
+        <DialogPrimitive.Content className="fixed top-1/2 left-1/2 z-80 w-[min(440px,calc(100vw-32px))] -translate-x-1/2 -translate-y-1/2 rounded-overlay border border-border bg-surface p-0 text-foreground shadow-overlay data-[state=open]:animate-[dialog-in_var(--duration-base)_ease-out]">
+          <form noValidate onSubmit={onSubmit}>
+            <div className="flex items-start justify-between gap-3 px-5 pt-3.5">
+              <div>
+                <DialogPrimitive.Title className="t-section">
+                  {title}
+                </DialogPrimitive.Title>
+                {description ? (
+                  <DialogPrimitive.Description className="t-body-small muted mt-0.5">
+                    {description}
+                  </DialogPrimitive.Description>
+                ) : null}
+              </div>
+              <DialogPrimitive.Close asChild>
+                <Button variant="quiet" compact aria-label="Fechar">
+                  <Icon name="x" />
+                </Button>
+              </DialogPrimitive.Close>
+            </div>
+            <div className="grid gap-4 px-5 pt-2 pb-5">{children}</div>
+            <div className="flex justify-end gap-2 px-5 pb-5">
+              <DialogPrimitive.Close asChild>
+                <Button>Cancelar</Button>
+              </DialogPrimitive.Close>
+              <Button type="submit" variant="primary" loading={loading}>
+                {submitLabel}
+              </Button>
+            </div>
+          </form>
+        </DialogPrimitive.Content>
+      </DialogPrimitive.Portal>
+    </DialogPrimitive.Root>
+  );
+}
+
 interface DetailDrawerProps {
   title: string;
   description?: string;

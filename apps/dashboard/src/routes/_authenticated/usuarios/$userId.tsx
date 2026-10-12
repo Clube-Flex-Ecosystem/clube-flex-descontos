@@ -29,7 +29,9 @@ export const Route = createFileRoute('/_authenticated/usuarios/$userId')({
       throw error;
     }
   },
-  head: () => ({ meta: [{ title: 'Usuário — Clube Flex' }] }),
+  head: ({ loaderData }) => ({
+    meta: [{ title: `${loaderData?.user.fullName ?? 'Usuário'} — Clube Flex` }],
+  }),
   component: UserRoute,
   errorComponent: UserError,
 });

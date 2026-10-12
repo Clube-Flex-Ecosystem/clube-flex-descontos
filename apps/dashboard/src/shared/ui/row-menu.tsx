@@ -18,6 +18,8 @@ export function RowMenu({
   label: string;
   items: RowMenuItem[];
 }) {
+  // Sem ações além das visíveis na linha, o menu não aparece.
+  if (items.length === 0) return null;
   return (
     <DropdownMenuPrimitive.Root>
       <DropdownMenuPrimitive.Trigger asChild>

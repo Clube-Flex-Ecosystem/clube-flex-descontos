@@ -40,7 +40,9 @@ export const Route = createFileRoute('/_authenticated/parceiros/$partnerId')({
       throw error;
     }
   },
-  head: () => ({ meta: [{ title: 'Parceiro — Clube Flex' }] }),
+  head: ({ loaderData }) => ({
+    meta: [{ title: `${loaderData?.partner.name ?? 'Parceiro'} — Clube Flex` }],
+  }),
   component: PartnerRoute,
   errorComponent: PartnerError,
 });
