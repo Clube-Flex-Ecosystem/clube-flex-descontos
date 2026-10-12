@@ -141,15 +141,6 @@ export default function CatalogIsland(props: Props) {
                             strokeWidth={1.75}
                         />
                     </div>
-                    <p className="flex items-start gap-1.5 text-sm text-muted-foreground">
-                        <Info
-                            className="mt-0.5 h-4 w-4 shrink-0"
-                            aria-hidden="true"
-                            strokeWidth={1.75}
-                        />
-                        O plano é informado por você e não é validado pelo Clube
-                        Flex.
-                    </p>
                 </div>
                 {plan && (
                     <div className="grid gap-1.5">

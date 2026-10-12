@@ -6,7 +6,14 @@ import {
     type PublicContactRequest,
 } from '@flex/contracts';
 import { useEffect, useReducer, useRef, useState } from 'react';
-import { AlertCircle, ArrowRight, Bot, MessageCircle, X } from 'lucide-react';
+import {
+    AlertCircle,
+    ArrowRight,
+    ArrowUpRight,
+    Bot,
+    MessageCircle,
+    X,
+} from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { button } from '../../../components/ui/button';
 import type { z } from 'zod';
@@ -35,7 +42,7 @@ type Action =
 const greeting: Message = {
     by: 'bot',
     content:
-        'Olá! Sou o assistente virtual do Clube Flex. Minhas respostas são automáticas. Como posso ajudar?',
+        'Olá! 👋 Seja bem-vindo ao Clube Flex! Que bom ter você por aqui. Como podemos ajudar hoje?',
 };
 function reducer(state: State, action: Action): State {
     if (action.type === 'close') return { ...state, step: 'closed' };
@@ -85,15 +92,32 @@ const choosePartner = (state: State): State => ({
             by: 'bot',
             content: (
                 <>
-                    A parceria continua por e-mail. Inclua:
-                    <ul>
-                        <li>nome do responsável;</li>
-                        <li>empresa ou profissional;</li>
-                        <li>telefone ou WhatsApp;</li>
-                        <li>cidade;</li>
-                        <li>serviços oferecidos;</li>
-                        <li>proposta de desconto.</li>
+                    Que bom ter você interessado em fazer parte do Clube Flex!
+                    🤝
+                    <br />
+                    <br />
+                    Para dar o próximo passo, envie sua proposta para{' '}
+                    <a
+                        href="mailto:comercial@flexcard.org.br"
+                        className="font-semibold underline underline-offset-2"
+                    >
+                        comercial@flexcard.org.br
+                    </a>
+                    .
+                    <br />
+                    <br />
+                    Para agilizar a análise, inclua:
+                    <ul className="mt-2 list-disc space-y-1 pl-5">
+                        <li>Nome do responsável</li>
+                        <li>Nome da empresa ou profissional</li>
+                        <li>Telefone ou WhatsApp</li>
+                        <li>Cidade de atuação</li>
+                        <li>Serviços oferecidos</li>
+                        <li>Proposta de desconto para os membros do clube</li>
                     </ul>
+                    <br />
+                    Nossa equipe vai avaliar sua proposta e entrar em contato
+                    para conversar sobre os próximos passos.
                 </>
             ),
         },
@@ -334,17 +358,64 @@ export default function AssistantIsland() {
     return (
         <>
             <button
-                className="fixed right-5 bottom-5 z-40 grid h-15 w-15 place-items-center rounded-full border-0 bg-sidebar text-surface shadow-float transition-[background-color,scale] duration-200 ease-out after:absolute after:top-0.5 after:right-0.5 after:h-3 after:w-3 after:rounded-full after:border-2 after:border-background after:bg-brand-signal hover:scale-105 hover:bg-sidebar-raised"
                 type="button"
-                aria-label="Abrir assistente do Clube Flex"
                 data-open-assistant
+                aria-label="Conversar com o assistente virtual do Flex"
+                className="
+        group fixed z-40
+        right-4 bottom-[calc(16px+env(safe-area-inset-bottom))]
+        sm:right-5 sm:bottom-5
+
+        flex size-14 items-center justify-center
+        sm:h-auto sm:w-auto sm:gap-3
+        sm:px-4 sm:py-3
+
+        rounded-full border border-white/10
+        bg-sidebar text-surface shadow-float
+
+        transition-[transform,background-color,box-shadow]
+        duration-200 ease-out
+        hover:bg-sidebar-raised
+        sm:hover:-translate-y-1
+        active:scale-95
+
+        focus-visible:outline-2
+        focus-visible:outline-offset-4
+        focus-visible:outline-brand-signal
+        motion-reduce:transform-none
+        motion-reduce:transition-none
+    "
             >
-                <MessageCircle
-                    className="h-6 w-6"
+                <span className="grid size-10 shrink-0 place-items-center rounded-full sm:bg-white/10">
+                    <Bot
+                        className="size-6 sm:size-5"
+                        aria-hidden="true"
+                        strokeWidth={1.75}
+                    />
+                </span>
+
+                <span className="hidden flex-col items-start gap-0.5 text-left sm:flex">
+                    <span className="text-sm font-semibold">
+                        Posso te ajudar? 👋
+                    </span>
+                    <span className="text-xs text-white/75">
+                        Sou o assistente virtual do Flex.
+                    </span>
+                </span>
+
+                <ArrowUpRight
+                    className="
+            ml-1 hidden size-5 shrink-0
+            text-brand-signal
+            transition-transform duration-200
+            group-hover:translate-x-0.5
+            group-hover:-translate-y-0.5
+            sm:block
+        "
                     aria-hidden="true"
-                    strokeWidth={1.75}
                 />
             </button>
+
             {state.step !== 'closed' && (
                 <>
                     <button
@@ -379,7 +450,7 @@ export default function AssistantIsland() {
                                     Assistente Clube Flex
                                 </h2>
                                 <small className="block text-caption text-muted-foreground">
-                                    Atendimento virtual automático
+                                    Atendimento virtual
                                 </small>
                             </div>
                             <button

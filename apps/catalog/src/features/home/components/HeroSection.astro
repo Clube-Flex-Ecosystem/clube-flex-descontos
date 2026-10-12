@@ -67,26 +67,7 @@ const benefits = [
             class="relative mx-auto aspect-square w-full max-w-115"
             aria-hidden="true"
         >
-            <div class="absolute inset-[4%_0_8%_6%] rounded-panel border border-border bg-surface-muted"></div>
-            <div class="absolute top-0 right-[4%] aspect-square w-[30%] rounded-full bg-brand-signal"></div>
-            <FlexCard class="absolute top-[26%] left-[14%] w-[72%] rotate-[-7deg] animate-[card-float_8s_ease-in-out_infinite] motion-reduce:animate-none" />
-            {benefits.map(({ icon: Icon, label, value, position }) => (
-                <div
-                    class={`absolute ${position} flex items-center gap-3 rounded-card border border-border bg-surface px-4 py-3 shadow-card`}
-                >
-                    <span class="grid h-10 w-10 place-items-center rounded-xl bg-surface-muted text-foreground">
-                        <Icon class="h-5 w-5" stroke-width={1.75} />
-                    </span>
-                    <div>
-                        <small class="block text-caption text-muted-foreground">
-                            {label}
-                        </small>
-                        <strong class="block font-display text-number-sm font-stretch-108% tabular-nums text-accent-strong max-[380px]:text-xl">
-                            {value}
-                        </strong>
-                    </div>
-                </div>
-            ))}
+            <FlexCard class="absolute top-[26%] left-[14%] w-[72%] rotate-[-7deg] animate-[card-float_4s_ease-in-out_infinite] motion-reduce:animate-none" />
         </div>
     </div>
 </section>
