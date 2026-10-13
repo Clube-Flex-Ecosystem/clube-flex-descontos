@@ -12,6 +12,9 @@ RUN pnpm install --frozen-lockfile --filter @flex/catalog...
 COPY tsconfig.base.json ./
 COPY packages/contracts packages/contracts
 COPY apps/catalog apps/catalog
+# Endereço público da API embutido no bundle Astro.
+ARG PUBLIC_API_URL
+ENV PUBLIC_API_URL=$PUBLIC_API_URL
 RUN pnpm --filter @flex/catalog build \
  && pnpm --filter @flex/catalog deploy --legacy --prod /out \
  && cp -r apps/catalog/dist /out/
