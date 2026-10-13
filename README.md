@@ -51,7 +51,7 @@ Com e-mail, o código de ativação é enviado automaticamente. Sem e-mail (ou s
 | `BCRYPT_ROUNDS`                      | API          | Custo do bcrypt; padrão `12`                                                                                                          |
 | `SEED_SUPPORT_PASSWORD`              | API (seed)   | Senha usada somente pelo comando de seed do usuário de suporte                                                                        |
 | `TEST_DATABASE_URL`                  | API (testes) | Conexão com o PostgreSQL descartável dos testes; padrão `postgres://flex:flex@localhost:5433/flex_test`                               |
-| `API_URL`                            | Catálogo     | Endereço da API central usado pelo SSR e pelas ilhas; padrão `http://localhost:3000`                                                  |
+| `PUBLIC_API_URL`                            | Catálogo     | Endereço da API central usado pelo SSR e pelas ilhas; padrão `http://localhost:3000`                                                  |
 | `VITE_API_URL`                       | Dashboard    | Endereço da API embutido no bundle; padrão `http://localhost:3000` e, em Docker, informado como `--build-arg`                         |
 
 Cada app possui um modelo copiável em `apps/<app>/.env.example`. Os arquivos
