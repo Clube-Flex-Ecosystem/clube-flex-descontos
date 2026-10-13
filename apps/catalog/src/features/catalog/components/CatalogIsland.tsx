@@ -5,7 +5,6 @@ import {
     BadgePercent,
     Check,
     ChevronDown,
-    Info,
     MapPin,
     Star,
     Ticket,

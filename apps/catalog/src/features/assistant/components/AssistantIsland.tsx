@@ -6,14 +6,7 @@ import {
     type PublicContactRequest,
 } from '@flex/contracts';
 import { useEffect, useReducer, useRef, useState } from 'react';
-import {
-    AlertCircle,
-    ArrowRight,
-    ArrowUpRight,
-    Bot,
-    MessageCircle,
-    X,
-} from 'lucide-react';
+import { AlertCircle, ArrowRight, ArrowUpRight, Bot, X } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { button } from '../../../components/ui/button';
 import type { z } from 'zod';
