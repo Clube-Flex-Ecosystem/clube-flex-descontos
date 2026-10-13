@@ -572,9 +572,7 @@ export default function AssistantIsland() {
                                                 )
                                             }
                                         />
-                                        <span>
-                                            {consent.text}
-                                        </span>
+                                        <span>{consent.text}</span>
                                     </label>
                                     <button
                                         className={button('primary')}
