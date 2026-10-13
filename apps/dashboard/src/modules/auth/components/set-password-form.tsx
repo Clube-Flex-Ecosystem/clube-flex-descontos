@@ -72,6 +72,7 @@ export function SetPasswordForm({
             />
             <TextField
                 label="Nova senha"
+                placeholder="Mínimo de 6 caracteres"
                 type="password"
                 autoComplete="new-password"
                 revealable
@@ -81,6 +82,7 @@ export function SetPasswordForm({
             <PasswordCriteria value={newPassword} />
             <TextField
                 label="Confirmar nova senha"
+                placeholder="Repita a nova senha"
                 type="password"
                 autoComplete="new-password"
                 revealable

@@ -4,10 +4,31 @@ import {
     type FieldErrorCode,
 } from '@flex/contracts';
 
-// Senhas comuns com ao menos 15 caracteres, a menor extensão aceita. A lista é
+// Senhas comuns com ao menos 6 caracteres, a menor extensão aceita. A lista é
 // intencionalmente curta: a verificação contra bases de vazamentos exige um
 // serviço externo e fica fora desta entrega.
 const COMMON_PASSWORDS = new Set([
+    '123456',
+    '1234567',
+    '12345678',
+    '123456789',
+    '1234567890',
+    '654321',
+    'password',
+    'password1',
+    'password123',
+    'qwerty',
+    'qwerty123',
+    'abc123',
+    'abcdef',
+    'senha',
+    'senha123',
+    'senha1234',
+    'mudar123',
+    'admin123',
+    'administrador',
+    'clubeflex',
+    'clubeflex123',
     '123456789012345',
     '1234567890123456',
     '12345678901234567890',
@@ -55,7 +76,7 @@ function isRepeatedPattern(value: string): boolean {
 }
 
 /**
- * Regras de senha da ADR-0004: tamanho de 15 a 128 caracteres, sem regras de composição,
+ * Regras de senha da ADR-0004: tamanho de 6 a 128 caracteres, sem regras de composição,
  * recusando senhas comuns ou previsíveis.
  */
 export function checkPassword(password: string): FieldErrorCode | null {

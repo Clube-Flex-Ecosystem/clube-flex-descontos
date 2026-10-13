@@ -152,6 +152,7 @@ export function PlanFormDrawer({ plan, onClose }: PlanFormDrawerProps) {
                 ) : null}
                 <InputField
                     label="Nome"
+                    placeholder="Ex.: Flex Família"
                     autoFocus
                     hint="Deve ser único, sem diferenciar maiúsculas e acentos."
                     error={fieldMessage(errors.name?.message)}
@@ -160,6 +161,7 @@ export function PlanFormDrawer({ plan, onClose }: PlanFormDrawerProps) {
                 {isNew ? (
                     <InputField
                         label="Identificador público"
+                        placeholder="flex-familia"
                         optional
                         mono
                         hint="Usado nos links do catálogo. Gerado a partir do nome quando vazio e imutável depois."
@@ -169,6 +171,7 @@ export function PlanFormDrawer({ plan, onClose }: PlanFormDrawerProps) {
                 ) : (
                     <InputField
                         label="Identificador público"
+                        placeholder="flex-familia"
                         mono
                         readOnly
                         value={plan.slug}

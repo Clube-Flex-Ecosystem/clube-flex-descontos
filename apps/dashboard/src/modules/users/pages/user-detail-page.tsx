@@ -348,12 +348,14 @@ function UserDetail({
                         <CardBody grid>
                             <InputField
                                 label="Nome completo"
+                                placeholder="Ex.: Maria Souza"
                                 readOnly={!canManage}
                                 error={fieldMessage(errors.fullName?.message)}
                                 {...register('fullName')}
                             />
                             <InputField
                                 label="Nome de usuário"
+                                placeholder="maria.souza"
                                 mono
                                 readOnly={!canManage}
                                 error={fieldMessage(errors.username?.message)}
@@ -361,6 +363,7 @@ function UserDetail({
                             />
                             <InputField
                                 label="E-mail"
+                                placeholder="nome@exemplo.com"
                                 optional
                                 type="email"
                                 readOnly={!canManage}

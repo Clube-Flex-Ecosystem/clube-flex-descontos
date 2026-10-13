@@ -514,6 +514,7 @@ export function PartnerForm({
                         <div className="grid gap-4 md:grid-cols-2">
                             <InputField
                                 label="Nome do parceiro"
+                                placeholder="Ex.: Clínica Bem Viver"
                                 frameClassName="md:col-span-2"
                                 autoComplete="organization"
                                 hint={
@@ -526,6 +527,7 @@ export function PartnerForm({
                             />
                             <InputField
                                 label="Endereço público"
+                                placeholder="clinica-bem-viver"
                                 frameClassName="md:col-span-2"
                                 optional={isNew}
                                 prefix="flexclube.org/parceiros/"
@@ -540,6 +542,7 @@ export function PartnerForm({
                             />
                             <InputField
                                 label="Site"
+                                placeholder="https://www.exemplo.com.br"
                                 optional
                                 type="url"
                                 inputMode="url"
@@ -548,6 +551,7 @@ export function PartnerForm({
                             />
                             <TextareaField
                                 label="Descrição"
+                                placeholder="Descreva o parceiro e o que ele oferece ao associado."
                                 frameClassName="md:col-span-2"
                                 hint={
                                     <span className="tnum">
@@ -564,6 +568,7 @@ export function PartnerForm({
                             />
                             <TextareaField
                                 label="Instruções para usar o benefício"
+                                placeholder="Explique como o associado usa o benefício."
                                 frameClassName="md:col-span-2"
                                 error={fieldMessage(
                                     errors.usageInstructions?.message,

@@ -26,6 +26,7 @@ export function BenefitsEditor({ plans }: { plans: readonly Plan[] }) {
         <div className="grid gap-4">
             <InputField
                 label="Cupom geral"
+                placeholder="Ex.: FLEX10"
                 optional
                 mono
                 frameClassName="max-w-80"

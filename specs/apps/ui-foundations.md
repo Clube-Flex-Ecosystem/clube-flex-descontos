@@ -127,6 +127,24 @@ Controles interativos contemplam, quando aplicável:
 O estado não pode ser comunicado somente por cor. Desabilitado não usa
 opacidade: tem fundo, texto e borda próprios.
 
+### Placeholder em campos de texto
+
+Regra de UX válida para o dashboard e o catálogo (revisão de 2026-10-13):
+
+- Todo campo de texto (`input` de texto, e-mail, telefone, URL, senha, busca e
+  `textarea`) possui `placeholder` preenchido por padrão. Nos componentes
+  compartilhados do dashboard (`TextField`, `InputField`, `TextareaField`) a
+  propriedade é obrigatória.
+- O placeholder é um exemplo realista (`Ex.: Maria Souza`, `(21) 99999-9999`) ou
+  uma orientação curta (`Mínimo de 6 caracteres`); não repete o rótulo.
+- O placeholder complementa e nunca substitui o rótulo visível nem o texto de
+  ajuda: informação necessária para preencher corretamente permanece no rótulo
+  ou no `hint`.
+- Segue o token `placeholder` (ver [Estados globais do browser](#estados-globais-do-browser-dashboard)),
+  que mantém o contraste mínimo de 4,5:1.
+- Checkbox, radio, interruptor e `select` não se aplicam; `select` usa a opção
+  inicial (por exemplo, "Selecione…") como equivalente.
+
 ## Cores semânticas
 
 - verde (`success`): sucesso;

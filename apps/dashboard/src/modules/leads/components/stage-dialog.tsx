@@ -71,6 +71,7 @@ export function StageDialog({
             {target === 'lost' ? (
                 <TextareaField
                     label="Motivo da perda"
+                    placeholder="Ex.: Optou por outro plano"
                     optional
                     value={reason}
                     onChange={(event) => setReason(event.target.value)}

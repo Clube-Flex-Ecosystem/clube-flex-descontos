@@ -137,12 +137,14 @@ export function UnitsEditor() {
                                 <div className="grid gap-4 md:grid-cols-2">
                                     <InputField
                                         label="Nome da unidade"
+                                        placeholder="Ex.: Unidade Centro"
                                         frameClassName="md:col-span-2"
                                         error={message(`units.${index}.name`)}
                                         {...register(`units.${index}.name`)}
                                     />
                                     <InputField
                                         label="CEP"
+                                        placeholder="00000-000"
                                         inputMode="numeric"
                                         autoComplete="postal-code"
                                         error={message(
@@ -154,6 +156,7 @@ export function UnitsEditor() {
                                     />
                                     <InputField
                                         label="Estado"
+                                        placeholder="RJ"
                                         readOnly
                                         hint="Por enquanto, apenas o Rio de Janeiro."
                                         error={message(`units.${index}.state`)}
@@ -161,18 +164,21 @@ export function UnitsEditor() {
                                     />
                                     <InputField
                                         label="Logradouro"
+                                        placeholder="Ex.: Av. Rio Branco"
                                         frameClassName="md:col-span-2"
                                         error={message(`units.${index}.street`)}
                                         {...register(`units.${index}.street`)}
                                     />
                                     <InputField
                                         label="Número"
+                                        placeholder="Ex.: 120"
                                         hint="Use s/n quando não houver número."
                                         error={message(`units.${index}.number`)}
                                         {...register(`units.${index}.number`)}
                                     />
                                     <InputField
                                         label="Complemento"
+                                        placeholder="Ex.: Sala 301"
                                         optional
                                         error={message(
                                             `units.${index}.complement`,
@@ -183,6 +189,7 @@ export function UnitsEditor() {
                                     />
                                     <InputField
                                         label="Bairro"
+                                        placeholder="Ex.: Centro"
                                         error={message(
                                             `units.${index}.neighborhood`,
                                         )}
@@ -192,11 +199,13 @@ export function UnitsEditor() {
                                     />
                                     <InputField
                                         label="Cidade"
+                                        placeholder="Ex.: Rio de Janeiro"
                                         error={message(`units.${index}.city`)}
                                         {...register(`units.${index}.city`)}
                                     />
                                     <InputField
                                         label="Horário de atendimento"
+                                        placeholder="Ex.: Segunda a sexta, das 8h às 18h"
                                         optional
                                         frameClassName="md:col-span-2"
                                         hint="Texto livre, como “Segunda a sexta, das 8h às 18h”."
@@ -209,6 +218,7 @@ export function UnitsEditor() {
                                     />
                                     <TextareaField
                                         label="Instruções da unidade"
+                                        placeholder="Ex.: Apresente o cartão Flex na recepção."
                                         optional
                                         frameClassName="md:col-span-2"
                                         error={message(

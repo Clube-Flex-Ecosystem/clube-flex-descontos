@@ -655,8 +655,8 @@
       <form class="auth-form" novalidate data-login>
         <div><h1>Entrar</h1><p class="muted" style="margin-top:6px">Use o nome de usuário e a senha da sua conta.</p></div>
         <div class="alert danger" role="alert" hidden id="login-error"><svg class="icon" aria-hidden="true"><use href="#i-alert"/></svg><div>Usuário ou senha incorretos.</div></div>
-        <div class="field"><label for="login-user">Nome de usuário</label><input id="login-user" autocomplete="username" value="ana.souza"></div>
-        <div class="field"><label for="login-pass">Senha</label><input id="login-pass" type="password" autocomplete="current-password" value="••••••••••"></div>
+        <div class="field"><label for="login-user">Nome de usuário</label><input id="login-user" autocomplete="username" placeholder="Seu nome de usuário" value="ana.souza"></div>
+        <div class="field"><label for="login-pass">Senha</label><input id="login-pass" type="password" autocomplete="current-password" placeholder="Digite sua senha" value="••••••••••"></div>
         <button class="btn primary" type="submit">Entrar</button>
         <div class="auth-links"><a href="#">Ativar conta</a><a href="#">Esqueci minha senha</a></div>
       </form>
@@ -819,11 +819,11 @@
               <section class="card" id="sec-main" aria-labelledby="sec-main-t">
                 <div class="card-head"><div><h2 id="sec-main-t">Dados principais</h2><p>Informações que identificam o parceiro no catálogo.</p></div></div>
                 <div class="card-body field-grid">
-                  <div class="field full"><label for="p-name">Nome do parceiro</label><input id="p-name" value="Clínica Vida Plena"><span class="hint">Já existe um parceiro chamado “Clínica Vida”. Verifique se não é duplicidade.</span></div>
-                  <div class="field field-error"><label for="p-slug">Endereço público</label><div class="prefix"><span>flexclube.org/parceiros/</span><input id="p-slug" value="clinica vida plena" aria-invalid="true" aria-describedby="p-slug-hint"></div><span class="hint" id="p-slug-hint"><svg class="icon" aria-hidden="true" style="width:13px;height:13px"><use href="#i-alert"/></svg>Use apenas letras minúsculas, números e hífens.</span></div>
-                  <div class="field"><label for="p-site">Site <span class="opt">(opcional)</span></label><input id="p-site" type="url" value="https://vidaplena.com.br"></div>
-                  <div class="field full"><label for="p-desc">Descrição</label><textarea id="p-desc">Atendimento clínico e exames em diferentes especialidades, com agendamento pelo WhatsApp.</textarea><span class="hint num">91 de 2.000 caracteres.</span></div>
-                  <div class="field full"><label for="p-instr">Instruções para usar o benefício</label><textarea id="p-instr" style="min-height:64px">Apresente a carteirinha digital antes do atendimento.</textarea></div>
+                  <div class="field full"><label for="p-name">Nome do parceiro</label><input id="p-name" placeholder="Ex.: Clínica Bem Viver" value="Clínica Vida Plena"><span class="hint">Já existe um parceiro chamado “Clínica Vida”. Verifique se não é duplicidade.</span></div>
+                  <div class="field field-error"><label for="p-slug">Endereço público</label><div class="prefix"><span>flexclube.org/parceiros/</span><input id="p-slug" placeholder="clinica-bem-viver" value="clinica vida plena" aria-invalid="true" aria-describedby="p-slug-hint"></div><span class="hint" id="p-slug-hint"><svg class="icon" aria-hidden="true" style="width:13px;height:13px"><use href="#i-alert"/></svg>Use apenas letras minúsculas, números e hífens.</span></div>
+                  <div class="field"><label for="p-site">Site <span class="opt">(opcional)</span></label><input id="p-site" type="url" placeholder="https://www.exemplo.com.br" value="https://vidaplena.com.br"></div>
+                  <div class="field full"><label for="p-desc">Descrição</label><textarea id="p-desc" placeholder="Descreva o parceiro e o que ele oferece ao associado.">Atendimento clínico e exames em diferentes especialidades, com agendamento pelo WhatsApp.</textarea><span class="hint num">91 de 2.000 caracteres.</span></div>
+                  <div class="field full"><label for="p-instr">Instruções para usar o benefício</label><textarea id="p-instr" placeholder="Explique como o associado usa o benefício." style="min-height:64px">Apresente a carteirinha digital antes do atendimento.</textarea></div>
                 </div>
               </section>
 
@@ -853,7 +853,7 @@
               <section class="card" id="sec-benefits" aria-labelledby="sec-benefits-t">
                 <div class="card-head"><div><h2 id="sec-benefits-t">Benefícios e cupons</h2><p>Um benefício por plano. O cupom do plano prevalece sobre o cupom geral.</p></div></div>
                 <div class="card-body stack" style="gap:16px">
-                  <div class="field" style="max-width:320px"><label for="p-coupon">Cupom geral <span class="opt">(opcional)</span></label><input id="p-coupon" class="mono" value="FLEXVIDA"></div>
+                  <div class="field" style="max-width:320px"><label for="p-coupon">Cupom geral <span class="opt">(opcional)</span></label><input id="p-coupon" class="mono" placeholder="Ex.: FLEX10" value="FLEXVIDA"></div>
                   <table class="sub-table">
                     <thead><tr><th scope="col">Plano</th><th scope="col">Desconto</th><th scope="col">Cupom do plano <span style="color:var(--muted)">(opcional)</span></th></tr></thead>
                     <tbody id="p-benefits"></tbody>
@@ -933,9 +933,9 @@
               <div class="card">
                 <div class="card-head"><div><h2>Dados da conta</h2></div></div>
                 <div class="card-body field-grid">
-                  <div class="field"><label for="u-name">Nome completo</label><input id="u-name"></div>
-                  <div class="field"><label for="u-login">Nome de usuário</label><input id="u-login" class="mono"></div>
-                  <div class="field full"><label for="u-mail">E-mail <span class="opt">(opcional)</span></label><input id="u-mail" type="email"></div>
+                  <div class="field"><label for="u-name">Nome completo</label><input id="u-name" placeholder="Ex.: Maria Souza"></div>
+                  <div class="field"><label for="u-login">Nome de usuário</label><input id="u-login" class="mono" placeholder="maria.souza"></div>
+                  <div class="field full"><label for="u-mail">E-mail <span class="opt">(opcional)</span></label><input id="u-mail" type="email" placeholder="nome@exemplo.com"></div>
                 </div>
               </div>
               <div class="card">
@@ -993,13 +993,13 @@
           <div class="page-head"><div><h1 id="password-title">Alterar senha</h1><p>Sua sessão atual permanece ativa após a alteração.</p></div></div>
           <form class="card" style="max-width:560px" novalidate data-password-form>
             <div class="card-body stack" style="gap:14px">
-              <div class="field"><label for="pw-current">Senha atual</label><input id="pw-current" type="password" autocomplete="current-password"></div>
-              <div class="field"><label for="pw-new">Nova senha</label><input id="pw-new" type="password" autocomplete="new-password" aria-describedby="pw-rules"></div>
+              <div class="field"><label for="pw-current">Senha atual</label><input id="pw-current" type="password" autocomplete="current-password" placeholder="Digite a senha atual"></div>
+              <div class="field"><label for="pw-new">Nova senha</label><input id="pw-new" type="password" placeholder="Mínimo de 6 caracteres" autocomplete="new-password" aria-describedby="pw-rules"></div>
               <ul class="req-list" id="pw-rules" aria-label="Critérios da senha">
                 <li data-rule="len"><svg class="icon no" aria-hidden="true"><use href="#i-check"/></svg>Pelo menos 10 caracteres</li>
                 <li data-rule="mix"><svg class="icon no" aria-hidden="true"><use href="#i-check"/></svg>Letras e números</li>
               </ul>
-              <div class="field"><label for="pw-confirm">Confirmar nova senha</label><input id="pw-confirm" type="password" autocomplete="new-password"></div>
+              <div class="field"><label for="pw-confirm">Confirmar nova senha</label><input id="pw-confirm" type="password" placeholder="Repita a nova senha" autocomplete="new-password"></div>
             </div>
             <div class="card-foot" style="justify-content:flex-end"><button class="btn primary" type="submit">Alterar senha</button></div>
           </form>
@@ -1049,7 +1049,7 @@
       <div class="dlg-head"><div><h2 id="stage-title">Alterar etapa</h2><p id="stage-lead"></p></div><button class="btn ghost sm icon-only" value="cancel" aria-label="Fechar"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button></div>
       <div class="dlg-body">
         <div class="field"><label for="stage-select">Nova etapa</label><select id="stage-select"></select></div>
-        <div class="field" id="stage-lost" hidden><label for="stage-reason">Motivo da perda <span class="opt">(opcional)</span></label><textarea id="stage-reason" style="min-height:72px"></textarea></div>
+        <div class="field" id="stage-lost" hidden><label for="stage-reason">Motivo da perda <span class="opt">(opcional)</span></label><textarea id="stage-reason" placeholder="Ex.: Optou por outro plano" style="min-height:72px"></textarea></div>
         <div class="alert info" id="stage-confirm" hidden><svg class="icon" aria-hidden="true"><use href="#i-alert"/></svg><div id="stage-confirm-text"></div></div>
       </div>
       <div class="dlg-actions"><button class="btn" value="cancel">Cancelar</button><button class="btn primary" value="confirm" id="stage-submit">Alterar etapa</button></div>
@@ -1657,7 +1657,7 @@
       if (opts.optional) l.append(" ", el("span", "opt", "(opcional)"));
       let input;
       if (opts.options) { input = el("select"); opts.options.forEach(o => input.append(Object.assign(el("option", "", o), { value: o }))); input.value = value; }
-      else { input = el("input"); input.value = value; if (opts.readonly) input.readOnly = true; if (opts.mono) input.className = "mono"; }
+      else { input = el("input"); input.value = value; if (opts.readonly) input.readOnly = true; if (opts.mono) input.className = "mono"; input.placeholder = opts.placeholder || ""; }
       input.id = id; f.append(l, input);
       if (opts.hint) f.append(el("span", "hint", opts.hint));
       return f;
@@ -1674,21 +1674,21 @@
       $("#entity-title").textContent = titles[key][isNew ? 0 : 1];
       $("#entity-sub").textContent = isNew ? "" : r.name;
       if (key === "plans") {
-        body.append(field("e-name", "Nome", r?.name), field("e-slug", "Identificador público", r?.slug || "", { mono: true, readonly: !isNew, hint: isNew ? "Gerado a partir do nome; usado em links do catálogo." : "Não muda ao renomear o plano, para preservar links existentes." }), activeSwitch(r ? r.active : true));
+        body.append(field("e-name", "Nome", r?.name, { placeholder: "Ex.: Flex Família" }), field("e-slug", "Identificador público", r?.slug || "", { mono: true, placeholder: "flex-familia", readonly: !isNew, hint: isNew ? "Gerado a partir do nome; usado em links do catálogo." : "Não muda ao renomear o plano, para preservar links existentes." }), activeSwitch(r ? r.active : true));
       } else if (key === "categories" || key === "sources") {
-        body.append(field("e-name", "Nome", r?.name, { hint: "Deve ser único, sem diferenciar maiúsculas e acentos." }), activeSwitch(r ? r.active : true));
+        body.append(field("e-name", "Nome", r?.name, { placeholder: "Ex.: Saúde e bem-estar", hint: "Deve ser único, sem diferenciar maiúsculas e acentos." }), activeSwitch(r ? r.active : true));
       } else if (key === "lead") {
         // A última origem escolhida é lembrada durante a sessão; na primeira abertura, nenhuma vem selecionada.
         const sources = DATA.sources.filter(s => s.active && !s.protected).map(s => s.name);
-        body.append(field("e-name", "Nome"), field("e-phone", "WhatsApp", "", { hint: "Com DDD. Um WhatsApp só pode pertencer a um lead." }), field("e-mail", "E-mail", "", { optional: true }),
-          field("e-source", "Origem", lastSource, { options: ["", ...sources], hint: lastSource ? "Última origem usada nesta sessão." : undefined }), field("e-detail", "Detalhe da origem", "", { optional: true }),
+        body.append(field("e-name", "Nome", "", { placeholder: "Ex.: Maria Souza" }), field("e-phone", "WhatsApp", "", { placeholder: "(21) 99999-9999", hint: "Com DDD. Um WhatsApp só pode pertencer a um lead." }), field("e-mail", "E-mail", "", { optional: true, placeholder: "nome@exemplo.com" }),
+          field("e-source", "Origem", lastSource, { options: ["", ...sources], hint: lastSource ? "Última origem usada nesta sessão." : undefined }), field("e-detail", "Detalhe da origem", "", { optional: true, placeholder: "Ex.: Indicação da recepção" }),
           field("e-owner", "Responsável", ME + " (você)", { options: [ME + " (você)", "Sem responsável"] }));
         $("#e-source option[value='']").textContent = "Selecione";
       } else if (key === "lead-edit") {
-        body.append(field("e-name", "Nome", r.name), field("e-phone", "WhatsApp", r.phone, { hint: "Com DDD. Um WhatsApp só pode pertencer a um lead." }), field("e-mail", "E-mail", r.email || "", { optional: true }),
-          field("e-source", "Origem", r.source, { options: DATA.sources.filter(s => s.active || s.name === r.source).map(s => s.name), hint: "A origem anterior fica registrada no histórico." }), field("e-detail", "Detalhe da origem", "", { optional: true }));
+        body.append(field("e-name", "Nome", r.name, { placeholder: "Ex.: Maria Souza" }), field("e-phone", "WhatsApp", r.phone, { placeholder: "(21) 99999-9999", hint: "Com DDD. Um WhatsApp só pode pertencer a um lead." }), field("e-mail", "E-mail", r.email || "", { optional: true, placeholder: "nome@exemplo.com" }),
+          field("e-source", "Origem", r.source, { options: DATA.sources.filter(s => s.active || s.name === r.source).map(s => s.name), hint: "A origem anterior fica registrada no histórico." }), field("e-detail", "Detalhe da origem", "", { optional: true, placeholder: "Ex.: Indicação da recepção" }));
       } else if (key === "user") {
-        body.append(field("e-name", "Nome completo"), field("e-login", "Nome de usuário", "", { mono: true, readonly: true, hint: "Gerado a partir do nome; recebe um sufixo numérico se já existir. Pode ser ajustado no detalhe do usuário." }), field("e-mail", "E-mail", "", { optional: true }),
+        body.append(field("e-name", "Nome completo", "", { placeholder: "Ex.: Maria Souza" }), field("e-login", "Nome de usuário", "", { mono: true, readonly: true, placeholder: "Gerado a partir do nome", hint: "Gerado a partir do nome; recebe um sufixo numérico se já existir. Pode ser ajustado no detalhe do usuário." }), field("e-mail", "E-mail", "", { optional: true, placeholder: "nome@exemplo.com" }),
           Object.assign(el("div", "alert info"), {}));
         const a = body.lastChild; a.append(icon("i-alert")); a.append(el("div", "", "A conta começa ativa, sem permissões e aguardando ativação. O código de ativação é emitido ao salvar: sem e-mail, ele é exibido uma única vez no detalhe do usuário."));
       }
@@ -1793,7 +1793,7 @@
         wrap.append(row);
         if (openUnit === u && !u.removed) {
           const panel = el("div", "unit-edit");
-          panel.append(field(`unit-${u.id}`, "Nome da unidade", u.name), el("p", "hint", "Endereço, horários, instruções e contatos próprios da unidade."));
+          panel.append(field(`unit-${u.id}`, "Nome da unidade", u.name, { placeholder: "Ex.: Unidade Centro" }), el("p", "hint", "Endereço, horários, instruções e contatos próprios da unidade."));
           const actions = el("div", "row");
           actions.append(button("btn danger-quiet sm", "Remover unidade", () => { u.removed = true; openUnit = null; markPartnerDirty(); renderUnits(); }, "i-trash"), button("btn sm", "Recolher", () => { openUnit = null; renderUnits(); }));
           panel.append(actions); wrap.append(panel);

@@ -2,7 +2,7 @@
 
 **Estado:** Aceito  
 **Decisão:** 2026-10-10
-**Revisão:** 2026-10-12
+**Revisão:** 2026-10-13 (comprimento mínimo da senha reduzido de 15 para 6 caracteres, por solicitação do responsável)
 
 ## Contexto
 
@@ -11,7 +11,7 @@ O dashboard administra dados pessoais e permissões granulares. A autenticação
 ## Decisão
 
 - Armazenar senhas com bcrypt, usando 12 rounds por padrão.
-- Exigir de 15 a 128 caracteres, sem regras artificiais de composição ou expiração periódica.
+- Exigir de 6 a 128 caracteres, sem regras artificiais de composição ou expiração periódica.
 - Recusar senhas comuns ou comprometidas.
 - Utilizar JWT assinado, com validade de 8 horas, sem refresh token e sem persistência de sessão.
 - Transportar o JWT em cookie host-only `__Host-`, `Secure`, `HttpOnly` e `SameSite=Strict`.
@@ -34,7 +34,7 @@ O dashboard administra dados pessoais e permissões granulares. A autenticação
 
 - Logout apaga o cookie do navegador, mas um token copiado permanece válido até expirar ou até a versão de autenticação da conta mudar.
 - A proteção por origem pressupõe que o dashboard e a API permaneçam em origens explicitamente configuradas.
-- Senhas de 15 caracteres exigem comunicação clara e bom suporte a gerenciadores de senha.
+- O mínimo de 6 caracteres reduz a resistência a força bruta; os limites de tentativas, a recusa de senhas comuns e a invalidação de sessões passam a ser a principal proteção.
 - Rate limiting precisa considerar o proxy do Coolify sem confiar em cabeçalhos arbitrários.
 
 ## Referências

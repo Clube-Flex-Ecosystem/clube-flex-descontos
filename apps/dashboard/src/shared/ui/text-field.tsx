@@ -3,6 +3,8 @@ import { Icon } from './icon';
 
 interface TextFieldProps extends InputHTMLAttributes<HTMLInputElement> {
     label: string;
+    /** Obrigatório: todo campo de texto exibe um exemplo ou orientação de preenchimento. */
+    placeholder: string;
     hint?: string;
     error?: string | undefined;
     /** Exibe o controle para mostrar ou ocultar o conteúdo digitado. */

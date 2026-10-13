@@ -39,12 +39,14 @@ export function LeadFields({
         <>
             <InputField
                 label="Nome"
+                placeholder="Ex.: Maria Souza"
                 autoFocus={autoFocus}
                 error={fieldMessage(errors.name?.message)}
                 {...register('name')}
             />
             <InputField
                 label="WhatsApp"
+                placeholder="(21) 99999-9999"
                 inputMode="tel"
                 autoComplete="off"
                 className="tnum"
@@ -73,6 +75,7 @@ export function LeadFields({
             ) : null}
             <InputField
                 label="E-mail"
+                placeholder="nome@exemplo.com"
                 optional
                 type="email"
                 error={fieldMessage(errors.email?.message)}
@@ -93,6 +96,7 @@ export function LeadFields({
             </SelectField>
             <TextareaField
                 label="Detalhe da origem"
+                placeholder="Ex.: Indicação da recepção"
                 optional
                 error={fieldMessage(errors.sourceDetail?.message)}
                 {...register('sourceDetail')}
@@ -100,6 +104,7 @@ export function LeadFields({
             {source?.requiresReferral ? (
                 <InputField
                     label="Quem indicou"
+                    placeholder="Nome de quem indicou"
                     error={fieldMessage(errors.referredBy?.message)}
                     {...register('referredBy')}
                 />

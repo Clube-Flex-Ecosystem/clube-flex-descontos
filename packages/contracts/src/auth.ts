@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { permissionSchema } from './permissions';
 import { requiredText } from './text';
 
-export const PASSWORD_MIN_LENGTH = 15;
+export const PASSWORD_MIN_LENGTH = 6;
 export const PASSWORD_MAX_LENGTH = 128;
 
 // Comprimento medido em caracteres Unicode, não em unidades UTF-16.

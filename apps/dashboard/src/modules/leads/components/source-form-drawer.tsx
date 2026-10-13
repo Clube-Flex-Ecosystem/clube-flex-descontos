@@ -100,6 +100,7 @@ export function SourceFormDrawer({
                 ) : null}
                 <InputField
                     label="Nome"
+                    placeholder="Ex.: Indicação"
                     autoFocus
                     hint="Deve ser único, sem diferenciar maiúsculas e acentos."
                     error={nameError ?? undefined}

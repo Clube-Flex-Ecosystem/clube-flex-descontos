@@ -276,8 +276,8 @@ export default function AssistantIsland() {
     const input = (
         name: 'name' | 'whatsapp' | 'email',
         label: string,
-        type = 'text',
-        placeholder = '',
+        type: string,
+        placeholder: string,
     ) => (
         <form
             className="grid gap-2"

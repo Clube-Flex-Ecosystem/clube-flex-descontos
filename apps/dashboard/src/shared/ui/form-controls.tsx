@@ -84,6 +84,8 @@ interface InputFieldProps extends Omit<
     'size'
 > {
     label: ReactNode;
+    /** Obrigatório: todo campo de texto exibe um exemplo ou orientação de preenchimento. */
+    placeholder: string;
     optional?: boolean;
     hint?: ReactNode;
     error?: string | undefined;
@@ -150,6 +152,8 @@ export function InputField({
 
 interface TextareaFieldProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
     label: ReactNode;
+    /** Obrigatório: todo campo de texto exibe um exemplo ou orientação de preenchimento. */
+    placeholder: string;
     optional?: boolean;
     hint?: ReactNode;
     error?: string | undefined;

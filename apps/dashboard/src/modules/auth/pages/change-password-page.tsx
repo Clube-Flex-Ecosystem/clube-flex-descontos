@@ -76,6 +76,7 @@ export function ChangePasswordPage() {
                         ) : null}
                         <TextField
                             label="Senha atual"
+                            placeholder="Digite a senha atual"
                             type="password"
                             autoComplete="current-password"
                             revealable
@@ -86,6 +87,7 @@ export function ChangePasswordPage() {
                         />
                         <TextField
                             label="Nova senha"
+                            placeholder="Mínimo de 6 caracteres"
                             type="password"
                             autoComplete="new-password"
                             revealable
@@ -95,6 +97,7 @@ export function ChangePasswordPage() {
                         <PasswordCriteria value={newPassword} />
                         <TextField
                             label="Confirmar nova senha"
+                            placeholder="Repita a nova senha"
                             type="password"
                             autoComplete="new-password"
                             revealable

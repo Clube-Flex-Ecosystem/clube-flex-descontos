@@ -64,6 +64,7 @@ export function RecoveryPage() {
                 ) : null}
                 <TextField
                     label="Nome de usuário"
+                    placeholder="Seu nome de usuário"
                     autoComplete="username"
                     autoCapitalize="none"
                     spellCheck={false}

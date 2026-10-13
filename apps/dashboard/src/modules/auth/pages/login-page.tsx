@@ -55,6 +55,7 @@ export function LoginPage({ notice }: { notice?: LoginNotice | undefined }) {
                 {failure ? <Alert tone="danger">{failure}</Alert> : null}
                 <TextField
                     label="Nome de usuário"
+                    placeholder="Seu nome de usuário"
                     autoComplete="username"
                     autoCapitalize="none"
                     spellCheck={false}
@@ -63,6 +64,7 @@ export function LoginPage({ notice }: { notice?: LoginNotice | undefined }) {
                 />
                 <TextField
                     label="Senha"
+                    placeholder="Digite sua senha"
                     type="password"
                     autoComplete="current-password"
                     revealable

@@ -134,6 +134,7 @@ export function CategoryFormDrawer({
                 ) : null}
                 <InputField
                     label="Nome"
+                    placeholder="Ex.: Saúde e bem-estar"
                     autoFocus
                     hint="Deve ser único, sem diferenciar maiúsculas e acentos."
                     error={fieldMessage(errors.name?.message)}

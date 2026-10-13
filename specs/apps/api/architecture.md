@@ -171,7 +171,7 @@ Ordem conceitual:
 ### Senhas
 
 - Hash de senhas com bcrypt e custo configurável, usando 12 rounds por padrão.
-- Comprimento entre 15 e 128 caracteres.
+- Comprimento entre 6 e 128 caracteres.
 - Unicode, espaços e colagem permitidos.
 - Sem regras obrigatórias de composição e sem expiração periódica.
 - Senhas comuns ou conhecidas como comprometidas devem ser recusadas.

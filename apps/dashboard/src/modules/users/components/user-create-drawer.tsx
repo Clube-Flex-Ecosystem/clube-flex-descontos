@@ -88,12 +88,14 @@ export function UserCreateDrawer({ onClose }: { onClose: () => void }) {
             {failure ? <Alert tone="danger">{failure}</Alert> : null}
             <InputField
                 label="Nome completo"
+                placeholder="Ex.: Maria Souza"
                 autoFocus
                 error={fieldMessage(errors.fullName?.message)}
                 {...register('fullName')}
             />
             <InputField
                 label="Nome de usuário"
+                placeholder="Gerado a partir do nome"
                 mono
                 readOnly
                 value={fullName.trim() ? baseUsername(fullName) : ''}
@@ -101,6 +103,7 @@ export function UserCreateDrawer({ onClose }: { onClose: () => void }) {
             />
             <InputField
                 label="E-mail"
+                placeholder="nome@exemplo.com"
                 optional
                 type="email"
                 hint="Com e-mail, o código de ativação é enviado automaticamente."
